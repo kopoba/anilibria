@@ -1,0 +1,22 @@
+- Регистрация
+- Авторизация
+- Авторизация через patreon, vk
+- Восстановление пароля
+- recaptcha (https://developers.google.com/recaptcha/docs/v3)
+- Proof of Work Captcha (https://coinhive.com/info/captcha-help)
+- Личный кабинет
+- Админка
+- Избранное
+- Торрент трекер
+- Поиск
+- Все релизы
+- Голосование, рейтинг
+- Топ 10 / топ
+- Рассылка (email, pushall, telegram)
+- Плееры
+- API
+- Конвертация данных (bitrix news, release, users, messages)
+- 2FA
+- Блокировка стран
+- Группы пользователей
+

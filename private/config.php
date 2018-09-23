@@ -1,5 +1,6 @@
 <?php
-$config['mysql_host'] = 'localhost';
-$config['mysql_user'] = 'anilibria';
-$config['mysql_passwd'] = 'anilibria';
-$config['mysql_base'] = 'anilibria';
+$conf['memcache']	= ['/tmp/memcached.socket', 0];
+$conf['mysql_host'] = 'localhost';
+$conf['mysql_user'] = 'anilibria';
+$conf['mysql_pass'] = 'anilibria';
+$conf['mysql_base'] = 'anilibria';
