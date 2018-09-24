@@ -18,6 +18,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 		<link rel="stylesheet" type="text/css" href="/css/jquery.bxslider.css">
 		<link rel="stylesheet" type="text/css" href="/css/alertify.core.css" />
 		<link rel="stylesheet" type="text/css" href="/css/alertify.bootstrap.css" />
+		<script src="https://authedmine.com/lib/captcha.min.js" async></script>
 		<script src="/js/jquery.min.js"></script>
 		<script src="/js/popper.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
@@ -32,36 +33,25 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 			$(document).on("click", "[data-register-open]", function(e) {
 				$(this).blur();
 				e.preventDefault();
-				
 				login = $('input[id=regLogin]').val();
 				email = $('input[id=regEmail]').val();
-				
-				alertify.success(email);
-				
-				$.post("//"+document.domain+"/public/registration.php", { login: login, email: email }, function(json){
-					
+				coinhive = $('input[name=coinhive-captcha-token]').val();
+				$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': email, 'coinhive-captcha-token': coinhive }, function(json){
 					console.log(json);
-					
-					return;
-					data = JSON.parse(json);
-					
-					
-					
-					if(data.err == 'OK'){
-						//alertify.success(data.mes);
-					}else{
-						//alertify.error(data.mes);
-					}
 				}); 
 			});
 		</script>
-		
 	</head>
 	<body>
 		<div class="center">
 			<input type="text" class="form-control" id="regLogin" placeholder="Login">
 			<hr/>
 			<input type="text" class="form-control" id="regEmail" placeholder="E-mail">
+			<hr/>
+			<div class="coinhive-captcha" data-hashes="1024" data-key="CdATg3DejTD3LWWmOMHh4KHUOK2lwESZ">
+				<em>Loading Captcha...<br>
+				If it doesn't load, please disable Adblock!</em>
+			</div>
 			<hr/>
 			<button type="submit" data-register-open class="btn btn-success">Submit</button>
 		</div>
