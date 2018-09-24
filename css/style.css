@@ -1,5 +1,5 @@
 /* line 1, D:/GitHub Projects/anilibria/sass/style.scss */
-html, body {
+html, body, #content_wrapper {
   height: 100%;
   width: 100%;
   -webkit-font-smoothing: antialiased;
@@ -7,6 +7,7 @@ html, body {
 
 /* line 7, D:/GitHub Projects/anilibria/sass/style.scss */
 html {
+  min-width: 1440px;
   background-color: #ebebeb;
 }
 
@@ -47,6 +48,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 
 /* line 45, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_header {
+  position: relative;
   width: 100%;
   height: 95px;
   background-color: #fff;
@@ -55,23 +57,46 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   font-style: normal;
 }
 
-/* line 53, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 54, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_header img {
   float: left;
   padding: 5px 30px;
 }
 
 /* line 59, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_header a#user_avatar {
+  position: relative;
+  float: left;
+  width: 75px;
+  height: 75px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  margin: 10px 0 10px 100px;
+}
+
+/* line 68, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_header a#user_avatar img {
+  margin: 0;
+  padding: 0;
+  width: 75px;
+  height: 75px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+
+/* line 84, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu {
   list-style-type: none;
 }
 
-/* line 61, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 86, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu li {
   float: left;
 }
 
-/* line 63, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 88, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu li a {
   display: block;
   color: #2b2b2b;
@@ -80,9 +105,27 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   line-height: 25px;
 }
 
-/* line 69, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 94, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu li a:hover {
   color: #eb5252;
+}
+
+/* line 101, D:/GitHub Projects/anilibria/sass/style.scss */
+#side_menu {
+  position: absolute;
+  width: 420px;
+  background-color: #fff;
+  margin-top: 20px;
+  float: left;
+}
+
+/* line 109, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content {
+  width: 100%;
+  background-color: #fff;
+  margin-top: 20px;
+  margin-left: 450px;
+  float: left;
 }
 
 /*# sourceMappingURL=../css/style.map */
