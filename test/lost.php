@@ -33,10 +33,9 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 			$(document).on("click", "[data-register-open]", function(e) {
 				$(this).blur();
 				e.preventDefault();
-				login = $('input[id=regLogin]').val();
-				email = $('input[id=regEmail]').val();
+				mail = $('input[id=regEmail]').val();
 				coinhive = $('input[name=coinhive-captcha-token]').val();
-				$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': email, 'coinhive-captcha-token': coinhive }, function(json){
+				$.post("//"+document.domain+"/public/password_recovery.php", { 'mail': mail, 'coinhive-captcha-token': coinhive }, function(json){
 					console.log(json);
 				}); 
 			});
@@ -44,9 +43,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 	</head>
 	<body>
 		<div class="center">
-			<input type="text" class="form-control" id="regLogin" placeholder="Login">
-			<hr/>
-			<input type="text" class="form-control" id="regEmail" placeholder="E-mail">
+			<input type="text" class="form-control" id="regEmail" placeholder="Login">
 			<hr/>
 			<div class="coinhive-captcha" data-hashes="1024" data-key="CdATg3DejTD3LWWmOMHh4KHUOK2lwESZ">
 				<em>Loading Captcha...<br>
