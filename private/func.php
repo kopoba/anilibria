@@ -30,6 +30,10 @@ function _message($mes, $err = 'ok'){
 	die();
 }
 
+function half_string($s){
+	return substr($s, 0, round(strlen($s)/2));
+}
+
 function coinhive_proof(){
 	global $conf;
 	if(empty($_POST['coinhive-captcha-token'])){

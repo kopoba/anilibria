@@ -11,7 +11,7 @@
 	- strlen login max 20, email max 254
 	- login only 0-9A-Za-z
 	- FILTER_VALIDATE_EMAIL $_POST['mail']
-	- Запрос отправил неавторизованный пользователь.
+	- Запрос отправил неавторизованный пользователь. (?)
 	- Уже зарегистрирован $_POST['login'] или $_POST['mail'] ?
 	Если ошибка - отвечаем json {err:error, mes:причина}.
 	
@@ -49,7 +49,7 @@ if(preg_match('/[^0-9A-Za-z]/', $_POST['login'])){
 
 if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 	_message('Wrong email', 'error');
-} 
+}
 
 $query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
 $query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
