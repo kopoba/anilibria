@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AniLibria.TV</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/slider.css">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.bxslider.js"></script>
+    <script>
+        $(function(){
+            var hslider = $('#hslider');
+            if ($('.slide', hslider).length > 1) {
+
+                $('.slideshow', hslider).bxSlider({
+                    auto: true,
+                    autoHover: true,
+                    mode: 'fade',
+                    speed: 1000
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="content_wrapper">
+        <header>
+            <div id="main_header">
+                <img src="images/logo.png"/>
+                <nav>
+                    <ul id="main_menu">
+                        <li><a href="#">Главная</a></li>
+                        <li><a href="#">Аниме</a></li>
+                        <li><a href="#">Новости</a></li>
+                        <li><a href="#">Видео</a></li>
+                        <li><a href="#">Блоги</a></li>
+                        <li><a href="#">О Команде</a></li>
+                        <li><a href="#">Ссылки</a></li>
+                        <li><a href="#">Форум</a></li>
+                    </ul>
+                </nav>
+                <a href="#" id="user_avatar"><img src="images/avatar.png"/></a>
+            </div>
+            <div id="hslider">
+                <div id="slides_main_wrapper" class="slideshow">
+                    <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/0ae1f95f1606730c0c5ba58478da3607.png')">
+                        <a href='#'>Slider Link</a>
+                    </figure>
+                    <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/19092732570c1cae6c3c19ab8644a6c9.png')">
+                        <a href='#'>Slider Link</a>
+                    </figure>
+                    <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/6bf0b14db261817700ce17faeb79222b.png')">
+                        <a href='#'>Slider Link</a>
+                    </figure>
+                </div>
+            </div>
+        </header>
+        <aside id="side_menu">aside content comming soon</aside>
+        <div id="main_content">main content comming soon</div>
+        <footer id="main_footer"></footer>
+    </div>
+</body>
+</html>
