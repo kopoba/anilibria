@@ -10,7 +10,7 @@
     <script src="js/jquery.bxslider.js"></script>
     <script>
         $(function(){
-            var hslider = $('#hslider');
+            const hslider = $('#hslider');
             if ($('.slide', hslider).length > 1) {
 
                 $('.slideshow', hslider).bxSlider({
@@ -21,6 +21,16 @@
                 });
             }
         });
+        $(function() {
+            const sub_block = $(".subnav-content");
+            const sub_link = $(".subnav-content > a");
+            $(sub_link).click(function() {
+                $(sub_link).removeClass("active");
+                $(sub_block).removeClass("active");
+                $(this).addClass("active");
+                $(this).parent(sub_link).addClass("active");
+            });
+        });
     </script>
 </head>
 <body>
@@ -28,17 +38,54 @@
         <header>
             <div id="main_header">
                 <img src="images/logo.png"/>
-                <nav>
-                    <ul id="main_menu">
-                        <li><a href="#">Главная</a></li>
-                        <li><a href="#">Аниме</a></li>
-                        <li><a href="#">Новости</a></li>
-                        <li><a href="#">Видео</a></li>
-                        <li><a href="#">Блоги</a></li>
-                        <li><a href="#">О Команде</a></li>
-                        <li><a href="#">Ссылки</a></li>
-                        <li><a href="#">Форум</a></li>
-                    </ul>
+                <nav id="main_menu">
+                    <div class="subnav">
+                        <a href="#" class="main_nav_link">Главная</a>
+                        <div class="subnav-content active">
+                            <a href="#" class="active">Новости</a>
+                            <a href="#">Календарь осеннего сезона</a>
+                            <a href="#">Все релизы</a>
+                            <a href="#">О Нас</a>
+                            <a href="#">Правила</a>
+                        </div>
+                    </div>
+                    <div class="subnav">
+                        <a href="#" class="main_nav_link">Аниме</a>
+                        <div class="subnav-content">
+                            <a href="#">Календарь осеннего сезона</a>
+                            <a href="#">Календарь летнего сезона</a>
+                            <a href="#">Все релизы</a>
+                            <a href="#">Моё избранное</a>
+                            <a href="#">Топ 10 осени</a>
+                        </div>
+                    </div>
+                    <div class="subnav">
+                        <a href="#" class="main_nav_link">Видео</a>
+                        <div class="subnav-content">
+                            <a href="#">RAP-Обзоры</a>
+                            <a href="#">Fisheye Placebo</a>
+                            <a href="#">Анонсы сезонов и топ-10</a>
+                        </div>
+                    </div>
+                    <div class="subnav">
+                        <a href="#" class="main_nav_link">Видеоблоги</a>
+                        <div class="subnav-content">
+                            <a href="#">Люпин(ЛЛН)</a>
+                            <a href="#">Иташи</a>
+                            <a href="#">Сильв</a>
+                            <a href="#">Чайный домик</a>
+                        </div>
+                    </div>
+                    <div class="subnav">
+                        <a href="#" class="main_nav_link">О Команде</a>
+                        <div class="subnav-content">
+                            <a href="#">О Нас</a>
+                            <a href="#">Список команды</a>
+                            <a href="#">Подать заявку</a>
+                            <a href="#">Поддержать</a>
+                        </div>
+                    </div>
+                    <a href="#" class="main_nav_link">Форум</a>
                 </nav>
                 <a href="#" id="user_avatar"><img src="images/avatar.png"/></a>
             </div>
