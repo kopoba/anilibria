@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <title>AniLibria.TV</title>
     <meta charset="UTF-8">
@@ -8,44 +8,13 @@
     <link rel="stylesheet" href="fonts/fonts.css">
     <script src="js/jquery.min.js"></script>
     <script src="js/jquery.bxslider.js"></script>
-    <script>
-        $(function(){
-            const hslider = $('#hslider');
-            if ($('.slide', hslider).length > 1) {
-
-                $('.slideshow', hslider).bxSlider({
-                    auto: true,
-                    autoHover: true,
-                    mode: 'fade',
-                    speed: 1000
-                });
-            }
-        });
-        $(function() {
-			const main_link = $(".main_nav_link");
-            const sub_block = $(".subnav-content");
-            const sub_link = $(".subnav-content > a");
-			$(main_link).click(function() {
-                $(main_link).removeClass("active");
-				$(sub_block).removeClass("active");
-				$(sub_link).removeClass("active");
-                $(this).addClass("active");
-				$(this).siblings(sub_block).addClass("active");
-            });
-            $(sub_link).click(function() {
-                $(sub_link).removeClass("active");
-                $(sub_block).removeClass("active");
-                $(this).addClass("active");
-                $(this).parent(sub_link).addClass("active");
-            });
-        });
-    </script>
+    <script src="js/main.js"></script>
 </head>
 <body>
     <div id="content_wrapper">
         <header>
             <div id="main_header">
-                <img src="images/logo.png"/>
+                <img src="images/logo.png" alt="logo"/>
                 <nav id="main_menu">
                     <div class="subnav">
                         <a href="#" class="main_nav_link">Главная</a>
@@ -95,7 +64,7 @@
                     </div>
                     <a href="#" class="main_nav_link">Форум</a>
                 </nav>
-                <a href="#" id="user_avatar"><img src="images/avatar.png"/></a>
+                <a href="#" id="user_avatar"><img src="images/avatar.png" alt="avatar"/></a>
             </div>
             <div id="hslider">
                 <div id="slides_main_wrapper" class="slideshow">
@@ -111,9 +80,93 @@
                 </div>
             </div>
         </header>
-        <aside id="side_menu">aside content comming soon</aside>
-        <div id="main_content">main content comming soon</div>
-        <footer id="main_footer"></footer>
+        <aside id="side_menu">
+            <a href="#">
+                <img src="images/subscribe_new_series.png" class="side_img_link" alt="series_feed"/>
+            </a>
+            <!-- Скрывать для действующего спонсора patreon -->
+            <a href="#">
+                <img src="images/patreon_subscribe.png" class="side_img_link" alt="series_feed"/>
+            </a>
+            <a href="#">
+                <img src="images/support_us.png" class="side_img_link" alt="series_feed"/>
+            </a>
+            <!-- Скрывать для действующего спонсора patreon -->
+            <div id="notice">
+                <p>Рекламное место<br/>365 x 500 px</p>
+                <a href="#">
+                    <!--<img src="images/support_us.png" class="side_img_link" alt="series_feed"/>-->
+                </a>
+            </div>
+            <a class="twitter-timeline" data-lang="ru" data-width="365" data-height="500" data-theme="dark" data-link-color="#eb5252" href="https://twitter.com/AniLibria_Tv?ref_src=twsrc%5Etfw">Tweets by AniLibria_Tv</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </aside>
+        <div id="main_content_top">
+            <div id="notice_top">
+                <p>Рекламное место<br/>639 x 150 px</p>
+                <!-- Заменять картинку на благодарность для действующего спонсора patreon -->
+                <a href="#">
+                    <!--<img src="images/support_us.png" class="side_img_link" alt="series_feed"/>-->
+                </a>
+            </div>
+            <div id="search">
+                <p>Поиск</p>
+                <input type="search"/>
+            </div>
+        </div>
+        <main id="main_content">
+            <article class="anime_block">
+                <header>
+                    <h1><a href="#">Black Clover / Чёрный Клевер (Черный клевер)</a></h1>
+                    <p>
+                        <span>Жанры:</span> <a href="#">экшен</a> <a href="#">комедия</a> <a href="#">магия</a> <a href="#">фэнтези</a> <a href="#">сёнен</a>
+                    </p>
+                </header>
+                <p>Описание: В мире, где всё решает магия, однажды
+                    у порога церкви находят двух брошенных детей,
+                    Аста и Юно. И если Юно оказался одарён
+                    исключительной магической силой, то Аста был
+                    урождён единственным человеком в мире, у
+                    которого эта сила полностью отсутствует...</p>
+                <img src="https://www.anilibria.tv/upload/iblock/ac9/BlackClover.png" alt="anime-name" />
+            </article>
+            <article class="anime_block">
+                <header>
+                    <h1><a href="#">Black Clover / Чёрный Клевер (Черный клевер)</a></h1>
+                    <p>
+                        <span>Жанры:</span> <a href="#">экшен</a> <a href="#">комедия</a> <a href="#">магия</a> <a href="#">фэнтези</a> <a href="#">сёнен</a>
+                    </p>
+                </header>
+                <p>Описание: В мире, где всё решает магия, однажды
+                    у порога церкви находят двух брошенных детей,
+                    Аста и Юно. И если Юно оказался одарён
+                    исключительной магической силой, то Аста был
+                    урождён единственным человеком в мире, у
+                    которого эта сила полностью отсутствует...</p>
+                <img src="https://www.anilibria.tv/upload/iblock/ac9/BlackClover.png" alt="anime-name" />
+            </article>
+        </main>
+        <div style="clear:both; height:0"></div>
+        <footer id="main_footer">
+            <div id="footer_left">
+                <span>ANILIBRIA.TV</span>
+                <p>Вы можете смотреть аниме онлайн<br/>
+                    или скачать аниме с трекера, а так же<br/>
+                    заказать аниме на озвучку для бесплатного<br/>
+                    домашнего ознакомительного просмотра.<br/>
+                    Все материалы на сайте предоставлены только<br/>
+                    для ознакомления, вы обязаны удалить их<br/>
+                    в течение суток после скачивания, в случаях нарушения<br/>
+                    авторских прав - обращайтесь на почту lupin@anilibria.tv<br/>
+                    и мы решим вашу проблему. Самая качественная озвучка<br/>
+                    для бесплатного просмотра на бесплатной<br/>
+                    основе - AniLibria.TV, заходите к нам, у нас вам всегда рады!
+                </p>
+                <span>СПАСИБО, ЧТО ВЫБИРАЕТЕ НАС!</span>
+            </div>
+            <div id="copyrights">
+                <span>©2012-2018 AniLibria.TV</span>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
