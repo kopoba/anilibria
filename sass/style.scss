@@ -59,7 +59,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   font-family: 'Roboto', 'Arial', sans-serif;
   font-weight: normal;
   font-style: normal;
-  margin-bottom: 60px;
+  margin-bottom: 80px;
   img {
     float: left;
     padding: 5px 30px;
@@ -126,7 +126,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   top: 105px;
   width: calc(100% - 40px);
   background-color: #fff;
-  padding: 10px 20px;
+  padding: 20px 20px;
 }
 div.subnav .active {
   display: block;
@@ -160,22 +160,117 @@ div.subnav .active {
       line-height: 30px;
     }
   }
+
+  iframe {
+    margin-top: 10px!important;
+  }
 }
 
-#main_content {
+#main_content_top {
   position: relative;
   width: calc(100% - 450px);
+  height: 150px;
   background-color: #fff;
   margin-top: 30px;
   margin-left: 30px;
   float: right;
+  #notice_top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 50%;
+    height: 100%;
+    background-color: #eb5252;
+    float: left;
+    p {
+      font-size: 30px;
+      line-height: 30px;
+      color: #fff;
+    }
+  }
+  #search {
+    text-align: center;
+    width: 50%;
+    float: right;
+
+    >p {
+      color: #3c3c3c;
+      font-size: 25px;
+      margin: 20px 0 5px 0;
+      padding: 0;
+    }
+
+    input {
+      width: 75%;
+      height: 40px;
+      font-family: 'Roboto', 'Arial', sans-serif;
+      background-color: #ededed;
+      color: #aeaeae;
+      font-size: 20px;
+      border-radius: 10px;
+      padding: 10px 20px;
+      &:focus {
+        color: #3c3c3c;
+      }
+    }
+  }
+}
+
+#main_content {
+  position: relative;
+  width: calc(100% - 510px);
+  background-color: #fff;
+  margin-top: 30px;
+  margin-left: 30px;
+  padding: 30px;
+  float: right;
+
+  .anime_block {
+    position: inherit;
+    min-height: 340px;
+    border-bottom: 5px solid #ededed;
+    margin-bottom: 30px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    header {
+      position: inherit;
+      width: calc(100% - 250px);
+      h1 {
+        font-size: 25px;
+        color: #eb5252;
+      }
+      p {
+        span {
+          color: #3c3c3c;
+        }
+        a {
+          color: #eb5252;
+        }
+      }
+    }
+    > p {
+      color: #3c3c3c;
+      width: calc(100% - 250px);
+    }
+    > img {
+      width: 220px;
+      height: 320px;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
 }
 
 #main_footer {
+  position: relative;
   width: 100%;
-  height: 300px;
+  height: 330px;
   background-color: #b34050;
   margin-top: 30px;
+  color: #fff;
 
   #copyrights {
     position: absolute;
@@ -184,8 +279,24 @@ div.subnav .active {
     line-height: 40px;
     bottom: 0;
     text-align: center;
-    color: #fff;
     font-size: 15px;
     background-color: #9b303f;
+  }
+
+  #footer_left {
+    position: relative;
+    width: 50%;
+    height: 230px;
+    padding: 30px 0 0 30px;
+    p {
+      margin: 5px 0;
+      font-size: 15px;
+      line-height: 15px;
+    }
+    span {
+      font-size: 25px;
+      line-height: 25px;
+      font-weight: bold;
+    }
   }
 }
