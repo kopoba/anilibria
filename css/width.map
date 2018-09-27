@@ -1,0 +1,12 @@
+{
+	"version": 3,
+	"file": "../sass/width.css",
+	"sources": [
+		"../sass/width.scss"
+	],
+	"sourcesContent": [
+		"@media screen and (max-width: 1440px) {\n\t#content_wrapper {\n\t\twidth: 1200px;\n\t}\n}\n"
+	],
+	"mappings": "AAAA,MAAM,CAAN,MAAM,MAAM,SAAS,EAAE,MAAM;;EAC5B,AAAA,gBAAgB,CAAC;IAChB,KAAK,EAAE,MAAO;GACd",
+	"names": []
+}

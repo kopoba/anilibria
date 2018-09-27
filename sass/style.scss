@@ -6,7 +6,7 @@ html, body {
 
 html {
   //overflow-y: scroll;
-  min-width: 1440px;
+  //min-width: 768px;
   max-width: 1920px;
   //min-height: 768px;
   background-color: #ebebeb;
@@ -228,7 +228,6 @@ div.subnav .active {
 
   .anime_block {
     position: inherit;
-    min-height: 340px;
     border-bottom: 5px solid #ededed;
     margin-bottom: 30px;
     &:last-child {
@@ -236,31 +235,62 @@ div.subnav .active {
     }
     header {
       position: inherit;
-      width: calc(100% - 250px);
+      width: calc(100% - 30px);
       h1 {
         font-size: 25px;
         color: #eb5252;
-      }
-      p {
-        span {
-          color: #3c3c3c;
-        }
-        a {
-          color: #eb5252;
-        }
       }
     }
     > p {
       color: #3c3c3c;
       width: calc(100% - 250px);
+      margin-bottom: 60px;
+      float: left;
+      span {
+        color: #3c3c3c;
+      }
+      a {
+        color: #eb5252;
+      }
     }
     > img {
       width: 220px;
       height: 320px;
-      position: absolute;
-      top: 0;
-      right: 0;
+      float: right;
+      margin-bottom: 20px;
+      //position: absolute;
+      //top: 40px;
+      //right: 0;
+	  border: 5px solid #ededed;
+	  border-radius: 10px;
     }
+	footer {
+	  position: absolute;
+	  bottom: 0;
+	  width: calc(100% - 250px);
+	  margin: 20px 0;
+	  a {
+		float: right;
+		display: block;
+		background-color: #eb5252;
+		font-size: 16px;
+		line-height: 16px;
+		color: #fff;
+		margin-left: 10px;
+		padding: 10px;
+		text-transform: uppercase;
+		&:hover {
+			background-color: #9b303f;
+		}
+	  }
+	  p {
+		float: left;
+		font-size: 16px;
+		line-height: 16px;
+		padding: 10px 0;
+		color: #3c3c3c;
+	  }
+	}
   }
 }
 

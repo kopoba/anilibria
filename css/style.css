@@ -7,7 +7,6 @@ html, body {
 
 /* line 7, D:/GitHub Projects/anilibria/sass/style.scss */
 html {
-  min-width: 1440px;
   max-width: 1920px;
   background-color: #ebebeb;
 }
@@ -269,54 +268,91 @@ div.subnav .active {
 /* line 229, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block {
   position: inherit;
-  min-height: 340px;
   border-bottom: 5px solid #ededed;
   margin-bottom: 30px;
 }
 
-/* line 234, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 233, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block:last-child {
   margin-bottom: 0;
 }
 
-/* line 237, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 236, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block header {
   position: inherit;
-  width: calc(100% - 250px);
+  width: calc(100% - 30px);
 }
 
-/* line 240, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 239, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block header h1 {
   font-size: 25px;
   color: #eb5252;
 }
 
-/* line 245, D:/GitHub Projects/anilibria/sass/style.scss */
-#main_content .anime_block header p span {
-  color: #3c3c3c;
-}
-
-/* line 248, D:/GitHub Projects/anilibria/sass/style.scss */
-#main_content .anime_block header p a {
-  color: #eb5252;
-}
-
-/* line 253, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 244, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block > p {
   color: #3c3c3c;
   width: calc(100% - 250px);
+  margin-bottom: 60px;
+  float: left;
 }
 
-/* line 257, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 249, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content .anime_block > p span {
+  color: #3c3c3c;
+}
+
+/* line 252, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content .anime_block > p a {
+  color: #eb5252;
+}
+
+/* line 256, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block > img {
   width: 220px;
   height: 320px;
-  position: absolute;
-  top: 0;
-  right: 0;
+  float: right;
+  margin-bottom: 20px;
+  border: 5px solid #ededed;
+  border-radius: 10px;
 }
 
 /* line 267, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content .anime_block footer {
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 250px);
+  margin: 20px 0;
+}
+
+/* line 272, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content .anime_block footer a {
+  float: right;
+  display: block;
+  background-color: #eb5252;
+  font-size: 16px;
+  line-height: 16px;
+  color: #fff;
+  margin-left: 10px;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+/* line 282, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content .anime_block footer a:hover {
+  background-color: #9b303f;
+}
+
+/* line 286, D:/GitHub Projects/anilibria/sass/style.scss */
+#main_content .anime_block footer p {
+  float: left;
+  font-size: 16px;
+  line-height: 16px;
+  padding: 10px 0;
+  color: #3c3c3c;
+}
+
+/* line 297, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer {
   position: relative;
   width: 100%;
@@ -326,7 +362,7 @@ div.subnav .active {
   color: #fff;
 }
 
-/* line 275, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 305, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #copyrights {
   position: absolute;
   width: 100%;
@@ -338,7 +374,7 @@ div.subnav .active {
   background-color: #9b303f;
 }
 
-/* line 286, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 316, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left {
   position: relative;
   width: 50%;
@@ -346,14 +382,14 @@ div.subnav .active {
   padding: 30px 0 0 30px;
 }
 
-/* line 291, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 321, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left p {
   margin: 5px 0;
   font-size: 15px;
   line-height: 15px;
 }
 
-/* line 296, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 326, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left span {
   font-size: 25px;
   line-height: 25px;
