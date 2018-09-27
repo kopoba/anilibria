@@ -58,3 +58,19 @@ function coinhive_proof(){
 	}
 	return false;
 }
+
+function _exit(){
+	global $db;
+	if(session_status() != PHP_SESSION_NONE){
+		if(!empty($_SESSION['sess'])){
+			$query = $db->prepare("DELETE FROM `session` WHERE `hash` = :hash");
+			$query->bindParam(':hash', $_SESSION["sess"], PDO::PARAM_STR);
+			$query->execute();
+		}
+		$params = session_get_cookie_params();
+		setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+		session_unset();
+		session_destroy();
+		header("Location: https://".$_SERVER['SERVER_NAME']);	
+	}
+}

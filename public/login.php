@@ -7,6 +7,7 @@
 	Узнаем ip с которого получили запрос.
 	
 	Выполняем проверки:
+	- Уже авторизован?
 	- empty $_POST['login'] & $_POST['passwd']
 	- strlen login max 20
 	- login only 0-9A-Za-z
@@ -17,7 +18,6 @@
 	
 	Если password_hash устарел - обновим его.
 	
-	$_SESSION['id']		- id пользователя в базе.
 	$_SESSION['sess']	- hash('sha512', ip.agent.time()+86400.$login.half_string(password_hash));
 	
 	session table
@@ -43,6 +43,11 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+
+if($user){
+	_message('Already authorized', 'error');
+}
 
 if(empty($_POST['login']) || empty($_POST['passwd'])){
 	_message('Empty post value', 'error');
@@ -85,7 +90,6 @@ if($hash != 'no_hash'){
 	$row['passwd'] = $hash;
 }
 
-$_SESSION['id'] = $row['id'];
 $_SESSION['sess'] = hash('sha512', $ip.$agent.$time.$row['login'].half_string($row['passwd']));
 
 $query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, :ip, :info)");

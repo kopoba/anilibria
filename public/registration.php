@@ -6,6 +6,7 @@
 	- coinhive (Proof of Work Captcha)
 	
 	Отправляет POST запрос. Ловим данные. Выполняем проверки:
+	- уже авторизован?
 	- coinhive proof
 	- empty $_POST['login'] & $_POST['mail']
 	- strlen login max 20, email max 254
@@ -30,6 +31,11 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+
+if($user){
+	_message('Already authorized', 'error');
+}
 
 if(!coinhive_proof()){
 	_message('Coinhive captcha error', 'error');
