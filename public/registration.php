@@ -33,46 +33,4 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
-if($user){
-	_message('Already authorized', 'error');
-}
-
-if(!coinhive_proof()){
-	_message('Coinhive captcha error', 'error');
-}
-
-if(empty($_POST['login']) || empty($_POST['mail'])){
-	_message('Empty post value', 'error');
-}
-
-if(strlen($_POST['login']) > 20 || strlen($_POST['mail']) > 254){
-	_message('Too long login or email', 'error');
-}
-
-if(preg_match('/[^0-9A-Za-z]/', $_POST['login'])){
-	_message('Wrong login', 'error');
-}
-
-if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
-	_message('Wrong email', 'error');
-}
-
-$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
-$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
-$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
-$query->execute();
-if($query->rowCount() > 0){
-	_message('Already registered', 'error');
-}
-
-$passwd = genRandStr(8);
-$hash = rehash($passwd);
-
-$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`) VALUES (:login, :mail, :passwd)");
-$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
-$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
-$query->bindParam(':passwd', $hash, PDO::PARAM_STR);
-$query->execute();
-
-_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd");
-_message('Success registration');
+registration();
