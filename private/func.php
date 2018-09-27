@@ -75,34 +75,34 @@ function _exit(){
 	}
 }
 
-function login($login, $passwd){
-	global $db, $user, $var;
+function login(){
+	global $db, $var, $user;
 	if($user){
 		_message('Already authorized', 'error');
 	}
-	if(empty($login) || empty($passwd)){
+	if(empty($_POST['login']) || empty($_POST['passwd'])){
 		_message('Empty post value', 'error');
 	}
-	if(strlen($login) > 20){
+	if(strlen($_POST['login']) > 20){
 		_message('Too long login or email', 'error');
 	}
-	if(preg_match('/[^0-9A-Za-z]/', $login)){
+	if(preg_match('/[^0-9A-Za-z]/', $_POST['login'])){
 		_message('Wrong login', 'error');
 	}
 	if(strlen($var['user_agent']) > 256){
 		_message('Wrong user agen', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login");
-	$query->bindValue(':login', $login, PDO::PARAM_STR);
+	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('Invalid user', 'error');
 	}
 	$row = $query->fetch();
-	if(!password_verify($passwd, $row['passwd'])){
+	if(!password_verify($_POST['passwd'], $row['passwd'])){
 		_message('Wrong password', 'error');
 	}
-	$hash = rehash($passwd, $row['passwd']);
+	$hash = rehash($_POST['passwd'], $row['passwd']);
 	if($hash != 'no_hash'){
 		$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
 		$query->bindParam(':passwd', $hash, PDO::PARAM_STR);
@@ -111,12 +111,12 @@ function login($login, $passwd){
 		$row['passwd'] = $hash;
 	}
 	$time = $var['time']+86400;
-	$_SESSION['sess'] = hash('sha512', $ip.$agent.$time.$row['login'].half_string($row['passwd']));
+	$_SESSION['sess'] = hash('sha512', $var['ip'].$agent.$time.$row['login'].half_string($row['passwd']));
 	$query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, :ip, :info)");
 	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
 	$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
 	$query->bindParam(':time', $time, PDO::PARAM_STR);
-	$query->bindParam(':ip', $ip, PDO::PARAM_STR);
+	$query->bindParam(':ip', $var['ip'], PDO::PARAM_STR);
 	$query->bindParam(':info', $agent, PDO::PARAM_STR);
 	$query->execute();
 	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid");
@@ -128,5 +128,37 @@ function login($login, $passwd){
 		$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
 		$query->execute();
 	}
+	_message('Success');
+}
+
+function password_link(){
+	global $db, $var;
+	if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
+		_message('Empty get value', 'error');
+	}
+	if(!is_numeric($_GET['id']) || !is_numeric($_GET['time'])){
+		_message('Wrong id or time', 'error');	
+	}
+	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() == 0){
+		_message('No such user', 'error');
+	}
+	$row = $query->fetch();
+	$hash = hash('sha512', $var['ip'].$_GET['id'].$_GET['time'].half_string($row['passwd']));
+	if($_GET['hash'] != $hash){
+		_message('Wrong hash', 'error');
+	}
+	if($var['time'] > $_GET['time']){
+		_message('Invalid link', 'error');
+	}
+	$passwd = genRandStr(8);
+	$hash = rehash($passwd);
+	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
+	$query->bindValue(':id', $row['id'], PDO::PARAM_STR);
+	$query->bindParam(':passwd', $hash, PDO::PARAM_STR);
+	$query->execute();
+	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd");
 	_message('Success');
 }
