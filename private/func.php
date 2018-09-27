@@ -227,3 +227,36 @@ function registration(){
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd");
 	_message('Success registration');
 }
+
+function auth(){
+	global $db, $var, $user;
+	if(!empty($_SESSION['sess'])){
+		$query = $db->prepare("SELECT * FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())");
+		$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
+		$query->execute();
+		if($query->rowCount() != 1){
+			_exit();
+		}
+		$session = $query->fetch();
+		$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+		$query->bindParam(':id', $session['uid'], PDO::PARAM_STR);
+		$query->execute();
+		if($query->rowCount() != 1){
+			_exit();
+		}
+		$row = $query->fetch();
+		if($_SESSION['sess'] != hash('sha512', $var['ip'].$var['agent'].$session['time'].$row['login'].half_string($row['passwd']))){
+			_exit();
+		}
+		if($var['time'] > $session['time']){
+			$time = $var['time']+86400;
+			$hash = hash('sha512', $var['ip'].$var['agent'].$time.$row['login'].half_string($row['passwd'])
+			$query = $db->prepare('UPDATE `session` set `hash` = :hash, `time` = :time WHERE `id` = :id');
+			$query->bindParam(':hash', $hash, PDO::PARAM_STR);
+			$query->bindParam(':time', $time, PDO::PARAM_STR);
+			$query->bindParam(':id', $session['id'], PDO::PARAM_STR);
+			$query->execute();			
+		}
+		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail']];
+	}
+}
