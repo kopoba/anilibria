@@ -2,7 +2,6 @@
 #hslider {
   position: relative;
   width: 100%;
-  min-width: 1210px;
   height: 350px;
   background: transparent url("../images/bx_loader.gif") 50% 50% no-repeat;
   overflow: hidden;
