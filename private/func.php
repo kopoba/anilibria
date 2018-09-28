@@ -119,7 +119,7 @@ function login(){
 	$query->bindParam(':ip', $var['ip'], PDO::PARAM_STR);
 	$query->bindParam(':info', $agent, PDO::PARAM_STR);
 	$query->execute();
-	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid");
+	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`");
 	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
 	$query->execute();
 	if($query->rowCount() > 10){
@@ -250,12 +250,12 @@ function auth(){
 		}
 		if($var['time'] > $session['time']){
 			$time = $var['time']+86400;
-			$hash = hash('sha512', $var['ip'].$var['agent'].$time.$row['login'].half_string($row['passwd'])
+			$_SESSION['sess'] = hash('sha512', $var['ip'].$var['agent'].$time.$row['login'].half_string($row['passwd'])
 			$query = $db->prepare('UPDATE `session` set `hash` = :hash, `time` = :time WHERE `id` = :id');
-			$query->bindParam(':hash', $hash, PDO::PARAM_STR);
+			$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
 			$query->bindParam(':time', $time, PDO::PARAM_STR);
 			$query->bindParam(':id', $session['id'], PDO::PARAM_STR);
-			$query->execute();			
+			$query->execute();
 		}
 		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail']];
 	}
