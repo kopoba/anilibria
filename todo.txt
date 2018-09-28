@@ -1,9 +1,5 @@
-- Регистрация
-- Авторизация
-- Авторизация через patreon, vk
-- Восстановление пароля
+- Авторизация/ регистрация через patreon, vk
 - recaptcha (https://developers.google.com/recaptcha/docs/v3)
-- Proof of Work Captcha (https://coinhive.com/info/captcha-help)
 - Личный кабинет
 - Админка
 - Избранное
@@ -19,3 +15,4 @@
 - 2FA
 - Блокировка стран
 - Группы пользователей
+- Дизайн верстка письма
