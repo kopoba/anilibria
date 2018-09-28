@@ -1,9 +1,10 @@
 <?php
 
-function rehash($passwd, $hash = 0, $a = 'no_hash'){
-	if(empty($hash) || password_needs_rehash($hash, PASSWORD_DEFAULT))
-		$a = password_hash($passwd, PASSWORD_DEFAULT);
-	return $a;
+function createPasswd($passwd = ''){
+	if(empty($passwd)){
+		$passwd = genRandStr(8);
+	}
+	return [$passwd, password_hash($passwd, PASSWORD_DEFAULT)];
 }
 
 function genRandStr($length = 10) {
@@ -32,6 +33,17 @@ function _message($mes, $err = 'ok'){
 
 function half_string($s){
 	return substr($s, 0, round(strlen($s)/2));
+}
+
+function session_hash($login, $passwd, $rand = '', $time = ''){
+	global $conf, $var;
+	if(empty($rand)){
+		$rand = genRandStr(8);
+	}
+	if(empty($time)){
+		$time = $var['time']+86400;
+	}
+	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.half_string($passwd)), $time];
 }
 
 function coinhive_proof(){
@@ -102,22 +114,21 @@ function login(){
 	if(!password_verify($_POST['passwd'], $row['passwd'])){
 		_message('Wrong password', 'error');
 	}
-	$hash = rehash($_POST['passwd'], $row['passwd']);
-	if($hash != 'no_hash'){
+	if(password_needs_rehash($row['passwd'], PASSWORD_DEFAULT)){
+		$passwd = createPasswd($_POST['passwd']);
 		$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
-		$query->bindParam(':passwd', $hash, PDO::PARAM_STR);
+		$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
 		$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
 		$query->execute();
-		$row['passwd'] = $hash;
+		$row['passwd'] = $passwd[1];
 	}
-	$time = $var['time']+86400;
-	$_SESSION['sess'] = hash('sha512', $var['ip'].$agent.$time.$row['login'].half_string($row['passwd']));
+	$hash = session_hash($row['login'], $row['passwd']);
 	$query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, :ip, :info)");
 	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
-	$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
-	$query->bindParam(':time', $time, PDO::PARAM_STR);
+	$query->bindParam(':hash', $hash[0], PDO::PARAM_STR);
+	$query->bindParam(':time', $hash[1], PDO::PARAM_STR);
 	$query->bindParam(':ip', $var['ip'], PDO::PARAM_STR);
-	$query->bindParam(':info', $agent, PDO::PARAM_STR);
+	$query->bindParam(':info', $var['user_agent'], PDO::PARAM_STR);
 	$query->execute();
 	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`");
 	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
@@ -128,11 +139,12 @@ function login(){
 		$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
 		$query->execute();
 	}
+	$_SESSION['sess'] = $hash[0];
 	_message('Success');
 }
 
 function password_link(){
-	global $db, $var;
+	global $conf, $db, $var;
 	if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
 		_message('Empty get value', 'error');
 	}
@@ -146,25 +158,24 @@ function password_link(){
 		_message('No such user', 'error');
 	}
 	$row = $query->fetch();
-	$hash = hash('sha512', $var['ip'].$_GET['id'].$_GET['time'].half_string($row['passwd']));
+	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].half_string($row['passwd']));
 	if($_GET['hash'] != $hash){
 		_message('Wrong hash', 'error');
 	}
 	if($var['time'] > $_GET['time']){
 		_message('Invalid link', 'error');
 	}
-	$passwd = genRandStr(8);
-	$hash = rehash($passwd);
+	$passwd = createPasswd();
 	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
 	$query->bindValue(':id', $row['id'], PDO::PARAM_STR);
-	$query->bindParam(':passwd', $hash, PDO::PARAM_STR);
+	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
 	$query->execute();
-	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd");
+	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd[0]");
 	_message('Success');
 }
 
 function password_recovery(){
-	global $db, $var;
+	global $conf, $db, $var;
 	if(!coinhive_proof()){
 		_message('Coinhive captcha error', 'error');
 	}
@@ -184,7 +195,8 @@ function password_recovery(){
 		_message('No such user', 'error');
 	}
 	$row = $query->fetch();
-	$hash = hash('sha512', $var['ip'].$row['id'].$var['time']+43200.half_string($row['passwd']));
+	$time = $var['time']+43200;
+	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.half_string($row['passwd']));
 	$link = "http://test.poiuty.com/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP $ip<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('Success');
@@ -217,19 +229,18 @@ function registration(){
 	if($query->rowCount() > 0){
 		_message('Already registered', 'error');
 	}
-	$passwd = genRandStr(8);
-	$hash = rehash($passwd);
+	$passwd = createPasswd();
 	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`) VALUES (:login, :mail, :passwd)");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
-	$query->bindParam(':passwd', $hash, PDO::PARAM_STR);
+	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
 	$query->execute();
-	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd");
+	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('Success registration');
 }
 
 function auth(){
-	global $db, $var, $user;
+	global $conf, $db, $var, $user;
 	if(!empty($_SESSION['sess'])){
 		$query = $db->prepare("SELECT * FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())");
 		$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
@@ -245,17 +256,17 @@ function auth(){
 			_exit();
 		}
 		$row = $query->fetch();
-		if($_SESSION['sess'] != hash('sha512', $var['ip'].$var['agent'].$session['time'].$row['login'].half_string($row['passwd']))){
+		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], substr($session['hash'], 0, 8), $session['time'])[0]){
 			_exit();
 		}
-		if($var['time'] > $session['time']){
-			$time = $var['time']+86400;
-			$_SESSION['sess'] = hash('sha512', $var['ip'].$var['agent'].$time.$row['login'].half_string($row['passwd'])
+		if($var['time'] > $session['time']){			
+			$hash = session_hash($row['login'], $row['passwd']);
 			$query = $db->prepare('UPDATE `session` set `hash` = :hash, `time` = :time WHERE `id` = :id');
-			$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
-			$query->bindParam(':time', $time, PDO::PARAM_STR);
+			$query->bindParam(':hash', $hash[0], PDO::PARAM_STR);
+			$query->bindParam(':time', $hash[1], PDO::PARAM_STR);
 			$query->bindParam(':id', $session['id'], PDO::PARAM_STR);
 			$query->execute();
+			$_SESSION['sess'] = $hash[0];
 		}
 		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail']];
 	}

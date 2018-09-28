@@ -10,3 +10,5 @@ $conf['email'] = 'poiuty@poiuty.com';
 $conf['email_from'] = 'Test anilibria';
 
 $conf['coinhive_secret'] = 'secret';
+
+$conf['hash_algo'] = 'sha256';
