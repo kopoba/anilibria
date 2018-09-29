@@ -13,7 +13,8 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `login` varchar(20) NOT NULL,
   `passwd` varchar(255) NOT NULL,
-  `mail` varchar(254) NOT NULL
+  `mail` varchar(254) NOT NULL,
+  `2fa` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `session`

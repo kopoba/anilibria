@@ -111,6 +111,14 @@ function login(){
 		_message('Invalid user', 'error');
 	}
 	$row = $query->fetch();
+	if(!empty($row['2fa'])){
+		if(empty($_POST['fa2code'])){
+			_message('Empty post 2FA', 'error');
+		}
+		if(oathHotp($row['2fa'], floor(microtime(true) / 30)) != $_POST['fa2code']){
+			_message('Wrong 2FA', 'error');
+		}
+	}
 	if(!password_verify($_POST['passwd'], $row['passwd'])){
 		_message('Wrong password', 'error');
 	}
