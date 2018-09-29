@@ -268,6 +268,124 @@ function auth(){
 			$query->execute();
 			$_SESSION['sess'] = $hash[0];
 		}
-		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail']];
+		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa']];
+	}
+}
+
+function base32_map($i, $do = 'encode'){
+	$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+	if( $do == 'encode'){
+		return $chars[$i];
+	}else{
+		return array_search($i, str_split($chars));
+	}
+}
+
+function base32_bits($v){
+	$value = ord($v);
+	return vsprintf(str_repeat('%08b', count($value)), $value);
+}
+
+function base32_encode($data){
+	$result = ''; $s = 0;
+	$j = [4 => 1, 3 => 3, 2 => 4, 1 => 6];
+	$arr = explode('|', substr(chunk_split($data, 5, '|'), 0, -1));
+	foreach($arr as $val){
+		$s++;
+		$arr2 = str_split($val);
+		$x = ['00000000', '00000000', '00000000', '00000000', '00000000'];
+		foreach($arr2 as $key => $val2){
+			$x[$key] = base32_bits($val2);	
+		}
+		$arr3 = explode('|', substr(chunk_split(implode('', $x), 5, '|'), 0, -1));
+		foreach($arr3 as $key => $val3){	
+			$result .= base32_map(bindec($val3));
+		}
+		if($s == count($arr) && isset($j[strlen($val)])){
+			$result = str_pad(substr($result, 0, -$j[strlen($val)]), 8*$s, '=', STR_PAD_RIGHT);
+		}
+	}
+	return $result;
+}
+
+function base32_decode($data){ // thx Sanasol
+	$x = '';
+	$arr = str_split($data);
+	foreach($arr as $val){
+		$x .= str_pad(decbin(base32_map($val, 'decode')), 5, '0', STR_PAD_LEFT);
+	}
+	$chunks = str_split($x, 8);
+	$string = array_map(function($chr){
+		return chr(bindec($chr));
+	}, $chunks);
+	return implode("", $string);
+}
+
+function generate_secret(){
+	return base32_encode(genRandStr());
+}
+
+function oathTruncate($hash){
+	$offset = ord($hash[19]) & 0xf;
+	$temp = unpack('N', substr($hash, $offset, 4));
+	return substr($temp[1] & 0x7fffffff, -6);
+}
+
+function oathHotp($secret, $time){
+	$secret = base32_decode($secret);
+	$time = pack('N*', 0, $time);
+	$hash = hash_hmac('sha1', $time, $secret, true);
+	return str_pad(oathTruncate($hash), 6, '0', STR_PAD_LEFT);
+}
+
+function getQRCodeGoogleUrl($name, $secret){
+	$urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$secret.'');
+	return 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl='.$urlencoded.'';
+}
+
+function auth2FA(){
+	global $db, $user;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_POST['do'])){
+		_message('Empty post', 'error');
+	}
+	switch($_POST['do']){
+		default: return 'empty_post_value'; break;
+		case 'gen':
+			if(!empty($user['2fa'])){
+				_message('2FA already activated', 'error');				
+			}
+			$base32_key = generate_secret();
+			_message("<img src=".getQRCodeGoogleUrl($user['login']."@anilibria.tv", $base32_key)."><br>Secret key: $base32_key<br/>Сохраните секретный ключ в надежном месте.");
+		break;
+		case 'save':
+			if(empty($_POST['passwd']) || empty($_POST['code']) || empty($_POST['recode'])){
+				_message('empty_post_value', 'error');
+			}
+			if($_POST['code'] != $_POST['recode'] || strlen($_POST['code']) != 16 || ctype_lower($_POST['code'])){
+				_message('wrong_2fa', 'error');
+			}
+			if(!password_verify($_POST['passwd'], $user['passwd'])){
+				_message('Wrong password', 'error');
+			}
+			if(!empty($user['2fa'])){
+				if($_POST['code'] != $user['2fa']){
+					_message('Wrong 2FA', 'error');	
+				}
+				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
+				$query->bindValue(':code', null, PDO::PARAM_INT);
+				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
+				$query->execute();
+				_message('2FA disabled');
+			}else{
+				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
+				$query->bindParam(':code', $_POST['code'], PDO::PARAM_STR);
+				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
+				$query->execute();
+				_message('2FA activated');
+			}
+		break;
 	}
 }
