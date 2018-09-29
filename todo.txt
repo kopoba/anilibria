@@ -12,7 +12,14 @@
 - Плееры
 - API
 - Конвертация данных (bitrix news, release, users, messages)
-- 2FA
 - Блокировка стран
 - Группы пользователей
 - Дизайн верстка письма
+
+
+== DONE ==
+Регистрация
+Авторизация
+Восстановление пароля
+Proof of Work Captcha (https://coinhive.com/info/captcha-help)
+2FA
