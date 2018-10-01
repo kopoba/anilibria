@@ -230,65 +230,94 @@ div.subnav .active {
     position: inherit;
     border-bottom: 5px solid #ededed;
     margin-bottom: 30px;
+    min-height: 350px;
+    //border: 1px solid black;
     &:last-child {
       margin-bottom: 0;
-    }
-    header {
-      position: inherit;
-      width: calc(100% - 30px);
-      h1 {
-        font-size: 25px;
-        color: #eb5252;
-      }
-    }
-    > p {
-      color: #3c3c3c;
-      width: calc(100% - 250px);
-      margin-bottom: 60px;
-      float: left;
-      span {
-        color: #3c3c3c;
-      }
-      a {
-        color: #eb5252;
-      }
     }
     > img {
       width: 220px;
       height: 320px;
-      float: right;
-      margin-bottom: 20px;
-      //position: absolute;
-      //top: 40px;
-      //right: 0;
-	  border: 5px solid #ededed;
-	  border-radius: 10px;
+      float: left;
+      border: 5px solid #ededed;
+      border-radius: 10px;
+      margin-right: 10px;
     }
+    header {
+      position: inherit;
+      width: 100%;
+      //border: 1px solid black;
+
+      span {
+        background-color: #eb5252;
+        color: #fff;
+        margin-right: 5px;
+        border-radius: 5px;
+        padding: 4px 10px;
+        font-size: 16px;
+        line-height: 16px;
+        float: left;
+      }
+      h1 {
+        font-size: 25px;
+        line-height: 27px;
+        color: #eb5252;
+      }
+    }
+    div {
+      margin-top: 20px;
+      //border: 1px solid black;
+      > p {
+        color: #3c3c3c;
+        width: 100%;
+        span {
+          color: #3c3c3c;
+        }
+        a {
+          color: #eb5252;
+        }
+      }
+      .torr-buttons {
+        position: absolute;
+        bottom: 65px;
+        right: 0;
+        a {
+          float: left;
+          display: block;
+          background-color: #eb5252;
+          font-size: 15px;
+          line-height: 15px;
+          color: #fff;
+          margin-right: 10px;
+          padding: 10px;
+          text-transform: uppercase;
+          &:hover {
+            background-color: #9b303f;
+          }
+        }
+      }
+    }
+
 	footer {
-	  position: absolute;
-	  bottom: 0;
-	  width: calc(100% - 250px);
-	  margin: 20px 0;
-	  a {
-		float: right;
-		display: block;
-		background-color: #eb5252;
-		font-size: 16px;
-		line-height: 16px;
-		color: #fff;
-		margin-left: 10px;
-		padding: 10px;
-		text-transform: uppercase;
-		&:hover {
-			background-color: #9b303f;
-		}
-	  }
+      border-top: 5px solid #ededed;
+	  position: relative;
+	  width: 100%;
+      float: left;
+	  margin-bottom: 5px;
+      margin-top: 15px;
+      padding-top: 5px;
 	  p {
-		float: left;
-		font-size: 16px;
-		line-height: 16px;
+		float: right;
+		font-size: 15px;
+		line-height: 15px;
 		padding: 10px 0;
 		color: #3c3c3c;
+        b {
+          margin-left: 5px;
+        }
+        span {
+          color: #eb5252;
+        }
 	  }
 	}
   }
