@@ -143,6 +143,27 @@ div.subnav .active {
   .side_img_link {
     margin: 5px 0;
   }
+  
+  #social_links {
+    width: 362px;
+	margin: 0 auto;
+	border-radius: 5px;
+	overflow: hidden;
+	background-color: #ededed;
+	> span {
+	  display: block;
+	  width: 100%;
+	  padding: 10px 0;
+	  background-color: #eb5252;
+	  color: #fff;
+	  font-size: 20px;
+	  line-height: 20px;
+	}
+	> a {
+	  display: inline-block;
+	  margin: 5px 10px;
+	}
+  }
 
   #notice {
     display: flex;
