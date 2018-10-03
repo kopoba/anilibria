@@ -276,7 +276,7 @@ function auth(){
 			$query->execute();
 			$_SESSION['sess'] = $hash[0];
 		}
-		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa']];
+		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa'], 'access' => $row['access']];
 	}
 }
 
@@ -396,4 +396,20 @@ function auth2FA(){
 			}
 		break;
 	}
+}
+
+function recaptchav3(){
+	global $conf, $var;
+	if(empty($_POST['g-recaptcha-response'])){
+		_message('Empty post recaptcha', 'error');
+	}
+	$data = ['secret' => $conf['recaptcha_secret'], 'response' => $_POST['g-recaptcha-response'], 'remoteip' => $var['ip']];
+	$verify = curl_init();
+	curl_setopt($verify, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+	curl_setopt($verify, CURLOPT_POST, true);
+	curl_setopt($verify, CURLOPT_POSTFIELDS, $data);
+	curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
+	$result = json_decode(curl_exec($verify), true);
+	curl_close($verify);
+	return $result;
 }
