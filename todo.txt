@@ -1,3 +1,4 @@
+- Front-end
 - Авторизация/ регистрация через patreon, vk
 - recaptcha (https://developers.google.com/recaptcha/docs/v3)
 - Личный кабинет
