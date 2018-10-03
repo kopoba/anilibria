@@ -5,9 +5,6 @@ html, body {
 }
 
 html {
-  //overflow-y: scroll;
-  //min-width: 768px;
-  //min-height: 768px;
   background-color: #ebebeb;
 }
 
@@ -36,6 +33,9 @@ a, a:visited, a:active {
   text-decoration: none;
   outline: none;
   color: inherit;
+  &:hover {
+    color: #ce5351;
+  }
 }
 
 article, aside, details, figcaption, figure, footer, header, menu, nav, section {
@@ -47,7 +47,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   max-width: 1920px;
   margin: 0 auto;
   position: relative;
-  //overflow-x: hidden;
   font-family: 'Roboto', 'Arial', sans-serif;
 }
 
@@ -59,7 +58,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   font-family: 'Roboto', 'Arial', sans-serif;
   font-weight: normal;
   font-style: normal;
-  margin-bottom: 80px;
+  margin-bottom: 82.5px;
   img {
     float: left;
     padding: 5px 30px;
@@ -88,48 +87,48 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 
 #main_menu {
   position: relative;
-  > a,
-  .subnav > a {
-    display: block;
+  .main_nav_link {
+    display: inline-block;
     padding: 0;
-    float: left;
     color: #2b2b2b;
     margin: 35px 10px;
     font-size: 25px;
     line-height: 25px;
+    &:hover,
+    &.active {
+      color: #ce5351;
+    }
   }
-  .subnav-content > a {
-    display: block;
-    margin: 0 10px;
-    padding: 0;
-    float: left;
-    color: #2b2b2b;
-    font-size: 20px;
-    line-height: 20px;
+  .subnav {
+    display: inline-block;
+    overflow: hidden;
+    text-align: center;
+    > div.active {
+      display: block !important;
+    }
+    .subnav-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 105px;
+      width: calc(100% - 40px);
+      min-height: 24px;
+      background-color: #fff;
+      padding: 20px 20px;
+      text-align: center;
+      a {
+        display: inline-block;
+        margin: 0 20px;
+        padding: 0;
+        color: #2b2b2b;
+        font-size: 20px;
+        line-height: 20px;
+        &.active, &:hover {
+          color: #ce5351;
+        }
+      }
+    }
   }
-  a:hover,
-  a.active {
-    color: #eb5252;
-  }
-}
-
-.subnav {
-  float: left;
-  overflow: hidden;
-  padding-bottom: 10px;
-}
-
-.subnav-content {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 105px;
-  width: calc(100% - 40px);
-  background-color: #fff;
-  padding: 20px 20px;
-}
-div.subnav .active {
-  display: block;
 }
 
 #side_menu {
@@ -140,15 +139,27 @@ div.subnav .active {
   float: left;
   text-align: center;
   padding: 25px 0;
-  .side_img_link {
-    margin: 5px 0;
+  .side_image_links {
+    display: block;
+    width: 365px;
+    line-height: 0;
+    margin: 0 auto 20px auto;
+    &:first-child,
+    &:first-child .side_img_link {
+      width: 365px;
+      height: 92px;
+    }
+    .side_img_link {
+      margin: 0;
+      padding: 0;
+      width: 365px;
+      height: 100px;
+    }
   }
   
   #social_links {
     width: 362px;
-	margin: 0 auto;
-	margin-top: 5px;
-	margin-bottom: 10px;
+	margin: 20px auto;
 	padding-bottom: 5px;
 	border-radius: 5px;
 	overflow: hidden;
@@ -175,7 +186,7 @@ div.subnav .active {
     height: 500px;
     background-color: #eb5252;
     color: #fff;
-    margin: 5px auto;
+    margin: 20px auto;
     border-radius: 5px;
     align-items: center;
     justify-content: center;
@@ -186,8 +197,9 @@ div.subnav .active {
     }
   }
 
-  iframe {
-    margin-top: 10px!important;
+  #twitter_block {
+    width: 365px;
+    margin: 20px auto 0 auto;
   }
 }
 
@@ -313,7 +325,7 @@ div.subnav .active {
           padding: 10px;
           text-transform: uppercase;
           &:hover {
-            background-color: #9b303f;
+            background-color: #ce5351;
           }
         }
       }
