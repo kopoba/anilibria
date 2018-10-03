@@ -7,7 +7,6 @@ html, body {
 html {
   //overflow-y: scroll;
   //min-width: 768px;
-  max-width: 1920px;
   //min-height: 768px;
   background-color: #ebebeb;
 }
@@ -45,6 +44,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 
 #content_wrapper {
   width: 90%;
+  max-width: 1920px;
   margin: 0 auto;
   position: relative;
   //overflow-x: hidden;
