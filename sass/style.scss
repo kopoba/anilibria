@@ -156,7 +156,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
       height: 100px;
     }
   }
-  
   #social_links {
     width: 362px;
 	margin: 20px auto;
@@ -179,7 +178,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 	  margin: 5px 10px;
 	}
   }
-
   #notice {
     display: flex;
     width: 365px;
@@ -196,9 +194,9 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
       line-height: 30px;
     }
   }
-
   #twitter_block {
     width: 365px;
+    height: 500px;
     margin: 20px auto 0 auto;
   }
 }
@@ -230,14 +228,12 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     text-align: center;
     width: 50%;
     float: right;
-
     >p {
       color: #3c3c3c;
       font-size: 25px;
       margin: 20px 0 5px 0;
       padding: 0;
     }
-
     input {
       width: 75%;
       height: 40px;
@@ -262,7 +258,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   margin-left: 30px;
   padding: 30px;
   float: right;
-
   .anime_block {
     position: inherit;
     border-bottom: 5px solid #ededed;
@@ -356,7 +351,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   .news_block {
     position: inherit;
     margin-bottom: 30px;
-    //min-height: 350px;
     &:last-child {
       margin-bottom: 0;
     }
@@ -405,7 +399,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   background-color: #b34050;
   margin-top: 30px;
   color: #fff;
-
   #copyrights {
     position: absolute;
     width: 100%;
@@ -416,7 +409,6 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     font-size: 15px;
     background-color: #9b303f;
   }
-
   #footer_left {
     position: relative;
     width: 50%;

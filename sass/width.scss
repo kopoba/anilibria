@@ -2,6 +2,7 @@
   #content_wrapper {
     width: 1200px;
   }
+
   #main_header {
     height: 70px;
     margin-bottom: 62px;
@@ -22,6 +23,7 @@
       }
     }
   }
+
   #main_menu {
     .main_nav_link {
       margin: 25px 10px;
@@ -42,6 +44,7 @@
       }
     }
   }
+
   #hslider {
     height: 250px;
     .slideshow {
@@ -51,6 +54,7 @@
       }
     }
   }
+
   #side_menu {
     width: 285px;
     margin-top: 15px;
@@ -86,7 +90,6 @@
         }
       }
     }
-
     #notice {
       width: 270px;
       height: 369px;
@@ -96,7 +99,6 @@
         line-height: 25px;
       }
     }
-
     #twitter_block {
       width: 270px;
       margin: 10px auto 0 auto;
@@ -121,12 +123,12 @@
         margin: 20px 0 5px 0;
         padding: 0;
       }
-
       input {
         font-size: 15px;
       }
     }
   }
+
   #main_content {
     width: calc(100% - 330px);
     margin-top: 15px;
@@ -198,6 +200,7 @@
 	}
   }
   }
+
   #main_footer {
     height: 300px;
     margin-top: 15px;
