@@ -37,7 +37,7 @@ label {
 a, a:visited, a:active {
   text-decoration: none;
   outline: none;
-  color: inherit;
+  color: #eb5252;
 }
 
 /* line 36, D:/GitHub Projects/anilibria/sass/style.scss */
@@ -65,19 +65,18 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   width: 100%;
   height: 95px;
   background-color: #fff;
-  font-family: 'Roboto', 'Arial', sans-serif;
   font-weight: normal;
   font-style: normal;
   margin-bottom: 82.5px;
 }
 
-/* line 62, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 61, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_header img {
   float: left;
   padding: 5px 30px;
 }
 
-/* line 67, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 66, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_header a#user_avatar {
   position: absolute;
   top: 10px;
@@ -89,7 +88,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   border-radius: 50%;
 }
 
-/* line 76, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 75, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_header a#user_avatar img {
   margin: 0;
   padding: 0;
@@ -100,12 +99,12 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   border-radius: 50%;
 }
 
-/* line 88, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 87, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu {
   position: relative;
 }
 
-/* line 90, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 89, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .main_nav_link {
   display: inline-block;
   padding: 0;
@@ -115,24 +114,24 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   line-height: 25px;
 }
 
-/* line 97, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 96, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .main_nav_link:hover, #main_menu .main_nav_link.active {
   color: #ce5351;
 }
 
-/* line 102, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 101, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .subnav {
   display: inline-block;
   overflow: hidden;
   text-align: center;
 }
 
-/* line 106, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 105, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .subnav > div.active {
   display: block !important;
 }
 
-/* line 109, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 108, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .subnav .subnav-content {
   display: none;
   position: absolute;
@@ -145,7 +144,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   text-align: center;
 }
 
-/* line 119, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 118, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .subnav .subnav-content a {
   display: inline-block;
   margin: 0 20px;
@@ -155,12 +154,12 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   line-height: 20px;
 }
 
-/* line 126, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 125, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_menu .subnav .subnav-content a.active, #main_menu .subnav .subnav-content a:hover {
   color: #ce5351;
 }
 
-/* line 134, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 133, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu {
   position: relative;
   width: 420px;
@@ -171,7 +170,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   padding: 25px 0;
 }
 
-/* line 142, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 141, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu .side_image_links {
   display: block;
   width: 365px;
@@ -179,14 +178,14 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   margin: 0 auto 20px auto;
 }
 
-/* line 147, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 146, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu .side_image_links:first-child,
 #side_menu .side_image_links:first-child .side_img_link {
   width: 365px;
   height: 92px;
 }
 
-/* line 152, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 151, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu .side_image_links .side_img_link {
   margin: 0;
   padding: 0;
@@ -194,17 +193,17 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   height: 100px;
 }
 
-/* line 159, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 158, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu #social_links {
   width: 362px;
   margin: 20px auto;
   padding-bottom: 5px;
   border-radius: 5px;
   overflow: hidden;
-  background-color: #ededed;
+  background-color: #f3f3f3;
 }
 
-/* line 166, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 165, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu #social_links > span {
   display: block;
   width: 100%;
@@ -216,13 +215,13 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   margin-bottom: 10px;
 }
 
-/* line 176, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 175, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu #social_links > a {
   display: inline-block;
   margin: 5px 10px;
 }
 
-/* line 181, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 180, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu #notice {
   display: flex;
   width: 365px;
@@ -235,20 +234,20 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   justify-content: center;
 }
 
-/* line 192, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 191, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu #notice p {
   font-size: 30px;
   line-height: 30px;
 }
 
-/* line 197, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 196, D:/GitHub Projects/anilibria/sass/style.scss */
 #side_menu #twitter_block {
   width: 365px;
   height: 500px;
   margin: 20px auto 0 auto;
 }
 
-/* line 204, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 203, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top {
   position: relative;
   width: calc(100% - 450px);
@@ -259,7 +258,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   float: right;
 }
 
-/* line 212, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 211, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top #notice_top {
   display: flex;
   align-items: center;
@@ -271,21 +270,21 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   float: left;
 }
 
-/* line 221, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 220, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top #notice_top p {
   font-size: 30px;
   line-height: 30px;
   color: #fff;
 }
 
-/* line 227, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 226, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top #search {
   text-align: center;
   width: 50%;
   float: right;
 }
 
-/* line 231, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 230, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top #search > p {
   color: #3c3c3c;
   font-size: 25px;
@@ -293,24 +292,23 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   padding: 0;
 }
 
-/* line 237, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 236, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top #search input {
   width: 75%;
   height: 40px;
-  font-family: 'Roboto', 'Arial', sans-serif;
-  background-color: #ededed;
+  background-color: #f3f3f3;
   color: #aeaeae;
   font-size: 20px;
   border-radius: 10px;
   padding: 10px 20px;
 }
 
-/* line 246, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 244, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content_top #search input:focus {
   color: #3c3c3c;
 }
 
-/* line 253, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 251, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content {
   position: relative;
   width: calc(100% - 510px);
@@ -321,7 +319,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   float: right;
 }
 
-/* line 261, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 259, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block {
   position: inherit;
   border-bottom: 5px solid #ededed;
@@ -329,12 +327,12 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   min-height: 350px;
 }
 
-/* line 266, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 264, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block:last-child {
   margin-bottom: 0;
 }
 
-/* line 269, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 267, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block > img {
   width: 220px;
   height: 320px;
@@ -344,13 +342,13 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   margin-right: 10px;
 }
 
-/* line 277, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 275, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block header {
   position: inherit;
   width: 100%;
 }
 
-/* line 280, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 278, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block header span {
   background-color: #eb5252;
   color: #fff;
@@ -362,42 +360,42 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   float: left;
 }
 
-/* line 290, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 288, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block header h1 {
   font-size: 25px;
   line-height: 25px;
   color: #eb5252;
 }
 
-/* line 296, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 294, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div {
   margin-top: 20px;
 }
 
-/* line 298, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 296, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div > p {
   color: #3c3c3c;
   width: 100%;
 }
 
-/* line 301, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 299, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div > p span {
   color: #3c3c3c;
 }
 
-/* line 304, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 302, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div > p a {
   color: #eb5252;
 }
 
-/* line 308, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 306, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div .torr-buttons {
   position: absolute;
   bottom: 65px;
   right: 0;
 }
 
-/* line 312, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 310, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div .torr-buttons a {
   float: left;
   display: block;
@@ -410,12 +408,12 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   text-transform: uppercase;
 }
 
-/* line 322, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 320, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block div .torr-buttons a:hover {
   background-color: #ce5351;
 }
 
-/* line 328, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 326, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block footer {
   border-top: 5px solid #ededed;
   position: relative;
@@ -426,7 +424,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   padding-top: 5px;
 }
 
-/* line 336, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 334, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block footer p {
   float: right;
   font-size: 15px;
@@ -435,46 +433,46 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #3c3c3c;
 }
 
-/* line 342, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 340, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block footer p b {
   margin-left: 5px;
 }
 
-/* line 345, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 343, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .anime_block footer p span {
   color: #eb5252;
 }
 
-/* line 351, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 349, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block {
   position: inherit;
   margin-bottom: 30px;
 }
 
-/* line 354, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 352, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block:last-child {
   margin-bottom: 0;
 }
 
-/* line 357, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 355, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block header {
   position: inherit;
   width: 100%;
 }
 
-/* line 360, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 358, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block header h1 {
   font-size: 25px;
   line-height: 27px;
   color: #eb5252;
 }
 
-/* line 366, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 364, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block div {
   margin-top: 20px;
 }
 
-/* line 369, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 367, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block footer {
   border-top: 5px solid #ededed;
   border-bottom: 5px solid #ededed;
@@ -486,7 +484,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   padding: 5px 0;
 }
 
-/* line 378, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 376, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block footer p {
   float: right;
   font-size: 15px;
@@ -495,17 +493,105 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #3c3c3c;
 }
 
-/* line 384, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 382, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block footer p b {
   margin-left: 5px;
 }
 
-/* line 387, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 385, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_content .news_block footer p span {
   color: #eb5252;
 }
 
+/* line 393, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper {
+  text-align: center;
+}
+
 /* line 395, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper h1, #reg_wrapper h2 {
+  font-size: 25px;
+  line-height: 25px;
+  color: #3c3c3c;
+  margin-bottom: 20px;
+}
+
+/* line 401, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper hr {
+  border: 3px solid #f8f8f8;
+  margin: 20px 0;
+}
+
+/* line 405, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper input, #reg_wrapper #got_account {
+  margin: 10px auto;
+}
+
+/* line 408, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper #hidden_captcha {
+  display: block;
+  margin: 5px 0;
+}
+
+/* line 412, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper input[type="text"], #reg_wrapper input[type="email"] {
+  display: block;
+  width: 200px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+  color: #848484;
+}
+
+/* line 421, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper input[type="submit"] {
+  display: block;
+  width: 240px;
+  height: 40px;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 17px;
+  line-height: 17px;
+  background-color: #f36767;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* line 432, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper input[type="submit"]:hover {
+  background-color: #ce5351;
+}
+
+/* line 435, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper input[type="submit"]:active {
+  transform: translateY(1px);
+}
+
+/* line 440, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper #got_account {
+  display: block;
+  width: 200px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 17px;
+  line-height: 17px;
+  background-color: #f36767;
+  color: #fff;
+}
+
+/* line 450, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper #got_account:hover {
+  background-color: #ce5351;
+}
+
+/* line 454, D:/GitHub Projects/anilibria/sass/style.scss */
+#reg_wrapper .oauth_links {
+  margin: 5px 40px;
+}
+
+/* line 459, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer {
   position: relative;
   width: 100%;
@@ -515,7 +601,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #fff;
 }
 
-/* line 402, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 466, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #copyrights {
   position: absolute;
   width: 100%;
@@ -527,7 +613,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   background-color: #9b303f;
 }
 
-/* line 412, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 476, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left {
   position: relative;
   width: 50%;
@@ -535,14 +621,14 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   padding: 30px 0 0 30px;
 }
 
-/* line 417, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 481, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left p {
   margin: 5px 0;
   font-size: 15px;
   line-height: 15px;
 }
 
-/* line 422, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 486, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left span {
   font-size: 25px;
   line-height: 25px;
