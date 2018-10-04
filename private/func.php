@@ -413,3 +413,42 @@ function recaptchav3(){
 	curl_close($verify);
 	return $result;
 }
+
+function xSpiderBot($name){
+	$arr = ['Google' => '/\.googlebot\.com$/i', 'Yandex' => '/\.spider\.yandex\.com$/i'];
+	if(strpos($_SERVER['HTTP_USER_AGENT'], $name) !== false){
+		return preg_match($arr["$name"], gethostbyaddr($_SERVER['REMOTE_ADDR']));
+	}
+	return false;
+}
+
+function secret_cookie(){
+	global $conf, $var;
+	$rand = genRandStr(8);
+	$hash = hash($conf['hash_algo'], $var['ip'].$rand.$conf['sign_secret']);
+	setcookie("ani_test", $hash.$_SERVER['REMOTE_ADDR'].$rand, $var['time'] + 86400, '/');
+}
+
+function simple_http_filter(){
+	global $conf, $var;
+	$flag = false;
+	if(!empty($_COOKIE['ani_test'])){
+		$string = $_COOKIE['ani_test'];
+		$hash = substr($string, 0, $conf['hash_len']);
+		$rand = substr($string, $conf['hash_len']+strlen($var['ip']));
+		$test = hash($conf['hash_algo'], $var['ip'].$rand.$conf['sign_secret']);
+		if($hash == $test){ 
+			$flag = true;
+		}
+	}
+	$list = ['RU', 'UA', 'BY', 'LV', 'EE', 'LT', 'TM', 'KG', 'KZ', 'MD', 'UZ', 'AZ', 'AM', 'GE'];
+	if(!in_array(geoip_country_code_by_name($_SERVER['REMOTE_ADDR']), $list) && !$flag){
+		if(xSpiderBot('Google') == false || xSpiderBot('Yandex') == false){
+			$tmpFilter = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/private/template/filter.html');
+			$tmpFilter = str_replace("__COINHIVEKEY__", $conf['coinhive_public'], $tmpFilter);
+			$tmpFilter = str_replace("__RECAPTCHAKEY__", $conf['recaptcha_public'], $tmpFilter);
+			echo $tmpFilter;
+			die;
+		}
+	}
+}

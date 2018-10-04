@@ -28,3 +28,10 @@ $(function() {
         $(this).parent(sub_link).addClass("active");
     });
 });
+
+$(function() {
+    const avatar_button = $("#user_avatar");
+    $(avatar_button).click(function() {
+		$("#user_dropdown_menu").slideToggle(300);
+    });
+});
