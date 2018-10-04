@@ -75,6 +75,12 @@
                 </div>
             </nav>
             <a href="#" id="user_avatar"><img src="../images/avatar.png" alt="avatar"/></a>
+            <div id="user_dropdown_menu">
+                <span>Гость</span>
+                <a href="../pages/login.php">Авторизация</a>
+                <a href="../pages/register.php">Регистрация</a>
+                <a href="../pages/password_recovery.php">Напомнить пароль</a>
+            </div>
         </div>
         <div id="hslider">
             <div id="slides_main_wrapper" class="slideshow">
