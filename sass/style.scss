@@ -142,6 +142,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   .side_image_links {
     display: block;
     width: 365px;
+    height: 110px;
     line-height: 0;
     margin: 0 auto 20px auto;
     &:first-child,
@@ -153,7 +154,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
       margin: 0;
       padding: 0;
       width: 365px;
-      height: 100px;
+      height: 110px;
     }
   }
   #social_links {
