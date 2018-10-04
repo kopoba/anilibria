@@ -390,7 +390,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   }
 }
 
-#reg_wrapper {
+#user_log_reg_rec {
   text-align: center;
   h1, h2 {
     font-size: 25px;
@@ -402,14 +402,16 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     border: 3px solid #f8f8f8;
     margin: 20px 0;
   }
-  input, #got_account {
+  input, .a_button {
     margin: 10px auto;
   }
   #hidden_captcha {
     display: block;
-    margin: 5px 0;
+    margin: 10px 0;
   }
-  input[type="text"], input[type="email"] {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"]{
     display: block;
     width: 200px;
     height: 20px;
@@ -437,7 +439,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     }
 
   }
-  #got_account {
+  .a_button {
     display: block;
     width: 200px;
     height: 20px;

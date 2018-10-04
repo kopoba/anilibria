@@ -504,12 +504,12 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 }
 
 /* line 393, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper {
+#user_log_reg_rec {
   text-align: center;
 }
 
 /* line 395, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper h1, #reg_wrapper h2 {
+#user_log_reg_rec h1, #user_log_reg_rec h2 {
   font-size: 25px;
   line-height: 25px;
   color: #3c3c3c;
@@ -517,24 +517,26 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 }
 
 /* line 401, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper hr {
+#user_log_reg_rec hr {
   border: 3px solid #f8f8f8;
   margin: 20px 0;
 }
 
 /* line 405, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper input, #reg_wrapper #got_account {
+#user_log_reg_rec input, #user_log_reg_rec .a_button {
   margin: 10px auto;
 }
 
 /* line 408, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper #hidden_captcha {
+#user_log_reg_rec #hidden_captcha {
   display: block;
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 /* line 412, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper input[type="text"], #reg_wrapper input[type="email"] {
+#user_log_reg_rec input[type="text"],
+#user_log_reg_rec input[type="email"],
+#user_log_reg_rec input[type="password"] {
   display: block;
   width: 200px;
   height: 20px;
@@ -544,8 +546,8 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #848484;
 }
 
-/* line 421, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper input[type="submit"] {
+/* line 423, D:/GitHub Projects/anilibria/sass/style.scss */
+#user_log_reg_rec input[type="submit"] {
   display: block;
   width: 240px;
   height: 40px;
@@ -558,18 +560,18 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #fff;
 }
 
-/* line 432, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper input[type="submit"]:hover {
+/* line 434, D:/GitHub Projects/anilibria/sass/style.scss */
+#user_log_reg_rec input[type="submit"]:hover {
   background-color: #ce5351;
 }
 
-/* line 435, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper input[type="submit"]:active {
+/* line 437, D:/GitHub Projects/anilibria/sass/style.scss */
+#user_log_reg_rec input[type="submit"]:active {
   transform: translateY(1px);
 }
 
-/* line 440, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper #got_account {
+/* line 442, D:/GitHub Projects/anilibria/sass/style.scss */
+#user_log_reg_rec .a_button {
   display: block;
   width: 200px;
   height: 20px;
@@ -581,17 +583,17 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #fff;
 }
 
-/* line 450, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper #got_account:hover {
+/* line 452, D:/GitHub Projects/anilibria/sass/style.scss */
+#user_log_reg_rec .a_button:hover {
   background-color: #ce5351;
 }
 
-/* line 454, D:/GitHub Projects/anilibria/sass/style.scss */
-#reg_wrapper .oauth_links {
+/* line 456, D:/GitHub Projects/anilibria/sass/style.scss */
+#user_log_reg_rec .oauth_links {
   margin: 5px 40px;
 }
 
-/* line 459, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 461, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer {
   position: relative;
   width: 100%;
@@ -601,7 +603,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   color: #fff;
 }
 
-/* line 466, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 468, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #copyrights {
   position: absolute;
   width: 100%;
@@ -613,7 +615,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   background-color: #9b303f;
 }
 
-/* line 476, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 478, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left {
   position: relative;
   width: 50%;
@@ -621,14 +623,14 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   padding: 30px 0 0 30px;
 }
 
-/* line 481, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 483, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left p {
   margin: 5px 0;
   font-size: 15px;
   line-height: 15px;
 }
 
-/* line 486, D:/GitHub Projects/anilibria/sass/style.scss */
+/* line 488, D:/GitHub Projects/anilibria/sass/style.scss */
 #main_footer #footer_left span {
   font-size: 25px;
   line-height: 25px;
