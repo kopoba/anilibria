@@ -3,13 +3,6 @@
     <h1>Авторизация пользователя</h1>
     <input type="text" placeholder="Логин" />
     <input type="password" placeholder="Пароль" />
-    <div id="hidden_captcha">
-        <script src="https://authedmine.com/lib/captcha.min.js" async></script>
-        <div class="coinhive-captcha" data-hashes="1024" data-key="CdATg3DejTD3LWWmOMHh4KHUOK2lwESZ">
-            <em>Loading Captcha...<br>
-                If it doesn't load, please disable Adblock!</em>
-        </div>
-    </div>
     <input type="submit" value="Вход" />
     <a class="a_button" href="#">Забыли пароль?</a>
     <a class="a_button" href="#">Регистрация</a>
