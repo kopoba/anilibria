@@ -158,25 +158,25 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   }
   #social_links {
     width: 362px;
-	margin: 20px auto;
-	padding-bottom: 5px;
-	border-radius: 5px;
-	overflow: hidden;
-	background-color: #ededed;
-	> span {
-	  display: block;
-	  width: 100%;
-	  padding: 10px 0;
-	  background-color: #eb5252;
-	  color: #fff;
-	  font-size: 25px;
-	  line-height: 25px;
-	  margin-bottom: 10px;
-	}
-	> a {
-	  display: inline-block;
-	  margin: 5px 10px;
-	}
+  margin: 20px auto;
+  padding-bottom: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #ededed;
+  > span {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #eb5252;
+    color: #fff;
+    font-size: 25px;
+    line-height: 25px;
+    margin-bottom: 10px;
+  }
+  > a {
+    display: inline-block;
+    margin: 5px 10px;
+  }
   }
   #notice {
     display: flex;
@@ -325,28 +325,28 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
         }
       }
     }
-	footer {
+  footer {
       border-top: 5px solid #ededed;
-	  position: relative;
-	  width: 100%;
+    position: relative;
+    width: 100%;
       float: left;
-	  margin-bottom: 5px;
+    margin-bottom: 5px;
       margin-top: 15px;
       padding-top: 5px;
-	  p {
-		float: right;
-		font-size: 15px;
-		line-height: 15px;
-		padding: 10px 0;
-		color: #3c3c3c;
+    p {
+    float: right;
+    font-size: 15px;
+    line-height: 15px;
+    padding: 10px 0;
+    color: #3c3c3c;
         b {
           margin-left: 5px;
         }
         span {
           color: #eb5252;
         }
-	  }
-	}
+    }
+  }
   }
   .news_block {
     position: inherit;
@@ -366,29 +366,29 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     div {
       margin-top: 20px;
     }
-	footer {
+  footer {
       border-top: 5px solid #ededed;
-	  border-bottom: 5px solid #ededed;
-	  position: relative;
-	  width: 100%;
+    border-bottom: 5px solid #ededed;
+    position: relative;
+    width: 100%;
       float: left;
-	  margin-bottom: 5px;
+    margin-bottom: 5px;
       margin-top: 15px;
       padding: 5px 0;
-	  p {
-		float: right;
-		font-size: 15px;
-		line-height: 15px;
-		padding: 10px 0;
-		color: #3c3c3c;
+    p {
+    float: right;
+    font-size: 15px;
+    line-height: 15px;
+    padding: 10px 0;
+    color: #3c3c3c;
         b {
           margin-left: 5px;
         }
         span {
           color: #eb5252;
         }
-	  }
-	}
+    }
+  }
   }
 }
 
@@ -424,5 +424,58 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
       line-height: 25px;
       font-weight: bold;
     }
+  }
+}
+
+#user_dropdown_menu {
+  position: absolute;
+  top: 105px;
+  right: 0;
+  background: #fff;
+  border: 3px solid #ce5351;
+  display: none;
+  width: 150px;
+  padding: 10px;
+  text-align: center;
+  z-index: 2;
+  span {
+    display: block;
+    font-size: 25px;
+    line-height: 25px;
+	margin: 0 0 10px 0;
+	padding-bottom: 10px;
+	border-bottom: 2px solid black;
+  }
+  a {
+    display: block;
+    padding: 0;
+    margin: 5px 0;
+    text-decoration: none;
+    outline: none;
+    font-size: 20px;
+    line-height: 20px;
+    color: #eb5252;
+  }
+  &:after, &:before {
+    bottom: 100%;
+    left: 105px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  &:after {
+    border-color: rgba(136, 183, 213, 0);
+    border-bottom-color: #fff;
+    border-width: 15px;
+    margin-left: -15px;
+  }
+  &:before {
+    border-color: rgba(194, 225, 245, 0);
+    border-bottom-color: #ce5351;
+    border-width: 19px;
+    margin-left: -19px;
   }
 }
