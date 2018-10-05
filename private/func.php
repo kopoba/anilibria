@@ -183,8 +183,16 @@ function password_link(){
 }
 
 function password_recovery(){
-	global $conf, $db, $var;
-	if(!coinhive_proof()){
+	global $conf, $db, $var; $z = false;
+	if(!empty($_POST['g-recaptcha-response'])){
+		$result = recaptchav3();
+		if($result['success'] && $result['score'] > 0.5){
+			$z = true;
+		}else{
+			_message('reCaptcha test failed: score too low', 'error');
+		}
+	}
+	if(!coinhive_proof() && !$z){
 		_message('Coinhive captcha error', 'error');
 	}
 	if(empty($_POST['mail'])){
@@ -206,8 +214,8 @@ function password_recovery(){
 	$time = $var['time']+43200;
 	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.half_string($row['passwd']));
 	$link = "http://test.poiuty.com/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
-	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP $ip<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
-	_message('Success');
+	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
+	_message('Please check your mail');
 }
 
 function registration(){

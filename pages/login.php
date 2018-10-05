@@ -4,7 +4,7 @@
     <input id="login" type="text" placeholder="Логин" />
     <input id="passwd" type="password" placeholder="Пароль" />
     <input id="fa2code" type="text" placeholder="FA2code" />
-    <div id="error" style="display: none">ddfgdfg</div>
+    <div id="error" style="display: none"></div>
     <input type="submit" data-submit-login value="Вход" />
     <a class="a_button" href="password_recovery.php">Забыли пароль?</a>
     <a class="a_button" href="register.php">Регистрация</a>
