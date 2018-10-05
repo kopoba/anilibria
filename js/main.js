@@ -35,3 +35,22 @@ $(function() {
 		$("#user_dropdown_menu").slideToggle(300);
     });
 });
+$(document).on("click", "[data-submit-login]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	login = $('input[id=login]').val();
+	passwd = $('input[id=passwd]').val();
+	fa2code = $('input[id=fa2code]').val();
+	$.post("//"+document.domain+"/public/login.php", { 'login': login, 'passwd': passwd, 'fa2code': fa2code }, function(json){
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			document.location.href="/";
+		}else{
+			$("div#error").html(data.mes);
+			if($("div#error").css('display') == 'none'){
+				$("div#error").show();
+			}
+		}
+		//console.log(data);
+	});
+});
