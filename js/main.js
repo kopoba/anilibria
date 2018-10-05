@@ -32,8 +32,14 @@ $(function() {
 $(function() {
     const avatar_button = $("#user_avatar");
     $(avatar_button).click(function() {
-		$("#user_dropdown_menu").slideToggle(300);
+		$("#user_dropdown_menu").slideDown(300);
     });
+	$(document).mouseup(function(e) {
+		const container = $("#user_dropdown_menu");
+		if (!container.is(e.target) && container.has(e.target).length === 0) {
+			container.slideUp(300);
+		}
+	});
 });
 $(document).on("click", "[data-submit-login]", function(e) {
 	$(this).blur();
