@@ -11,7 +11,7 @@
         </div>
     </div>
     <input type="submit" value="Регистрация" />
-    <a class="a_button" href="#">Уже есть аккаунт?</a>
+    <a class="a_button" href="login.php">Уже есть аккаунт?</a>
     <hr/>
     <h2>Авторизация через внешние сервисы</h2>
     <a class="oauth_links" href="#"><img src="../images/patreon_auth.png" alt="Patreon Auth"/> </a>

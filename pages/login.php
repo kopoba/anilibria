@@ -4,8 +4,8 @@
     <input type="text" placeholder="Логин" />
     <input type="password" placeholder="Пароль" />
     <input type="submit" value="Вход" />
-    <a class="a_button" href="#">Забыли пароль?</a>
-    <a class="a_button" href="#">Регистрация</a>
+    <a class="a_button" href="password_recovery.php">Забыли пароль?</a>
+    <a class="a_button" href="register.php">Регистрация</a>
     <hr/>
     <h2>Авторизация через внешние сервисы</h2>
     <a class="oauth_links" href="#"><img src="../images/patreon_auth.png" alt="Patreon Auth"/> </a>

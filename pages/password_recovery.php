@@ -10,6 +10,6 @@
         </div>
     </div>
     <input type="submit" value="Отправить" />
-    <a class="a_button" href="#">Авторизация</a>
+    <a class="a_button" href="login.php">Авторизация</a>
 </div>
 <?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
