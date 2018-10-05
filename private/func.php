@@ -182,8 +182,8 @@ function password_link(){
 	_message('Success');
 }
 
-function password_recovery(){
-	global $conf, $db, $var; $z = false;
+function testcaptcha(){
+	$z = false;
 	if(!empty($_POST['g-recaptcha-response'])){
 		$result = recaptchav3();
 		if($result['success'] && $result['score'] > 0.5){
@@ -195,6 +195,11 @@ function password_recovery(){
 	if(!coinhive_proof() && !$z){
 		_message('Coinhive captcha error', 'error');
 	}
+}
+
+function password_recovery(){
+	global $conf, $db, $var;
+	testcaptcha();
 	if(empty($_POST['mail'])){
 		_message('Empty post value', 'error');
 	}
@@ -223,9 +228,7 @@ function registration(){
 	if($user){
 		_message('Already authorized', 'error');
 	}
-	if(!coinhive_proof()){
-		_message('Coinhive captcha error', 'error');
-	}
+	testcaptcha();
 	if(empty($_POST['login']) || empty($_POST['mail'])){
 		_message('Empty post value', 'error');
 	}

@@ -87,3 +87,38 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 		});
 	}
 });
+$(document).on("click", "[data-submit-register]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	var submit = $(this);
+	var mail = $('input[id=email]').val();
+	var login = $('input[id=login]').val();	
+	if($("div.coinhive-captcha").css('display') == 'none'){
+		submit.hide(); // recaptcha has some delay
+		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
+			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'g-recaptcha-response': token }, function(json){
+				data = JSON.parse(json);
+				$("div#error").html(data.mes);
+				if($("div#error").css('display') == 'none'){
+					$("div#error").show();
+				}
+				if(data.err != 'ok'){
+					$("div.coinhive-captcha").show();
+				}
+				submit.show();
+			});
+		});
+	}else{
+		token = $('input[name=coinhive-captcha-token]').val();
+		$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'coinhive-captcha-token': token }, function(json){
+			data = JSON.parse(json);
+			$("div#error").html(data.mes);
+			if($("div#error").css('display') == 'none'){
+				$("div#error").show();
+			}
+			if(data.err == 'ok'){
+				$("div.coinhive-captcha").show();
+			}
+		});
+	}
+});
