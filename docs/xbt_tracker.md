@@ -1,6 +1,6 @@
 Устанавливаем пакеты.
 ```
-apt-get install cmake default-libmysqlclient-dev g++ git libboost-dev make zlib1g-dev
+apt-get install cmake default-libmysqlclient-dev libmariadb-dev-compat g++ git libboost-dev make zlib1g-dev
 ```
 
 Скачиваем, компилируем.
