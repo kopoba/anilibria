@@ -463,3 +463,86 @@ function simple_http_filter(){
 		}
 	}
 }
+
+function isJson($string) {
+	json_decode($string);
+	return (json_last_error() == JSON_ERROR_NONE);
+}
+
+function torrentInfo(){
+	global $conf;
+	if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
+		_message('You can upload only torrents', 'error');	
+	}
+	$torrent = new File_Bittorrent2_Decode;
+	if(empty($_FILES['torrent'])){
+		_message('No upload file', 'error');
+	}
+	if($_FILES['torrent']['error'] != 0){
+		_message('Upload error', 'error');
+	}
+	$info = $torrent->decodeFile($_FILES['torrent']['tmp_name']);
+	if($info['announce'] != $conf['torrent_announce']){
+		_message('Wrong announce', 'error');
+	}
+	$info['pack_hash'] = pack('H*', $info['info_hash']);
+	return $info;
+}
+
+function torrentExist($hash){
+	global $db;
+	$query = $db->prepare("SELECT * FROM xbt_files WHERE `info_hash` = :hash");
+	$query->bindParam(':hash', $hash, PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() == 0){
+		return false;
+	}
+	return true;
+}
+
+function torrentAdd($hash, $rid, $json, $completed = 0){
+	global $db;
+	$query = $db->prepare("INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, :completed, :rid, :info)");
+	$query->bindParam(':hash', $hash, PDO::PARAM_STR);
+	$query->bindParam(':completed', $completed, PDO::PARAM_STR);
+	$query->bindParam(':rid', $rid, PDO::PARAM_STR);
+	$query->bindParam(':info', $json, PDO::PARAM_STR);
+	$query->execute();
+	return $db->lastInsertId();	
+}
+
+function torrent(){
+	global $conf, $db, $user, $var;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if($user['access'] < 4){
+		_message('Access denied', 'error');
+	}
+	if(empty($_GET['do'])){
+		_message('Empty GET', 'error');
+	}
+	switch($_GET['do']){
+		case 'add':
+			if(empty($_POST['rid']) || empty($_POST['quality']) || empty($_POST['episode'])){
+				_message('Set release id, name, quality and episode', 'error');
+			}
+			if(!is_numeric($_POST['rid'])){
+				_message('Release ID allow numeric', 'error');
+			}
+			if(strlen($_POST['quality']) > 200 || strlen($_POST['episode']) > 200){
+				_message('Max strlen 200', 'error');
+			}
+			$info = torrentInfo($_FILES['torrent']['tmp_name']);
+			if(torrentExist($info['pack_hash'])){
+				_message('Torrent hash already exist', 'error');
+			}
+			$name = torrentAdd($info['pack_hash'], $_POST['rid'], json_encode([$_POST['quality'], $_POST['episode']]));
+			move_uploaded_file($_FILES['torrent']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
+			_message('Success');
+		break;
+		default:
+			_message('Wrong command', 'error');
+		break;
+	}
+}
