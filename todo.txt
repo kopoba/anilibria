@@ -2,7 +2,6 @@
 - Личный кабинет
 - Админка
 - Избранное
-- Торрент трекер
 - Поиск
 - Все релизы
 - Голосование, рейтинг
@@ -26,3 +25,4 @@ Proof of Work Captcha (https://coinhive.com/info/captcha-help)
 2FA
 Simple http flood filter
 recaptcha (https://developers.google.com/recaptcha/docs/v3)
+Торрент трекер
