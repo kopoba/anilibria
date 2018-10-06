@@ -41,6 +41,40 @@ $(function() {
 		}
 	});
 });
+
+$(function() {
+    $(".floating_label").each(function() {
+        const sop = '<span class="span_for_lable">'; //span opening
+        const scl = '</span>'; //span closing
+        //split the label into single letters and inject span tags around them
+        //$(this).html(sop + $(this).html().split("").join(scl+sop) + scl);
+        console.log($(this).html(), sop + $(this).html() + scl);
+        $(this).html(sop + $(this).html() + scl);
+        //to prevent space-only spans from collapsing
+        $(".ch:contains(' ')").html("&nbsp;");
+    })
+
+    $(".styled_input").focus(function() {
+        //$(this).next().addClass("focused");
+        $(this).next().addClass("focused");
+    });
+	$(".styled_input").blur(function() {
+		if(!$.trim(this.value).length) {
+            $(this).next().removeClass("focused");
+		}
+	});
+});
+$(document).ready(function() {
+    $(".styled_input").each(function(){
+        if($(this).val() === ""){
+            $(this).next().removeClass("focused");
+        }
+        else{
+            $(this).next().addClass("focused");
+        }
+    });
+});
+
 $(document).on("click", "[data-submit-login]", function(e) {
 	$(this).blur();
 	e.preventDefault();
