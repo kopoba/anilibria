@@ -489,7 +489,7 @@ function torrentInfo(){
 	return $info;
 }
 
-function torrentExist($hash){
+function torrentHashExist($hash){
 	global $db;
 	$query = $db->prepare("SELECT * FROM xbt_files WHERE `info_hash` = :hash");
 	$query->bindParam(':hash', $hash, PDO::PARAM_STR);
@@ -500,15 +500,40 @@ function torrentExist($hash){
 	return true;
 }
 
+function torrentExist($id){
+	global $db;
+	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid`= :id");
+	$query->bindParam(':id', $id, PDO::PARAM_STR);
+	$query->execute();
+	return $query->fetch();
+}
+
 function torrentAdd($hash, $rid, $json, $completed = 0){
 	global $db;
 	$query = $db->prepare("INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, :completed, :rid, :info)");
 	$query->bindParam(':hash', $hash, PDO::PARAM_STR);
-	$query->bindParam(':completed', $completed, PDO::PARAM_STR);
 	$query->bindParam(':rid', $rid, PDO::PARAM_STR);
+	$query->bindParam(':completed', $completed, PDO::PARAM_STR);
 	$query->bindParam(':info', $json, PDO::PARAM_STR);
 	$query->execute();
 	return $db->lastInsertId();	
+}
+
+// https://github.com/shakahl/xbt/wiki/XBT-Tracker-(XBTT)
+// flags - This field is used to communicate with the tracker. Usable values: 0 - No changes. 1 - Torrent should be deleted. 2 - Torrent was updated.
+// flag 1 work		https://github.com/OlafvdSpek/xbt/blob/master/Tracker/server.cpp#L183-L187
+// source code		https://img.poiuty.com/img/6e/f01f40eaa783018fe12e5649315b716e.png
+// flag 2 not work	https://img.poiuty.com/img/7c/a5479067a6e3a272d66bb92c0416797c.png
+// Also I dont find it in source.
+function torrentDelete($id){
+	global $db;
+	$query = $db->prepare("UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id");
+	$query->bindParam(':id', $id, PDO::PARAM_STR);
+	$query->execute();
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent';
+	if(file_exists($file)) {
+		unlink($file);
+	}
 }
 
 function torrent(){
@@ -519,11 +544,18 @@ function torrent(){
 	if($user['access'] < 4){
 		_message('Access denied', 'error');
 	}
-	if(empty($_GET['do'])){
+	if(empty($_POST['do'])){
 		_message('Empty GET', 'error');
 	}
-	switch($_GET['do']){
-		case 'add':
+	switch($_POST['do']){
+		case 'delete':
+			if(empty($_POST['edit_torrent']) || !is_numeric($_POST['edit_torrent'])){
+				_message('No edit_torrent', 'error');
+			}
+			torrentDelete($_POST['edit_torrent']);
+			_message('Finish, we delete torrent');
+		break;
+		default:
 			if(empty($_POST['rid']) || empty($_POST['quality']) || empty($_POST['episode'])){
 				_message('Set release id, name, quality and episode', 'error');
 			}
@@ -534,15 +566,25 @@ function torrent(){
 				_message('Max strlen 200', 'error');
 			}
 			$info = torrentInfo($_FILES['torrent']['tmp_name']);
-			if(torrentExist($info['pack_hash'])){
+			if(torrentHashExist($info['pack_hash'])){
 				_message('Torrent hash already exist', 'error');
 			}
-			$name = torrentAdd($info['pack_hash'], $_POST['rid'], json_encode([$_POST['quality'], $_POST['episode']]));
+			$json = json_encode([$_POST['quality'], $_POST['episode']]);
+			if(empty($_POST['edit_torrent'])){
+				$name = torrentAdd($info['pack_hash'], $_POST['rid'], $json);
+			}else{
+				if(!is_numeric($_POST['edit_torrent'])){
+					_message('edit_torrent allow only numeric', 'error');
+				}
+				$old = torrentExist($_POST['edit_torrent']);
+				if(!is_array($old)){
+					_message('No old torrent', 'error');
+				}
+				$name = torrentAdd($info['pack_hash'], $_POST['rid'], $json, $old['completed']);
+				torrentDelete($_POST['edit_torrent']);
+			}
 			move_uploaded_file($_FILES['torrent']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
 			_message('Success');
-		break;
-		default:
-			_message('Wrong command', 'error');
 		break;
 	}
 }
