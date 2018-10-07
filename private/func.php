@@ -606,21 +606,21 @@ function getUserAvatar() {
 }
 
 function show_profile(){
-    global $db, $user; $id = 1;
-    if($user){
-        $id = $user['id'];
-    }
-    if(!empty($_GET['id'])){
-        $id = $_GET['id'];
-    }
-    if(!is_numeric($id)){
-        return ['err' => true, 'mes' => 'Wrong user id'];
-    }
-    $query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-    $query->bindValue(':id', $id, PDO::PARAM_STR);
-    $query->execute();
-    if($query->rowCount() == 0){
-        return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
-    }
+	global $db, $user; $id = 1;
+	if($user){
+		$id = $user['id'];
+	}
+	if(!empty($_GET['id'])){
+		$id = $_GET['id'];
+	}
+	if(!is_numeric($id)){
+		return ['err' => true, 'mes' => 'Wrong user id'];
+	}
+	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+	$query->bindValue(':id', $id, PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() == 0){
+		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+	}
     return ['err' => false, 'mes' => $query->fetch()];
 }

@@ -52,6 +52,7 @@ if($profile['err']){
 			<b>Access level:</b><span>&nbsp;{$profile['mes']['access']}</span>
 		</p>";
 }
+
 ?>
     <script>
         $(document).ready(function(){
