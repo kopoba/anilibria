@@ -10,7 +10,7 @@
         <label for="passwd" class="floating_label">Пароль</label>
     </div>
     <div class="input_wrapper">
-        <input id="fa2code" class="styled_input" type="text" spellcheck="false" required />
+        <input id="fa2code" class="styled_input" type="text" spellcheck="false" />
         <label for="fa2code" class="floating_label">2FA Code</label>
     </div>
     <div id="error" style="display: none"></div>

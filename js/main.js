@@ -73,7 +73,14 @@ $(document).ready(function() {
             $(this).next().addClass("focused");
         }
     });
+    $(".styled_input[type=\"password\"]").change(function () {
+        $(this).next().addClass("focused");
+    })
 });
+
+function delete_error() {
+    $("div#error").remove();
+}
 
 $(document).on("click", "[data-submit-login]", function(e) {
 	$(this).blur();

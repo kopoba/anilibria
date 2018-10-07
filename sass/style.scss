@@ -53,22 +53,22 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 #main_header {
   position: relative;
   width: 100%;
-  height: 70px;
+  height: 60px;
   background-color: #fff;
   font-weight: normal;
   font-style: normal;
-  margin-bottom: 62px;
+  margin-bottom: 55px;
   >img {
     float: left;
-    width: 226px;
-    height: 60px;
+    width: 188px;
+    height: 50px;
     padding: 5px 30px;
   }
 
   a#user_avatar {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 5px;
+    right: 5px;
     width: 50px;
     height: 50px;
     -webkit-border-radius: 50%;
@@ -84,6 +84,20 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
       border-radius: 50%;
     }
   }
+  .auth_button {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    padding: 7.5px 10px;
+    font-size: 15px;
+    line-height: 15px;
+    background-color: #f36767;
+    cursor: pointer;
+    color: #fff;
+    &:hover {
+      background-color: #ce5351;
+    }
+  }
 }
 
 #main_menu {
@@ -92,7 +106,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     display: inline-block;
     padding: 0;
     color: #2b2b2b;
-    margin: 25px 10px;
+    margin: 20px 20px;
     font-size: 20px;
     line-height: 20px;
     &:hover,
@@ -111,7 +125,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
       display: none;
       position: absolute;
       left: 0;
-      top: 80px;
+      top: 65px;
       width: calc(100% - 20px);
       min-height: 22px;
       background-color: #fff;
@@ -484,7 +498,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
 .span_for_lable {
   display: block;
   float: left;
-  position: relative; /*for upward animation*/
+  position: relative;
   background-color: #fff;
   &:first-child {padding-left: 2px;}
   &:last-child {padding-right: 2px;}
