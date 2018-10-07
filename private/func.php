@@ -218,7 +218,7 @@ function password_recovery(){
 	$row = $query->fetch();
 	$time = $var['time']+43200;
 	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.half_string($row['passwd']));
-	$link = "http://test.poiuty.com/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
+	$link = "https://test.anilibria.tv/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('Please check your mail');
 }
@@ -587,4 +587,45 @@ function torrent(){
 			_message('Success');
 		break;
 	}
+}
+
+function getUserAvatar() {
+    global $user;
+    if ($user) {
+        $filename = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/".$user["id"].".png";
+        if (file_exists($filename)) {
+            $user_avatar_path = $filename;
+        } else {
+            $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
+        }
+    }
+    return $user_avatar_path;
+}
+
+function show_profile() {
+    global $db, $user, $userResult, $errorMsg;
+    if(!isset($_GET["id"])) {
+        $userID = $user["id"];
+    } else {
+        $userID = $_GET["id"];
+    }
+    $query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+    $query->bindValue(':id', $userID, PDO::PARAM_STR);
+    $query->execute();
+    if($query->rowCount() == 0){
+        $errorMsg = "К сожалению, такого пользователя не существует.";
+    }
+    $row = $query->fetch();
+    $userResult = array(
+        "ID" => $row["id"],
+        "LOGIN" => $row["login"],
+        "EMAIL" => $row["mail"],
+        "ACCESS" => $row["access"]
+    );
+
+    if($user["access"] == 5) {
+        echo "<pre>";
+        print_r($row);
+        echo "</pre>";
+    }
 }

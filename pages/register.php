@@ -10,8 +10,14 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 <div id="user_log_reg_rec">
     <h1>Регистрация нового пользователя</h1>
-    <input id="login" type="text" placeholder="Логин" />
-    <input id="email" type="email" placeholder="E-mail" />
+    <div class="input_wrapper">
+        <input id="login" class="styled_input" type="text" spellcheck="false" />
+        <label for="login" class="floating_label">Логин</label>
+    </div>
+    <div class="input_wrapper">
+        <input id="email" class="styled_input" type="email" spellcheck="false" />
+        <label for="email" class="floating_label">Email</label>
+    </div>
     <div id="hidden_captcha">
         <script src="https://authedmine.com/lib/captcha.min.js" async></script>
         <script src="https://www.google.com/recaptcha/api.js?render=<?php echo $conf['recaptcha_public']; ?>"></script>
@@ -21,7 +27,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
         </div>
     </div>
     <div id="error" style="display: none"></div>
-    <input type="submit" data-submit-register value="Регистрация" />
+    <input type="submit" data-submit-register value="Отправить" />
     <a class="a_button" href="login.php">Уже есть аккаунт?</a>
     <hr/>
     <h2>Авторизация через внешние сервисы</h2>

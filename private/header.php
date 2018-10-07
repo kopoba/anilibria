@@ -1,3 +1,9 @@
+<?php
+if (isset($_GET["logout"])) {
+    _exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -74,12 +80,18 @@
                     </div>
                 </div>
             </nav>
-            <a href="#" id="user_avatar"><img src="../images/avatar.png" alt="avatar"/></a>
+            <?php
+            if($user) {
+                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar()?>" alt="avatar"/></a><?php
+            } else {
+                ?><a class="auth_button" href="../pages/login.php">Авторизация</a><?php
+            }
+            ?>
             <div id="user_dropdown_menu">
-                <span>Гость</span>
-                <a href="../pages/login.php">Авторизация</a>
-                <a href="../pages/register.php">Регистрация</a>
-                <a href="../pages/password_recovery.php">Напомнить пароль</a>
+                <span><?php echo $user["login"] ?></span>
+                <a href="../pages/profile.php">Мой профиль</a>
+                <a href="#">Моё избранное</a>
+                <a href="?logout">Выход</a>
             </div>
         </div>
         <div id="hslider">
