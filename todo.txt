@@ -1,4 +1,5 @@
 - Авторизация/ регистрация через patreon, vk
+- Личный кабинет
 - Админка
 - Избранное
 - Поиск
@@ -25,4 +26,3 @@ Proof of Work Captcha (https://coinhive.com/info/captcha-help)
 Simple http flood filter
 recaptcha (https://developers.google.com/recaptcha/docs/v3)
 Торрент трекер
-Личный кабинет
