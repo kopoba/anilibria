@@ -14,9 +14,11 @@ if (isset($_GET["logout"])) {
     <link rel="stylesheet" href="../css/slider.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
     <link rel="stylesheet" href="../css/width.css">
+    <link rel="stylesheet" href="../css/imgareaselect-animated.css">
     <script src="../js/jquery.min.js"></script>
     <script src="../js/jquery.bxslider.js"></script>
     <script src="../js/main.js"></script>
+    <script src="../js/jquery.imgareaselect.min.js"></script>
 </head>
 <body>
 <div id="content_wrapper">
@@ -139,7 +141,7 @@ if (isset($_GET["logout"])) {
         </a>
         <!-- Скрывать для действующего спонсора patreon -->
         <div id="notice">
-            <p>Рекламное место<br/>365 x 500 px</p>
+            <p>Рекламное место<br/>240 x 328 px</p>
             <a href="#">
                 <!--<img src="images/support_us.png" class="side_img_link" alt="ad name"/>-->
             </a>
@@ -150,7 +152,7 @@ if (isset($_GET["logout"])) {
     </aside>
     <div id="main_content_top">
         <div id="notice_top">
-            <p>Рекламное место<br/>639 x 150 px</p>
+            <p>Рекламное место<br/>518 x 120 px</p>
             <!-- Заменять картинку на благодарность для действующего спонсора patreon -->
             <a href="#">
                 <!--<img src="images/support_us.png" class="side_img_link" alt="ad name"/>-->

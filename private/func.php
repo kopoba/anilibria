@@ -592,40 +592,35 @@ function torrent(){
 function getUserAvatar() {
     global $user;
     if ($user) {
-        $filename = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/".$user["id"].".png";
+        $filename = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $user['id'] . ".png";
+        $filename2 = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $user['id'] . ".jpg";
         if (file_exists($filename)) {
-            $user_avatar_path = $filename;
-        } else {
+            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $user['id'] . ".png";
+        } elseif (file_exists($filename2)) {
+            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $user['id'] . ".jpg";
+        }else {
             $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
         }
     }
     return $user_avatar_path;
 }
 
-function show_profile() {
-    global $db, $user, $userResult, $errorMsg;
-    if(!isset($_GET["id"])) {
-        $userID = $user["id"];
-    } else {
-        $userID = $_GET["id"];
+function show_profile(){
+    global $db, $user; $id = 1;
+    if($user){
+        $id = $user['id'];
+    }
+    if(!empty($_GET['id'])){
+        $id = $_GET['id'];
+    }
+    if(!is_numeric($id)){
+        return ['err' => true, 'mes' => 'Wrong user id'];
     }
     $query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-    $query->bindValue(':id', $userID, PDO::PARAM_STR);
+    $query->bindValue(':id', $id, PDO::PARAM_STR);
     $query->execute();
     if($query->rowCount() == 0){
-        $errorMsg = "К сожалению, такого пользователя не существует.";
+        return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
     }
-    $row = $query->fetch();
-    $userResult = array(
-        "ID" => $row["id"],
-        "LOGIN" => $row["login"],
-        "EMAIL" => $row["mail"],
-        "ACCESS" => $row["access"]
-    );
-
-    if($user["access"] == 5) {
-        echo "<pre>";
-        print_r($row);
-        echo "</pre>";
-    }
+    return ['err' => false, 'mes' => $query->fetch()];
 }
