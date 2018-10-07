@@ -38,6 +38,24 @@ a, a:visited, a:active {
   }
 }
 
+input[type="submit"] {
+  display: block;
+  margin: 0;
+  padding: 5px 10px;
+  font-size: 16px;
+  line-height: 16px;
+  background-color: #f36767;
+  cursor: pointer;
+  color: #fff;
+  &:hover {
+    background-color: #ce5351;
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+
+}
+
 article, aside, details, figcaption, figure, footer, header, menu, nav, section {
   display: block;
 }
@@ -68,7 +86,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   a#user_avatar {
     position: absolute;
     top: 5px;
-    right: 5px;
+    right: 25px;
     width: 50px;
     height: 50px;
     -webkit-border-radius: 50%;
@@ -87,7 +105,7 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   .auth_button {
     position: absolute;
     top: 15px;
-    right: 10px;
+    right: 30px;
     padding: 7.5px 10px;
     font-size: 15px;
     line-height: 15px;
@@ -589,5 +607,13 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
     border-bottom-color: #ce5351;
     border-width: 14px;
     margin-left: -14px;
+  }
+}
+
+#avatar_preview {
+  position: relative;
+  #filePreview {
+    height: 200px;
+    width: auto;
   }
 }
