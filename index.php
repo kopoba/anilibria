@@ -7,8 +7,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
-var_dump($user);
-
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 

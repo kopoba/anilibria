@@ -592,10 +592,13 @@ function torrent(){
 function getUserAvatar() {
     global $user;
     if ($user) {
-        $filename = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/".$user["id"].".png";
+        $filename = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $user['id'] . ".png";
+        $filename2 = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $user['id'] . ".jpg";
         if (file_exists($filename)) {
-            $user_avatar_path = $filename;
-        } else {
+            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $user['id'] . ".png";
+        } elseif (file_exists($filename2)) {
+            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $user['id'] . ".jpg";
+        }else {
             $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
         }
     }
