@@ -25,21 +25,15 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
-show_profile();
-?>
-<?php
-if(isset($errorMsg)) {
-    echo "<div id=\"error\" style=\"display: block; text-align: center;\">".$errorMsg."</div>";
-} else {
-    ?>
-    <p>
-        <b>ID:</b><span>&nbsp;<?php echo $userResult["ID"] ?></span><br/>
-        <b>Login:</b><span>&nbsp;<?php echo $userResult["LOGIN"] ?></span><br/>
-        <b>Email:</b><span>&nbsp;<?php echo $userResult["EMAIL"] ?></span><br/>
-        <b>Access level:</b><span>&nbsp;<?php echo $userResult["ACCESS"] ?></span>
-    </p>
-    <?php
+$profile = show_profile();
+if($profile['err']){
+    echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
+}else{
+	echo "<p>
+			<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
+			<b>Login:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
+			<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
+			<b>Access level:</b><span>&nbsp;{$profile['mes']['access']}</span>
+		</p>";
 }
-?>
-
-<?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');

@@ -602,30 +602,22 @@ function getUserAvatar() {
     return $user_avatar_path;
 }
 
-function show_profile() {
-    global $db, $user, $userResult, $errorMsg;
-    if(!isset($_GET["id"])) {
-        $userID = $user["id"];
-    } else {
-        $userID = $_GET["id"];
-    }
-    $query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-    $query->bindValue(':id', $userID, PDO::PARAM_STR);
-    $query->execute();
-    if($query->rowCount() == 0){
-        $errorMsg = "К сожалению, такого пользователя не существует.";
-    }
-    $row = $query->fetch();
-    $userResult = array(
-        "ID" => $row["id"],
-        "LOGIN" => $row["login"],
-        "EMAIL" => $row["mail"],
-        "ACCESS" => $row["access"]
-    );
-
-    if($user["access"] == 5) {
-        echo "<pre>";
-        print_r($row);
-        echo "</pre>";
-    }
+function show_profile(){
+	global $db, $user; $id = 1;
+	if($user){
+		$id = $user['id'];
+	}
+	if(!empty($_GET['id'])){
+		$id = $_GET['id'];
+	}
+	if(!is_numeric($id)){
+		return ['err' => true, 'mes' => 'Wrong user id'];
+	}
+	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+	$query->bindValue(':id', $id, PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() == 0){
+		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+	}
+    return ['err' => false, 'mes' => $query->fetch()];
 }
