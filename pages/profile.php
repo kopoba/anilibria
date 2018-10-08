@@ -35,7 +35,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/image_upload.php');
 $profile = show_profile();
 if(isset($_POST['upload'])) {
     cropandupload();
