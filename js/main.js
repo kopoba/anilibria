@@ -169,3 +169,36 @@ $(document).on("click", "[data-submit-register]", function(e) {
 		});
 	}
 });
+$(document).on("click", "[data-2fa-generate]", function(e) {
+	var _this = $(this);
+	_this.blur();
+	e.preventDefault();
+	$.post("//"+document.domain+"/public/2fa.php", {do: 'gen'}, function(json){
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			_this.hide();
+			$("#2fakey").html('<center>'+data.mes+'</center>');
+			$("#2fainfo").show();
+		}
+	});
+});
+$(document).on("click", "[data-2fa-start]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	secret = $('input[id=2fa]').val();
+	check = $('input[id=2facheck]').val();
+	passwd = $('input[id=passwd]').val();
+	$.post("//"+document.domain+"/public/2fa.php", {do: 'save', '2fa': secret, code: check, passwd: passwd}, function(json){
+		data = JSON.parse(json);
+		$("div#error").html(data.mes);
+		if(data.err == 'ok'){
+			if(data.mes == '2FA activated'){
+				$("#send2fa").val('Выключить 2FA');
+				$("div#2fagen").hide();
+			}else{
+				$("#send2fa").val('Включить 2FA');
+				$("div#2fagen").show();
+			}
+		}
+	});
+});

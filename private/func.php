@@ -377,22 +377,27 @@ function auth2FA(){
 				_message('2FA already activated', 'error');				
 			}
 			$base32_key = generate_secret();
-			_message("<img src=".getQRCodeGoogleUrl($user['login']."@anilibria.tv", $base32_key)."><br>Secret key: $base32_key<br/>Сохраните секретный ключ в надежном месте.");
+			_message("<img src=".getQRCodeGoogleUrl($user['login']."@anilibria.tv", $base32_key)."><br>Secret key: $base32_key<br/>Сохраните секретный ключ в надежном месте.<input type=\"hidden\" id=\"2fa\" value=\"$base32_key\">");
 		break;
 		case 'save':
-			if(empty($_POST['passwd']) || empty($_POST['code']) || empty($_POST['recode'])){
+			if(empty($_POST['passwd']) || empty($_POST['code'])){
 				_message('empty_post_value', 'error');
+			}			
+			if(empty($user['2fa'])){
+				if(empty($_POST['2fa']) || ctype_lower($_POST['2fa']) || strlen($_POST['2fa']) != 16){
+					_message('empty_post_value or wrong 2fa', 'error');
+				}
+				$check = $_POST['2fa'];
+			}else{
+				$check = $user['2fa'];
 			}
-			if($_POST['code'] != $_POST['recode'] || strlen($_POST['code']) != 16 || ctype_lower($_POST['code'])){
-				_message('wrong_2fa', 'error');
+			if(oathHotp($check, floor(microtime(true) / 30)) != $_POST['code']){
+				_message('Wrong 2FA', 'error');
 			}
 			if(!password_verify($_POST['passwd'], $user['passwd'])){
 				_message('Wrong password', 'error');
 			}
 			if(!empty($user['2fa'])){
-				if($_POST['code'] != $user['2fa']){
-					_message('Wrong 2FA', 'error');	
-				}
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
 				$query->bindValue(':code', null, PDO::PARAM_INT);
 				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
@@ -400,7 +405,7 @@ function auth2FA(){
 				_message('2FA disabled');
 			}else{
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
-				$query->bindParam(':code', $_POST['code'], PDO::PARAM_STR);
+				$query->bindParam(':code', $_POST['2fa'], PDO::PARAM_STR);
 				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
 				$query->execute();
 				_message('2FA activated');
