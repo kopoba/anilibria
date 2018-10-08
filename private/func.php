@@ -611,9 +611,11 @@ function getUserAvatar() {
 }
 
 function show_profile(){
-	global $db, $user; $id = 1;
+	global $db, $user; $id;
 	if($user){
 		$id = $user['id'];
+	} else {
+		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
 	if(!empty($_GET['id'])){
 		$id = $_GET['id'];
