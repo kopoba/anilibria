@@ -594,16 +594,36 @@ function torrent(){
 	}
 }
 
+function upload_avatar() {
+    global $user;
+    if(isset($_FILES["avatar"])) {
+        $fileSize = $_FILES["avatar"]["size"];
+        $fileTemp = $_FILES["avatar"]["tmp_name"];
+        $fileError = $_FILES["avatar"]["error"];
+        $folderName = substr(md5($user["login"]),0,2);
+        $uploadPath = $_SERVER['DOCUMENT_ROOT']."/upload/avatars/".$folderName;
+        $error = false;
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+        $fileName = "/" . $user["id"] . ".jpg";
+        if($fileSize > 150000 || $fileError > 0) {
+            $error = true;
+        }
+        if(!$error) {
+            move_uploaded_file($fileTemp, $uploadPath . $fileName);
+        }
+    }
+}
+
 function getUserAvatar() {
     global $user;
     if ($user) {
-        $filename = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $user['id'] . ".png";
-        $filename2 = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $user['id'] . ".jpg";
+        $folderName = substr(md5($user["login"]),0,2);
+        $filename = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $folderName . "/" . $user['id'] . ".jpg";
         if (file_exists($filename)) {
-            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $user['id'] . ".png";
-        } elseif (file_exists($filename2)) {
-            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $user['id'] . ".jpg";
-        }else {
+            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $folderName . "/" . $user['id'] . ".jpg";
+        } else {
             $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
         }
     }
@@ -611,7 +631,7 @@ function getUserAvatar() {
 }
 
 function show_profile(){
-	global $db, $user; $id;
+	global $db, $user;
 	if($user){
 		$id = $user['id'];
 	} else {
