@@ -1,9 +1,3 @@
-<?php
-if (isset($_GET["logout"])) {
-    _exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -91,7 +85,7 @@ if (isset($_GET["logout"])) {
                 <span><?php echo $user["login"] ?></span>
                 <a href="../pages/profile.php">Мой профиль</a>
                 <a href="#">Моё избранное</a>
-                <a href="?logout">Выход</a>
+                <a href="/public/logout.php">Выход</a>
             </div>
         </div>
         <div id="hslider">
