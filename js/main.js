@@ -64,6 +64,7 @@ $(function() {
 		}
 	});
 });
+
 $(document).ready(function() {
     $(".styled_input").each(function(){
         if($(this).val() === ""){

@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="../css/slider.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
     <link rel="stylesheet" href="../css/width.css">
-    <link rel="stylesheet" href="../css/imgareaselect-animated.css">
+    <link rel="stylesheet" href="../css/cropper.css">
     <script src="../js/jquery.min.js"></script>
     <script src="../js/jquery.bxslider.js"></script>
     <script src="../js/main.js"></script>
-    <script src="../js/jquery.imgareaselect.min.js"></script>
+    <script src="../js/cropper/cropper.js"></script>
 </head>
 <body>
 <div id="content_wrapper">
@@ -92,13 +92,13 @@
         </div>
         <div id="hslider">
             <div id="slides_main_wrapper" class="slideshow">
-                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/0ae1f95f1606730c0c5ba58478da3607.png')">
+                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/b3e605bcf7195f3f89d2c629f04a48db.png')">
                     <a href='#'>Slider Link</a>
                 </figure>
-                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/19092732570c1cae6c3c19ab8644a6c9.png')">
+                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/7c7123157d4e84147cd3ab48085640e7.png')">
                     <a href='#'>Slider Link</a>
                 </figure>
-                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/6bf0b14db261817700ce17faeb79222b.png')">
+                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/c61bb097dd93bab4328d5b37a23e4e69.png')">
                     <a href='#'>Slider Link</a>
                 </figure>
             </div>
