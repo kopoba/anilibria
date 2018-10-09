@@ -626,14 +626,18 @@ function getUserAvatar() {
         } else {
             $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
         }
-    }
+    } else {
+		
+	}
     return $user_avatar_path;
 }
 
 function show_profile(){
 	global $db, $user;
-	if($user){
-		$id = $user['id'];
+	$getID = $_GET["id"];
+	$curUserID = $user["id"];
+	if($user && $curUserID != $getID) {
+		$id = $getID;
 	} else {
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
