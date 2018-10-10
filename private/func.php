@@ -603,39 +603,41 @@ function torrent(){
 }
 
 function upload_avatar() {
-    global $user;
-    if(isset($_FILES["avatar"])) {
-        $fileSize = $_FILES["avatar"]["size"];
-        $fileTemp = $_FILES["avatar"]["tmp_name"];
-        $fileError = $_FILES["avatar"]["error"];
-        $folderName = substr(md5($user["login"]),0,2);
-        $uploadPath = $_SERVER['DOCUMENT_ROOT']."/upload/avatars/".$folderName;
-        $error = false;
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
-        }
-        $fileName = "/" . $user["id"] . ".jpg";
-        if($fileSize > 150000 || $fileError > 0) {
-            $error = true;
-        }
-        if(!$error) {
-            move_uploaded_file($fileTemp, $uploadPath . $fileName);
-        }
-    }
+	global $user;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_FILES['avatar'])){
+		_message('No upload file', 'error');
+	}
+	if($_FILES['avatar']['error'] != 0){
+		_message('Upload error', 'error');
+	}
+	if($_FILES['avatar']['type'] != 'image/jpeg'){
+		_message('You can upload only jpeg', 'error');	
+	}
+	if($_FILES['avatar']['size'] > 150000){
+		_message('Max size', 'error');
+	}
+	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
+	if(!file_exists($dir)) {
+		mkdir($dir, 0755, true);
+	}
+	move_uploaded_file($_FILES['avatar']['tmp_name'], "$dir/{$user['id']}.jpg");
+	_message('Success');
 }
 
 function getUserAvatar() {
-    global $user;
-    if ($user) {
-        $folderName = substr(md5($user["login"]),0,2);
-        $filename = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $folderName . "/" . $user['id'] . ".jpg";
-        if (file_exists($filename)) {
-            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $folderName . "/" . $user['id'] . ".jpg";
-        } else {
-            $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-        }
-    }
-    return $user_avatar_path;
+	global $user;
+	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
+	if($user){
+		$dir = substr(md5($user["id"]), 0, 2);
+		$path = "/upload/avatars/$dir/{$user['id']}.jpg";
+		if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
+			$img = "https://".$_SERVER['SERVER_NAME'].$path;
+		}
+	}
+	return $img;
 }
 
 function show_profile(){
