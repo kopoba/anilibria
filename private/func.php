@@ -32,7 +32,7 @@ function _message($mes, $err = 'ok'){
 }
 
 function half_string($s){
-	return substr($s, 0, round(strlen($s)/2));
+	return substr($s, round(strlen($s)/2));
 }
 
 function session_hash($login, $passwd, $rand = '', $time = ''){
@@ -43,7 +43,7 @@ function session_hash($login, $passwd, $rand = '', $time = ''){
 	if(empty($time)){
 		$time = $var['time']+86400;
 	}
-	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.half_string($passwd)), $time];
+	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string($passwd))), $time];
 }
 
 function coinhive_proof(){
@@ -170,7 +170,7 @@ function password_link(){
 		_message('No such user', 'error');
 	}
 	$row = $query->fetch();
-	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].half_string($row['passwd']));
+	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].sha1(half_string($row['passwd'])));
 	if($_GET['hash'] != $hash){
 		_message('Wrong hash', 'error');
 	}
@@ -221,7 +221,7 @@ function password_recovery(){
 	}
 	$row = $query->fetch();
 	$time = $var['time']+43200;
-	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.half_string($row['passwd']));
+	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string($row['passwd'])));
 	$link = "https://test.anilibria.tv/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('Please check your mail');
