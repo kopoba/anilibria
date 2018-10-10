@@ -614,7 +614,7 @@ function upload_avatar() {
 	if($_FILES['avatar']['size'] > 150000){
 		_message('Max size', 'error');
 	}
-	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
+	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['login']), 0, 2);
 	if(!file_exists($dir)) {
 		mkdir($dir, 0755, true);
 	}
@@ -622,30 +622,26 @@ function upload_avatar() {
 	_message('Success');
 }
 
-function getUserAvatar() {
-	global $user;
+function getUserAvatar($login, $userid) {
 	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-	if($user){
-		$dir = substr(md5($user["id"]), 0, 2);
-		$path = "/upload/avatars/$dir/{$user['id']}.jpg";
-		if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
-			$img = "https://".$_SERVER['SERVER_NAME'].$path;
-		}
+	$dir = substr(md5($login), 0, 2);
+	$path = "/upload/avatars/".$dir."/".$userid.".jpg";
+	if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
+		$img = "https://".$_SERVER['SERVER_NAME'].$path;
 	}
 	return $img;
 }
 
 function show_profile(){
 	global $db, $user;
-	$getID = $_GET["id"];
-	$curUserID = $user["id"];
-	if($user && $curUserID != $getID) {
-		$id = $getID;
-	} else {
-		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
-	}
 	if(!empty($_GET['id'])){
 		$id = $_GET['id'];
+	} else {
+		if($user) {
+			$id = $user['id'];
+		} else {
+			return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+		}
 	}
 	if(!is_numeric($id)){
 		return ['err' => true, 'mes' => 'Wrong user id'];
@@ -657,6 +653,30 @@ function show_profile(){
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
     return ['err' => false, 'mes' => $query->fetch()];
+}
+
+function getGroupName($access) {
+	switch($access) {
+		case 0:
+			$groupName = "Заблокирован";
+			break;
+		case 1:
+			$groupName = "Пользователь";
+			break;
+		case 2:
+			$groupName = "Спонсор";
+			break;
+		case 3:
+			$groupName = "Либриец";
+			break;
+		case 4:
+			$groupName = "Редактор";
+			break;
+		case 5:
+			$groupName = "Админ";
+			break;
+	}
+	return $groupName;
 }
 
 function cryptAES($text, $key, $do = 'encrypt'){

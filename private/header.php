@@ -78,7 +78,7 @@
             </nav>
             <?php
             if($user) {
-                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar()?>" alt="avatar"/></a><?php
+                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar($user["login"], $user["id"])?>" alt="avatar"/></a><?php
             } else {
                 ?><a class="auth_button" href="../pages/login.php">Авторизация</a><?php
             }
@@ -92,7 +92,7 @@
         </div>
         <div id="hslider">
             <div id="slides_main_wrapper" class="slideshow">
-                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/b3e605bcf7195f3f89d2c629f04a48db.png')">
+                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/884b3171a8f451fc8780bd0f8cd06e06.png')">
                     <a href='#'>Slider Link</a>
                 </figure>
                 <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/7c7123157d4e84147cd3ab48085640e7.png')">

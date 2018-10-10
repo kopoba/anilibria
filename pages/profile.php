@@ -36,17 +36,17 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $profile = show_profile();
-$userAvatar = getUserAvatar();
 
 if($profile['err']){
     echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
 }else{
-
+	echo "asd ".$profile['mes']['login'];
+	$userAvatar = getUserAvatar($profile['mes']['login'], $profile['mes']['id']);
     echo "<p>
 			<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
 			<b>Login:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
 			<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
-			<b>Access level:</b><span>&nbsp;{$profile['mes']['access']}</span>
+			<b>Access level:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span>
 		</p>";
 }
 ?>
@@ -175,15 +175,15 @@ if($profile['err']){
                             };
                             return xhr;
                         },
-                        success: function () {
-                            $alert.show().addClass('alert-success').text('Upload success');
-                        },
-                        error: function () {
-                            avatar.src = initialAvatarURL;
-                            $alert.show().addClass('alert-warning').text('Upload error');
-                        },
-                        complete: function () {
+                        complete: function (response) {
                             $progress.hide();
+							var getContact = JSON.parse(response.responseText);
+							if(getContact.err == "ok") {
+								$alert.show().addClass('alert-success').text('Upload success');
+							} else {
+								$alert.show().addClass('alert-warning').text('Upload error: ' + getContact.mes);
+								avatar.src = initialAvatarURL;
+							}
                         },
                     });
                 }, "image/jpeg");
