@@ -32,7 +32,7 @@ function _message($mes, $err = 'ok'){
 }
 
 function half_string($s){
-	return substr($s, 0, round(strlen($s)/2));
+	return substr($s, round(strlen($s)/2));
 }
 
 function session_hash($login, $passwd, $rand = '', $time = ''){
@@ -43,7 +43,7 @@ function session_hash($login, $passwd, $rand = '', $time = ''){
 	if(empty($time)){
 		$time = $var['time']+86400;
 	}
-	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.half_string($passwd)), $time];
+	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string($passwd))), $time];
 }
 
 function coinhive_proof(){
@@ -115,7 +115,11 @@ function login(){
 		if(empty($_POST['fa2code'])){
 			_message('Empty post 2FA', 'error');
 		}
-		if(oathHotp($row['2fa'], floor(microtime(true) / 30)) != $_POST['fa2code']){
+		$secret = cryptAES($row['2fa'], $_POST['passwd'], 'decode');
+		if(strlen($secret) != 16 || !ctype_alnum($secret) || ctype_lower($secret)){
+			_message('Wrong 2FA', 'error');
+		}
+		if(oathHotp($secret, floor(microtime(true) / 30)) != $_POST['fa2code']){
 			_message('Wrong 2FA', 'error');
 		}
 	}
@@ -166,7 +170,7 @@ function password_link(){
 		_message('No such user', 'error');
 	}
 	$row = $query->fetch();
-	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].half_string($row['passwd']));
+	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].sha1(half_string($row['passwd'])));
 	if($_GET['hash'] != $hash){
 		_message('Wrong hash', 'error');
 	}
@@ -217,7 +221,7 @@ function password_recovery(){
 	}
 	$row = $query->fetch();
 	$time = $var['time']+43200;
-	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.half_string($row['passwd']));
+	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string($row['passwd'])));
 	$link = "https://test.anilibria.tv/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('Please check your mail');
@@ -381,15 +385,18 @@ function auth2FA(){
 		break;
 		case 'save':
 			if(empty($_POST['passwd']) || empty($_POST['code'])){
-				_message('empty_post_value', 'error');
-			}			
+				_message('Empty post', 'error');
+			}
 			if(empty($user['2fa'])){
-				if(empty($_POST['2fa']) || ctype_lower($_POST['2fa']) || strlen($_POST['2fa']) != 16){
-					_message('empty_post_value or wrong 2fa', 'error');
+				if(empty($_POST['2fa'])){
+					_message('Empty post 2fa', 'error');
 				}
 				$check = $_POST['2fa'];
 			}else{
-				$check = $user['2fa'];
+				$check = cryptAES($user['2fa'], $_POST['passwd'], 'decode');
+			}
+			if(strlen($check) != 16 || !ctype_alnum($check) || ctype_lower($check)){
+				_message('Wrong 2FA', 'error');
 			}
 			if(oathHotp($check, floor(microtime(true) / 30)) != $_POST['code']){
 				_message('Wrong 2FA', 'error');
@@ -404,8 +411,9 @@ function auth2FA(){
 				$query->execute();
 				_message('2FA disabled');
 			}else{
+				$encryptCode = cryptAES($_POST['2fa'], $_POST['passwd']);
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
-				$query->bindParam(':code', $_POST['2fa'], PDO::PARAM_STR);
+				$query->bindParam(':code', $encryptCode, PDO::PARAM_STR);
 				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
 				$query->execute();
 				_message('2FA activated');
@@ -467,11 +475,6 @@ function simple_http_filter(){
 			die;
 		}
 	}
-}
-
-function isJson($string) {
-	json_decode($string);
-	return (json_last_error() == JSON_ERROR_NONE);
 }
 
 function torrentInfo(){
@@ -595,41 +598,41 @@ function torrent(){
 }
 
 function upload_avatar() {
-    global $user;
-    if(isset($_FILES["avatar"])) {
-        $fileSize = $_FILES["avatar"]["size"];
-        $fileTemp = $_FILES["avatar"]["tmp_name"];
-        $fileError = $_FILES["avatar"]["error"];
-        $folderName = substr(md5($user["login"]),0,2);
-        $uploadPath = $_SERVER['DOCUMENT_ROOT']."/upload/avatars/".$folderName;
-        $error = false;
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
-        }
-        $fileName = "/" . $user["id"] . ".jpg";
-        if($fileSize > 150000 || $fileError > 0) {
-            $error = true;
-        }
-        if(!$error) {
-            move_uploaded_file($fileTemp, $uploadPath . $fileName);
-        }
-    }
+	global $user;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_FILES['avatar'])){
+		_message('No upload file', 'error');
+	}
+	if($_FILES['avatar']['error'] != 0){
+		_message('Upload error', 'error');
+	}
+	if($_FILES['avatar']['type'] != 'image/jpeg'){
+		_message('You can upload only jpeg', 'error');	
+	}
+	if($_FILES['avatar']['size'] > 150000){
+		_message('Max size', 'error');
+	}
+	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
+	if(!file_exists($dir)) {
+		mkdir($dir, 0755, true);
+	}
+	move_uploaded_file($_FILES['avatar']['tmp_name'], "$dir/{$user['id']}.jpg");
+	_message('Success');
 }
 
 function getUserAvatar() {
-    global $user;
-    if ($user) {
-        $folderName = substr(md5($user["login"]),0,2);
-        $filename = $_SERVER['DOCUMENT_ROOT'] . "/upload/avatars/" . $folderName . "/" . $user['id'] . ".jpg";
-        if (file_exists($filename)) {
-            $user_avatar_path = "https://" . $_SERVER['SERVER_NAME'] . "/upload/avatars/" . $folderName . "/" . $user['id'] . ".jpg";
-        } else {
-            $user_avatar_path = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-        }
-    } else {
-		
+	global $user;
+	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
+	if($user){
+		$dir = substr(md5($user["id"]), 0, 2);
+		$path = "/upload/avatars/$dir/{$user['id']}.jpg";
+		if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
+			$img = "https://".$_SERVER['SERVER_NAME'].$path;
+		}
 	}
-    return $user_avatar_path;
+	return $img;
 }
 
 function show_profile(){
@@ -654,4 +657,22 @@ function show_profile(){
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
     return ['err' => false, 'mes' => $query->fetch()];
+}
+
+function cryptAES($text, $key, $do = 'encrypt'){
+	$key = hash('sha256', $key, true);
+	$algo = MCRYPT_RIJNDAEL_256;
+	$mode = MCRYPT_MODE_CBC;
+	$iv_size = mcrypt_get_iv_size($algo, $mode);
+	$iv = mcrypt_create_iv($iv_size, MCRYPT_DEV_URANDOM);
+	if($do == 'encrypt'){
+		$ciphertext = mcrypt_encrypt($algo, $key, $text, $mode, $iv);
+		$ciphertext = $iv . $ciphertext;
+		return base64_encode($ciphertext);
+	}else{
+		$ciphertext_dec = base64_decode($text);
+		$iv_dec = substr($ciphertext_dec, 0, $iv_size);
+		$ciphertext_dec = substr($ciphertext_dec, $iv_size);
+		return rtrim(mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec));
+	}
 }
