@@ -115,7 +115,11 @@ function login(){
 		if(empty($_POST['fa2code'])){
 			_message('Empty post 2FA', 'error');
 		}
-		if(oathHotp($row['2fa'], floor(microtime(true) / 30)) != $_POST['fa2code']){
+		$secret = trim(cryptAES($row['2fa'], $_POST['passwd'], 'decode'));
+		if(strlen($secret) != 16 || !ctype_alnum($secret) || ctype_lower($secret)){
+			_message('Wrong 2FA', 'error');
+		}
+		if(oathHotp($secret, floor(microtime(true) / 30)) != $_POST['fa2code']){
 			_message('Wrong 2FA', 'error');
 		}
 	}
@@ -381,15 +385,18 @@ function auth2FA(){
 		break;
 		case 'save':
 			if(empty($_POST['passwd']) || empty($_POST['code'])){
-				_message('empty_post_value', 'error');
-			}			
+				_message('Empty post', 'error');
+			}
 			if(empty($user['2fa'])){
-				if(empty($_POST['2fa']) || ctype_lower($_POST['2fa']) || strlen($_POST['2fa']) != 16){
-					_message('empty_post_value or wrong 2fa', 'error');
+				if(empty($_POST['2fa'])){
+					_message('Empty post 2fa', 'error');
 				}
 				$check = $_POST['2fa'];
 			}else{
-				$check = $user['2fa'];
+				$check = trim(cryptAES($user['2fa'], $_POST['passwd'], 'decode'));
+			}
+			if(strlen($check) != 16 || !ctype_alnum($check) || ctype_lower($check)){
+				_message('Wrong 2FA', 'error');
 			}
 			if(oathHotp($check, floor(microtime(true) / 30)) != $_POST['code']){
 				_message('Wrong 2FA', 'error');
@@ -404,8 +411,9 @@ function auth2FA(){
 				$query->execute();
 				_message('2FA disabled');
 			}else{
+				$encryptCode = cryptAES($_POST['2fa'], $_POST['passwd']);
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
-				$query->bindParam(':code', $_POST['2fa'], PDO::PARAM_STR);
+				$query->bindParam(':code', $encryptCode, PDO::PARAM_STR);
 				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
 				$query->execute();
 				_message('2FA activated');
@@ -650,4 +658,22 @@ function show_profile(){
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
     return ['err' => false, 'mes' => $query->fetch()];
+}
+
+function cryptAES($text, $key, $do = 'encrypt'){
+	$key = substr(hash('whirlpool', $key), 0, 32);
+	$algo = MCRYPT_RIJNDAEL_256;
+	$mode = MCRYPT_MODE_CBC;
+	$iv_size = mcrypt_get_iv_size($algo, $mode);
+	$iv = mcrypt_create_iv($iv_size, MCRYPT_DEV_URANDOM);
+	if($do == 'encrypt'){
+		$ciphertext = mcrypt_encrypt($algo, $key, $text, $mode, $iv);
+		$ciphertext = $iv . $ciphertext;
+		return base64_encode($ciphertext);
+	}else{
+		$ciphertext_dec = base64_decode($text);
+		$iv_dec = substr($ciphertext_dec, 0, $iv_size);
+		$ciphertext_dec = substr($ciphertext_dec, $iv_size);
+		return mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec);
+	}
 }
