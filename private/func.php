@@ -115,7 +115,7 @@ function login(){
 		if(empty($_POST['fa2code'])){
 			_message('Empty post 2FA', 'error');
 		}
-		$secret = trim(cryptAES($row['2fa'], $_POST['passwd'], 'decode'));
+		$secret = cryptAES($row['2fa'], $_POST['passwd'], 'decode');
 		if(strlen($secret) != 16 || !ctype_alnum($secret) || ctype_lower($secret)){
 			_message('Wrong 2FA', 'error');
 		}
@@ -393,7 +393,7 @@ function auth2FA(){
 				}
 				$check = $_POST['2fa'];
 			}else{
-				$check = trim(cryptAES($user['2fa'], $_POST['passwd'], 'decode'));
+				$check = cryptAES($user['2fa'], $_POST['passwd'], 'decode');
 			}
 			if(strlen($check) != 16 || !ctype_alnum($check) || ctype_lower($check)){
 				_message('Wrong 2FA', 'error');
@@ -475,11 +475,6 @@ function simple_http_filter(){
 			die;
 		}
 	}
-}
-
-function isJson($string) {
-	json_decode($string);
-	return (json_last_error() == JSON_ERROR_NONE);
 }
 
 function torrentInfo(){
@@ -663,7 +658,7 @@ function show_profile(){
 }
 
 function cryptAES($text, $key, $do = 'encrypt'){
-	$key = substr(hash('whirlpool', $key), 0, 32);
+	$key = hash('sha256', $key, true);
 	$algo = MCRYPT_RIJNDAEL_256;
 	$mode = MCRYPT_MODE_CBC;
 	$iv_size = mcrypt_get_iv_size($algo, $mode);
@@ -676,6 +671,6 @@ function cryptAES($text, $key, $do = 'encrypt'){
 		$ciphertext_dec = base64_decode($text);
 		$iv_dec = substr($ciphertext_dec, 0, $iv_size);
 		$ciphertext_dec = substr($ciphertext_dec, $iv_size);
-		return mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec);
+		return rtrim(mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec));
 	}
 }
