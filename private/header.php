@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="../fonts/fonts.css">
     <link rel="stylesheet" href="../css/width.css">
     <link rel="stylesheet" href="../css/cropper.css">
+    <link rel="stylesheet" href="../css/bt_modal/bootstrap.css">
     <script src="../js/jquery.min.js"></script>
     <script src="../js/jquery.bxslider.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/cropper/cropper.js"></script>
+    <script src="../js/bt_modal/bootstrap.js"></script>
 </head>
 <body>
 <div id="content_wrapper">
@@ -78,7 +80,7 @@
             </nav>
             <?php
             if($user) {
-                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar()?>" alt="avatar"/></a><?php
+                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar($user["id"])?>" alt="avatar"/></a><?php
             } else {
                 ?><a class="auth_button" href="../pages/login.php">Авторизация</a><?php
             }
@@ -92,7 +94,7 @@
         </div>
         <div id="hslider">
             <div id="slides_main_wrapper" class="slideshow">
-                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/b3e605bcf7195f3f89d2c629f04a48db.png')">
+                <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/884b3171a8f451fc8780bd0f8cd06e06.png')">
                     <a href='#'>Slider Link</a>
                 </figure>
                 <figure class="slider_main slide" style="background-image: url('https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/slider/image_smart/7c7123157d4e84147cd3ab48085640e7.png')">

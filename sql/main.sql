@@ -12,10 +12,14 @@ CREATE TABLE `session` (
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `login` varchar(20) NOT NULL,
+  `nickname` VARCHAR(20) DEFAULT NULL,
   `passwd` varchar(255) NOT NULL,
   `mail` varchar(254) NOT NULL,
   `2fa` varchar(255) DEFAULT NULL,
-  `access` int(11) NOT NULL DEFAULT 1
+  `access` int(11) NOT NULL DEFAULT 1,
+  `sex` int(1) DEFAULT 0,
+  `user_values` json DEFAULT NULL,
+  `register_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `xbt_config` (

@@ -102,7 +102,7 @@ function login(){
 		_message('Wrong login', 'error');
 	}
 	if(strlen($var['user_agent']) > 256){
-		_message('Wrong user agen', 'error');
+		_message('Wrong user agent', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
@@ -250,10 +250,12 @@ function registration(){
 		_message('Already registered', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`) VALUES (:login, :mail, :passwd)");
+	$userFields = setupUserData();
+	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `user_data`) VALUES (:login, :mail, :passwd, :userData)");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
 	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
+    $query->bindParam(':userData', $userFields, PDO::PARAM_STR);
 	$query->execute();
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('Success registration');
@@ -650,28 +652,26 @@ function upload_avatar() {
 	_message('Success');
 }
 
-function getUserAvatar() {
-	global $user;
+function getUserAvatar($userid) {
 	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-	if($user){
-		$dir = substr(md5($user["id"]), 0, 2);
-		$path = "/upload/avatars/$dir/{$user['id']}.jpg";
-		if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
-			$img = "https://".$_SERVER['SERVER_NAME'].$path;
-		}
+	$dir = substr(md5($userid), 0, 2);
+	$path = "/upload/avatars/$dir/$userid.jpg";
+	if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
+		$img = "https://".$_SERVER['SERVER_NAME'].$path;
 	}
 	return $img;
 }
 
 function show_profile(){
 	global $db, $user;
-	if($user){
-		$id = $user['id'];
-	} else {
-		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
-	}
 	if(!empty($_GET['id'])){
 		$id = $_GET['id'];
+	} else {
+		if($user) {
+			$id = $user['id'];
+		} else {
+			return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+		}
 	}
 	if(!is_numeric($id)){
 		return ['err' => true, 'mes' => 'Wrong user id'];
@@ -683,6 +683,86 @@ function show_profile(){
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
     return ['err' => false, 'mes' => $query->fetch()];
+}
+
+function getUserNick($id) {
+	global $db;
+	$query = $db->prepare("SELECT `login`, `nickname` FROM `users` WHERE `id` = :id");
+	$query->bindValue(':id', $id, PDO::PARAM_STR);
+	$query->execute();
+	$row = $query->fetch();
+	if(isset($row["nickname"])) {
+		return $row["nickname"];
+	} else {
+		return $row["login"];
+	}
+}
+
+function getGroupName($access) {
+	switch($access) {
+		case 0:
+			$groupName = "Заблокирован";
+			break;
+		case 1:
+			$groupName = "Пользователь";
+			break;
+		case 2:
+			$groupName = "Спонсор";
+			break;
+		case 3:
+			$groupName = "Либриец";
+			break;
+		case 4:
+			$groupName = "Редактор";
+			break;
+		case 5:
+			$groupName = "Админ";
+			break;
+	}
+	return $groupName;
+}
+
+function setupUserData() {
+    $userFields = array(
+        'vk' => NULL,
+        'telegram' => NULL,
+        'steamid' => NULL,
+        'age' => NULL,
+        'country' => NULL,
+        'city' => NULL
+    );
+    return json_encode($userFields);
+}
+
+function saveUser($id) {
+    global $db;
+    if($_POST['saveData']) {
+        $dataToSave = array(
+            'nickname' => $_POST['nickname'],
+            'sex' => $_POST['sex']
+        );
+        $jsonDataSave = array(
+            'vk' => $_POST['vkontakte'],
+            'telegram' => $_POST['telegram'],
+            'steamid' => $_POST['steamid'],
+            'age' => $_POST['age'],
+            'country' => $_POST['country'],
+            'city' => $_POST['city']
+        );
+        $json = json_encode($jsonDataSave);
+        $query = $db->prepare("UPDATE `users` SET `nickname` = :nickname, `user_data` = :user_data, `sex` = :sex WHERE `id` = :id");
+        $query->bindParam(':nickname', $dataToSave['nickname'], PDO::PARAM_STR);
+        $query->bindParam(':sex', $dataToSave['sex'], PDO::PARAM_STR);
+        $query->bindParam(':id', $id, PDO::PARAM_STR);
+        $query->bindParam(':user_data', $json, PDO::PARAM_STR);
+        $query->execute();
+        _message('Data saved');
+    }
+}
+
+function adminLevel() {
+    global $user;
+    return $user['access'];
 }
 
 function cryptAES($text, $key, $do = 'encrypt'){
@@ -708,21 +788,23 @@ function change_mail(){
 	if(!$user){
 		_message('Unauthorized user', 'error');
 	}
-	if(empty($_POST['mail']) || empty($_POST['passwd'])){
+	if(empty($_POST['mail']) && empty($_POST['passwd'])){
 		_message('Empty post', 'error');	
 	}
-	if(!password_verify($_POST['passwd'], $user['passwd'])){
+	if(!empty($_POST['mail']) != $user['mail'] && !password_verify($_POST['passwd'], $user['passwd'])){
 		_message('Wrong password', 'error');
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('Wrong email', 'error');
 	}
-	$_POST['mail'] = mb_strtolower($_POST['mail']);
-	$time = $var['time']+43200;
-	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_POST['mail'].$time.sha1(half_string($user['passwd'])));
-	$link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=".urlencode($_POST['mail'])."&hash=$hash";
-	_mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
-	_message('Please check your mail');
+    if(!empty($_POST['mail']) != $user['mail']) {
+        $_POST['mail'] = mb_strtolower($_POST['mail']);
+        $time = $var['time'] + 43200;
+        $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
+        $link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
+        _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
+        _message('Please check your mail');
+    }
 }
 
 function mail_link(){
