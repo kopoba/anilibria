@@ -115,11 +115,7 @@ function login(){
 		if(empty($_POST['fa2code'])){
 			_message('Empty post 2FA', 'error');
 		}
-		$secret = cryptAES($row['2fa'], $_POST['passwd'], 'decode');
-		if(strlen($secret) != 16 || !ctype_alnum($secret) || ctype_lower($secret)){
-			_message('Wrong 2FA', 'error');
-		}
-		if(oathHotp($secret, floor(microtime(true) / 30)) != $_POST['fa2code']){
+		if(oathHotp($row['2fa'], floor(microtime(true) / 30)) != $_POST['fa2code']){
 			_message('Wrong 2FA', 'error');
 		}
 	}
@@ -245,6 +241,7 @@ function registration(){
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('Wrong email', 'error');
 	}
+	$_POST['mail'] = mb_strtolower($_POST['mail']);
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
@@ -395,7 +392,7 @@ function auth2FA(){
 				}
 				$check = $_POST['2fa'];
 			}else{
-				$check = cryptAES($user['2fa'], $_POST['passwd'], 'decode');
+				$check = $user['2fa'];
 			}
 			if(strlen($check) != 16 || !ctype_alnum($check) || ctype_lower($check)){
 				_message('Wrong 2FA', 'error');
@@ -413,9 +410,8 @@ function auth2FA(){
 				$query->execute();
 				_message('2FA disabled');
 			}else{
-				$encryptCode = cryptAES($_POST['2fa'], $_POST['passwd']);
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
-				$query->bindParam(':code', $encryptCode, PDO::PARAM_STR);
+				$query->bindParam(':code', $_POST['2fa'], PDO::PARAM_STR);
 				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
 				$query->execute();
 				_message('2FA activated');
@@ -477,26 +473,6 @@ function simple_http_filter(){
 			die;
 		}
 	}
-}
-
-function torrentInfo(){
-	global $conf;
-	if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
-		_message('You can upload only torrents', 'error');	
-	}
-	$torrent = new File_Bittorrent2_Decode;
-	if(empty($_FILES['torrent'])){
-		_message('No upload file', 'error');
-	}
-	if($_FILES['torrent']['error'] != 0){
-		_message('Upload error', 'error');
-	}
-	$info = $torrent->decodeFile($_FILES['torrent']['tmp_name']);
-	if($info['announce'] != $conf['torrent_announce']){
-		_message('Wrong announce', 'error');
-	}
-	$info['pack_hash'] = pack('H*', $info['info_hash']);
-	return $info;
 }
 
 function torrentHashExist($hash){
@@ -575,13 +551,26 @@ function torrent(){
 			if(strlen($_POST['quality']) > 200 || strlen($_POST['episode']) > 200){
 				_message('Max strlen 200', 'error');
 			}
-			$info = torrentInfo($_FILES['torrent']['tmp_name']);
-			if(torrentHashExist($info['pack_hash'])){
+			if(empty($_FILES['torrent'])){
+				_message('No upload file', 'error');
+			}
+			if($_FILES['torrent']['error'] != 0){
+				_message('Upload error', 'error');
+			}
+			if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
+				_message('You can upload only torrents', 'error');	
+			}
+			$torrent = new Torrent($_FILES['torrent']['tmp_name']);
+			if(empty($torrent->hash_info())){
+				_message('Wrong torrent file', 'error');
+			}
+			$pack_hash = pack('H*', $torrent->hash_info());
+			if(torrentHashExist($pack_hash)){
 				_message('Torrent hash already exist', 'error');
 			}
 			$json = json_encode([$_POST['quality'], $_POST['episode']]);
 			if(empty($_POST['edit_torrent'])){
-				$name = torrentAdd($info['pack_hash'], $_POST['rid'], $json);
+				$name = torrentAdd($pack_hash, $_POST['rid'], $json);
 			}else{
 				if(!is_numeric($_POST['edit_torrent'])){
 					_message('edit_torrent allow only numeric', 'error');
@@ -590,13 +579,52 @@ function torrent(){
 				if(!is_array($old)){
 					_message('No old torrent', 'error');
 				}
-				$name = torrentAdd($info['pack_hash'], $_POST['rid'], $json, $old['completed']);
+				$name = torrentAdd($pack_hash, $_POST['rid'], $json, $old['completed']);
 				torrentDelete($_POST['edit_torrent']);
 			}
-			move_uploaded_file($_FILES['torrent']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
+			$torrent->announce(false);
+			$torrent->announce($conf['torrent_announce']);
+			$torrent->save($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
 			_message('Success');
 		break;
 	}
+}
+
+function downloadTorrent(){
+	global $db, $user, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_GET['id'])){
+		_message('Empty $_GET', 'error');
+	}
+	if(!is_numeric($_GET['id'])){
+		_message('Wrong id', 'error');
+	}
+	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid` = :id");
+	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() == 0){
+		_message('Wrong id', 'error');
+	}
+	$info_hash = $query->fetch()['info_hash'];	
+
+	$query = $db->prepare("SELECT * FROM `xbt_users` WHERE `torrent_pass_version` = :id");
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() == 0){
+		$query = $db->prepare("INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)");
+		$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+		$query->execute();
+		$uid = $db->lastInsertId();
+	}else{
+		$uid = $query->fetch()['uid'];
+	}
+	$key = sprintf('%08x%s', $uid, substr(sha1("{$conf['torrent_secret']} {$user['id']} $uid $info_hash"), 0, 24));
+	$torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
+	$torrent->announce(false);
+	$torrent->announce(str_replace('/announce', "/$key/announce", $conf['torrent_announce']));
+	$torrent->send();
 }
 
 function upload_avatar() {
@@ -722,4 +750,72 @@ function cryptAES($text, $key, $do = 'encrypt'){
 		$ciphertext_dec = substr($ciphertext_dec, $iv_size);
 		return rtrim(mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec));
 	}
+}
+
+function change_mail(){
+	global $user, $var, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_POST['mail']) || empty($_POST['passwd'])){
+		_message('Empty post', 'error');	
+	}
+	if(!password_verify($_POST['passwd'], $user['passwd'])){
+		_message('Wrong password', 'error');
+	}
+	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
+		_message('Wrong email', 'error');
+	}
+	$_POST['mail'] = mb_strtolower($_POST['mail']);
+	$time = $var['time']+43200;
+	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_POST['mail'].$time.sha1(half_string($user['passwd'])));
+	$link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=".urlencode($_POST['mail'])."&hash=$hash";
+	_mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
+	_message('Please check your mail');
+}
+
+function mail_link(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_GET['time']) || empty($_GET['mail']) || empty($_GET['hash'])){
+		_message('Empty $_GET', 'error');
+	}
+	if($var['time'] > $_GET['time']){
+		_message('Too late $_GET', 'error');	
+	}
+	$_GET['mail'] = urldecode($_GET['mail']);
+	if(!filter_var($_GET['mail'], FILTER_VALIDATE_EMAIL)){
+		_message('Wrong email', 'error');
+	}
+	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_GET['mail'].$_GET['time'].sha1(half_string($user['passwd'])));
+	if($hash != $_GET['hash']){
+		_message('Wrong hash', 'error');
+	}
+	$query = $db->prepare("UPDATE `users` SET `mail` = :mail WHERE `id` = :id");
+	$query->bindParam(':mail', $_GET['mail'], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	_message('Success');
+}
+
+function change_passwd(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_POST['passwd'])){
+		_message('Empty post', 'error');
+	}
+	if(!password_verify($_POST['passwd'], $user['passwd'])){
+		_message('Wrong password', 'error');
+	}
+	$passwd = createPasswd();
+	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
+	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
+	_message('Please check your mail');
 }

@@ -16,6 +16,11 @@
 - Дизайн верстка страницы check bot
 - Блокировка IP
 
+- Активные сессии (просмотр, удалить)
+- Удалить аватар
+- Список авторизаций (удачные/ неудачные) 
+
+
 
 == DONE ==
 Регистрация
@@ -26,3 +31,5 @@ Proof of Work Captcha (https://coinhive.com/info/captcha-help)
 Simple http flood filter
 recaptcha (https://developers.google.com/recaptcha/docs/v3)
 Торрент трекер
+Изменить пароль
+Изменить email
