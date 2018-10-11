@@ -791,20 +791,18 @@ function change_mail(){
 	if(empty($_POST['mail']) && empty($_POST['passwd'])){
 		_message('Empty post', 'error');	
 	}
-	if(!empty($_POST['mail']) != $user['mail'] && !password_verify($_POST['passwd'], $user['passwd'])){
+	if(!password_verify($_POST['passwd'], $user['passwd'])){
 		_message('Wrong password', 'error');
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('Wrong email', 'error');
 	}
-    if(!empty($_POST['mail']) != $user['mail']) {
-        $_POST['mail'] = mb_strtolower($_POST['mail']);
-        $time = $var['time'] + 43200;
-        $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
-        $link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
-        _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
-        _message('Please check your mail');
-    }
+    $_POST['mail'] = mb_strtolower($_POST['mail']);
+    $time = $var['time'] + 43200;
+    $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
+    $link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
+    _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
+    _message('Please check your mail');
 }
 
 function mail_link(){
