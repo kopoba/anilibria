@@ -450,6 +450,49 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   }
 }
 
+.input_wrapper {
+  width: 240px;
+  position: relative;
+  .floating_label {
+    position: absolute;
+    top: 25%;
+    left: 10px;
+    transition: all 200ms;
+    opacity: 0.5;
+    color: #848484;
+  }
+  input:not([type="submit"]) {
+    position: relative;
+    width: 200px;
+    height: 20px;
+    padding: 10px 20px;
+    margin: 5px 0;
+    background-color: #fff;
+    color: #848484;
+    border: 1px solid #3c3c3c;
+    font-size: 14px;
+    line-height: 14px;
+  }
+}
+input[type="submit"] {
+  display: block;
+  width: 240px;
+  height: 40px;
+  margin: 5px 0;
+  padding: 10px 20px;
+  font-size: 17px;
+  line-height: 17px;
+  background-color: #f36767;
+  cursor: pointer;
+  color: #fff;
+  &:hover {
+    background-color: #ce5351;
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
 #user_log_reg_rec {
   text-align: center;
   h1, h2 {
@@ -469,48 +512,15 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
   .input_wrapper {
     width: 240px;
     margin: 0 auto;
-    position: relative;
-    .floating_label {
-      position: absolute;
-      top: 25%;
-      left: 10px;
-      transition: all 200ms;
-      opacity: 0.5;
-      color: #848484;
-    }
     input:not([type="submit"]) {
-      position: relative;
       width: 200px;
       height: 20px;
-      //border-radius: 10px;
-      padding: 10px 20px;
-      margin: 5px 0;
-      background-color: #fff;
-      color: #848484;
-      border: 1px solid #3c3c3c;
-      font-size: 14px;
-      line-height: 14px;
     }
   }
   input[type="submit"] {
-    display: block;
     width: 240px;
     height: 40px;
-    //border-radius: 10px;
     margin: 5px auto;
-    padding: 10px 20px;
-    font-size: 17px;
-    line-height: 17px;
-    background-color: #f36767;
-    cursor: pointer;
-    color: #fff;
-    &:hover {
-      background-color: #ce5351;
-    }
-    &:active {
-      transform: translateY(1px);
-    }
-
   }
   .a_button {
     margin: 0 5px;

@@ -102,7 +102,7 @@ function login(){
 		_message('Wrong login', 'error');
 	}
 	if(strlen($var['user_agent']) > 256){
-		_message('Wrong user agen', 'error');
+		_message('Wrong user agent', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
@@ -734,6 +734,37 @@ function setupUserData() {
     return json_encode($userFields);
 }
 
+function saveUser($id) {
+    global $db;
+    if($_POST['saveData']) {
+        $dataToSave = array(
+            'nickname' => $_POST['nickname'],
+            'sex' => $_POST['sex']
+        );
+        $jsonDataSave = array(
+            'vk' => $_POST['vkontakte'],
+            'telegram' => $_POST['telegram'],
+            'steamid' => $_POST['steamid'],
+            'age' => $_POST['age'],
+            'country' => $_POST['country'],
+            'city' => $_POST['city']
+        );
+        $json = json_encode($jsonDataSave);
+        $query = $db->prepare("UPDATE `users` SET `nickname` = :nickname, `user_data` = :user_data, `sex` = :sex WHERE `id` = :id");
+        $query->bindParam(':nickname', $dataToSave['nickname'], PDO::PARAM_STR);
+        $query->bindParam(':sex', $dataToSave['sex'], PDO::PARAM_STR);
+        $query->bindParam(':id', $id, PDO::PARAM_STR);
+        $query->bindParam(':user_data', $json, PDO::PARAM_STR);
+        $query->execute();
+        _message('Data saved');
+    }
+}
+
+function adminLevel() {
+    global $user;
+    return $user['access'];
+}
+
 function cryptAES($text, $key, $do = 'encrypt'){
 	$key = hash('sha256', $key, true);
 	$algo = MCRYPT_RIJNDAEL_256;
@@ -757,21 +788,23 @@ function change_mail(){
 	if(!$user){
 		_message('Unauthorized user', 'error');
 	}
-	if(empty($_POST['mail']) || empty($_POST['passwd'])){
+	if(empty($_POST['mail']) && empty($_POST['passwd'])){
 		_message('Empty post', 'error');	
 	}
-	if(!password_verify($_POST['passwd'], $user['passwd'])){
+	if(!empty($_POST['mail']) != $user['mail'] && !password_verify($_POST['passwd'], $user['passwd'])){
 		_message('Wrong password', 'error');
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('Wrong email', 'error');
 	}
-	$_POST['mail'] = mb_strtolower($_POST['mail']);
-	$time = $var['time']+43200;
-	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_POST['mail'].$time.sha1(half_string($user['passwd'])));
-	$link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=".urlencode($_POST['mail'])."&hash=$hash";
-	_mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
-	_message('Please check your mail');
+    if(!empty($_POST['mail']) != $user['mail']) {
+        $_POST['mail'] = mb_strtolower($_POST['mail']);
+        $time = $var['time'] + 43200;
+        $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
+        $link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
+        _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
+        _message('Please check your mail');
+    }
 }
 
 function mail_link(){
