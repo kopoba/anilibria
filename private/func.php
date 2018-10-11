@@ -115,11 +115,7 @@ function login(){
 		if(empty($_POST['fa2code'])){
 			_message('Empty post 2FA', 'error');
 		}
-		$secret = cryptAES($row['2fa'], $_POST['passwd'], 'decode');
-		if(strlen($secret) != 16 || !ctype_alnum($secret) || ctype_lower($secret)){
-			_message('Wrong 2FA', 'error');
-		}
-		if(oathHotp($secret, floor(microtime(true) / 30)) != $_POST['fa2code']){
+		if(oathHotp($row['2fa'], floor(microtime(true) / 30)) != $_POST['fa2code']){
 			_message('Wrong 2FA', 'error');
 		}
 	}
@@ -394,7 +390,7 @@ function auth2FA(){
 				}
 				$check = $_POST['2fa'];
 			}else{
-				$check = cryptAES($user['2fa'], $_POST['passwd'], 'decode');
+				$check = $user['2fa'];
 			}
 			if(strlen($check) != 16 || !ctype_alnum($check) || ctype_lower($check)){
 				_message('Wrong 2FA', 'error');
@@ -412,9 +408,8 @@ function auth2FA(){
 				$query->execute();
 				_message('2FA disabled');
 			}else{
-				$encryptCode = cryptAES($_POST['2fa'], $_POST['passwd']);
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
-				$query->bindParam(':code', $encryptCode, PDO::PARAM_STR);
+				$query->bindParam(':code', $_POST['2fa'], PDO::PARAM_STR);
 				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
 				$query->execute();
 				_message('2FA activated');
@@ -722,4 +717,24 @@ function mail_link(){
 	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
 	$query->execute();
 	_message('Success');
+}
+
+function change_passwd(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_POST['passwd'])){
+		_message('Empty post', 'error');
+	}
+	if(!password_verify($_POST['passwd'], $user['passwd'])){
+		_message('Wrong password', 'error');
+	}
+	$passwd = createPasswd();
+	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
+	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
+	_message('Please check your mail');
 }
