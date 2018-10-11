@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="../fonts/fonts.css">
     <link rel="stylesheet" href="../css/width.css">
     <link rel="stylesheet" href="../css/cropper.css">
+    <link rel="stylesheet" href="../css/bt_modal/bootstrap.css">
     <script src="../js/jquery.min.js"></script>
     <script src="../js/jquery.bxslider.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/cropper/cropper.js"></script>
+    <script src="../js/bt_modal/bootstrap.js"></script>
 </head>
 <body>
 <div id="content_wrapper">

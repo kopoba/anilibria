@@ -253,10 +253,12 @@ function registration(){
 		_message('Already registered', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`) VALUES (:login, :mail, :passwd)");
+	$userFields = setupUserData();
+	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `user_data`) VALUES (:login, :mail, :passwd, :userData)");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
 	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
+    $query->bindParam(':userData', $userFields, PDO::PARAM_STR);
 	$query->execute();
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('Success registration');
@@ -690,6 +692,18 @@ function getGroupName($access) {
 			break;
 	}
 	return $groupName;
+}
+
+function setupUserData() {
+    $userFields = array(
+        'vk' => NULL,
+        'telegram' => NULL,
+        'steamid' => NULL,
+        'age' => NULL,
+        'country' => NULL,
+        'city' => NULL
+    );
+    return json_encode($userFields);
 }
 
 function cryptAES($text, $key, $do = 'encrypt'){

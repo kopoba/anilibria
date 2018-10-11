@@ -15,14 +15,6 @@
     4. Настройки (приватность)
     5. Привязка аккаунтов Патреон/ВК
 
-
-    Заливка аватарки:
-    Славливаем POST['upload'] по нажатию кнопки и запускаем функцию cropandupload
-    из файла image_upload.
-
-    Нужно пофиксить баг -> при выборе аватарки в профиле, появляется предпросмотр + crop
-    Кропу выставляются координаты $(image).imgAreaSelect
-
 */
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
@@ -41,17 +33,33 @@ if($profile['err']){
     echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
 }else{
 	$userAvatar = getUserAvatar($profile['mes']['id']);
+    $userData = json_decode($profile['mes']['user_data']);
     echo "<p>
 			<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
-			<b>Login:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
-			<b>Nickname:</b><span>&nbsp;".getUserNick($profile['mes']['id'])."</span><br/>
+			<b>Логин:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
+			<b>Никнэйм:</b><span>&nbsp;".getUserNick($profile['mes']['id'])."</span><br/>
 			<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
-			<b>Access level:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span>
+			<b>Доступ:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span><br/>
+			<b>Вконтакте:</b><span>$userData->vk</span><br/>
+			<b>Телеграм:</b><span>$userData->telegram</span><br/>
+			<b>SteamID:</b><span>$userData->steamid</span><br/>
+			<b>Возраст:</b><span>$userData->age</span><br/>
+			<b>Страна:</b><span>$userData->country</span><br/>
+			<b>Город:</b><span>$userData->city</span><br/>
+			<b>Пол:</b><span>&nbsp;{$profile['mes']['sex']}</span><br/>
+			<b>Дата регистрации:</b><span>&nbsp;{$profile['mes']['register_date']}</span><br/>
 		</p>";
+    echo "JSON Encoded Data:&nbsp;{$profile['mes']['user_data']}<br/>";
 }
+
+if(isset($_GET['id'])) {
+    if($_GET['id'] == $profile['mes']['id'] || $profile['mes']['access'] == 5) {
+        echo "hello its me";
+    }
+}
+
+
 ?>
-<link rel="stylesheet" href="../css/bt_modal/bootstrap.min.css">
-<script src="../js/bt_modal/bootstrap.min.js"></script>
 <style>
     .label {
         cursor: pointer;
@@ -139,7 +147,11 @@ if($profile['err']){
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
                 aspectRatio: 1,
-                viewMode: 2,
+                viewMode: 1,
+                scalable: false,
+                zoomable: false,
+                imageSmoothingEnabled: false,
+                imageSmoothingQuality: 'high',
             });
         }).on('hidden.bs.modal', function () {
             cropper.destroy();
@@ -190,7 +202,7 @@ if($profile['err']){
 							}
                         },
                     });
-                }, "image/jpeg");
+                }, "image/jpeg", 0.95);
             }
         });
     });
