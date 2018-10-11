@@ -473,26 +473,6 @@ function simple_http_filter(){
 	}
 }
 
-function torrentInfo(){
-	global $conf;
-	if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
-		_message('You can upload only torrents', 'error');	
-	}
-	$torrent = new File_Bittorrent2_Decode;
-	if(empty($_FILES['torrent'])){
-		_message('No upload file', 'error');
-	}
-	if($_FILES['torrent']['error'] != 0){
-		_message('Upload error', 'error');
-	}
-	$info = $torrent->decodeFile($_FILES['torrent']['tmp_name']);
-	if($info['announce'] != $conf['torrent_announce']){
-		_message('Wrong announce', 'error');
-	}
-	$info['pack_hash'] = pack('H*', $info['info_hash']);
-	return $info;
-}
-
 function torrentHashExist($hash){
 	global $db;
 	$query = $db->prepare("SELECT * FROM xbt_files WHERE `info_hash` = :hash");
@@ -569,13 +549,29 @@ function torrent(){
 			if(strlen($_POST['quality']) > 200 || strlen($_POST['episode']) > 200){
 				_message('Max strlen 200', 'error');
 			}
-			$info = torrentInfo($_FILES['torrent']['tmp_name']);
-			if(torrentHashExist($info['pack_hash'])){
+			if(empty($_FILES['torrent'])){
+				_message('No upload file', 'error');
+			}
+			if($_FILES['torrent']['error'] != 0){
+				_message('Upload error', 'error');
+			}
+			if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
+				_message('You can upload only torrents', 'error');	
+			}
+			$torrent = new Torrent($_FILES['torrent']['tmp_name']);
+			if(!$torrent->{'0'}){
+				_message('Wrong torrent file', 'error');
+			}
+			if($torrent->announce() != $conf['torrent_announce']){
+				_message('Wrong announce', 'error');
+			}
+			$pack_hash = pack('H*', $torrent->hash_info());
+			if(torrentHashExist($pack_hash)){
 				_message('Torrent hash already exist', 'error');
 			}
 			$json = json_encode([$_POST['quality'], $_POST['episode']]);
 			if(empty($_POST['edit_torrent'])){
-				$name = torrentAdd($info['pack_hash'], $_POST['rid'], $json);
+				$name = torrentAdd($pack_hash, $_POST['rid'], $json);
 			}else{
 				if(!is_numeric($_POST['edit_torrent'])){
 					_message('edit_torrent allow only numeric', 'error');
@@ -584,7 +580,7 @@ function torrent(){
 				if(!is_array($old)){
 					_message('No old torrent', 'error');
 				}
-				$name = torrentAdd($info['pack_hash'], $_POST['rid'], $json, $old['completed']);
+				$name = torrentAdd($pack_hash, $_POST['rid'], $json, $old['completed']);
 				torrentDelete($_POST['edit_torrent']);
 			}
 			move_uploaded_file($_FILES['torrent']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
