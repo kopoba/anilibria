@@ -245,6 +245,7 @@ function registration(){
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('Wrong email', 'error');
 	}
+	$_POST['mail'] = mb_strtolower($_POST['mail']);
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
@@ -673,4 +674,52 @@ function cryptAES($text, $key, $do = 'encrypt'){
 		$ciphertext_dec = substr($ciphertext_dec, $iv_size);
 		return rtrim(mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec));
 	}
+}
+
+function change_mail(){
+	global $user, $var, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_POST['mail']) || empty($_POST['passwd'])){
+		_message('Empty post', 'error');	
+	}
+	if(!password_verify($_POST['passwd'], $user['passwd'])){
+		_message('Wrong password', 'error');
+	}
+	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
+		_message('Wrong email', 'error');
+	}
+	$_POST['mail'] = mb_strtolower($_POST['mail']);
+	$time = $var['time']+43200;
+	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_POST['mail'].$time.sha1(half_string($user['passwd'])));
+	$link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=".urlencode($_POST['mail'])."&hash=$hash";
+	_mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
+	_message('Please check your mail');
+}
+
+function mail_link(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_GET['time']) || empty($_GET['mail']) || empty($_GET['hash'])){
+		_message('Empty $_GET', 'error');
+	}
+	if($var['time'] > $_GET['time']){
+		_message('Too late $_GET', 'error');	
+	}
+	$_GET['mail'] = urldecode($_GET['mail']);
+	if(!filter_var($_GET['mail'], FILTER_VALIDATE_EMAIL)){
+		_message('Wrong email', 'error');
+	}
+	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_GET['mail'].$_GET['time'].sha1(half_string($user['passwd'])));
+	if($hash != $_GET['hash']){
+		_message('Wrong hash', 'error');
+	}
+	$query = $db->prepare("UPDATE `users` SET `mail` = :mail WHERE `id` = :id");
+	$query->bindParam(':mail', $_GET['mail'], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	_message('Success');
 }
