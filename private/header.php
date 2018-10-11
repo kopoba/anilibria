@@ -78,7 +78,7 @@
             </nav>
             <?php
             if($user) {
-                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar($user["login"], $user["id"])?>" alt="avatar"/></a><?php
+                ?><a href="#" id="user_avatar"><img src="<?php echo getUserAvatar($user["id"])?>" alt="avatar"/></a><?php
             } else {
                 ?><a class="auth_button" href="../pages/login.php">Авторизация</a><?php
             }

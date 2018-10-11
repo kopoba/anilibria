@@ -614,7 +614,7 @@ function upload_avatar() {
 	if($_FILES['avatar']['size'] > 150000){
 		_message('Max size', 'error');
 	}
-	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['login']), 0, 2);
+	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
 	if(!file_exists($dir)) {
 		mkdir($dir, 0755, true);
 	}
@@ -622,10 +622,10 @@ function upload_avatar() {
 	_message('Success');
 }
 
-function getUserAvatar($login, $userid) {
+function getUserAvatar($userid) {
 	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-	$dir = substr(md5($login), 0, 2);
-	$path = "/upload/avatars/".$dir."/".$userid.".jpg";
+	$dir = substr(md5($userid), 0, 2);
+	$path = "/upload/avatars/$dir/$userid.jpg";
 	if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
 		$img = "https://".$_SERVER['SERVER_NAME'].$path;
 	}
@@ -653,6 +653,19 @@ function show_profile(){
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
     return ['err' => false, 'mes' => $query->fetch()];
+}
+
+function getUserNick($id) {
+	global $db;
+	$query = $db->prepare("SELECT `login`, `nickname` FROM `users` WHERE `id` = :id");
+	$query->bindValue(':id', $id, PDO::PARAM_STR);
+	$query->execute();
+	$row = $query->fetch();
+	if(isset($row["nickname"])) {
+		return $row["nickname"];
+	} else {
+		return $row["login"];
+	}
 }
 
 function getGroupName($access) {

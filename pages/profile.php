@@ -40,11 +40,11 @@ $profile = show_profile();
 if($profile['err']){
     echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
 }else{
-	echo "asd ".$profile['mes']['login'];
-	$userAvatar = getUserAvatar($profile['mes']['login'], $profile['mes']['id']);
+	$userAvatar = getUserAvatar($profile['mes']['id']);
     echo "<p>
 			<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
 			<b>Login:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
+			<b>Nickname:</b><span>&nbsp;".getUserNick($profile['mes']['id'])."</span><br/>
 			<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
 			<b>Access level:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span>
 		</p>";
@@ -66,6 +66,10 @@ if($profile['err']){
     .img-container img {
         max-width: 100%;
     }
+	#avatar {
+		width: 200px;
+		height: 200px;
+	}
 </style>
 <h1>Upload cropped image to server</h1>
 <label class="label" data-toggle="tooltip" title="Change your avatar">
