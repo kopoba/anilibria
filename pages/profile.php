@@ -9,7 +9,7 @@
     Пользователь найден => Записываем нужные нам данные в массив $userInfo и выводим на странице
 
     В дальнейшем:
-    1. Изменение данных 50% / 100%
+    1. Изменение данных 90% / 100%
     2. Привязка 2FA
     3. Оформление страницы
     4. Настройки (приватность)
@@ -29,8 +29,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $profile = show_profile();
 if(isset($_POST['saveData'])) {
-    if(!empty($_POST['mail'])) change_mail();
-    if(!empty($_POST['passwd'])) change_passwd();
+    if(!empty($_POST['mail']) != $profile['mes']['mail']) change_mail();
+    if(!password_verify($_POST['passwd'], $profile['mes']['passwd'])) change_passwd(); //При условии, что мы дадим юзеру вписать свой пароль новый
     saveUser($profile['mes']['id']);
 }
 $profileError = json_decode($profile['err']);
