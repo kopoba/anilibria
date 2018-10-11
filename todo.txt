@@ -16,11 +16,9 @@
 - Дизайн верстка страницы check bot
 - Блокировка IP
 
-- Изменить email
 - Активные сессии (просмотр, удалить)
 - Удалить аватар
-- Список авторизаций (удачные/ неудачные)
-- Изменить пароль
+- Список авторизаций (удачные/ неудачные) 
 
 
 
@@ -33,3 +31,5 @@ Proof of Work Captcha (https://coinhive.com/info/captcha-help)
 Simple http flood filter
 recaptcha (https://developers.google.com/recaptcha/docs/v3)
 Торрент трекер
+Изменить пароль
+Изменить email
