@@ -29,47 +29,49 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $profile = show_profile();
 if(isset($_POST['saveData'])) {
-    if(!empty($_POST['mail']) != $profile['mes']['mail']) change_mail();
+    if(!empty($_POST['mail'])) $mailResult = change_mail();
     if(!password_verify($_POST['passwd'], $profile['mes']['passwd'])) change_passwd(); //При условии, что мы дадим юзеру вписать свой пароль новый
     saveUser($profile['mes']['id']);
 }
-$profileError = json_decode($profile['err']);
-echo $profileError."<<<<";
-if($profileError){
+
+if($profile['err']) {
     echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
-}else{
-	$userAvatar = getUserAvatar($profile['mes']['id']);
-    $userData = json_decode($profile['mes']['user_data']);
-    switch ($profile['mes']['sex']) {
-        case 0:
-            $sex = "Не указано";
-            break;
-        case 1:
-            $sex = "Мужчина";
-            break;
-        case 2:
-            $sex = "Женщина";
-            break;
-    }
-    echo "<p>
-			<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
-			<b>Логин:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
-			<b>Ник:</b><span>&nbsp;".getUserNick($profile['mes']['id'])."</span><br/>
-			<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
-			<b>Доступ:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span><br/>
-			<b>Вконтакте:</b><span>&nbsp;$userData->vk</span><br/>
-			<b>Телеграм:</b><span>&nbsp;$userData->telegram</span><br/>
-			<b>SteamID:</b><span>&nbsp;$userData->steamid</span><br/>
-			<b>Возраст:</b><span>&nbsp;$userData->age</span><br/>
-			<b>Страна:</b><span>&nbsp;$userData->country</span><br/>
-			<b>Город:</b><span>&nbsp;$userData->city</span><br/>
-			<b>Пол:</b><span>&nbsp;$sex</span><br/>
-			<b>Дата регистрации:</b><span>&nbsp;{$profile['mes']['register_date']}</span><br/>
-		</p>";
+}
+if(!empty($mailResult['err']) != "ok") {
+	echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$mailResult['mes']}</div>";
 }
 
+$userAvatar = getUserAvatar($profile['mes']['id']);
+$userData = json_decode($profile['mes']['user_data']);
+switch ($profile['mes']['sex']) {
+	case 0:
+		$sex = "Не указано";
+		break;
+	case 1:
+		$sex = "Мужчина";
+		break;
+	case 2:
+		$sex = "Женщина";
+		break;
+}
+echo "<p>
+		<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
+		<b>Логин:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
+		<b>Ник:</b><span>&nbsp;".getUserNick($profile['mes']['id'])."</span><br/>
+		<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
+		<b>Доступ:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span><br/>
+		<b>Вконтакте:</b><span>&nbsp;$userData->vk</span><br/>
+		<b>Телеграм:</b><span>&nbsp;$userData->telegram</span><br/>
+		<b>SteamID:</b><span>&nbsp;$userData->steamid</span><br/>
+		<b>Возраст:</b><span>&nbsp;$userData->age</span><br/>
+		<b>Страна:</b><span>&nbsp;$userData->country</span><br/>
+		<b>Город:</b><span>&nbsp;$userData->city</span><br/>
+		<b>Пол:</b><span>&nbsp;$sex</span><br/>
+		<b>Дата регистрации:</b><span>&nbsp;{$profile['mes']['register_date']}</span><br/>
+	</p>";
+
 if(!empty($_GET['id'])) {
-    if($_GET['id'] == $profile['mes']['id'] || adminLevel() == 5) {?>
+    if($_GET['id'] == $user['id'] || $user['access'] == 5) {?>
         <p><br/><b>Редактирование провиля:</b></p>
         <form method="post" enctype="multipart/form-data">
             <div class="input_wrapper">
@@ -129,7 +131,7 @@ if(!empty($_GET['id'])) {
     <?php }
 }
 
-if(adminLevel() == 5) {
+if($user['access'] == 5) {
 
     echo "Debug info:<br/>";
     echo "<pre>";

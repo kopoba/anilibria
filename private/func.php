@@ -218,7 +218,7 @@ function password_recovery(){
 	$row = $query->fetch();
 	$time = $var['time']+43200;
 	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string($row['passwd'])));
-	$link = "https://test.anilibria.tv/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
+	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('Please check your mail');
 }
@@ -760,11 +760,6 @@ function saveUser($id) {
     }
 }
 
-function adminLevel() {
-    global $user;
-    return $user['access'];
-}
-
 function cryptAES($text, $key, $do = 'encrypt'){
 	$key = hash('sha256', $key, true);
 	$algo = MCRYPT_RIJNDAEL_256;
@@ -788,7 +783,7 @@ function change_mail(){
 	if(!$user){
 		_message('Unauthorized user', 'error');
 	}
-	if(empty($_POST['mail']) && empty($_POST['passwd'])){
+	if(empty($_POST['mail']) || empty($_POST['passwd'])){
 		_message('Empty post', 'error');	
 	}
 	if(!password_verify($_POST['passwd'], $user['passwd'])){
@@ -800,7 +795,7 @@ function change_mail(){
     $_POST['mail'] = mb_strtolower($_POST['mail']);
     $time = $var['time'] + 43200;
     $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
-    $link = "https://test.anilibria.tv/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
+    $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
     _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
     _message('Please check your mail');
 }
@@ -833,6 +828,9 @@ function mail_link(){
 
 function change_passwd(){
 	global $db, $user, $var, $conf;
+	if(!empty($_POST['mail']) != $profile['mes']['mail']){
+		die();
+	}
 	if(!$user){
 		_message('Unauthorized user', 'error');
 	}
