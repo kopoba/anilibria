@@ -18,7 +18,7 @@ CREATE TABLE `users` (
   `2fa` varchar(255) DEFAULT NULL,
   `access` int(11) NOT NULL DEFAULT 1,
   `sex` int(1) DEFAULT 0,
-  `user_values` json DEFAULT NULL,
+  `user_values` varchar(1024) DEFAULT NULL,
   `register_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
