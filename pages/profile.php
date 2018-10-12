@@ -29,7 +29,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $profile = show_profile();
 if(isset($_POST['saveData'])) {
-    if(!empty($_POST['mail'])) $mailResult = change_mail();
+    if(!empty($_POST['mail']) != $profile['mes']['mail']) $mailResult = change_mail();
     if(!password_verify($_POST['passwd'], $profile['mes']['passwd'])) change_passwd(); //При условии, что мы дадим юзеру вписать свой пароль новый
     saveUser($profile['mes']['id']);
 }
@@ -37,7 +37,7 @@ if(isset($_POST['saveData'])) {
 if($profile['err']) {
     echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
 }
-if(!empty($mailResult['err']) != "ok") {
+if(!isset($mailResult['err']) != "ok") {
 	echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$mailResult['mes']}</div>";
 }
 
