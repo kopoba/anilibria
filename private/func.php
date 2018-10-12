@@ -828,9 +828,6 @@ function mail_link(){
 
 function change_passwd(){
 	global $db, $user, $var, $conf;
-	if(!empty($_POST['mail']) != $profile['mes']['mail']){
-		die();
-	}
 	if(!$user){
 		_message('Unauthorized user', 'error');
 	}
