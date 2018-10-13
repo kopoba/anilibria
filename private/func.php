@@ -762,19 +762,23 @@ function saveUser($id) {
 
 function cryptAES($text, $key, $do = 'encrypt'){
 	$key = hash('sha256', $key, true);
-	$algo = MCRYPT_RIJNDAEL_256;
-	$mode = MCRYPT_MODE_CBC;
-	$iv_size = mcrypt_get_iv_size($algo, $mode);
-	$iv = mcrypt_create_iv($iv_size, MCRYPT_DEV_URANDOM);
+	$iv_size = openssl_cipher_iv_length($cipher = 'AES-256-CBC');
+	$iv = random_bytes($iv_size);
 	if($do == 'encrypt'){
-		$ciphertext = mcrypt_encrypt($algo, $key, $text, $mode, $iv);
-		$ciphertext = $iv . $ciphertext;
-		return base64_encode($ciphertext);
+		$ciphertext_raw = openssl_encrypt($text, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+		$hmac = hash_hmac('sha512', $ciphertext_raw, $key, true);		
+		$ciphertext = base64_encode($iv.$hmac.$ciphertext_raw);
+		return $ciphertext;
 	}else{
-		$ciphertext_dec = base64_decode($text);
-		$iv_dec = substr($ciphertext_dec, 0, $iv_size);
-		$ciphertext_dec = substr($ciphertext_dec, $iv_size);
-		return rtrim(mcrypt_decrypt($algo, $key, $ciphertext_dec, $mode, $iv_dec));
+		$c = base64_decode($text);
+		$iv_dec = substr($c, 0, $iv_size);
+		$hmac = substr($c, $iv_size, $sha2len=64);
+		$ciphertext_raw = substr($c, $iv_size+$sha2len);
+		$original = openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv_dec);
+		$calcmac = hash_hmac('sha512', $ciphertext_raw, $key, true);
+		if(hash_equals($hmac, $calcmac)){
+			return $original;
+		}
 	}
 }
 
