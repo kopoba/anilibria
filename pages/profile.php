@@ -25,123 +25,28 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
+if(!$user){
+	header('Location: /');
+	die;
+}
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
-$profile = show_profile();
-if(isset($_POST['saveData'])) {
-    if(!empty($_POST['mail']) != $profile['mes']['mail']) $mailResult = change_mail();
-    if(!password_verify($_POST['passwd'], $profile['mes']['passwd'])) change_passwd(); //При условии, что мы дадим юзеру вписать свой пароль новый
-    saveUser($profile['mes']['id']);
+echo "<p>";
+echo "<b>ID:</b><span>&nbsp;{$user['id']}</span><br/>";
+echo "<b>Email:</b><span>&nbsp;{$user['mail']}</span><br/>";
+echo "<b>Логин:</b><span>&nbsp;{$user['login']}</span><br/>";
+echo "<b>Nickname:</b><span>&nbsp{$user['nickname']}</span><br/>";
+echo "<b>Доступ:</b><span>&nbsp;{$var['group'][$user['access']]}</span><br/>";
+if(!empty($user['user_values']) && is_array($user['user_values'])){
+	foreach($user['user_values'] as $v => $k){
+		echo "<b>{$var['user_values'][$v]}</b><span>&nbsp;$k</span><br/>";
+	}
 }
+echo "<b>Пол:</b><span>&nbsp;{$var['sex'][$user['sex']]}</span><br/>";
+echo "<b>Дата регистрации:</b><span>&nbsp;{$user['register_date']}</span><br/>";
+echo "</p>";
 
-if($profile['err']) {
-    echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$profile['mes']}</div>";
-}
-if(!isset($mailResult['err']) != "ok") {
-	echo "<div id=\"error\" style=\"display: block; text-align: center;\">{$mailResult['mes']}</div>";
-}
-
-$userAvatar = getUserAvatar($profile['mes']['id']);
-$userData = json_decode($profile['mes']['user_data']);
-switch ($profile['mes']['sex']) {
-	case 0:
-		$sex = "Не указано";
-		break;
-	case 1:
-		$sex = "Мужчина";
-		break;
-	case 2:
-		$sex = "Женщина";
-		break;
-}
-echo "<p>
-		<b>ID:</b><span>&nbsp;{$profile['mes']['id']}</span><br/>
-		<b>Логин:</b><span>&nbsp;{$profile['mes']['login']}</span><br/>
-		<b>Ник:</b><span>&nbsp;".getUserNick($profile['mes']['id'])."</span><br/>
-		<b>Email:</b><span>&nbsp;{$profile['mes']['mail']}</span><br/>
-		<b>Доступ:</b><span>&nbsp;". getGroupName($profile['mes']['access'])."</span><br/>
-		<b>Вконтакте:</b><span>&nbsp;$userData->vk</span><br/>
-		<b>Телеграм:</b><span>&nbsp;$userData->telegram</span><br/>
-		<b>SteamID:</b><span>&nbsp;$userData->steamid</span><br/>
-		<b>Возраст:</b><span>&nbsp;$userData->age</span><br/>
-		<b>Страна:</b><span>&nbsp;$userData->country</span><br/>
-		<b>Город:</b><span>&nbsp;$userData->city</span><br/>
-		<b>Пол:</b><span>&nbsp;$sex</span><br/>
-		<b>Дата регистрации:</b><span>&nbsp;{$profile['mes']['register_date']}</span><br/>
-	</p>";
-
-if(!empty($_GET['id'])) {
-    if($_GET['id'] == $user['id'] || $user['access'] == 5) {?>
-        <p><br/><b>Редактирование провиля:</b></p>
-        <form method="post" enctype="multipart/form-data">
-            <div class="input_wrapper">
-                <input id="email" class="styled_input" type="email" name="mail" value="<?php echo $profile['mes']['mail']?>" />
-                <label for="email" class="floating_label">Email</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="nickname" class="styled_input" type="text" name="nickname" value="<?php echo $profile['mes']['nickname']?>" />
-                <label for="nickname" class="floating_label">Ник</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="password_old" class="styled_input" name="passwd" type="password" />
-                <label for="password_old" class="floating_label">Старый пароль</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="password_new" class="styled_input" type="password" />
-                <label for="password_new" class="floating_label">Новый пароль</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="password_new2" class="styled_input" type="password" />
-                <label for="password_new2" class="floating_label">Повторите пароль</label>
-            </div>
-            <!-- user json fields -->
-            <div class="input_wrapper">
-                <input id="vkontakte" class="styled_input" type="url" name="vkontakte" value="<?php echo $userData->vk?>" />
-                <label for="vkontakte" class="floating_label">Вконтакте</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="steamid" class="styled_input" type="url" name="steamid" value="<?php echo $userData->steamid?>" />
-                <label for="steamid" class="floating_label">SteamID</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="telegram" class="styled_input" type="url" name="telegram" value="<?php echo $userData->telegram?>" />
-                <label for="telegram" class="floating_label">Телеграм</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="age" class="styled_input" type="number" name="age" value="<?php echo $userData->age?>" />
-                <label for="age" class="floating_label">Возраст</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="country" class="styled_input" type="text" name="country" value="<?php echo $userData->country?>" />
-                <label for="country" class="floating_label">Страна</label>
-            </div>
-            <div class="input_wrapper">
-                <input id="city" class="styled_input" type="text" name="city" value="<?php echo $userData->city?>" />
-                <label for="city" class="floating_label">Город</label>
-            </div>
-            <label for="sex">Пол:</label>
-            <select id="sex" name="sex">
-                <option value="0" <?php if ($profile['mes']['sex'] == 0) echo 'selected="selected"' ?>>Не указано</option>
-                <option value="1" <?php if ($profile['mes']['sex'] == 1) echo 'selected="selected"' ?>>Мужской</option>
-                <option value="2" <?php if ($profile['mes']['sex'] == 2) echo 'selected="selected"' ?>>Женский</option>
-            </select>
-            <!-- user json fields end -->
-            <input type="submit" name="saveData" value="Изменить" />
-        </form>
-    <?php }
-}
-
-if($user['access'] == 5) {
-
-    echo "Debug info:<br/>";
-    echo "<pre>";
-    echo print_r($_POST);
-    echo "</pre>";
-    echo "JSON Decoded Data:<br/>";
-    foreach ($userData as $value) {
-        echo "$value<br/>";
-    }
-}
 ?>
 <style>
     .label {
@@ -164,7 +69,7 @@ if($user['access'] == 5) {
 </style>
 <h1>Upload cropped image to server</h1>
 <label class="label" data-toggle="tooltip" title="Change your avatar">
-    <img class="rounded" id="avatar" src="<?php echo $userAvatar?>" alt="avatar">
+    <img class="rounded" id="avatar" src="<?php echo getUserAvatar()?>" alt="avatar">
     <input type="file" class="sr-only" id="input" name="image" accept="image/*">
 </label>
 <div class="progress">

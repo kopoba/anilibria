@@ -156,7 +156,7 @@ function password_link(){
 	if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
 		_message('Empty get value', 'error');
 	}
-	if(!is_numeric($_GET['id']) || !is_numeric($_GET['time'])){
+	if(!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])){
 		_message('Wrong id or time', 'error');	
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
@@ -250,12 +250,10 @@ function registration(){
 		_message('Already registered', 'error');
 	}
 	$passwd = createPasswd();
-	$userFields = setupUserData();
-	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `user_data`) VALUES (:login, :mail, :passwd, :userData)");
+	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `user_data`) VALUES (:login, :mail, :passwd)");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
 	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
-    $query->bindParam(':userData', $userFields, PDO::PARAM_STR);
 	$query->execute();
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('Success registration');
@@ -290,7 +288,10 @@ function auth(){
 			$query->execute();
 			$_SESSION['sess'] = $hash[0];
 		}
-		$user = ['id' => $row['id'], 'login' => $row['login'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa'], 'access' => $row['access']];
+		$user = ['id' => $row['id'], 'login' => $row['login'], 'nickname' => $row['nickname'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa'], 'access' => $row['access'], 'sex' => $row['sex'], 'register_date' => $row['register_date']];
+		if(!empty($row['user_values'])){			
+			$user['user_values'] = json_decode($row['user_values'], true);
+		}
 	}
 }
 
@@ -535,7 +536,7 @@ function torrent(){
 	}
 	switch($_POST['do']){
 		case 'delete':
-			if(empty($_POST['edit_torrent']) || !is_numeric($_POST['edit_torrent'])){
+			if(empty($_POST['edit_torrent']) || !ctype_digit($_POST['edit_torrent'])){
 				_message('No edit_torrent', 'error');
 			}
 			torrentDelete($_POST['edit_torrent']);
@@ -545,7 +546,7 @@ function torrent(){
 			if(empty($_POST['rid']) || empty($_POST['quality']) || empty($_POST['episode'])){
 				_message('Set release id, name, quality and episode', 'error');
 			}
-			if(!is_numeric($_POST['rid'])){
+			if(!ctype_digit($_POST['rid'])){
 				_message('Release ID allow numeric', 'error');
 			}
 			if(strlen($_POST['quality']) > 200 || strlen($_POST['episode']) > 200){
@@ -572,7 +573,7 @@ function torrent(){
 			if(empty($_POST['edit_torrent'])){
 				$name = torrentAdd($pack_hash, $_POST['rid'], $json);
 			}else{
-				if(!is_numeric($_POST['edit_torrent'])){
+				if(!ctype_digit($_POST['edit_torrent'])){
 					_message('edit_torrent allow only numeric', 'error');
 				}
 				$old = torrentExist($_POST['edit_torrent']);
@@ -598,7 +599,7 @@ function downloadTorrent(){
 	if(empty($_GET['id'])){
 		_message('Empty $_GET', 'error');
 	}
-	if(!is_numeric($_GET['id'])){
+	if(!ctype_digit($_GET['id'])){
 		_message('Wrong id', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid` = :id");
@@ -652,88 +653,42 @@ function upload_avatar() {
 	_message('Success');
 }
 
-function getUserAvatar($userid) {
+function getUserAvatar($id = ''){
+	global $user; 
+	if(empty($id)){
+		$id = $user['id'];
+	}
 	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-	$dir = substr(md5($userid), 0, 2);
-	$path = "/upload/avatars/$dir/$userid.jpg";
+	$dir = substr(md5($id), 0, 2);
+	$path = "/upload/avatars/$dir/$id.jpg";
 	if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
 		$img = "https://".$_SERVER['SERVER_NAME'].$path;
 	}
 	return $img;
 }
 
-function show_profile(){
-	global $db, $user;
-	if(!empty($_GET['id'])){
-		$id = $_GET['id'];
-	} else {
-		if($user) {
-			$id = $user['id'];
-		} else {
-			return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
-		}
-	}
-	if(!is_numeric($id)){
-		return ['err' => true, 'mes' => 'Wrong user id'];
-	}
+function show_profile($id){
+	global $db, $user, $var;
+	$result = [];
 	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
 	$query->bindValue(':id', $id, PDO::PARAM_STR);
 	$query->execute();
 	if($query->rowCount() == 0){
 		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
-    return ['err' => false, 'mes' => $query->fetch()];
-}
-
-function getUserNick($id) {
-	global $db;
-	$query = $db->prepare("SELECT `login`, `nickname` FROM `users` WHERE `id` = :id");
-	$query->bindValue(':id', $id, PDO::PARAM_STR);
-	$query->execute();
 	$row = $query->fetch();
-	if(isset($row["nickname"])) {
-		return $row["nickname"];
-	} else {
-		return $row["login"];
+	$result['id'] = $row['id'];
+	$result['nickname']  = $row['nickname'] ?? $row['login'];
+	$result['sex'] = $var['sex'][$row['sex']];
+	$result['group'] = $var['group'][$row['access']];
+	$result['register_date'] = $row['register_date'];
+	if(!empty($row['user_values'])){
+		$result['user_values'] = json_decode($row['user_values'], true);
 	}
+    return ['err' => false, 'mes' => $result];
 }
 
-function getGroupName($access) {
-	switch($access) {
-		case 0:
-			$groupName = "Заблокирован";
-			break;
-		case 1:
-			$groupName = "Пользователь";
-			break;
-		case 2:
-			$groupName = "Спонсор";
-			break;
-		case 3:
-			$groupName = "Либриец";
-			break;
-		case 4:
-			$groupName = "Редактор";
-			break;
-		case 5:
-			$groupName = "Админ";
-			break;
-	}
-	return $groupName;
-}
-
-function setupUserData() {
-    $userFields = array(
-        'vk' => NULL,
-        'telegram' => NULL,
-        'steamid' => NULL,
-        'age' => NULL,
-        'country' => NULL,
-        'city' => NULL
-    );
-    return json_encode($userFields);
-}
-
+/*
 function saveUser($id) {
     global $db;
     if($_POST['saveData']) {
@@ -759,6 +714,7 @@ function saveUser($id) {
         _message('Data saved');
     }
 }
+*/
 
 function cryptAES($text, $key, $do = 'encrypt'){
 	$key = hash('sha256', $key, true);
@@ -795,6 +751,9 @@ function change_mail(){
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('Wrong email', 'error');
+	}
+	if($_POST['mail'] == $user['mail']){
+		_message('Same email', 'error');
 	}
     $_POST['mail'] = mb_strtolower($_POST['mail']);
     $time = $var['time'] + 43200;
