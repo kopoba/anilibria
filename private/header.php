@@ -8,13 +8,15 @@
     <link rel="stylesheet" href="../css/slider.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
     <link rel="stylesheet" href="../css/width.css">
-    <link rel="stylesheet" href="../css/cropper.css">
-    <link rel="stylesheet" href="../css/bt_modal/bootstrap.css">
+    <link rel="stylesheet" href="../plugins/cropperjs/css/cropper.css">
+    <link rel="stylesheet" href="../plugins/bootstrap4_modal/css/bootstrap.css">
+    <link rel="stylesheet" href="../plugins/quilljs/css/quill.snow.css">
     <script src="../js/jquery.min.js"></script>
-    <script src="../js/jquery.bxslider.js"></script>
+    <script src="../plugins/bxslider/js/jquery.bxslider.js"></script>
     <script src="../js/main.js"></script>
-    <script src="../js/cropper/cropper.js"></script>
-    <script src="../js/bt_modal/bootstrap.js"></script>
+    <script src="../plugins/cropperjs/js/cropper.js"></script>
+    <script src="../plugins/bootstrap4_modal/js/bootstrap.js"></script>
+    <script src="../plugins/quilljs/js/quill.js"></script>
 </head>
 <body>
 <div id="content_wrapper">

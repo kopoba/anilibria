@@ -250,7 +250,7 @@ function registration(){
 		_message('Already registered', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `user_data`) VALUES (:login, :mail, :passwd)");
+	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`) VALUES (:login, :mail, :passwd)");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
 	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
