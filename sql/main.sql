@@ -12,14 +12,13 @@ CREATE TABLE `session` (
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `login` varchar(20) NOT NULL,
-  `nickname` VARCHAR(20) DEFAULT NULL,
+  `nickname` varchar(20) DEFAULT NULL,
   `passwd` varchar(255) NOT NULL,
   `mail` varchar(254) NOT NULL,
   `2fa` varchar(255) DEFAULT NULL,
   `access` int(11) NOT NULL DEFAULT 1,
-  `sex` int(1) DEFAULT 0,
   `user_values` varchar(1024) DEFAULT NULL,
-  `register_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `register_date` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `xbt_config` (
@@ -82,10 +81,13 @@ ALTER TABLE `xbt_users`
   ADD PRIMARY KEY (`uid`);
 
 ALTER TABLE `session`
-  MODIFY id int(11) NOT NULL AUTO_INCREMENT;
-ALTER TABLE users
-  MODIFY id int(11) NOT NULL AUTO_INCREMENT;
-ALTER TABLE xbt_files
-  MODIFY fid int(11) NOT NULL AUTO_INCREMENT;
-ALTER TABLE xbt_users
-  MODIFY uid int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `xbt_files`
+  MODIFY `fid` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `xbt_users`
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT;

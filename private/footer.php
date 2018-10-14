@@ -22,6 +22,7 @@
                 <span>©2012-2018 AniLibria.TV</span>
             </div>
         </footer>
+         <center><?php echo pageStat(); ?></center>
     </div>
 </body>
 </html>

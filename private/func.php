@@ -843,3 +843,8 @@ function change_passwd(){
 	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
 	_message('Please check your mail');
 }
+
+function pageStat(){
+	global $conf;
+	return "Page generated in ".round((microtime(true) - $conf['start']), 4)." seconds. Peak memory usage: ".round(memory_get_peak_usage()/1048576, 2)." MB";
+}

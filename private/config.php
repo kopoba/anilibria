@@ -1,4 +1,6 @@
 <?php
+$conf['start'] = microtime(true);
+
 $conf['memcache']	= ['/tmp/memcached.socket', 0];
 
 $conf['mysql_host'] = 'localhost';
