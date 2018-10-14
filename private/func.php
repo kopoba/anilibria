@@ -654,9 +654,12 @@ function upload_avatar() {
 }
 
 function getUserAvatar($id = ''){
-	global $user; 
-	if(empty($id)){
+	global $user;
+	if(empty($id) && !empty($user['id'])){
 		$id = $user['id'];
+	}
+	if(empty($id) || !ctype_digit($id)){
+		return ['err' => true, 'mes' => 'Wrong ID'];
 	}
 	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
 	$dir = substr(md5($id), 0, 2);
@@ -669,6 +672,9 @@ function getUserAvatar($id = ''){
 
 function show_profile($id){
 	global $db, $user, $var;
+	if(empty($id) || !ctype_digit($id)){
+		return ['err' => true, 'mes' => 'Wrong ID'];
+	}
 	$result = [];
 	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
 	$query->bindValue(':id', $id, PDO::PARAM_STR);
@@ -679,8 +685,8 @@ function show_profile($id){
 	$row = $query->fetch();
 	$result['id'] = $row['id'];
 	$result['nickname']  = $row['nickname'] ?? $row['login'];
-	$result['sex'] = $var['sex'][$row['sex']];
-	$result['group'] = $var['group'][$row['access']];
+	$result['sex'] = $row['sex'];
+	$result['access'] = $row['access'];
 	$result['register_date'] = $row['register_date'];
 	if(!empty($row['user_values'])){
 		$result['user_values'] = json_decode($row['user_values'], true);
