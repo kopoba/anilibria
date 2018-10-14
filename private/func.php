@@ -694,6 +694,14 @@ function show_profile($id){
     return ['err' => false, 'mes' => $result];
 }
 
+function getTemplate($template){
+	$file = $_SERVER['DOCUMENT_ROOT']."/private/template/$template.html";
+	if(!file_exists($file)){
+		return ['err' => true, 'mes' => 'Template not exists'];
+	}
+	return file_get_contents($file);
+}
+
 /*
 function saveUser($id) {
     global $db;
