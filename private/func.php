@@ -250,7 +250,7 @@ function registration(){
 		_message('Already registered', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`) VALUES (:login, :mail, :passwd)");
+	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))");
 	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
 	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
 	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
@@ -288,7 +288,7 @@ function auth(){
 			$query->execute();
 			$_SESSION['sess'] = $hash[0];
 		}
-		$user = ['id' => $row['id'], 'login' => $row['login'], 'nickname' => $row['nickname'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa'], 'access' => $row['access'], 'sex' => $row['sex'], 'register_date' => $row['register_date']];
+		$user = ['id' => $row['id'], 'login' => $row['login'], 'nickname' => $row['nickname'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa'], 'access' => $row['access'], 'register_date' => $row['register_date']];
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
@@ -685,7 +685,6 @@ function show_profile($id){
 	$row = $query->fetch();
 	$result['id'] = $row['id'];
 	$result['nickname']  = $row['nickname'] ?? $row['login'];
-	$result['sex'] = $row['sex'];
 	$result['access'] = $row['access'];
 	$result['register_date'] = $row['register_date'];
 	if(!empty($row['user_values'])){
@@ -702,33 +701,55 @@ function getTemplate($template){
 	return file_get_contents($file);
 }
 
-/*
-function saveUser($id) {
-    global $db;
-    if($_POST['saveData']) {
-        $dataToSave = array(
-            'nickname' => $_POST['nickname'],
-            'sex' => $_POST['sex']
-        );
-        $jsonDataSave = array(
-            'vk' => $_POST['vkontakte'],
-            'telegram' => $_POST['telegram'],
-            'steamid' => $_POST['steamid'],
-            'age' => $_POST['age'],
-            'country' => $_POST['country'],
-            'city' => $_POST['city']
-        );
-        $json = json_encode($jsonDataSave);
-        $query = $db->prepare("UPDATE `users` SET `nickname` = :nickname, `user_data` = :user_data, `sex` = :sex WHERE `id` = :id");
-        $query->bindParam(':nickname', $dataToSave['nickname'], PDO::PARAM_STR);
-        $query->bindParam(':sex', $dataToSave['sex'], PDO::PARAM_STR);
-        $query->bindParam(':id', $id, PDO::PARAM_STR);
-        $query->bindParam(':user_data', $json, PDO::PARAM_STR);
-        $query->execute();
-        _message('Data saved');
-    }
+
+
+// {"sex": "", "vk":"", "telegram": "", "steam": "", "age": "", "country": "", "city": ""}
+// sex	int 0, 1, 2
+// age	strtotime
+function saveUserValues(){
+	global $db, $user, $var; $arr = [];
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+    if(empty($_POST)){
+		_message('Empty post', 'error');	
+	}
+	if(count($_POST) > 10){		
+		_message('Too much args1', 'error');
+	}
+    foreach($_POST as $key => $val){		
+		if(empty($val) || !array_key_exists($key, $var['user_values'])){
+			continue;
+		}
+		if(!preg_match('/^[А-Яа-яA-Za-z0-9_.-]+$/u', $val)){
+			_message('Wrong chars', 'error');
+		}
+		if(mb_strlen($val) > 30){
+			_message('Max len 30', 'error');
+		}
+		$arr[$key] = htmlspecialchars($val);
+	}
+	if(!empty($arr['sex']) && (!ctype_digit($arr['sex']) || ($arr['sex'] < 0 || $arr['sex'] > 2))){
+		_message('Wrong sex', 'error');
+	}
+    if(!empty($arr['age'])){
+		$time = strtotime($arr['age']);
+		if(!$time || $time > $var['time'] || date('Y', $time) < date('Y', $var['time'])-80){
+			_message('Wrong time', 'error');
+		}
+		$arr['age'] = $time;
+	}
+    $json = json_encode($arr);
+    if(strlen($json) > 1024){
+		_message('Max len 1024', 'error');
+	}
+	$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
+	$query->bindParam(':user_values', $json, PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	_message('Data saved');
 }
-*/
+
 
 function cryptAES($text, $key, $do = 'encrypt'){
 	$key = hash('sha256', $key, true);

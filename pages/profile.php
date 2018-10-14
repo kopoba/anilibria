@@ -40,11 +40,16 @@ echo "<b>Nickname:</b><span>&nbsp{$user['nickname']}</span><br/>";
 echo "<b>Доступ:</b><span>&nbsp;{$var['group'][$user['access']]}</span><br/>";
 if(!empty($user['user_values']) && is_array($user['user_values'])){
 	foreach($user['user_values'] as $v => $k){
+		if($v == 'sex'){
+			$k = $var['sex'][$k];
+		}
+		if($v == 'age'){
+			$k = floor(($var['time'] - $k) / 31556926);
+		}
 		echo "<b>{$var['user_values'][$v]}</b><span>&nbsp;$k</span><br/>";
 	}
 }
-echo "<b>Пол:</b><span>&nbsp;{$var['sex'][$user['sex']]}</span><br/>";
-echo "<b>Дата регистрации:</b><span>&nbsp;{$user['register_date']}</span><br/>";
+echo "<b>Дата регистрации:</b><span>&nbsp;".date('Y-m-d', $user['register_date'])."</span><br/>";
 echo "</p>";
 
 ?>

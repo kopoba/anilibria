@@ -24,11 +24,16 @@ function user_page(){
 		$a .= "<b>Доступ:</b><span>&nbsp;{$var['group'][$profile['mes']['access']]}</span><br/>";
 		if(!empty($profile['mes']['user_values']) && is_array($profile['mes']['user_values'])){
 			foreach($profile['mes']['user_values'] as $v => $k){
+				if($v == 'sex'){
+					$k = $var['sex'][$k];
+				}
+				if($v == 'age'){
+					$k = floor(($var['time'] - $k) / 31556926);
+				}
 				$a .= "<b>{$var['user_values'][$v]}</b><span>&nbsp;$k</span><br/>";
 			}
 		}
-		$a .= "<b>Пол:</b><span>&nbsp;{$var['sex'][$profile['mes']['sex']]}</span><br/>";
-		$a .= "<b>Дата регистрации:</b><span>&nbsp;{$profile['mes']['register_date']}</span><br/>";
+		$a .= "<b>Дата регистрации:</b><span>&nbsp;".date('Y-m-d', $profile['mes']['register_date'])."</span><br/>";
 		$b = "<img class=\"rounded\" id=\"avatar\" src=\"".getUserAvatar($_GET['id'])."\" alt=\"avatar\">";
 		$a = str_replace('__USERINFO__', $a,  getTemplate('user_info'));
 		$b = str_replace('__AVATAR__', $b,  getTemplate('user_avatar'));
