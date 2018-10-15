@@ -646,7 +646,13 @@ function upload_avatar() {
 	if(!$user){
 		_message('Unauthorized user', 'error');
 	}
+	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
+	$file = "$dir/{$user['id']}.jpg";
 	if(empty($_FILES['avatar'])){
+		if(file_exists($file)){
+			unlink($file);
+			_message('Success');
+		}
 		_message('No upload file', 'error');
 	}
 	if($_FILES['avatar']['error'] != 0){
@@ -658,11 +664,10 @@ function upload_avatar() {
 	if($_FILES['avatar']['size'] > 150000){
 		_message('Max size', 'error');
 	}
-	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
 	if(!file_exists($dir)) {
 		mkdir($dir, 0755, true);
 	}
-	move_uploaded_file($_FILES['avatar']['tmp_name'], "$dir/{$user['id']}.jpg");
+	move_uploaded_file($_FILES['avatar']['tmp_name'], $file);
 	_message('Success');
 }
 
