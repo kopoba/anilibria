@@ -1,20 +1,6 @@
 <?php
 /*
-    Запрашиваем поля пользователя show_profile();
-    if(!isset($_GET["id"])) => Проверяем, если в ссылке не указан ?id=userid,
-    то, загружаем данные залогиненого пользователя.
-
-    Если пользователь не найден => выводим ошибку, скрываем пустые поля профиля
-
-    Пользователь найден => Записываем нужные нам данные в массив $userInfo и выводим на странице
-
-    В дальнейшем:
-    1. Изменение данных 90% / 100%
-    2. Привязка 2FA
-    3. Оформление страницы
-    4. Настройки (приватность)
-    5. Привязка аккаунтов Патреон/ВК
-
+	...
 */
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
@@ -32,26 +18,8 @@ if(!$user){
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
-echo "<p>";
-echo "<b>ID:</b><span>&nbsp;{$user['id']}</span><br/>";
-echo "<b>Email:</b><span>&nbsp;{$user['mail']}</span><br/>";
-echo "<b>Логин:</b><span>&nbsp;{$user['login']}</span><br/>";
-echo "<b>Nickname:</b><span>&nbsp{$user['nickname']}</span><br/>";
-echo "<b>Доступ:</b><span>&nbsp;{$var['group'][$user['access']]}</span><br/>";
-if(!empty($user['user_values']) && is_array($user['user_values'])){
-	foreach($user['user_values'] as $v => $k){
-		if($v == 'sex'){
-			$k = $var['sex'][$k];
-		}
-		if($v == 'age'){
-			$k = floor(($var['time'] - $k) / 31556926);
-		}
-		echo "<b>{$var['user_values'][$v]}</b><span>&nbsp;$k</span><br/>";
-	}
-}
-echo "<b>Дата регистрации:</b><span>&nbsp;".date('Y-m-d', $user['register_date'])."</span><br/>";
-echo "<b>Последняя активность:</b><span>&nbsp;".date('Y-m-d', $user['last_activity'])."</span><br/>";
-echo "</p>";
+
+echo userInfoShow($user['id']);
 
 ?>
 <style>

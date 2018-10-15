@@ -683,28 +683,86 @@ function getUserAvatar($id = ''){
 	return $img;
 }
 
-function show_profile($id){
-	global $db, $user, $var;
+function userInfo($id){
+	global $db, $user, $var; $result = [];
 	if(empty($id) || !ctype_digit($id)){
 		return ['err' => true, 'mes' => 'Wrong ID'];
 	}
-	$result = [];
-	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-	$query->bindValue(':id', $id, PDO::PARAM_STR);
-	$query->execute();
-	if($query->rowCount() == 0){
-		return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+	if(!empty($user['id']) && $user['id'] == $id){
+		$result = [
+			'id' => $user['id'],
+			'mail' => $user['mail'],
+			'login' => $user['login'],
+			'nickname' => $user['nickname'] ?? $user['login'],
+			'access' => $user['access'],
+			'register_date' => $user['register_date'],
+			'last_activity' => $user['last_activity'],
+			'user_values' => $user['user_values']
+		];
 	}
-	$row = $query->fetch();
-	$result['id'] = $row['id'];
-	$result['nickname']  = $row['nickname'] ?? $row['login'];
-	$result['access'] = $row['access'];
-	$result['register_date'] = $row['register_date'];
-	$result['last_activity'] = $row['last_activity'];
-	if(!empty($row['user_values'])){
-		$result['user_values'] = json_decode($row['user_values'], true);
+	if(empty($result)){
+		$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+		$query->bindValue(':id', $id, PDO::PARAM_STR);
+		$query->execute();
+		if($query->rowCount() == 0){
+			return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+		}
+		$row = $query->fetch();
+		$result = [
+			'id' => $row['id'],
+			'nickname' => $row['nickname'] ?? $row['login'],
+			'access' => $row['access'],
+			'register_date' => $row['register_date'],
+			'last_activity' => $row['last_activity'],
+			'user_values' => $row['user_values']
+		];
+		if(!empty($result['user_values'])){
+			$result['user_values'] = json_decode($result['user_values'], true);
+		}
 	}
-    return ['err' => false, 'mes' => $result];
+	return ['err' => false, 'mes' => $result];
+}
+
+function userInfoShow($id){
+	global $var;
+	if(!empty($id) && ctype_digit($id)){
+		$profile = userInfo($id);
+	}else{
+		$profile = ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
+	}
+	if($profile['err']) {	
+		return str_replace('__ERROR__', $profile['mes'],  getTemplate('error'));
+	}else{
+		$a = $b = '';
+		foreach($profile['mes'] as $key => $val){
+			if($key == 'user_values'){
+				if(empty($val)){
+					continue;
+				}
+				foreach($val as $k => $v){
+					if($k == 'sex'){
+						$v = $var['sex'][$v];
+					}
+					if($k == 'age'){
+						$v = floor(($var['time'] - $v) / 31556926);
+					}
+					$a .= "<b>{$var['user_values'][$k]}</b><span>&nbsp;$v</span><br/>";
+				}
+				continue;
+			}
+			if($key == 'register_date' || $key == 'last_activity'){
+				$val = date('Y-m-d', $val);
+			}
+			if($key == 'access'){
+				$val = $var['group'][$val];
+			}
+			$a .= "<b>{$var['user_values'][$key]}:</b><span>&nbsp;$val</span><br/>";
+		}
+		$b = "<img class=\"rounded\" id=\"avatar\" src=\"".getUserAvatar($id)."\" alt=\"avatar\">";
+		$a = str_replace('__USERINFO__', $a,  getTemplate('user_info'));
+		$b = str_replace('__AVATAR__', $b,  getTemplate('user_avatar'));
+		return $a.$b;
+	}
 }
 
 function getTemplate($template){
@@ -714,8 +772,6 @@ function getTemplate($template){
 	}
 	return file_get_contents($file);
 }
-
-
 
 // {"sex": "", "vk":"", "telegram": "", "steam": "", "age": "", "country": "", "city": ""}
 // sex	int 0, 1, 2
