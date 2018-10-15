@@ -148,6 +148,10 @@ function login(){
 		$query->execute();
 	}
 	$_SESSION['sess'] = $hash[0];
+	$query = $db->prepare("UPDATE `users` SET `last_activity` = :time WHERE `id` = :id");
+	$query->bindParam(':time', $var['time'], PDO::PARAM_STR);
+	$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
+	$query->execute();
 	_message('Success');
 }
 
@@ -288,7 +292,16 @@ function auth(){
 			$query->execute();
 			$_SESSION['sess'] = $hash[0];
 		}
-		$user = ['id' => $row['id'], 'login' => $row['login'], 'nickname' => $row['nickname'], 'passwd' => $row['passwd'], 'mail' => $row['mail'], '2fa' => $row['2fa'], 'access' => $row['access'], 'register_date' => $row['register_date']];
+		$user = [	'id' => $row['id'], 
+					'login' => $row['login'], 
+					'nickname' => $row['nickname'],
+					'passwd' => $row['passwd'], 
+					'mail' => $row['mail'], 
+					'2fa' => $row['2fa'],
+					'access' => $row['access'],
+					'register_date' => $row['register_date'],
+					'last_activity' => $row['last_activity']
+				];
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
@@ -687,6 +700,7 @@ function show_profile($id){
 	$result['nickname']  = $row['nickname'] ?? $row['login'];
 	$result['access'] = $row['access'];
 	$result['register_date'] = $row['register_date'];
+	$result['last_activity'] = $row['last_activity'];
 	if(!empty($row['user_values'])){
 		$result['user_values'] = json_decode($row['user_values'], true);
 	}

@@ -34,6 +34,7 @@ function user_page(){
 			}
 		}
 		$a .= "<b>Дата регистрации:</b><span>&nbsp;".date('Y-m-d', $profile['mes']['register_date'])."</span><br/>";
+		$a .= "<b>Последняя активность:</b><span>&nbsp;".date('Y-m-d', $profile['mes']['last_activity'])."</span><br/>";
 		$b = "<img class=\"rounded\" id=\"avatar\" src=\"".getUserAvatar($_GET['id'])."\" alt=\"avatar\">";
 		$a = str_replace('__USERINFO__', $a,  getTemplate('user_info'));
 		$b = str_replace('__AVATAR__', $b,  getTemplate('user_avatar'));

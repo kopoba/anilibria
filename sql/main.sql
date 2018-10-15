@@ -18,7 +18,8 @@ CREATE TABLE `users` (
   `2fa` varchar(255) DEFAULT NULL,
   `access` int(11) NOT NULL DEFAULT 1,
   `user_values` varchar(1024) DEFAULT NULL,
-  `register_date` bigint(20) DEFAULT NULL
+  `register_date` bigint(20) DEFAULT NULL,
+  `last_activity` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `xbt_config` (

@@ -50,6 +50,7 @@ if(!empty($user['user_values']) && is_array($user['user_values'])){
 	}
 }
 echo "<b>Дата регистрации:</b><span>&nbsp;".date('Y-m-d', $user['register_date'])."</span><br/>";
+echo "<b>Последняя активность:</b><span>&nbsp;".date('Y-m-d', $user['last_activity'])."</span><br/>";
 echo "</p>";
 
 ?>
