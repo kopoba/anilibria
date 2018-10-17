@@ -923,3 +923,32 @@ function pageStat(){
 	global $conf;
 	return "Page generated in ".round((microtime(true) - $conf['start']), 4)." seconds. Peak memory usage: ".round(memory_get_peak_usage()/1048576, 2)." MB";
 }
+
+function show_sess(){
+	global $db, $user, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	$query = $db->prepare("SELECT * FROM `session` WHERE `uid` = :id");
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	return $query->fetchAll();
+}
+
+function close_sess(){
+	global $db, $user, $conf;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(empty($_POST['id']) || !ctype_digit($_POST['id'])){
+		_message('Wrong sess id', 'error');
+	}
+	$query = $db->prepare("DELETE FROM `session` WHERE `id` = :id AND `uid` = :uid");
+	$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+	$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() != 1){
+		_message('Cant close session', 'error');
+	}
+	_message('Success');
+}
