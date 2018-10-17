@@ -71,6 +71,19 @@ button {
   }
 }
 
+a.link_button {
+  padding: 7.5px 10px;
+  font-size: 15px;
+  line-height: 30px;
+  background-color: #f36767;
+  cursor: pointer;
+  color: #fff;
+  &:hover {
+    background-color: #ce5351;
+    color: #fff;
+  }
+}
+
 article, aside, details, figcaption, figure, footer, header, menu, nav, section {
   display: block;
 }
@@ -444,6 +457,87 @@ article, aside, details, figcaption, figure, footer, header, menu, nav, section 
         }
         span {
           color: #eb5252;
+        }
+      }
+    }
+  }
+
+  #anime_detail {
+    width: 100%;
+    height: auto;
+    position: relative;
+    header {
+      padding: 0 0 20px 0;
+      h1 {
+        text-align: center;
+        font-size: 25px;
+        line-height: 25px;
+        color: #eb5252;
+        span {
+          font-size: 20px;
+          line-height: 20px;
+        }
+      }
+      hr {
+        border: 1px solid #f36767;
+        padding: 0;
+        margin: 5px 20%;
+      }
+    }
+    #anime_detail_body {
+      width: 100%;
+      p {
+        padding: 0 0 10px 0;
+        margin: 0;
+        color: #3c3c3c;
+        font-size: 14px;
+      }
+      img {
+        float: right;
+        border: 5px solid #ededed;
+        border-radius: 5px;
+        margin-left: 10px;
+        width: 362px;
+        height: 520px;
+      }
+    }
+    .red_hr {
+      border: 1px solid #f36767;
+      margin: 20px 0;
+    }
+    h2 {
+      font-size: 20px;
+      line-height: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      margin: 15px 0;
+    }
+    table {
+      border: 2px solid #4f4f4f;
+      border-collapse: collapse;
+      width: 100%;
+      text-align: left;
+      vertical-align: center;
+      font-size: 13px;
+      line-height: 13px;
+      tr {
+        border: 2px solid #4f4f4f;
+        td {
+          border: 2px solid #4f4f4f;
+          padding: 10px;
+        }
+        .torr_name {
+          width: 25%;
+        }
+        .torr_stats {
+          width: 40%;
+        }
+        .torr_addtime {
+          width: 25%;
+        }
+        .torr_download {
+          width: 10%;
+          text-align: center;
         }
       }
     }
