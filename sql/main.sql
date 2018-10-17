@@ -5,7 +5,7 @@ CREATE TABLE `session` (
   `uid` int(11) NOT NULL,
   `hash` varchar(255) NOT NULL,
   `time` bigint(20) NOT NULL,
-  `ip` varchar(255) NOT NULL,
+  `ip` varbinary(16) NOT NULL,
   `info` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -15,8 +15,8 @@ CREATE TABLE `users` (
   `nickname` varchar(20) DEFAULT NULL,
   `passwd` varchar(255) NOT NULL,
   `mail` varchar(254) NOT NULL,
-  `2fa` varchar(255) DEFAULT NULL,
-  `access` int(11) NOT NULL DEFAULT 1,
+  `2fa` varchar(16) DEFAULT NULL,
+  `access` int(1) NOT NULL DEFAULT 1,
   `user_values` varchar(1024) DEFAULT NULL,
   `register_date` bigint(20) DEFAULT NULL,
   `last_activity` bigint(20) DEFAULT NULL

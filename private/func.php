@@ -131,7 +131,7 @@ function login(){
 		$row['passwd'] = $passwd[1];
 	}
 	$hash = session_hash($row['login'], $row['passwd']);
-	$query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, :ip, :info)");
+	$query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)");
 	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
 	$query->bindParam(':hash', $hash[0], PDO::PARAM_STR);
 	$query->bindParam(':time', $hash[1], PDO::PARAM_STR);
