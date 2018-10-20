@@ -582,7 +582,7 @@ function torrent(){
 			if(torrentHashExist($pack_hash)){
 				_message('Torrent hash already exist', 'error');
 			}
-			$json = json_encode([$_POST['quality'], $_POST['episode']]);
+			$json = json_encode([$_POST['quality'], $_POST['episode'], $torrent->size()]);
 			if(empty($_POST['edit_torrent'])){
 				$name = torrentAdd($pack_hash, $_POST['rid'], $json);
 			}else{
@@ -951,4 +951,73 @@ function close_sess(){
 		_message('Cant close session', 'error');
 	}
 	_message('Success');
+}
+
+function formatBytes($size, $precision = 2){
+    $base = log($size, 1024);
+    $suffixes = ['', 'KB', 'MB', 'GB', 'TB'];
+    return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+}
+
+function showRelease(){
+	global $db, $user;
+	
+	function getList($text){
+		if(empty($text)){
+			return '-';
+		}
+		$arr = explode(',', $text);
+		if(!is_array($arr)){
+			return rtrim("<a href='#'>$text</a>");
+		}
+		$result = '';
+		foreach($arr as $k => $v){
+			$result .= "<a href='#'>".trim($v)."</a> ";
+		}
+		return rtrim($result);
+	}
+	
+	$query = $db->prepare("SELECT * FROM `page` WHERE `id` = :id");
+	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() != 1){
+		return str_replace('__ERROR__', 'К сожалению, такого релиза не существует.',  getTemplate('error'));
+	}
+	$row = $query->fetch();
+	
+	$status = ['0' => 'В работе', '1' => 'Завершен'];
+	
+	$page = str_replace('__NAME__', $row['name'],  getTemplate('torrent'));
+	$page = str_replace('__ENAME__', $row['ename'],  $page);
+	$page = str_replace('__IMG__', $row['id'],  $page);
+	$page = str_replace('__GENRE__', getList($row['genre']),  $page);
+	$page = str_replace('__VOICE__', getList($row['voice']),  $page);
+	$page = str_replace('__SEASON__', "<a href='#'>{$row['season']} {$row['year']}</a>",  $page);
+	$page = str_replace('__TRANSLATOR__', $row['translator'], $page);
+	$page = str_replace('__TIMING__', $row['timing'], $page);
+	$page = str_replace('__DESIGN__', $row['design'], $page);
+	$page = str_replace('__TYPE__', $row['type'], $page);
+	$page = str_replace('__STATUS__', $status[$row['status']], $page);
+	$page = str_replace('__DESCRIPTION__', $row['description'], $page);
+	
+	$torrent = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
+	$torrent->bindParam(':id', $row['id'], PDO::PARAM_STR);
+	$torrent->execute();
+	$showTorrent = '';
+	while($data = $torrent->fetch()){
+		$data['info'] = json_decode($data['info'], true);
+		$data['info']['2'] = formatBytes($data['info']['2']);
+		$data['ctime'] = date('d.m.Y H:m', $data['ctime']);
+		$showTorrent .= "
+			<tr>
+			<td class='torr_name'>Серия {$data['info']['1']} [{$data['info']['0']}]</td>
+			<td class='torr_stats'>Вес {$data['info']['2']} Раздают {$data['seeders']} Качают {$data['leechers']} Скачало {$data['completed']}</td>
+			<td class='torr_addtime'>Добавлен {$data['ctime']}</td>
+			<td class='torr_download'><a href='/upload/torrents/{$data['fid']}.torrent'>Скачать</a></td>
+			</tr>
+		";
+
+	}
+	$page = str_replace('__TABLE__', $showTorrent, $page);
+	return $page;
 }
