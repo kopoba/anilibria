@@ -1,5 +1,21 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
+CREATE TABLE `page` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `ename` varchar(255) DEFAULT NULL,
+  `genre` varchar(255) DEFAULT NULL,
+  `voice` varchar(255) DEFAULT NULL,
+  `season` varchar(255) DEFAULT NULL,
+  `year` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `translator` varchar(255) DEFAULT NULL,
+  `timing` varchar(255) DEFAULT NULL,
+  `design` varchar(255) DEFAULT NULL,
+  `status` int(1) NOT NULL DEFAULT 0,
+  `type` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `session` (
   `id` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
@@ -59,6 +75,9 @@ CREATE TABLE `xbt_users` (
   `uploaded` bigint(20) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `page`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `session`
   ADD PRIMARY KEY (`id`),
   ADD KEY `uid` (`uid`),
@@ -80,6 +99,9 @@ ALTER TABLE `xbt_files_users`
 
 ALTER TABLE `xbt_users`
   ADD PRIMARY KEY (`uid`);
+
+ALTER TABLE `page`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `session`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

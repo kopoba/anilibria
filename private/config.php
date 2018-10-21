@@ -23,3 +23,6 @@ $conf['sign_secret'] = 'secret';
 
 $conf['torrent_secret'] = 'secret';
 $conf['torrent_announce'] = 'http://tt.anilibria.tv:2710/announce';
+
+$conf['sphinx_host'] = '127.0.0.1';
+$conf['sphinx_port'] = '9306';
