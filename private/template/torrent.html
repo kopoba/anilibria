@@ -1,44 +1,51 @@
 <article id="anime_detail">
     <header>
-        <h1>__NAME__<br/><span>__ENAME__</span></h1>
+        <h1>{name}<br/><span>{name}</span></h1>
     </header>
     <div id="anime_detail_body">
-        <img id="torrent_poster" src="../upload/torrent/__IMG__.jpg" alt="__NAME__ / __ENAME__" title="__NAME__ / __ENAME__" />
+        <img id="torrent_poster" src="../upload/torrent/{img}.jpg" alt="{name} / {ename}" title="__NAME__ / {ename}" />
         <p>
             <span><b>Жанры:&nbsp;</b></span>
-            __GENRE__
+            {genre}
             <br/>
             <span><b>Озвучка:&nbsp;</b></span>
-            __VOICE__
+            {voice}
             <br/>
             <span><b>Аниме сезон:&nbsp;</b></span>
-            __SEASON__
+            {season}
             <br/>
-            <span><b>Тип:&nbsp;</b>__TYPE__</span>
+            <span><b>Тип:&nbsp;</b>{type}</span>
             <br/>
             <span><b>Перевод:&nbsp;</b></span>
-            __TRANSLATOR__
+            {translator}
             <br/>
             <span><b>Тайминг:&nbsp;</b></span>
-            __TIMING__
+            {timing}
             <br/>
             <span><b>Формление:&nbsp;</b></span>
-            __DESIGN__
+            {design}
             <br/>
-            <span><b>Состояние релиза:&nbsp;</b>__STATUS__</span>
+            <span><b>Состояние релиза:&nbsp;</b>{status}</span>
             <br/>
             <span><b>Технические параметры&nbsp;</b><small>(Спойлер)</small></span>
             <br/><br/>
             <b>Описание:&nbsp;</b>
-            __DESCRIPTION__
+            {description}
         </p>
         <div style="clear:both; height:0"></div>
         <hr class="red_hr"/>
         <h2>Скачать торрентом</h2>
-		<table>
-			__TABLE__
+		<table id="TorrentList" align="center">
+			{table}
 		</table>
         <br/>
-        <a href="#" class="link_button">Загрузить торрент</a>
+		<div {edit}>
+			<input type="file" name="torrent" accept=".torrent">
+			<input type="text" name="rid">
+			<input type="text" name="quality">
+			<input type="text" name="episode">
+			<button class="link_button" data-upload-torrent >Загрузить торрент</button>
+		</div>
+        {hidden}
     </div>
 </article>

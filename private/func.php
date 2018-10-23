@@ -479,10 +479,9 @@ function simple_http_filter(){
 	}
 	$list = ['RU', 'UA', 'BY', 'LV', 'EE', 'LT', 'TM', 'KG', 'KZ', 'MD', 'UZ', 'AZ', 'AM', 'GE'];
 	if(!in_array(geoip_country_code_by_name($_SERVER['REMOTE_ADDR']), $list) && !$flag){
-		if(xSpiderBot('Google') == false || xSpiderBot('Yandex') == false){
-			$tmpFilter = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/private/template/filter.html');
-			$tmpFilter = str_replace("__COINHIVEKEY__", $conf['coinhive_public'], $tmpFilter);
-			$tmpFilter = str_replace("__RECAPTCHAKEY__", $conf['recaptcha_public'], $tmpFilter);
+		if(xSpiderBot('Google') == false || xSpiderBot('Yandex') == false){			
+			$tmpFilter = str_replace("{coinhive}", $conf['coinhive_public'], getTemplate('filter'));
+			$tmpFilter = str_replace("{recaptcha}", $conf['recaptcha_public'], $tmpFilter);
 			echo $tmpFilter;
 			die;
 		}
@@ -736,7 +735,7 @@ function userInfoShow($id){
 		$profile = ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
 	}
 	if($profile['err']) {	
-		return str_replace('__ERROR__', $profile['mes'],  getTemplate('error'));
+		return str_replace('{error}', $profile['mes'],  getTemplate('error'));
 	}else{
 		$a = $b = '';
 		foreach($profile['mes'] as $key => $val){
@@ -764,8 +763,8 @@ function userInfoShow($id){
 			$a .= "<b>{$var['user_values'][$key]}:</b><span>&nbsp;$val</span><br/>";
 		}
 		$b = "<img class=\"rounded\" id=\"avatar\" src=\"".getUserAvatar($id)."\" alt=\"avatar\">";
-		$a = str_replace('__USERINFO__', $a,  getTemplate('user_info'));
-		$b = str_replace('__AVATAR__', $b,  getTemplate('user_avatar'));
+		$a = str_replace('{userinfo}', $a,  getTemplate('user_info'));
+		$b = str_replace('{avatar}', $b,  getTemplate('user_avatar'));
 		return $a.$b;
 	}
 }
@@ -981,43 +980,60 @@ function showRelease(){
 	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
 	$query->execute();
 	if($query->rowCount() != 1){
-		return str_replace('__ERROR__', 'К сожалению, такого релиза не существует.',  getTemplate('error'));
+		return str_replace('{error}', 'К сожалению, такого релиза не существует.',  getTemplate('error'));
 	}
 	$row = $query->fetch();
 	
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
 	
-	$page = str_replace('__NAME__', $row['name'],  getTemplate('torrent'));
-	$page = str_replace('__ENAME__', $row['ename'],  $page);
-	$page = str_replace('__IMG__', $row['id'],  $page);
-	$page = str_replace('__GENRE__', getList($row['genre']),  $page);
-	$page = str_replace('__VOICE__', getList($row['voice']),  $page);
-	$page = str_replace('__SEASON__', "<a href='#'>{$row['season']} {$row['year']}</a>",  $page);
-	$page = str_replace('__TRANSLATOR__', $row['translator'], $page);
-	$page = str_replace('__TIMING__', $row['timing'], $page);
-	$page = str_replace('__DESIGN__', $row['design'], $page);
-	$page = str_replace('__TYPE__', $row['type'], $page);
-	$page = str_replace('__STATUS__', $status[$row['status']], $page);
-	$page = str_replace('__DESCRIPTION__', $row['description'], $page);
+	$page = str_replace('{name}', $row['name'],  getTemplate('torrent'));
+	$page = str_replace('{ename}', $row['ename'],  $page);
+	$page = str_replace('{img}', $row['id'],  $page);
+	$page = str_replace('{genre}', getList($row['genre']),  $page);
+	$page = str_replace('{voice}', getList($row['voice']),  $page);
+	$page = str_replace('{season}', "<a href='#'>{$row['season']} {$row['year']}</a>",  $page);
+	$page = str_replace('{translator}', $row['translator'], $page);
+	$page = str_replace('{timing}', $row['timing'], $page);
+	$page = str_replace('{design}', $row['design'], $page);
+	$page = str_replace('{type}', $row['type'], $page);
+	$page = str_replace('{status}', $status[$row['status']], $page);
+	$page = str_replace('{description}', $row['description'], $page);
+	
+	if(!empty($user) && $user['access'] > 2){
+		$page = str_replace('{edit}', '', $page);
+		$page = str_replace('{hidden}', "<input type='hidden' id='rid' name='rid' value={$row['id']}>", $page);
+	}else{
+		$page = str_replace('{edit}', 'style="display: none;"', $page);
+		$page = str_replace('{hidden}', '', $page);
+	}
 	
 	$torrent = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
 	$torrent->bindParam(':id', $row['id'], PDO::PARAM_STR);
 	$torrent->execute();
 	$showTorrent = '';
 	while($data = $torrent->fetch()){
+		
+		$download = "/upload/torrents/{$data['fid']}.torrent";
+		$control = '';
+		if(!empty($user)){
+			if($user['access'] > 2){
+				$control =  " | Удалить | Обновить";
+			}
+			$download = "/public/torrent_download.php?id={$data['fid']}";
+		}
+		
 		$data['info'] = json_decode($data['info'], true);
 		$data['info']['2'] = formatBytes($data['info']['2']);
 		$data['ctime'] = date('d.m.Y H:m', $data['ctime']);
 		$showTorrent .= "
 			<tr>
-			<td class='torr_name'>Серия {$data['info']['1']} [{$data['info']['0']}]</td>
-			<td class='torr_stats'>Вес {$data['info']['2']} Раздают {$data['seeders']} Качают {$data['leechers']} Скачало {$data['completed']}</td>
-			<td class='torr_addtime'>Добавлен {$data['ctime']}</td>
-			<td class='torr_download'><a href='/upload/torrents/{$data['fid']}.torrent'>Скачать</a></td>
+			<td style='text-align:center;vertical-align:middle'>Серия {$data['info']['1']} [{$data['info']['0']}]</td>
+			<td style='text-align:center;vertical-align:middle'>Вес {$data['info']['2']} | Раздают {$data['seeders']} | Качают {$data['leechers']} | Скачало {$data['completed']}</td>
+			<td style='text-align:center;vertical-align:middle'>Добавлен {$data['ctime']}</td>
+			<td style='text-align:center;vertical-align:middle'><a href='$download'>Скачать</a>$control</td>
 			</tr>
 		";
-
 	}
-	$page = str_replace('__TABLE__', $showTorrent, $page);
+	$page = str_replace('{table}', $showTorrent, $page);
 	return $page;
 }

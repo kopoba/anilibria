@@ -9,12 +9,12 @@
 <script src='js/jquery.min.js'></script>
 <script src='js/bootstrap.min.js'></script>
 <script src='https://authedmine.com/lib/captcha.min.js' async></script>
-<script src='https://www.google.com/recaptcha/api.js?render=__RECAPTCHAKEY__'></script>
+<script src='https://www.google.com/recaptcha/api.js?render={recaptcha}'></script>
 <link href='css/bootstrap.min.css'>
 
 <script>
 grecaptcha.ready(function() {
-grecaptcha.execute('__RECAPTCHAKEY__').then(function(token) {
+grecaptcha.execute('{recaptcha}').then(function(token) {
 	$.post('//'+document.domain+'/public/simple_http_filter.php?do=recaptcha', {'g-recaptcha-response': token}, function(json){
 		data = JSON.parse(json);
 		if(data.mes.status != 'yes'){
@@ -45,7 +45,7 @@ function sendProof(token) {
 <div class='main'>
 <div id='aniCheck' class='alert alert-success'>Please wait...</div>
 <form id='proofCheck' style='display: none;' action='?' method='post'>	
-	<div class='coinhive-captcha' data-hashes='1024' data-key='__COINHIVEKEY__' data-callback='sendProof'>
+	<div class='coinhive-captcha' data-hashes='1024' data-key='{coinhive}' data-callback='sendProof'>
 		<em>Loading Captcha...<br>
 		If it does not load, please disable Adblock!</em>
 	</div>
