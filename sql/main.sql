@@ -1,5 +1,13 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
+CREATE TABLE `log_ip` (
+  `id` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `ip` varbinary(16) NOT NULL,
+  `time` bigint(20) NOT NULL,
+  `info` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `page` (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -75,6 +83,10 @@ CREATE TABLE `xbt_users` (
   `uploaded` bigint(20) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `log_ip`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `uid` (`uid`);
+
 ALTER TABLE `page`
   ADD PRIMARY KEY (`id`);
 
@@ -99,6 +111,9 @@ ALTER TABLE `xbt_files_users`
 
 ALTER TABLE `xbt_users`
   ADD PRIMARY KEY (`uid`);
+  
+ALTER TABLE `log_ip`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `page`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

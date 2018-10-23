@@ -18,7 +18,6 @@
 - Блокировка IP
 - Torrent stats
 - Изменить nickname
-- Список авторизаций (удачные/ неудачные) 
 
 
 
@@ -35,3 +34,4 @@ recaptcha (https://developers.google.com/recaptcha/docs/v3)
 Изменить email
 Удалить аватар
 Активные сессии (просмотр, удалить)
+Список авторизаций

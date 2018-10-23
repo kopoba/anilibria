@@ -152,6 +152,12 @@ function login(){
 	$query->bindParam(':time', $var['time'], PDO::PARAM_STR);
 	$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
 	$query->execute();
+	$query = $db->prepare("INSERT INTO `log_ip` (`uid`, `ip`, `time`, `info`) VALUES (:uid, INET6_ATON(:ip), :time, :info)");
+	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
+	$query->bindParam(':ip', $var['ip'], PDO::PARAM_STR);
+	$query->bindParam(':time', $var['time'], PDO::PARAM_STR);
+	$query->bindParam(':info', $var['user_agent'], PDO::PARAM_STR);
+	$query->execute();
 	_message('Success');
 }
 
