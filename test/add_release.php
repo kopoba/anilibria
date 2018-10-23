@@ -14,6 +14,7 @@ var_dump($user);
 
 <form action="/public/release.php" method="post" enctype="multipart/form-data">
 	<input type="file" name="poster" accept=".jpeg,.jpg"><br/>
+	<input type="text" name="id" placeholder="id"><br/>
     <input type="text" name="name" placeholder="name"><br/>
     <input type="text" name="ename" placeholder="ename"><br/>
     <input type="text" name="genre" placeholder="genre"><br/>
@@ -27,3 +28,4 @@ var_dump($user);
     <textarea rows="6" cols="50" name="description" placeholder="description"></textarea><br/>
     <input type="submit" value="add release" name="submit">
 </form>
+

@@ -1044,6 +1044,22 @@ function showRelease(){
 	return $page;
 }
 
+function check_poster(){
+	if(empty($_FILES['poster'])){
+		return ['err' => false, 'mes' =>'No upload file'];
+	}
+	if($_FILES['poster']['error'] != 0){
+		return ['err' => false, 'mes' =>'Upload error'];
+	}
+	if($_FILES['poster']['type'] != 'image/jpeg'){
+		return ['err' => false, 'mes' =>'You can upload only jpeg'];
+	}
+	if($_FILES['poster']['size'] > 1000000){
+		return ['err' => false, 'mes' =>'Max size'];
+	}
+	return ['err' => true];
+}
+
 function add_release(){
 	global $db, $user, $var;
 	if(!$user){
@@ -1059,17 +1075,9 @@ function add_release(){
 		}
 		$_POST[$key] = htmlspecialchars($_POST[$key]);	
 	}
-	if(empty($_FILES['poster'])){
-		_message('No upload file', 'error');
-	}
-	if($_FILES['poster']['error'] != 0){
-		_message('Upload error', 'error');
-	}
-	if($_FILES['poster']['type'] != 'image/jpeg'){
-		_message('You can upload only jpeg', 'error');	
-	}
-	if($_FILES['poster']['size'] > 1000000){
-		_message('Max size', 'error');
+	$check = check_poster();
+	if(!$check['err']){
+		_message($check['mes'], 'error');
 	}
 	$query = $db->prepare("
 		INSERT INTO `page` (`name`, `ename`, `genre`, `voice`, `translator`, `timing`, `design`, `year`, `season`, `type`, `description`) 
@@ -1089,5 +1097,43 @@ function add_release(){
 	$query->execute();
 	$id = $db->lastInsertId();
 	move_uploaded_file($_FILES['poster']['tmp_name'], $_SERVER['DOCUMENT_ROOT']."/upload/torrent/$id.jpg");
+	_message('Success');
+}
+
+
+function edit_release(){
+	global $db, $user, $var;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if($user['access'] < 4){
+		_message('Access deny', 'error');
+	}
+	if(empty($_POST['id']) || !ctype_digit($_POST['id'])){
+		_message('Wrong release id', 'error');
+	}
+	$query = $db->prepare("SELECT * FROM `page` WHERE `id` = :id");
+	$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() != 1){
+		_message('Release not exists', 'error');
+	}
+	$check = check_poster();
+	if($check){
+		$file = $_SERVER['DOCUMENT_ROOT']."/upload/torrent/{$_POST['id']}.jpg";
+		if(file_exists($file)){
+			unlink($file);
+		}
+		move_uploaded_file($_FILES['poster']['tmp_name'], $file);
+	}
+	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
+	foreach($arr as $key){
+		if(!empty($_POST[$key])){
+			$query = $db->prepare("UPDATE `page` SET `$key` =:$key WHERE `id` = :id");
+			$query->bindParam(":$key", $_POST[$key], PDO::PARAM_STR);
+			$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+			$query->execute();
+		}
+	}
 	_message('Success');
 }
