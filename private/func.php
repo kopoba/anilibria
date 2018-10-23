@@ -992,8 +992,8 @@ function showRelease(){
 	
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
 	
-	$page = str_replace('{name}', $row['name'],  getTemplate('torrent'));
-	$page = str_replace('{ename}', $row['ename'],  $page);
+	$page = str_replace('{runame}', $row['name'],  getTemplate('torrent'));
+	$page = str_replace('{engname}', $row['ename'],  $page);
 	$page = str_replace('{img}', $row['id'],  $page);
 	$page = str_replace('{genre}', getList($row['genre']),  $page);
 	$page = str_replace('{voice}', getList($row['voice']),  $page);
@@ -1042,4 +1042,52 @@ function showRelease(){
 	}
 	$page = str_replace('{table}', $showTorrent, $page);
 	return $page;
+}
+
+function add_release(){
+	global $db, $user, $var;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if($user['access'] < 4){
+		_message('Access deny', 'error');
+	}
+	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
+	foreach($arr as $key){
+		if(empty($_POST[$key])){
+			_message('Empty post', 'error');
+		}
+		$_POST[$key] = htmlspecialchars($_POST[$key]);	
+	}
+	if(empty($_FILES['poster'])){
+		_message('No upload file', 'error');
+	}
+	if($_FILES['poster']['error'] != 0){
+		_message('Upload error', 'error');
+	}
+	if($_FILES['poster']['type'] != 'image/jpeg'){
+		_message('You can upload only jpeg', 'error');	
+	}
+	if($_FILES['poster']['size'] > 1000000){
+		_message('Max size', 'error');
+	}
+	$query = $db->prepare("
+		INSERT INTO `page` (`name`, `ename`, `genre`, `voice`, `translator`, `timing`, `design`, `year`, `season`, `type`, `description`) 
+		VALUES (:name, :ename, :genre, :voice, :translator, :timing, :design, :year, :season, :type, :description)
+	");
+	$query->bindParam(':name', $_POST['name'], PDO::PARAM_STR);
+	$query->bindParam(':ename', $_POST['ename'], PDO::PARAM_STR);
+	$query->bindParam(':genre', $_POST['genre'], PDO::PARAM_STR);
+	$query->bindParam(':voice', $_POST['voice'], PDO::PARAM_STR);
+	$query->bindParam(':translator', $_POST['translator'], PDO::PARAM_STR);
+	$query->bindParam(':timing', $_POST['timing'], PDO::PARAM_STR);
+	$query->bindParam(':design', $_POST['design'], PDO::PARAM_STR);
+	$query->bindParam(':year', $_POST['year'], PDO::PARAM_STR);
+	$query->bindParam(':season', $_POST['season'], PDO::PARAM_STR);
+	$query->bindParam(':type', $_POST['type'], PDO::PARAM_STR);
+	$query->bindParam(':description', $_POST['description'], PDO::PARAM_STR);
+	$query->execute();
+	$id = $db->lastInsertId();
+	move_uploaded_file($_FILES['poster']['tmp_name'], $_SERVER['DOCUMENT_ROOT']."/upload/torrent/$id.jpg");
+	_message('Success');
 }
