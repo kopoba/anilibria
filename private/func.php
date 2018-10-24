@@ -871,6 +871,12 @@ function change_mail(){
 		_message('Same email', 'error');
 	}
     $_POST['mail'] = mb_strtolower($_POST['mail']);
+    $query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
+    $query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() > 0){
+		_message('Email already use', 'error');
+	}
     $time = $var['time'] + 43200;
     $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
     $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
