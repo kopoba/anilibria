@@ -903,6 +903,12 @@ function mail_link(){
 	if($hash != $_GET['hash']){
 		_message('Wrong hash', 'error');
 	}
+	$query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
+	$query->bindParam(':mail', $_GET['mail'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() > 0){
+		_message('Email already use', 'error');
+	}
 	$query = $db->prepare("UPDATE `users` SET `mail` = :mail WHERE `id` = :id");
 	$query->bindParam(':mail', $_GET['mail'], PDO::PARAM_STR);
 	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
