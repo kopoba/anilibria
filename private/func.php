@@ -1112,7 +1112,6 @@ function add_release(){
 	_message('Success');
 }
 
-
 function edit_release(){
 	global $db, $user, $var;
 	if(!$user){
@@ -1184,4 +1183,22 @@ function set_nickname(){
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_message('Success');
+}
+
+// block country, user access
+// ['RU, JP', 4], ['JP'], ['', 2]
+function check_block($arr){
+	global $db, $user, $var;
+	if(!is_array($arr)){
+		return true;
+	}
+	if(strpos($arr[0], geoip_country_code_by_name($var['ip'])) === false){
+		return false;
+	}
+	if(!empty($arr[1])){
+		if(empty($user) || $user['access'] < $arr[1]){
+			return false;
+		}
+	}
+	return true;
 }
