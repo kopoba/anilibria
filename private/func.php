@@ -1133,7 +1133,7 @@ function edit_release(){
 			$sql .= "`$key` = :$key,";
 			$data[] = $key;
 		}
-	}	
+	}
 	if(!empty($sql)){
 		$sql = rtrim($sql, ',');
 		$query = $db->prepare("UPDATE `page` SET $sql WHERE `id` = :id");
@@ -1143,5 +1143,34 @@ function edit_release(){
 		$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
 		$query->execute();
 	}
+	_message('Success');
+}
+
+
+function set_nickname(){
+	global $db, $user;
+	if(!$user){
+		_message('Unauthorized user', 'error');
+	}
+	if(!empty($user['nickname'])){
+		_message('Already set nickname', 'error');
+	}
+	if(empty($_POST['nickname'])){
+		_message('Empty nickname', 'error');
+	}
+	if(mb_strlen($_POST['nickname']) > 20){
+		_message('Nickname max len 20', 'error');
+	}
+	$_POST['nickname'] = htmlspecialchars($_POST['nickname']);
+	$query = $db->prepare("SELECT `id` FROM `users` WHERE `nickname` = :nickname");
+	$query->bindParam(':nickname', $_POST['nickname'], PDO::PARAM_STR);
+	$query->execute();
+	if($query->rowCount() > 0){
+		_message('Nickname already use', 'error');
+	}
+	$query = $db->prepare("UPDATE `users` SET `nickname` = :nickname WHERE `id` = :id");
+	$query->bindParam(':nickname', $_POST['nickname'], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->execute();
 	_message('Success');
 }

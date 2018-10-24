@@ -98,7 +98,8 @@ ALTER TABLE `session`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `login` (`login`),
-  ADD UNIQUE KEY `mail` (`mail`);
+  ADD UNIQUE KEY `mail` (`mail`),
+  ADD UNIQUE KEY `nickname` (`nickname`) USING BTREE;
 
 ALTER TABLE `xbt_files`
   ADD PRIMARY KEY (`fid`),
