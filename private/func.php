@@ -76,7 +76,7 @@ function _exit(){
 	if(session_status() != PHP_SESSION_NONE){
 		if(!empty($_SESSION['sess'])){
 			$query = $db->prepare("DELETE FROM `session` WHERE `hash` = :hash");
-			$query->bindParam(':hash', $_SESSION["sess"], PDO::PARAM_STR);
+			$query->bindParam(':hash', $_SESSION["sess"]);
 			$query->execute();
 		}
 		$params = session_get_cookie_params();
@@ -105,7 +105,7 @@ function login(){
 		_message('Wrong user agent', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login");
-	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
+	$query->bindValue(':login', $_POST['login']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('Invalid user', 'error');
@@ -125,38 +125,38 @@ function login(){
 	if(password_needs_rehash($row['passwd'], PASSWORD_DEFAULT)){
 		$passwd = createPasswd($_POST['passwd']);
 		$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
-		$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
-		$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
+		$query->bindParam(':passwd', $passwd[1]);
+		$query->bindParam(':id', $row['id']);
 		$query->execute();
 		$row['passwd'] = $passwd[1];
 	}
 	$hash = session_hash($row['login'], $row['passwd']);
 	$query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)");
-	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
-	$query->bindParam(':hash', $hash[0], PDO::PARAM_STR);
-	$query->bindParam(':time', $hash[1], PDO::PARAM_STR);
-	$query->bindParam(':ip', $var['ip'], PDO::PARAM_STR);
-	$query->bindParam(':info', $var['user_agent'], PDO::PARAM_STR);
+	$query->bindParam(':uid', $row['id']);
+	$query->bindParam(':hash', $hash[0]);
+	$query->bindParam(':time', $hash[1]);
+	$query->bindParam(':ip', $var['ip']);
+	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();
 	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`");
-	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
+	$query->bindParam(':uid', $row['id']);
 	$query->execute();
 	if($query->rowCount() > 10){
 		$row = $query->fetch();
 		$query = $db->prepare("DELETE FROM `session` WHERE `id` = :id");
-		$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
+		$query->bindParam(':id', $row['id']);
 		$query->execute();
 	}
 	$_SESSION['sess'] = $hash[0];
 	$query = $db->prepare("UPDATE `users` SET `last_activity` = :time WHERE `id` = :id");
-	$query->bindParam(':time', $var['time'], PDO::PARAM_STR);
-	$query->bindParam(':id', $row['id'], PDO::PARAM_STR);
+	$query->bindParam(':time', $var['time']);
+	$query->bindParam(':id', $row['id']);
 	$query->execute();
 	$query = $db->prepare("INSERT INTO `log_ip` (`uid`, `ip`, `time`, `info`) VALUES (:uid, INET6_ATON(:ip), :time, :info)");
-	$query->bindParam(':uid', $row['id'], PDO::PARAM_STR);
-	$query->bindParam(':ip', $var['ip'], PDO::PARAM_STR);
-	$query->bindParam(':time', $var['time'], PDO::PARAM_STR);
-	$query->bindParam(':info', $var['user_agent'], PDO::PARAM_STR);
+	$query->bindParam(':uid', $row['id']);
+	$query->bindParam(':ip', $var['ip']);
+	$query->bindParam(':time', $var['time']);
+	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();
 	_message('Success');
 }
@@ -170,7 +170,7 @@ function password_link(){
 		_message('Wrong id or time', 'error');	
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('No such user', 'error');
@@ -185,8 +185,8 @@ function password_link(){
 	}
 	$passwd = createPasswd();
 	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
-	$query->bindValue(':id', $row['id'], PDO::PARAM_STR);
-	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
+	$query->bindValue(':id', $row['id']);
+	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
 	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd[0]");
 	_message('Success');
@@ -220,7 +220,7 @@ function password_recovery(){
 		_message('Wrong email', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `mail` = :mail");
-	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
+	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('No such user', 'error');
@@ -253,17 +253,17 @@ function registration(){
 	}
 	$_POST['mail'] = mb_strtolower($_POST['mail']);
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
-	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
-	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
+	$query->bindValue(':login', $_POST['login']);
+	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('Already registered', 'error');
 	}
 	$passwd = createPasswd();
 	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))");
-	$query->bindValue(':login', $_POST['login'], PDO::PARAM_STR);
-	$query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
-	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
+	$query->bindValue(':login', $_POST['login']);
+	$query->bindParam(':mail', $_POST['mail']);
+	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('Success registration');
@@ -273,14 +273,14 @@ function auth(){
 	global $conf, $db, $var, $user;
 	if(!empty($_SESSION['sess'])){
 		$query = $db->prepare("SELECT * FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())");
-		$query->bindParam(':hash', $_SESSION['sess'], PDO::PARAM_STR);
+		$query->bindParam(':hash', $_SESSION['sess']);
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
 		}
 		$session = $query->fetch();
 		$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-		$query->bindParam(':id', $session['uid'], PDO::PARAM_STR);
+		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
@@ -292,9 +292,9 @@ function auth(){
 		if($var['time'] > $session['time']){			
 			$hash = session_hash($row['login'], $row['passwd']);
 			$query = $db->prepare('UPDATE `session` set `hash` = :hash, `time` = :time WHERE `id` = :id');
-			$query->bindParam(':hash', $hash[0], PDO::PARAM_STR);
-			$query->bindParam(':time', $hash[1], PDO::PARAM_STR);
-			$query->bindParam(':id', $session['id'], PDO::PARAM_STR);
+			$query->bindParam(':hash', $hash[0]);
+			$query->bindParam(':time', $hash[1]);
+			$query->bindParam(':id', $session['id']);
 			$query->execute();
 			$_SESSION['sess'] = $hash[0];
 		}
@@ -426,13 +426,13 @@ function auth2FA(){
 			if(!empty($user['2fa'])){
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
 				$query->bindValue(':code', null, PDO::PARAM_INT);
-				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
+				$query->bindParam(':uid', $user['id']);
 				$query->execute();
 				_message('2FA disabled');
 			}else{
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
-				$query->bindParam(':code', $_POST['2fa'], PDO::PARAM_STR);
-				$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
+				$query->bindParam(':code', $_POST['2fa']);
+				$query->bindParam(':uid', $user['id']);
 				$query->execute();
 				_message('2FA activated');
 			}
@@ -497,7 +497,7 @@ function simple_http_filter(){
 function torrentHashExist($hash){
 	global $db;
 	$query = $db->prepare("SELECT * FROM xbt_files WHERE `info_hash` = :hash");
-	$query->bindParam(':hash', $hash, PDO::PARAM_STR);
+	$query->bindParam(':hash', $hash);
 	$query->execute();
 	if($query->rowCount() == 0){
 		return false;
@@ -508,7 +508,7 @@ function torrentHashExist($hash){
 function torrentExist($id){
 	global $db;
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid`= :id");
-	$query->bindParam(':id', $id, PDO::PARAM_STR);
+	$query->bindParam(':id', $id);
 	$query->execute();
 	return $query->fetch();
 }
@@ -516,10 +516,10 @@ function torrentExist($id){
 function torrentAdd($hash, $rid, $json, $completed = 0){
 	global $db;
 	$query = $db->prepare("INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, :completed, :rid, :info)");
-	$query->bindParam(':hash', $hash, PDO::PARAM_STR);
-	$query->bindParam(':rid', $rid, PDO::PARAM_STR);
-	$query->bindParam(':completed', $completed, PDO::PARAM_STR);
-	$query->bindParam(':info', $json, PDO::PARAM_STR);
+	$query->bindParam(':hash', $hash);
+	$query->bindParam(':rid', $rid);
+	$query->bindParam(':completed', $completed);
+	$query->bindParam(':info', $json);
 	$query->execute();
 	return $db->lastInsertId();	
 }
@@ -533,7 +533,7 @@ function torrentAdd($hash, $rid, $json, $completed = 0){
 function torrentDelete($id){
 	global $db;
 	$query = $db->prepare("UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id");
-	$query->bindParam(':id', $id, PDO::PARAM_STR);
+	$query->bindParam(':id', $id);
 	$query->execute();
 	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent';
 	if(file_exists($file)) {
@@ -621,7 +621,7 @@ function downloadTorrent(){
 		_message('Wrong id', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid` = :id");
-	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('Wrong id', 'error');
@@ -629,11 +629,11 @@ function downloadTorrent(){
 	$info_hash = $query->fetch()['info_hash'];	
 
 	$query = $db->prepare("SELECT * FROM `xbt_users` WHERE `torrent_pass_version` = :id");
-	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		$query = $db->prepare("INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)");
-		$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+		$query->bindParam(':id', $user['id']);
 		$query->execute();
 		$uid = $db->lastInsertId();
 	}else{
@@ -712,7 +712,7 @@ function userInfo($id){
 	}
 	if(empty($result)){
 		$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
-		$query->bindValue(':id', $id, PDO::PARAM_STR);
+		$query->bindValue(':id', $id);
 		$query->execute();
 		if($query->rowCount() == 0){
 			return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
@@ -824,8 +824,8 @@ function saveUserValues(){
 		_message('Max len 1024', 'error');
 	}
 	$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
-	$query->bindParam(':user_values', $json, PDO::PARAM_STR);
-	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':user_values', $json);
+	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_message('Data saved');
 }
@@ -872,7 +872,7 @@ function change_mail(){
 	}
     $_POST['mail'] = mb_strtolower($_POST['mail']);
     $query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
-    $query->bindParam(':mail', $_POST['mail'], PDO::PARAM_STR);
+    $query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('Email already use', 'error');
@@ -904,14 +904,14 @@ function mail_link(){
 		_message('Wrong hash', 'error');
 	}
 	$query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
-	$query->bindParam(':mail', $_GET['mail'], PDO::PARAM_STR);
+	$query->bindParam(':mail', $_GET['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('Email already use', 'error');
 	}
 	$query = $db->prepare("UPDATE `users` SET `mail` = :mail WHERE `id` = :id");
-	$query->bindParam(':mail', $_GET['mail'], PDO::PARAM_STR);
-	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':mail', $_GET['mail']);
+	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_message('Success');
 }
@@ -929,8 +929,8 @@ function change_passwd(){
 	}
 	$passwd = createPasswd();
 	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
-	$query->bindParam(':passwd', $passwd[1], PDO::PARAM_STR);
-	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':passwd', $passwd[1]);
+	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
 	_message('Please check your mail');
@@ -947,7 +947,7 @@ function show_sess(){
 		_message('Unauthorized user', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `session` WHERE `uid` = :id");
-	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	return $query->fetchAll();
 }
@@ -961,8 +961,8 @@ function close_sess(){
 		_message('Wrong sess id', 'error');
 	}
 	$query = $db->prepare("DELETE FROM `session` WHERE `id` = :id AND `uid` = :uid");
-	$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
-	$query->bindParam(':uid', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $_POST['id']);
+	$query->bindParam(':uid', $user['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
 		_message('Cant close session', 'error');
@@ -995,7 +995,7 @@ function showRelease(){
 	}
 	
 	$query = $db->prepare("SELECT * FROM `page` WHERE `id` = :id");
-	$query->bindParam(':id', $_GET['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
 		return str_replace('{error}', 'К сожалению, такого релиза не существует.',  getTemplate('error'));
@@ -1026,7 +1026,7 @@ function showRelease(){
 	}
 	
 	$torrent = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
-	$torrent->bindParam(':id', $row['id'], PDO::PARAM_STR);
+	$torrent->bindParam(':id', $row['id']);
 	$torrent->execute();
 	$showTorrent = '';
 	while($data = $torrent->fetch()){
@@ -1095,17 +1095,17 @@ function add_release(){
 		INSERT INTO `page` (`name`, `ename`, `genre`, `voice`, `translator`, `timing`, `design`, `year`, `season`, `type`, `description`) 
 		VALUES (:name, :ename, :genre, :voice, :translator, :timing, :design, :year, :season, :type, :description)
 	");
-	$query->bindParam(':name', $_POST['name'], PDO::PARAM_STR);
-	$query->bindParam(':ename', $_POST['ename'], PDO::PARAM_STR);
-	$query->bindParam(':genre', $_POST['genre'], PDO::PARAM_STR);
-	$query->bindParam(':voice', $_POST['voice'], PDO::PARAM_STR);
-	$query->bindParam(':translator', $_POST['translator'], PDO::PARAM_STR);
-	$query->bindParam(':timing', $_POST['timing'], PDO::PARAM_STR);
-	$query->bindParam(':design', $_POST['design'], PDO::PARAM_STR);
-	$query->bindParam(':year', $_POST['year'], PDO::PARAM_STR);
-	$query->bindParam(':season', $_POST['season'], PDO::PARAM_STR);
-	$query->bindParam(':type', $_POST['type'], PDO::PARAM_STR);
-	$query->bindParam(':description', $_POST['description'], PDO::PARAM_STR);
+	$query->bindParam(':name', $_POST['name']);
+	$query->bindParam(':ename', $_POST['ename']);
+	$query->bindParam(':genre', $_POST['genre']);
+	$query->bindParam(':voice', $_POST['voice']);
+	$query->bindParam(':translator', $_POST['translator']);
+	$query->bindParam(':timing', $_POST['timing']);
+	$query->bindParam(':design', $_POST['design']);
+	$query->bindParam(':year', $_POST['year']);
+	$query->bindParam(':season', $_POST['season']);
+	$query->bindParam(':type', $_POST['type']);
+	$query->bindParam(':description', $_POST['description']);
 	$query->execute();
 	$id = $db->lastInsertId();
 	move_uploaded_file($_FILES['poster']['tmp_name'], $_SERVER['DOCUMENT_ROOT']."/upload/torrent/$id.jpg");
@@ -1125,7 +1125,7 @@ function edit_release(){
 		_message('Wrong release id', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `page` WHERE `id` = :id");
-	$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
 		_message('Release not exists', 'error');
@@ -1150,14 +1150,13 @@ function edit_release(){
 		$sql = rtrim($sql, ',');
 		$query = $db->prepare("UPDATE `page` SET $sql WHERE `id` = :id");
 		foreach($data as $k => $v){
-			$query->bindParam(":$v", $_POST[$v], PDO::PARAM_STR);
+			$query->bindParam(":$v", $_POST[$v]);
 		}
-		$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+		$query->bindParam(':id', $_POST['id']);
 		$query->execute();
 	}
 	_message('Success');
 }
-
 
 function set_nickname(){
 	global $db, $user;
@@ -1175,14 +1174,14 @@ function set_nickname(){
 	}
 	$_POST['nickname'] = htmlspecialchars($_POST['nickname']);
 	$query = $db->prepare("SELECT `id` FROM `users` WHERE `nickname` = :nickname");
-	$query->bindParam(':nickname', $_POST['nickname'], PDO::PARAM_STR);
+	$query->bindParam(':nickname', $_POST['nickname']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('Nickname already use', 'error');
 	}
 	$query = $db->prepare("UPDATE `users` SET `nickname` = :nickname WHERE `id` = :id");
-	$query->bindParam(':nickname', $_POST['nickname'], PDO::PARAM_STR);
-	$query->bindParam(':id', $user['id'], PDO::PARAM_STR);
+	$query->bindParam(':nickname', $_POST['nickname']);
+	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_message('Success');
 }
