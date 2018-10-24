@@ -1119,21 +1119,29 @@ function edit_release(){
 		_message('Release not exists', 'error');
 	}
 	$check = check_poster();
-	if($check){
+	if($check['err']){
 		$file = $_SERVER['DOCUMENT_ROOT']."/upload/torrent/{$_POST['id']}.jpg";
 		if(file_exists($file)){
 			unlink($file);
 		}
 		move_uploaded_file($_FILES['poster']['tmp_name'], $file);
 	}
+	$data = []; $sql = '';
 	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
 	foreach($arr as $key){
 		if(!empty($_POST[$key])){
-			$query = $db->prepare("UPDATE `page` SET `$key` =:$key WHERE `id` = :id");
-			$query->bindParam(":$key", $_POST[$key], PDO::PARAM_STR);
-			$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
-			$query->execute();
+			$sql .= "`$key` = :$key,";
+			$data[] = $key;
 		}
+	}	
+	if(!empty($sql)){
+		$sql = rtrim($sql, ',');
+		$query = $db->prepare("UPDATE `page` SET $sql WHERE `id` = :id");
+		foreach($data as $k => $v){
+			$query->bindParam(":$v", $_POST[$v], PDO::PARAM_STR);
+		}
+		$query->bindParam(':id', $_POST['id'], PDO::PARAM_STR);
+		$query->execute();
 	}
 	_message('Success');
 }
