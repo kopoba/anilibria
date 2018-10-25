@@ -1080,32 +1080,28 @@ function add_release(){
 	if($user['access'] < 4){
 		_message('Access deny', 'error');
 	}
+	$sql = ['col' => '', 'val' => ''];
+	$data = [];
 	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
 	foreach($arr as $key){
-		if(empty($_POST[$key])){
-			_message('Empty post', 'error');
-		}
-		$_POST[$key] = htmlspecialchars($_POST[$key]);	
+		$_POST[$key] = htmlspecialchars($_POST[$key]);
+		$sql['col'] .= "`$key`,";
+		$sql['val'] .= ":$key,";
+		$data[] = $key;
 	}
+	$sql['col'] = rtrim($sql['col'], ',');
+	$sql['val'] = rtrim($sql['val'], ',');
 	$check = check_poster();
 	if(!$check['err']){
 		_message($check['mes'], 'error');
 	}
-	$query = $db->prepare("
-		INSERT INTO `page` (`name`, `ename`, `genre`, `voice`, `translator`, `timing`, `design`, `year`, `season`, `type`, `description`) 
-		VALUES (:name, :ename, :genre, :voice, :translator, :timing, :design, :year, :season, :type, :description)
-	");
-	$query->bindParam(':name', $_POST['name']);
-	$query->bindParam(':ename', $_POST['ename']);
-	$query->bindParam(':genre', $_POST['genre']);
-	$query->bindParam(':voice', $_POST['voice']);
-	$query->bindParam(':translator', $_POST['translator']);
-	$query->bindParam(':timing', $_POST['timing']);
-	$query->bindParam(':design', $_POST['design']);
-	$query->bindParam(':year', $_POST['year']);
-	$query->bindParam(':season', $_POST['season']);
-	$query->bindParam(':type', $_POST['type']);
-	$query->bindParam(':description', $_POST['description']);
+	if(empty($sql['col'])){
+		_message('Empty post', 'error');	
+	}
+	$query = $db->prepare("INSERT INTO `page` ({$sql['col']}) VALUES ({$sql['val']})");
+	foreach($data as $k => $v){
+		$query->bindParam(":$v", $_POST[$v]);
+	}
 	$query->execute();
 	$id = $db->lastInsertId();
 	move_uploaded_file($_FILES['poster']['tmp_name'], $_SERVER['DOCUMENT_ROOT']."/upload/torrent/$id.jpg");
@@ -1149,6 +1145,7 @@ function edit_release(){
 		$sql = rtrim($sql, ',');
 		$query = $db->prepare("UPDATE `page` SET $sql WHERE `id` = :id");
 		foreach($data as $k => $v){
+			$_POST[$v] = htmlspecialchars($_POST[$v]);
 			$query->bindParam(":$v", $_POST[$v]);
 		}
 		$query->bindParam(':id', $_POST['id']);
