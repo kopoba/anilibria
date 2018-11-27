@@ -5,7 +5,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"log"
+	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -84,8 +86,16 @@ func statUpdate(hash string, x []string) {
 func main() {
 	handler := sockjs.NewHandler("/ws", sockjs.DefaultOptions, wsHandler)
 	http.Handle("/ws/", handler)
-	http.HandleFunc("/stat", webHandler)
-	log.Fatal(http.ListenAndServe("localhost:8080", nil))
+	http.HandleFunc("/stat/", webHandler)
+	const SOCK = "/tmp/stat.sock"
+	os.Remove(SOCK)
+	unixListener, err := net.Listen("unix", SOCK)
+	if err != nil {
+		log.Fatal("Listen (UNIX socket): ", err)
+	}
+	defer unixListener.Close()
+	os.Chmod(SOCK, 0777) // os.Chown(SOCK, 1001, 33) not work (operation not permitted)
+	log.Fatal(http.Serve(unixListener, nil))
 }
 
 func webHandler(w http.ResponseWriter, r *http.Request) {
