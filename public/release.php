@@ -14,5 +14,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
-add_release();
-
+if(!empty($_POST['id'])){
+	edit_release();
+}else{
+	add_release();
+}

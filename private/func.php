@@ -1080,8 +1080,8 @@ function add_release(){
 	if($user['access'] < 4){
 		_message('Access deny', 'error');
 	}
-	$sql = ['col' => '', 'val' => ''];
 	$data = [];
+	$sql = ['col' => '', 'val' => ''];
 	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
 	foreach($arr as $key){
 		$_POST[$key] = htmlspecialchars($_POST[$key]);
