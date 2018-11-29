@@ -81,7 +81,7 @@ body {
 	float: left;
 	height: 100px;
 	background: url(/img/bg_futer.png);
-	background-size: 200px;
+	/*background-size: 200px;*/
 	background-position: center top;
 	background-repeat: no-repeat;
 }
@@ -116,6 +116,12 @@ body {
 
 .clear {
 	clear: both;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .pagination {
