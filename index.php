@@ -6,6 +6,10 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
+
+//var_dump($user);
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
@@ -106,6 +110,5 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 					  </ul>
 					</nav>
 				</div>
-			</div>
 
 <?php require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

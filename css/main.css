@@ -124,6 +124,10 @@ body {
     margin-right: auto;
 }
 
+.form-control {
+	font-size: 12pt;
+}
+
 .pagination {
     margin: 5px 0;
 }
@@ -131,6 +135,38 @@ body {
 .pagination>li>a,
 .pagination>li>span {
 	color: #383838;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #383838;
+    border-color: #d3d3d3;
+}
+
+
+.btn-success:hover,
+.btn-success:active,
+.btn-success:visited,
+.btn-success:focus {
+    background-color: #282829;
+    border-color: #d3d3d3;
+}
+
+.btn-success.active.focus, .btn-success.active:focus, .btn-success.active:hover, .btn-success:active.focus, .btn-success:active:focus, .btn-success:active:hover, .open>.dropdown-toggle.btn-success.focus, .open>.dropdown-toggle.btn-success:focus, .open>.dropdown-toggle.btn-success:hover {
+    background-color: #282829;
+    border-color: #d3d3d3;
+}
+
+.form-control:focus {
+  border-color: #d3d3d3;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #d3d3d3;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 hr {

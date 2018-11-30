@@ -25,10 +25,38 @@ function _mail($email, $subject, $message){
 	mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);
 }
 
-function _message($mes, $err = 'ok'){
-	$arr = ['err' => $err, 'mes' => $mes];
-	echo json_encode($arr);
-	die();
+function _message($key, $err = 'ok'){
+	$text = [
+		'success' => 'Успех',
+		'empty' => 'Пустое значение, заполните все поля',
+		'wrong' => 'Неправильное значение',
+		'authorized' => 'Уже авторизован',
+		'registered' => 'Уже зарегистрирован',
+		'long' => 'Слишком длинное значение',
+		'wrongLogin' => 'Неправильный логин',
+		'wrongEmail' => 'Неправильный email',
+		'wrongUserAgent' => 'Неправильный user agent',
+		'invalidUser' => 'Неправильный пользователь',
+		'wrong2FA' => 'Неправильный код 2FA',
+		'wrongPasswd' => 'Неправильный пароль',
+		'noUser' => 'Нет такого пользователя',
+		'wrongHash' => 'Неправильный hash',
+		'wrongLink' => 'Неправильная ссылка',
+		'reCaptcha3' => 'reCaptcha проверка не пройдена: низкий score',
+		'coinhive' => 'Coinhive проверка не пройдена',
+		'checkEmail' => 'Проверьте почту',
+		'unauthorized' => 'Неавторизованный пользователь',
+		'2FA' => '2FA уже активирована',
+		'2FAdisabled' => '2FA выключена',
+		'2FAenabled' => '2FA включена',
+		'access' => 'Доступ запрещен',
+	];
+	
+	die(json_encode(['err' => $err, 'mes' => $text[$key], 'key' => $key]));
+}
+
+function _message2($mes){
+	die(json_encode(['err' => 'ok', 'mes' => $mes]));
 }
 
 function half_string($s){
@@ -90,19 +118,19 @@ function _exit(){
 function login(){
 	global $db, $var, $user;
 	if($user){
-		_message('Already authorized', 'error');
+		_message('authorized', 'error');
 	}
 	if(empty($_POST['login']) || empty($_POST['passwd'])){
-		_message('Empty post value', 'error');
+		_message('empty', 'error');
 	}
 	if(strlen($_POST['login']) > 20){
-		_message('Too long login or email', 'error');
+		_message('long', 'error');
 	}
 	if(preg_match('/[^0-9A-Za-z]/', $_POST['login'])){
-		_message('Wrong login', 'error');
+		_message('wrongLogin', 'error');
 	}
 	if(strlen($var['user_agent']) > 256){
-		_message('Wrong user agent', 'error');
+		_message('wrongUserAgent', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login");
 	$query->bindValue(':login', $_POST['login']);
@@ -113,14 +141,14 @@ function login(){
 	$row = $query->fetch();
 	if(!empty($row['2fa'])){
 		if(empty($_POST['fa2code'])){
-			_message('Empty post 2FA', 'error');
+			_message('empty', 'error');
 		}
 		if(oathHotp($row['2fa'], floor(microtime(true) / 30)) != $_POST['fa2code']){
-			_message('Wrong 2FA', 'error');
+			_message('wrong2FA', 'error');
 		}
 	}
 	if(!password_verify($_POST['passwd'], $row['passwd'])){
-		_message('Wrong password', 'error');
+		_message('wrongPasswd', 'error');
 	}
 	if(password_needs_rehash($row['passwd'], PASSWORD_DEFAULT)){
 		$passwd = createPasswd($_POST['passwd']);
@@ -158,7 +186,7 @@ function login(){
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();
-	_message('Success');
+	_message('success');
 }
 
 function password_link(){
@@ -192,64 +220,69 @@ function password_link(){
 	_message('Success');
 }
 
-function testcaptcha(){
-	$z = false;
-	if(!empty($_POST['g-recaptcha-response'])){
-		$result = recaptchav3();
-		if($result['success'] && $result['score'] > 0.5){
-			$z = true;
-		}else{
-			_message('reCaptcha test failed: score too low', 'error');
-		}
+function testRecaptcha(){
+	$v = 3;
+	if(!empty($_POST['recaptcha']) && $_POST['recaptcha'] == 2){
+		$v = $_POST['recaptcha'];
 	}
-	if(!coinhive_proof() && !$z){
+	$result = recaptcha($v);
+	if(!$result['success']){
+		_message('reCaptcha test failed', 'error');
+	}
+	if($v == 3 && $result['score'] < 0.5){
+		_message('reCaptcha test failed: score too low', 'error');
+	}
+}
+
+function testCoinhive(){
+	if(!coinhive_proof()){
 		_message('Coinhive captcha error', 'error');
 	}
 }
 
 function password_recovery(){
 	global $conf, $db, $var;
-	testcaptcha();
+	testRecaptcha();
 	if(empty($_POST['mail'])){
-		_message('Empty post value', 'error');
+		_message('empty', 'error');
 	}
 	if(strlen($_POST['mail']) > 254){
-		_message('Too long login or email', 'error');
+		_message('long', 'error');
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
-		_message('Wrong email', 'error');
+		_message('wrongEmail', 'error');
 	}
 	$query = $db->prepare("SELECT * FROM `users` WHERE `mail` = :mail");
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
-		_message('No such user', 'error');
+		_message('noUser', 'error');
 	}
 	$row = $query->fetch();
 	$time = $var['time']+43200;
 	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string($row['passwd'])));
 	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
-	_message('Please check your mail');
+	_message('checkEmail');
 }
 
 function registration(){
 	global $db, $user;
 	if($user){
-		_message('Already authorized', 'error');
+		_message('registered', 'error');
 	}
-	testcaptcha();
+	testRecaptcha();
 	if(empty($_POST['login']) || empty($_POST['mail'])){
-		_message('Empty post value', 'error');
+		_message('empty', 'error');
 	}
 	if(strlen($_POST['login']) > 20 || strlen($_POST['mail']) > 254){
-		_message('Too long login or email', 'error');
+		_message('long', 'error');
 	}
 	if(preg_match('/[^0-9A-Za-z]/', $_POST['login'])){
-		_message('Wrong login', 'error');
+		_message('wrongLogin', 'error');
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
-		_message('Wrong email', 'error');
+		_message('wrongEmail', 'error');
 	}
 	$_POST['mail'] = mb_strtolower($_POST['mail']);
 	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
@@ -257,7 +290,7 @@ function registration(){
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
-		_message('Already registered', 'error');
+		_message('registered', 'error');
 	}
 	$passwd = createPasswd();
 	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))");
@@ -266,7 +299,7 @@ function registration(){
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
-	_message('Success registration');
+	_message('success');
 }
 
 function auth(){
@@ -440,12 +473,16 @@ function auth2FA(){
 	}
 }
 
-function recaptchav3(){
+function recaptcha($v = 3){
 	global $conf, $var;
 	if(empty($_POST['g-recaptcha-response'])){
 		_message('Empty post recaptcha', 'error');
 	}
-	$data = ['secret' => $conf['recaptcha_secret'], 'response' => $_POST['g-recaptcha-response'], 'remoteip' => $var['ip']];
+	$secret = 'recaptcha_secret';
+	if($v != 3){
+		$secret = 'recaptcha2_secret';
+	}
+	$data = ['secret' => $conf[$secret], 'response' => $_POST['g-recaptcha-response'], 'remoteip' => $var['ip']];
 	$verify = curl_init();
 	curl_setopt($verify, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
 	curl_setopt($verify, CURLOPT_POST, true);

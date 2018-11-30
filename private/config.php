@@ -14,8 +14,13 @@ $conf['email_from'] = 'Test anilibria';
 $conf['coinhive_secret'] = 'secret';
 $conf['coinhive_public'] = 'public';
 
+// v3
 $conf['recaptcha_secret'] = 'secret';
 $conf['recaptcha_public'] = 'public';
+
+// v2
+$conf['recaptcha2_secret'] = 'secret';
+$conf['recaptcha2_public'] = 'public';
 
 $conf['hash_len'] = 64;
 $conf['hash_algo'] = 'sha256';
@@ -26,3 +31,5 @@ $conf['torrent_announce'] = 'http://tt.anilibria.tv:2710/announce';
 
 $conf['sphinx_host'] = '127.0.0.1';
 $conf['sphinx_port'] = '9306';
+
+$conf['minify'] = true;
