@@ -9,6 +9,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
+<?php if(!$user){ ?>
 <script src="https://www.google.com/recaptcha/api.js?render=<?php echo $conf['recaptcha_public']; ?>"></script>
 <div class="news-block">
 		<div class="news-header">
@@ -65,7 +66,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="clear"></div>
 		<div class="news_footer"></div>
 </div>
-	
+<?php } ?>	
 
 <div class="news-block" id="rules">
 		<div class="news-header">

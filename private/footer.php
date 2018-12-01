@@ -1,3 +1,4 @@
+			</div>
 			<div class="side">
 				<div class="asidehead" >
 					<div style="width: 96%; padding-top: 10px; margin: 0 auto;">
@@ -9,33 +10,37 @@
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="upload/poster/1.jpg" alt="" width="245" height="352"></a>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/1.jpg" alt="" width="245" height="352"></a>
 						<p class="lasttortext">Tokyo Ghoul:re / Токийский Гуль: Перерождение</p>
 					</div>
 				</div>
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="upload/poster/2.jpg" alt="" width="245" height="352"></a>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/2.jpg" alt="" width="245" height="352"></a>
 						<p class="lasttortext">Tokyo Ghoul:re / Токийский Гуль: Перерождение</p>
 					</div>
 				</div>
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="upload/poster/3.jpg" alt="" width="245" height="352"></a>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/3.jpg" alt="" width="245" height="352"></a>
 						<p class="lasttortext">Tensei shitara Slime Datta Ken /  О моём перерождении в слизь</p>
 					</div>
 				</div>
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="upload/poster/4.jpg" alt="" width="245" height="352"></a>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/4.jpg" alt="" width="245" height="352"></a>
 						<p class="lasttortext">ChaoS;HEAd / Вершина хаоса</p>
 					</div>
 				</div>
-				
-				<img src="img/pushall1.jpg" alt="">
+				<?php 
+					$tmpURL = 1;
+					if(rand(1,10) > 5) $tmpURL = 2;
+					echo "<img src=\"/img/pushall$tmpURL.jpg\" alt=\"\">";
+					unset($tmpURL);
+				?>
 			</div>
 		
 		</div>
@@ -43,33 +48,37 @@
 		<div class="footer">
 			<div class="footer_left">
 				<div class="footer_left2">
-					<img src="img/button/1.jpg" alt="">
-					<img src="img/button/2.gif" alt="">
-					<img src="img/button/3.gif" alt="">
-					<img src="img/button/4.gif" alt="">
-					<img src="img/button/5.gif" alt="">
-					<img src="img/button/6.png" alt="">
+					<a href="http://www.animespirit.ru/"><img src="/img/button/1.jpg" alt=""></a>
+					<a href="http://allmult.com/"><img src="/img/button/2.gif" alt=""></a>
+					<a href="http://www.animag.ru/"><img src="/img/button/3.gif" alt=""></a>
+					<a href="http://anidream.net/"><img src="/img/button/4.gif" alt=""></a>
+					<a href="http://anires.ru/pages/mainmenu.php"><img src="/img/button/5.gif" alt=""></a>
+					<a href="http://anibreak.ru/"><img src="/img/button/6.png" alt=""></a>
 				</div>
 			</div>
 			<div class="footer_center">
 			</div>
 			<div class="footer_right">
 				<ul>
-					<li><a href="">Правила</a></li>
+					<li><a href="/pages/login.php#rules">Правила</a></li>
 					<li><a href="">Реклама</a></li>
 					<li><a href="">Личный кабинет</a></li>
-					<li><a href="">Регистрация</a></li>
-					<li><a href="">Вход</a></li>
+					<?php 
+						$tmpURL = "<li><a href=\"/pages/login.php\">Регистрация</a></li><li><a href=\"/pages/login.php\">Вход</a></li>";
+						if($user) $tmpURL = "<li><a href=\"\">Избранное</a></li><li><a href=\"/public/logout.php\">Выход</a></li>";
+						echo $tmpURL;
+						unset($tmpURL);
+					?>
 				</ul>
 				<p>
 				Весь материал на сайте представлен исключительно для домашнего ознакомительного просмотра.<br/> В случаях нарушения авторских прав - обращайтесь на почту lupin@anilibria.tv 
 				</p>
 			</div>
 		</div>
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery.bxslider.min.js"></script>
-		<script src="js/bootstrap.min.js"></script>
-		<script src="js/main.js"></script>
-		<script>console.log("<?php echo pageStat(); ?>")</script>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/jquery.bxslider.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/main.js"></script>
+		<script>console.log("<?php echo pageStat(); ?>");</script>
 	</body>
 </html>
