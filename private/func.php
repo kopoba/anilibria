@@ -421,53 +421,53 @@ function getQRCodeGoogleUrl($name, $secret){
 function auth2FA(){
 	global $db, $user;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
 	if(empty($_POST['do'])){
-		_message('Empty post', 'error');
+		_message('empty', 'error');
 	}
 	switch($_POST['do']){
-		default: return 'empty_post_value'; break;
+		default: return 'empty'; break;
 		case 'gen':
 			if(!empty($user['2fa'])){
-				_message('2FA already activated', 'error');				
+				_message('2FA', 'error');				
 			}
 			$base32_key = generate_secret();
-			_message("<img src=".getQRCodeGoogleUrl($user['login']."@anilibria.tv", $base32_key)."><br>Secret key: $base32_key<br/>Сохраните секретный ключ в надежном месте.<input type=\"hidden\" id=\"2fa\" value=\"$base32_key\">");
+			_message2("<img src=".getQRCodeGoogleUrl($user['login']."@anilibria.tv", $base32_key)."><br>Secret key: $base32_key<br/>Сохраните секретный ключ в надежном месте.<input type=\"hidden\" id=\"2fa\" value=\"$base32_key\">");
 		break;
 		case 'save':
 			if(empty($_POST['passwd']) || empty($_POST['code'])){
-				_message('Empty post', 'error');
+				_message('empty', 'error');
 			}
 			if(empty($user['2fa'])){
 				if(empty($_POST['2fa'])){
-					_message('Empty post 2fa', 'error');
+					_message('empty', 'error');
 				}
 				$check = $_POST['2fa'];
 			}else{
 				$check = $user['2fa'];
 			}
 			if(strlen($check) != 16 || !ctype_alnum($check) || ctype_lower($check)){
-				_message('Wrong 2FA', 'error');
+				_message('wrong2FA', 'error');
 			}
 			if(oathHotp($check, floor(microtime(true) / 30)) != $_POST['code']){
-				_message('Wrong 2FA', 'error');
+				_message('wrong2FA', 'error');
 			}
 			if(!password_verify($_POST['passwd'], $user['passwd'])){
-				_message('Wrong password', 'error');
+				_message('wrongPasswd', 'error');
 			}
 			if(!empty($user['2fa'])){
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
 				$query->bindValue(':code', null, PDO::PARAM_INT);
 				$query->bindParam(':uid', $user['id']);
 				$query->execute();
-				_message('2FA disabled');
+				_message('2FAdisabled');
 			}else{
 				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
 				$query->bindParam(':code', $_POST['2fa']);
 				$query->bindParam(':uid', $user['id']);
 				$query->execute();
-				_message('2FA activated');
+				_message('2FAenabled');
 			}
 		break;
 	}
