@@ -50,6 +50,8 @@ function _message($key, $err = 'ok'){
 		'2FAdisabled' => '2FA выключена',
 		'2FAenabled' => '2FA включена',
 		'access' => 'Доступ запрещен',
+		'same' => 'Одинаковые данные',
+		'used' => 'Уже занято',
 	];
 	
 	die(json_encode(['err' => $err, 'mes' => $text[$key], 'key' => $key]));
@@ -891,34 +893,34 @@ function cryptAES($text, $key, $do = 'encrypt'){
 }
 
 function change_mail(){
-	global $user, $var, $conf;
+	global $db, $user, $var, $conf;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
 	if(empty($_POST['mail']) || empty($_POST['passwd'])){
-		_message('Empty post', 'error');	
+		_message('empty', 'error');	
 	}
 	if(!password_verify($_POST['passwd'], $user['passwd'])){
-		_message('Wrong password', 'error');
+		_message('wrongPasswd', 'error');
 	}
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
-		_message('Wrong email', 'error');
+		_message('wrongEmail', 'error');
 	}
 	if($_POST['mail'] == $user['mail']){
-		_message('Same email', 'error');
+		_message('same', 'error');
 	}
     $_POST['mail'] = mb_strtolower($_POST['mail']);
     $query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
     $query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
-		_message('Email already use', 'error');
+		_message('used', 'error');
 	}
     $time = $var['time'] + 43200;
     $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
     $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
     _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
-    _message('Please check your mail');
+    _message('checkEmail');
 }
 
 function mail_link(){
@@ -956,13 +958,13 @@ function mail_link(){
 function change_passwd(){
 	global $db, $user, $var, $conf;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
 	if(empty($_POST['passwd'])){
-		_message('Empty post', 'error');
+		_message('empty', 'error');
 	}
 	if(!password_verify($_POST['passwd'], $user['passwd'])){
-		_message('Wrong password', 'error');
+		_message('wrongPasswd', 'error');
 	}
 	$passwd = createPasswd();
 	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
@@ -970,7 +972,7 @@ function change_passwd(){
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
-	_message('Please check your mail');
+	_message('checkEmail');
 }
 
 function pageStat(){

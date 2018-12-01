@@ -157,3 +157,35 @@ $(document).on("click", "[data-2fa-start]", function(e) {
 		$("#2faMes").html("(<font color="+color+">"+data.mes+"</font>)");
 	});
 });
+
+
+$(document).on("click", "[data-change-email]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	mail = $('input[id=changeEmail]').val();
+	passwd = $('input[id=changeEmailPasswd]').val();
+	$.post("//"+document.domain+"/public/change_mail.php", {'mail': mail, 'passwd': passwd }, function(json){
+		data = JSON.parse(json);
+		color = 'red';
+		if(data.err == 'ok'){
+			color = 'green';
+		}
+		$("#changeEmailMes").html("(<font color="+color+">"+data.mes+"</font>)");
+	});
+});
+
+
+$(document).on("click", "[data-change-passwd]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	passwd = $('input[id=changePasswd]').val();
+	$.post("//"+document.domain+"/public/change_passwd.php", {'passwd': passwd }, function(json){
+		data = JSON.parse(json);
+		color = 'red';
+		if(data.err == 'ok'){
+			color = 'green';
+		}
+		$("#changePasswdMes").html("(<font color="+color+">"+data.mes+"</font>)");
+	});
+});
+

@@ -62,7 +62,7 @@
 				<ul>
 					<li><a href="/pages/login.php#rules">Правила</a></li>
 					<li><a href="">Реклама</a></li>
-					<li><a href="">Личный кабинет</a></li>
+					<li><a href="/pages/cp.php">Личный кабинет</a></li>
 					<?php 
 						$tmpURL = "<li><a href=\"/pages/login.php\">Регистрация</a></li><li><a href=\"/pages/login.php\">Вход</a></li>";
 						if($user) $tmpURL = "<li><a href=\"\">Избранное</a></li><li><a href=\"/public/logout.php\">Выход</a></li>";

@@ -13,9 +13,9 @@ if(!$user){
 }
 
 if(!empty($user['2fa'])){
-	$tmpMes = 'Выключить 2FA';
+	$tmpMes = 'ВЫКЛЮЧИТЬ 2FA';
 }else{
-	$tmpMes = 'Включить 2FA';
+	$tmpMes = 'ВКЛЮЧИТЬ 2FA';
 }
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
@@ -43,5 +43,40 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="clear"></div>
 		<div class="news_footer"></div>
 </div>
-	
+
+<div class="news-block">
+		<div class="news-header">
+			<h2 class="news-name" style="float:left;">
+				Изменить почту
+			</h2>
+			<h2 class="news-name" id="changeEmailMes" style="float:left; padding-left: 10px;"></h2>
+			<div class="clear"></div>	
+		</div>
+		<div class="clear"></div>
+		<div>			
+			<input class="form-control" id="changeEmail" type="text" placeholder="Новый email">
+			<input class="form-control" id="changeEmailPasswd" style="margin-top: 10px;" type="password" placeholder="Пароль">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-email type="submit" value="ОТПРАВИТь">
+		</div>
+		<div class="clear"></div>
+		<div class="news_footer"></div>
+</div>
+
+<div class="news-block">
+		<div class="news-header">
+			<h2 class="news-name" style="float:left;">
+				Изменить пароль
+			</h2>
+			<h2 class="news-name" id="changePasswdMes" style="float:left; padding-left: 10px;"></h2>
+			<div class="clear"></div>	
+		</div>
+		<div class="clear"></div>
+		<div>			
+			<input class="form-control" id="changePasswd" type="password" placeholder="Старый пароль">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-passwd type="submit" value="ОТПРАВИТь">
+		</div>
+		<div class="clear"></div>
+		<div class="news_footer"></div>
+</div>
+
 <?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
