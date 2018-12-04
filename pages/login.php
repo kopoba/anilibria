@@ -10,7 +10,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 <?php if(!$user){ ?>
-<script src="https://www.google.com/recaptcha/api.js?render=<?php echo $conf['recaptcha_public']; ?>"></script>
 <div class="news-block">
 		<div class="news-header">
 			<h2 class="news-name" style="float:left;">
@@ -42,6 +41,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="clear"></div>
 		<div>
 			<input class="form-control" id="regLogin" placeholder="Логин" type="email" required>
+			<input class="form-control" id="regNickname" style="margin-top: 10px;" placeholder="Nickname" type="email" required>
 			<input class="form-control" id="regEmail" style="margin-top: 10px;" placeholder="E-mail" type="email" required>
 			<div id="RecaptchaField1" style="margin-top: 10px; display: none;"></div>
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" data-submit-register value="ОТПРАВИТЬ" />

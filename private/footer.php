@@ -80,5 +80,9 @@
 		<script src="/js/bootstrap.min.js"></script>
 		<script src="/js/main.js"></script>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
+		<?php if($_SERVER['REQUEST_URI'] == '/pages/login.php' && !$user){
+			echo "<script src=\"https://www.google.com/recaptcha/api.js?render={$conf['recaptcha_public']}\"></script>";
+		 } 
+		 ?>
 	</body>
 </html>
