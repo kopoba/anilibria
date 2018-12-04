@@ -338,3 +338,77 @@ p.lasttortext {
 }
 
 /* torrent side end */
+
+
+/* profile start */
+
+.profile-info-left-side {
+	float: left;
+	width: 200px;
+	text-align: center;
+}
+
+.profile-left-block-wrapper {
+	padding: 10px 25px;
+}
+
+.profile-nickname {
+	display: block;
+	margin-bottom: 10px;
+	padding: 0;
+	font-size: 14pt;
+	line-height: 14pt;
+	text-align: center;
+}
+
+.profile-avatar-wrapper {
+	overflow: hidden;
+	width: 150px;
+	height: 150px;
+	-webkit-border-radius: 100%;
+	-moz-border-radius: 100%;
+	border-radius: 100%;
+}
+
+.profile-line {
+	float: left;
+	height: 260px;
+	border-left: 2px solid #383838;
+}
+
+.user-status {
+	display: block;
+	padding-top: 7px;
+}
+
+.profile-info-right-side {
+	float: left;
+	padding: 8px 20px 0 20px;
+}
+
+.profile-right-block-content {
+	display: block;
+	float: left;
+	width: 280px;
+}
+
+.profile-content-title {
+	font-size: 14pt;
+	color: #b82525;
+	font-weight: bold;
+	margin: 0;
+}
+
+.data-label {
+	display: block;
+	margin: 2px 0;
+}
+
+.user-data, .user-data a {
+	color: #f04646;
+	font-weight: 400;
+	text-decoration: none;
+	outline: none;
+}
+
+/* profile end */
