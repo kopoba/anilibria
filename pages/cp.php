@@ -26,10 +26,9 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="profile-left-block-wrapper">
 			<span class="profile-nickname"><b>VKuser323907417</b></span>			
 			<div class="profile-avatar-wrapper">
-				<img src="/upload/avatars/2.jpg" id="profile-avatar" alt="" width="150" height="150">
+				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/2.jpg" id="profile-avatar" alt="" width="150" height="150"></a>
 			</div>
 			<div class="user-status">
-				<font style="font-size: 14pt; color: red;">Offline</font><br/>
 				Зритель<br/>
 				Сообщений: 550
 			</div>
@@ -126,6 +125,28 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</div>
 		<div class="clear"></div>
 		<div class="news_footer"></div>
+</div>
+
+<div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="avatarInfo">Загрузка аватара</h4>
+			</div>
+			<div class="modal-body" style="max-height: 500px; max-width:580px; overflow: hidden;">
+				<center><img id="avatarPreview" src="/upload/avatars/noavatar.png" ></center>
+				<input type="hidden" id="x1" name="x1" />
+				<input type="hidden" id="y1" name="y1" />
+				<input type="hidden" id="w" name="w" />
+				<input type="hidden" id="h" name="h" />
+			</div>
+			<div class="modal-footer">
+				<label class="btn btn-default">Загрузить <input id="uploadAvatar" type="file" name="test" style="display: none;"></label>
+				<button data-upload-avatar type="button" class="btn btn-default">Отправить</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

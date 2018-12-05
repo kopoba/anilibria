@@ -176,6 +176,14 @@ hr {
 	border-top: 2px solid #d3d3d3;
 }
 
+.modal-open {
+	padding-right: 0px !important;
+}
+
+.jcrop-keymgr {
+    display: none !important;
+}
+
 /* nemu start */
 ul.main-navigation {
   padding: 0;
@@ -372,7 +380,7 @@ p.lasttortext {
 
 .profile-line {
 	float: left;
-	height: 260px;
+	height: 240px;
 	border-left: 2px solid #383838;
 }
 
