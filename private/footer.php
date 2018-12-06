@@ -80,9 +80,17 @@
 		<script src="/js/bootstrap.min.js"></script>
 		<script src="/js/main.js"></script>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
-		<?php if($_SERVER['REQUEST_URI'] == '/pages/login.php' && !$user){
-			echo "<script src=\"https://www.google.com/recaptcha/api.js?render={$conf['recaptcha_public']}\"></script>";
-		 } 
-		 ?>
+		<?php 
+			if($_SERVER['REQUEST_URI'] == '/pages/login.php' && !$user){
+				echo "<script src=\"https://www.google.com/recaptcha/api.js?render={$conf['recaptcha_public']}\"></script>";
+			}
+			if($_SERVER['REQUEST_URI'] == '/pages/cp.php' && $user){
+				echo "
+					<script src=\"/js/jquery.Jcrop.min.js\"></script>
+					<link rel=\"stylesheet\" href=\"/css/jquery.Jcrop.min.css\">
+					<script src=\"/js/uploadAvatar.js\"></script>
+				";
+			}
+		?>
 	</body>
 </html>

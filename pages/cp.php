@@ -18,6 +18,12 @@ if(!empty($user['2fa'])){
 	$tmpMes = 'ВКЛЮЧИТЬ 2FA';
 }
 
+if(!empty($user['avatar'])){
+	$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
+}else{
+	$tmpAvatar = "noavatar.jpg";
+}
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
@@ -26,7 +32,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="profile-left-block-wrapper">
 			<span class="profile-nickname"><b>VKuser323907417</b></span>			
 			<div class="profile-avatar-wrapper">
-				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/2.jpg" id="profile-avatar" alt="" width="150" height="150"></a>
+				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/<?php echo $tmpAvatar; ?>" id="profile-avatar" alt="" width="150" height="150"></a>
 			</div>
 			<div class="user-status">
 				Зритель<br/>
@@ -135,7 +141,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<h4 class="modal-title" id="avatarInfo">Загрузка аватара</h4>
 			</div>
 			<div class="modal-body" style="max-height: 500px; max-width:580px; overflow: hidden;">
-				<center><img id="avatarPreview" src="/upload/avatars/noavatar.png" ></center>
+				<center><img id="avatarPreview" src="/upload/avatars/<?php echo $tmpAvatar; ?>" ></center>
 				<input type="hidden" id="x1" name="x1" />
 				<input type="hidden" id="y1" name="y1" />
 				<input type="hidden" id="w" name="w" />

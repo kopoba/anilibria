@@ -52,6 +52,10 @@ function _message($key, $err = 'ok'){
 		'access' => 'Доступ запрещен',
 		'same' => 'Одинаковые данные',
 		'used' => 'Уже занято',
+		'noUploadFile' => 'Неудачная загрузка',
+		'uploadError' => 'Неудачная загрузка',
+		'wrongType' => 'Неправильный формат файла',
+		'maxSize' => 'Слишком большой файл',
 	];
 	
 	die(json_encode(['err' => $err, 'mes' => $text[$key], 'key' => $key]));
@@ -336,12 +340,14 @@ function auth(){
 		$user = [	'id' => $row['id'], 
 					'login' => $row['login'], 
 					'nickname' => $row['nickname'],
+					'avatar' => $row['avatar'],
 					'passwd' => $row['passwd'], 
 					'mail' => $row['mail'], 
 					'2fa' => $row['2fa'],
 					'access' => $row['access'],
 					'register_date' => $row['register_date'],
-					'last_activity' => $row['last_activity']
+					'last_activity' => $row['last_activity'],
+					'dir' => substr(md5($row['id']), 0, 2),
 				];
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
@@ -686,33 +692,75 @@ function downloadTorrent(){
 }
 
 function upload_avatar() {
-	global $user;
+	global $db, $user;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
-	$dir = $_SERVER['DOCUMENT_ROOT'].'/upload/avatars/'.substr(md5($user['id']), 0, 2);
-	$file = "$dir/{$user['id']}.jpg";
+	
 	if(empty($_FILES['avatar'])){
-		_message('No upload file', 'error');
+		_message('noUploadFile', 'error');
 	}
+	
 	if($_FILES['avatar']['error'] != 0){
-		if(file_exists($file)){
-			unlink($file);
-			_message('Success');
-		}
-		_message('Upload error', 'error');
+		_message('uploadError', 'error');
 	}
-	if($_FILES['avatar']['type'] != 'image/jpeg'){
-		_message('You can upload only jpeg', 'error');	
+	
+	if(!in_array(exif_imagetype($_FILES['avatar']['tmp_name']), [IMAGETYPE_PNG, IMAGETYPE_JPEG])){
+		_message('onlyPngJpg', 'error');	
 	}
 	if($_FILES['avatar']['size'] > 150000){
-		_message('Max size', 'error');
+		_message('maxSize', 'error');
 	}
+	
+	$img = new Imagick($_FILES['avatar']['tmp_name']);
+	$img->setImageFormat('jpg');
+	
+	$limit = 0; $crop = true;
+	foreach($_POST as $k => $v){
+		$limit++;
+		if(!in_array($k, ['w', 'h', 'x1', 'y1']))
+			$crop = false;	
+		
+		if(empty($v) && $v != 0)
+			$crop = false;
+
+		if(!ctype_digit($v))
+			$crop = false;
+
+		if($limit > 4)
+			$crop = false;
+
+		if($crop == false)
+			break;	
+	}
+	
+	if($crop) $img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
+	$img->resizeImage(160,160,Imagick::FILTER_LANCZOS, 1, false);
+	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+	$img->setImageCompressionQuality(90);
+	$img->stripImage();
+	
+	$name = hash('crc32', $img);
+	$tmp = $dir = '/upload/avatars/'.$user['dir'];
+	$dir = $_SERVER['DOCUMENT_ROOT'].$dir;
+	$file = "$dir/$name.jpg";
 	if(!file_exists($dir)) {
 		mkdir($dir, 0755, true);
 	}
-	move_uploaded_file($_FILES['avatar']['tmp_name'], $file);
-	_message('Success');
+	file_put_contents($file, $img);
+	if(!empty($user['avatar']) && $user['avatar'] != $name){
+		$old = "$dir/{$user['avatar']}.jpg";
+		if(file_exists($old)){
+			unlink($old);
+		}
+	}
+	
+	$query = $db->prepare("UPDATE `users` SET `avatar` = :avatar WHERE `id` = :id");
+	$query->bindParam(':avatar', $name);
+	$query->bindParam(':id', $user['id']);
+	$query->execute();
+
+	_message2("$tmp/$name.jpg");
 }
 
 function getUserAvatar($id = ''){
@@ -746,7 +794,7 @@ function userInfo($id){
 			'access' => $user['access'],
 			'register_date' => $user['register_date'],
 			'last_activity' => $user['last_activity'],
-			'user_values' => $user['user_values']
+			'user_values' => @$user['user_values']
 		];
 	}
 	if(empty($result)){
