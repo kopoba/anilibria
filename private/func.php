@@ -706,7 +706,7 @@ function upload_avatar() {
 	}
 	
 	if(!in_array(exif_imagetype($_FILES['avatar']['tmp_name']), [IMAGETYPE_PNG, IMAGETYPE_JPEG])){
-		_message('onlyPngJpg', 'error');	
+		_message('wrongType', 'error');	
 	}
 	if($_FILES['avatar']['size'] > 150000){
 		_message('maxSize', 'error');
@@ -715,11 +715,10 @@ function upload_avatar() {
 	$img = new Imagick($_FILES['avatar']['tmp_name']);
 	$img->setImageFormat('jpg');
 	
-	$limit = 0; $crop = true;
+	$crop = true;
 	foreach($_POST as $k => $v){
-		$limit++;
 		if(!in_array($k, ['w', 'h', 'x1', 'y1']))
-			$crop = false;	
+			$crop = false;
 		
 		if(empty($v) && $v != 0)
 			$crop = false;
@@ -727,11 +726,8 @@ function upload_avatar() {
 		if(!ctype_digit($v))
 			$crop = false;
 
-		if($limit > 4)
-			$crop = false;
-
 		if($crop == false)
-			break;	
+			break;
 	}
 	
 	if($crop) $img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
