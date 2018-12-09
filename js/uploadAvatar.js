@@ -49,7 +49,7 @@ $(document).on("click", "[data-upload-avatar]", function(e) {
 	form_data.append('y1', y1);
 	form_data.append('w', w);  
 	form_data.append('h', h);  
-    form_data.append('file', file_data);
+    form_data.append('avatar', file_data);
     
 	$.ajax({
 		type: 'POST',
@@ -57,14 +57,14 @@ $(document).on("click", "[data-upload-avatar]", function(e) {
 		processData: false,
 		contentType: false,
 		data: form_data,
-		url: "//"+document.domain+"/crop.php",
+		url: "//"+document.domain+"/public/upload_avatar.php",
 		success: function(json) {
 			data = JSON.parse(json);			
 			if(data.err != 'ok'){
-				$("#avatarInfo").html('Загрузка аватара <font color=red>'+data.mes+'</font>');
+				$("#avatarInfo").html('Загрузка аватара (<font color=red>'+data.mes+'</font>)');
 				return;
 			}
-			$('#profile-avatar').attr('src','/upload/avatars/a8/4.jpg');
+			$('#profile-avatar').attr('src', data.mes);
 			$('#avatarModal').modal('hide');
 		}
 	});

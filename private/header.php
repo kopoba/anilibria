@@ -5,9 +5,12 @@
 		<meta charset="UTF-8">
 		<meta name="description" content="test">
 		<meta name="keywords" content="anime, tracker, video">
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="css/main.css" />
-		<link rel="stylesheet" type="text/css" href="css/slider.css" />
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/main.css" />
+		<link rel="stylesheet" type="text/css" href="/css/slider.css" />
+		<link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+		<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+		<link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<div class="header">
@@ -42,6 +45,6 @@
 					</ul>
 				</div>
 				<div style="padding-top: 15px;">
-						<img src="img/other/1.jpg" alt="" class="center">
+						<img src="/img/other/1.jpg" alt="" class="center">
 				</div>
 

@@ -189,3 +189,84 @@ $(document).on("click", "[data-change-passwd]", function(e) {
 	});
 });
 
+
+$(document).on("click", "[data-edit-profile]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	$('#editProfile').modal('show');
+});
+
+$(document).on("click", "[data-reset-user-values]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	$.post("//"+document.domain+"/public/save_user_values.php", {'reset': 1 }, function(json){
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			text = 'Не указано';
+			$("#name").text(text);
+			$("#age").text(text);
+			$("#sex").text(text);
+			$("#vk").text(text);
+			$("#telegram").text(text);
+			$("#steam").text(text);
+			$("#phone").text(text);
+			$("#skype").text(text);
+			$("#facebook").text(text);
+			$("#instagram").text(text);
+			$("#youtube").text(text);
+			$("#twitch").text(text);
+			$("#twitter").text(text);
+			$('#editProfile').modal('hide');
+			return;
+		}
+		$("#profileInfo").html('Редактировать профиль (<font color=red>'+data.mes+'</font>)');
+	});
+});
+
+$(document).on("click", "[data-save-user-values]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	var name = $('input[id=name]').val();
+	var age = $('input[id=age]').val();
+	var sex = $('select[id=sex]').val();
+	var vk = $('input[id=vk]').val();
+	var telegram = $('input[id=telegram]').val();
+	var steam = $('input[id=steam]').val();
+	var phone = $('input[id=phone]').val();
+	var skype = $('input[id=skype]').val();
+	var facebook = $('input[id=facebook]').val();
+	var instagram = $('input[id=instagram]').val();
+	var youtube = $('input[id=youtube]').val();
+	var twitch = $('input[id=twitch]').val();
+	var twitter = $('input[id=twitter]').val();
+	
+	
+	
+	$.post("//"+document.domain+"/public/save_user_values.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter }, function(json){
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			if(name != "") $("#name").text(name);
+			if(age != "") $("#age").text(age);
+			if(sex != ""){
+				if(sex=="1"){
+					$("#sex").text("Мужской");
+				}else{
+					$("#sex").text("Женский");
+				}	
+			}
+			if(vk != "") $("#vk").text(sex);
+			if(telegram != "") $("#telegram").text(telegram);
+			if(steam != "") $("#steam").text(steam);
+			if(phone != "") $("#phone").text(phone);
+			if(skype != "") $("#skype").text(skype);
+			if(facebook != "") $("#facebook").text(facebook);
+			if(instagram != "") $("#instagram").text(instagram);
+			if(youtube != "") $("#youtube").text(youtube);
+			if(twitch != "") $("#twitch").text(twitch);
+			if(twitter != "") $("#twitter").text(twitter);
+			$('#editProfile').modal('hide');
+			return;
+		}
+		$("#profileInfo").html('Редактировать профиль (<font color=red>'+data.mes+'</font>)');
+	});
+});

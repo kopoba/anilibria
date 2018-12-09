@@ -24,6 +24,21 @@ if(!empty($user['avatar'])){
 	$tmpAvatar = "noavatar.jpg";
 }
 
+function profileMes($name){
+	global $user, $var;
+	$x = empty($user['user_values'][$name]) ? false : $user['user_values'][$name];
+	if($x){
+		switch($name){
+			case 'sex': $x = $var['sex'][$x]; break;
+			case 'age': $x = getAge($x); break;
+		}
+	}
+	if(!$x) $x = 'Не указано';
+	return $x;
+}
+
+//var_dump($user);
+
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
@@ -46,34 +61,47 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div class="profile-info-right-side">
 		<div class="profile-right-block-content">
 			<h3 class="profile-content-title">Личные данные</h3>
-				<p class="data-label">Имя: <span class="user-data">Мәке</span></p>
-				<p class="data-label">Пол: <span class="user-data">Мужской</span></p>
-				<p class="data-label">Возраст: <span class="user-data">100</span></p>
-				<p class="data-label">Был в сети: <span class="user-data">30.11.2019</span></p>
-				<p class="data-label">Регистрация: <span class="user-data">20.11.2018</span></p>
+				<p>Имя: <span id="name"><?php echo profileMes('name'); ?></span></p>
+				<p>Пол: <span id="sex"><?php echo profileMes('sex'); ?></span></p>
+				<p>Возраст: <span id="age"><?php echo profileMes('age'); ?></span></p>
+				<p>Был в сети: <span><?php echo date('d.m.Y', $user['register_date']); ?></span></p>
+				<p>Регистрация: <span><?php echo date('d.m.Y', $user['last_activity']); ?></span></p>
 				<br/>
 				<h3 class="profile-content-title">Статистика</h3>
-				<p class="data-label">Рейтинг: <span class="user-data">10</span></p>
-				<p class="data-label">Скачал: <span class="user-data">100 TB</span></p>
-				<p class="data-label">Раздал: <span class="user-data">200 TB</span></p>
+				<p>Раздал: <span>200 TB</span></p>
+				<p>Скачал: <span>100 TB</span></p>
+				<p>Рейтинг: <span>10</span></p>
 		</div>
 	</div>
+		
 	<div class="profile-info-right-side">
 		<div class="profile-right-block-content">
 			<h3 class="profile-content-title">Контактная информация</h3>
-				<p class="data-label">Телефон: <span class="user-data">Не указано</span></p>
-				<p class="data-label">Веб-сайт: <span class="user-data"><a href="http://vk.com/id323907417" target="_blank">http://vk.com/id323907417</a></span></p>
-				<p class="data-label">Skype: <span class="user-data">Не указано</span></p>
-				<p class="data-label">ВКонтакте: <span class="user-data">Не указано</span></p>
-				<p class="data-label">Facebook: <span class="user-data">Не указано</span></p>
-				<p class="data-label">Instagram: <span class="user-data">Не указано</span></p>
-				<p class="data-label">YouTube: <span class="user-data">Не указано</span></p>
-				<p class="data-label">Twitch: <span class="user-data">Не указано</span></p>
-				<p class="data-label">Twitter: <span class="user-data">Не указано</span></p>
-				<p class="data-label">Telegram: <span class="user-data">Не указано</span></p>
+				<p>Steam: <span id="steam"><?php echo profileMes('steam'); ?></span></p>
+				<p>Skype: <span id="skype"><?php echo profileMes('skype'); ?></span></p>
+				<p>Twitch: <span id="twitch"><?php echo profileMes('twitch'); ?></span></p>
+				<p>Twitter: <span id="twitter"><?php echo profileMes('twitter'); ?></span></p>
+				<p>YouTube: <span id="youtube"><?php echo profileMes('youtube'); ?></span></p>
+				<p>Телефон: <span id="phone"><?php echo profileMes('phone'); ?></span></p>
+				<p>Telegram: <span id="telegram"><?php echo profileMes('telegram'); ?></span></p>
+				<p>Facebook: <span id="facebook"><?php echo profileMes('facebook'); ?></span></p>
+				<p>Instagram: <span id="instagram"><?php echo profileMes('instagram'); ?></span></p>
+				<p>ВКонтакте: <span id="vk"><?php echo profileMes('vk'); ?></span></p>
 		</div>
 	</div>
+	<div class="profile-edit">
+	<a href="#" data-edit-profile style="color: #383838;" title="Редактировать"><span class="glyphicon glyphicon-edit"></span></a>
+	</div>
 </div>
+
+<style>
+	.profile-edit {
+		padding-top: 10px;
+		float: right;
+		height: 240px;
+		width: 16px;
+	}
+</style>
 
 <div class="news-block">
 		<div class="news-header">
@@ -87,7 +115,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div>			
 			<input class="form-control" id="changeEmail" type="text" placeholder="Новый email">
 			<input class="form-control" id="changeEmailPasswd" style="margin-top: 10px;" type="password" placeholder="Пароль">
-			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-email type="submit" value="ОТПРАВИТь">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-email type="submit" value="ОТПРАВИТЬ">
 		</div>
 		<div class="clear"></div>
 		<div class="news_footer"></div>
@@ -104,7 +132,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="clear"></div>
 		<div>			
 			<input class="form-control" id="changePasswd" type="password" placeholder="Старый пароль">
-			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-passwd type="submit" value="ОТПРАВИТь">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-passwd type="submit" value="ОТПРАВИТЬ">
 		</div>
 		<div class="clear"></div>
 		<div class="news_footer"></div>
@@ -133,7 +161,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="news_footer"></div>
 </div>
 
-<div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -150,6 +178,40 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<div class="modal-footer">
 				<label class="btn btn-default">Загрузить <input id="uploadAvatar" type="file" name="test" style="display: none;"></label>
 				<button data-upload-avatar type="button" class="btn btn-default">Отправить</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="editProfile" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="profileInfo">Редактировать профиль</h4>
+			</div>
+			<div class="modal-body" style="max-height: 500px; overflow: hidden;">
+				<input class="form-control" id="name" type="text" placeholder="Имя">
+				<select class="form-control" id="sex" style="margin-top: 7px;">
+					<option value="">Выберите пол</option>
+					<option value="1">Мужской</option>
+					<option value="2">Женский</option>
+				</select>				
+				<input class="form-control" id="age" type="text" style="margin-top: 7px;" placeholder="Возраст (год)" >
+				<input class="form-control" id="phone" type="text" style="margin-top: 7px;" placeholder="Телефон" >
+				<input class="form-control" id="steam" type="text" style="margin-top: 7px;" placeholder="Steam" >
+				<input class="form-control" id="skype" type="text" style="margin-top: 7px;" placeholder="Skype" >
+				<input class="form-control" id="vk" type="text" style="margin-top: 7px;" placeholder="ВКонтакте" >
+				<input class="form-control" id="facebook" type="text" style="margin-top: 7px;" placeholder="Facebook" >
+				<input class="form-control" id="instagram" type="text" style="margin-top: 7px;" placeholder="Instagram" >
+				<input class="form-control" id="youtube" type="text" style="margin-top: 7px;" placeholder="YouTube" >
+				<input class="form-control" id="twitch" type="text" style="margin-top: 7px;" placeholder="Twitch" >
+				<input class="form-control" id="twitter" type="text" style="margin-top: 7px;" placeholder="Twitter" >
+				<input class="form-control" id="telegram" type="text" style="margin-top: 7px;" placeholder="Telegram" >
+			</div>
+			<div class="modal-footer">
+				<button data-reset-user-values type="button" class="btn btn-default">Сбросить</button>
+				<button data-save-user-values type="button" class="btn btn-default">Сохранить</button>
 			</div>
 		</div>
 	</div>

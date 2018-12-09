@@ -22,7 +22,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 					</div>
 					<div>
 						<a href="/novosti/25-11-2018-otchyet-komandy-po-relizam-za-nedelyu/">
-							<img src="upload/news/1.jpg" alt="" width="860" style="float:left">
+							<img src="upload/news/1.jpg" alt="" width="840" style="float:left">
 						</a>
 					</div>
 					<div class="clear"></div>
@@ -48,7 +48,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 					</div>
 					<div>
 						<a href="/novosti/25-11-2018-otchyet-komandy-po-relizam-za-nedelyu/">
-							<img src="upload/news/2.jpg" alt="" width="860" style="float:left">
+							<img src="upload/news/2.jpg" alt="" width="840" style="float:left">
 						</a>
 					</div>
 					<div class="clear"></div>
@@ -69,7 +69,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 					</div>
 					<div>
 						<a href="/novosti/25-11-2018-otchyet-komandy-po-relizam-za-nedelyu/">
-							<img src="upload/news/3.jpg" alt="" width="860" style="float:left">
+							<img src="upload/news/3.jpg" alt="" width="840" style="float:left">
 						</a>
 					</div>
 					<div class="clear"></div>
@@ -82,33 +82,38 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				</div>
 				
 				<div class="clear"></div>
-				<div class="page-navigation" align="center">
-					<nav>
-					  <ul class="pagination pagination-lg">
-						<li class="page-item">
-						  <a class="page-link" href="#" aria-label="Previous">
-							<span aria-hidden="true">&laquo;</span>
-							<span class="sr-only">Previous</span>
-						  </a>
-						</li>
-							<li class="page-item"><a class="page-link" href="#">1</a></li>
-							<li class="page-item"><a class="page-link" href="#">2</a></li>
-							<li class="page-item"><a class="page-link" href="#">3</a></li>
-							<li class="page-item"><a class="page-link" href="#">4</a></li>
-							<li class="page-item"><a class="page-link" href="#">5</a></li>
-							<li class="page-item"><a class="page-link" href="#">6</a></li>
-							<li class="page-item"><a class="page-link" href="#">7</a></li>
-							<li class="page-item"><a class="page-link" href="#">8</a></li>
-							<li class="page-item"><a class="page-link" href="#">...</a></li>
-							<li class="page-item"><a class="page-link" href="#">100</a></li>
-							<li class="page-item">
-							<a class="page-link" href="#" aria-label="Next">
-								<span aria-hidden="true">&raquo;</span>
-								<span class="sr-only">Next</span>
-							</a>
-						</li>
-					  </ul>
-					</nav>
+				
+				<style>
+					.test {
+						    margin: 15px auto;
+    width: 140px;
+    background-color: white;
+    text-align: center; 
+
+
+					}
+			
+			.x {
+				
+				vertical-align: middle;
+				color: #383838;
+				
+			}
+			
+			.x:hover,
+.x:active,
+.x:visited,
+.x:focus {
+				color: #282829;
+				text-decoration: none;
+			}
+			
+			
+					
+				</style>
+				<div class="test">
+					<a href="#" class="x">ЗАГРУЗИТЬ ЕЩЕ</a>
+				
 				</div>
 
 <?php require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

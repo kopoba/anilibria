@@ -1,8 +1,8 @@
 			</div>
 			<div class="side">
 				<div class="asidehead" >
-					<div style="width: 96%; padding-top: 10px; margin: 0 auto;">
-					<input type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
+					<div style="width: 91%; padding-top: 11px; margin: 0 auto;">
+					<input class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
 					</div>
 				</div>
 				
@@ -57,6 +57,9 @@
 				</div>
 			</div>
 			<div class="footer_center">
+				<div class="chat">
+				<a  href="/chat"><span class="chat-link"></span></a>
+				</div>
 			</div>
 			<div class="footer_right">
 				<ul>

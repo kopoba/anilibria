@@ -866,7 +866,15 @@ function getTemplate($template){
 	return file_get_contents($file);
 }
 
-// {"sex": "", "vk":"", "telegram": "", "steam": "", "age": "", "country": "", "city": ""}
+
+function resetUserValues(){
+	global $db, $user, $var;
+	
+	
+	
+}
+
+// {"name":"","age":"","sex":"","vk":"","telegram":"","steam":"","phone":"","skype":"","facebook":"","instagram":"","youtube":"","twitch":"","twitter":""}
 // sex	int 0, 1, 2
 // age	strtotime
 function saveUserValues(){
@@ -877,8 +885,15 @@ function saveUserValues(){
     if(empty($_POST)){
 		_message('Empty post', 'error');	
 	}
-	if(count($_POST) > 10){		
+	if(count($_POST) > 20){		
 		_message('Too much args1', 'error');
+	}
+	if(!empty($_POST['reset'])){
+		$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
+		$query->bindParam(':user_values', $var['default_user_values']);
+		$query->bindParam(':id', $user['id']);
+		$query->execute();
+		_message2('Data saved');
 	}
     foreach($_POST as $key => $val){		
 		if(empty($val) || !array_key_exists($key, $var['user_values'])){
@@ -902,7 +917,12 @@ function saveUserValues(){
 		}
 		$arr['age'] = $time;
 	}
-    $json = json_encode($arr);
+    foreach($user['user_values'] as $k => $v){
+		if(!empty($arr[$k])){
+			$user['user_values'][$k] = $arr[$k];
+		}
+	}
+    $json = json_encode($user['user_values']);
     if(strlen($json) > 1024){
 		_message('Max len 1024', 'error');
 	}
@@ -910,9 +930,8 @@ function saveUserValues(){
 	$query->bindParam(':user_values', $json);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
-	_message('Data saved');
+	_message2('Data saved');
 }
-
 
 function cryptAES($text, $key, $do = 'encrypt'){
 	$key = hash('sha256', $key, true);
@@ -1281,4 +1300,8 @@ function check_block($arr){
 		}
 	}
 	return true;
+}
+
+function getAge($time){
+	return date('Y', time()) - date('Y', $time);
 }
