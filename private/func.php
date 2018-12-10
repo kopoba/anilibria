@@ -56,6 +56,8 @@ function _message($key, $err = 'ok'){
 		'uploadError' => 'Неудачная загрузка',
 		'wrongType' => 'Неправильный формат файла',
 		'maxSize' => 'Слишком большой файл',
+		'maxarg' => 'Слишком много аргументов',
+		'wrongData' => 'Неправильные данные',
 	];
 	
 	die(json_encode(['err' => $err, 'mes' => $text[$key], 'key' => $key]));
@@ -866,27 +868,19 @@ function getTemplate($template){
 	return file_get_contents($file);
 }
 
-
-function resetUserValues(){
-	global $db, $user, $var;
-	
-	
-	
-}
-
 // {"name":"","age":"","sex":"","vk":"","telegram":"","steam":"","phone":"","skype":"","facebook":"","instagram":"","youtube":"","twitch":"","twitter":""}
 // sex	int 0, 1, 2
 // age	strtotime
 function saveUserValues(){
 	global $db, $user, $var; $arr = [];
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('authorized', 'error');
 	}
     if(empty($_POST)){
-		_message('Empty post', 'error');	
+		_message('empty', 'error');	
 	}
 	if(count($_POST) > 20){		
-		_message('Too much args1', 'error');
+		_message('maxarg', 'error');
 	}
 	if(!empty($_POST['reset'])){
 		$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
@@ -900,20 +894,20 @@ function saveUserValues(){
 			continue;
 		}
 		if(!preg_match('/^[А-Яа-яA-Za-z0-9_.-]+$/u', $val)){
-			_message('Wrong chars', 'error');
+			_message('wrongData', 'error');
 		}
 		if(mb_strlen($val) > 30){
-			_message('Max len 30', 'error');
+			_message('long', 'error');
 		}
 		$arr[$key] = htmlspecialchars($val);
 	}
 	if(!empty($arr['sex']) && (!ctype_digit($arr['sex']) || ($arr['sex'] < 0 || $arr['sex'] > 2))){
-		_message('Wrong sex', 'error');
+		_message('wrongData', 'error');
 	}
     if(!empty($arr['age'])){
 		$time = strtotime($arr['age']);
 		if(!$time || $time > $var['time'] || date('Y', $time) < date('Y', $var['time'])-80){
-			_message('Wrong time', 'error');
+			_message('wrongData', 'error');
 		}
 		$arr['age'] = $time;
 	}
@@ -924,7 +918,7 @@ function saveUserValues(){
 	}
     $json = json_encode($user['user_values']);
     if(strlen($json) > 1024){
-		_message('Max len 1024', 'error');
+		_message('long', 'error');
 	}
 	$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
 	$query->bindParam(':user_values', $json);
