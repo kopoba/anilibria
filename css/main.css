@@ -273,6 +273,34 @@ a#activelink5:hover,
 a#activelink6:hover{
 	background-color:#cf2525;
 }
+
+.profile-edit {
+	padding-top: 10px;
+	float: right;
+	height: 240px;
+	width: 16px;
+}
+
+.loadmore {
+	margin: 15px auto;
+    width: 140px;
+    background-color: white;
+    text-align: center; 
+}
+
+.loadmore a {
+	vertical-align: middle;
+	color: #383838;
+}
+
+.loadmore a:hover,
+.loadmore a:active,
+.loadmore a:visited,
+.loadmore a:focus {
+	color: #282829;
+	text-decoration: none;
+}
+
 /* nemu end */
 
 

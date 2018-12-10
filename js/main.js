@@ -239,9 +239,6 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 	var youtube = $('input[id=youtube]').val();
 	var twitch = $('input[id=twitch]').val();
 	var twitter = $('input[id=twitter]').val();
-	
-	
-	
 	$.post("//"+document.domain+"/public/save_user_values.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){

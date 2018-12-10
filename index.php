@@ -80,40 +80,9 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 						<span class="other-info">Комментарии: 6</span>
 					</div>
 				</div>
-				
 				<div class="clear"></div>
-				
-				<style>
-					.test {
-						    margin: 15px auto;
-    width: 140px;
-    background-color: white;
-    text-align: center; 
-
-
-					}
-			
-			.x {
-				
-				vertical-align: middle;
-				color: #383838;
-				
-			}
-			
-			.x:hover,
-.x:active,
-.x:visited,
-.x:focus {
-				color: #282829;
-				text-decoration: none;
-			}
-			
-			
-					
-				</style>
-				<div class="test">
-					<a href="#" class="x">ЗАГРУЗИТЬ ЕЩЕ</a>
-				
+				<div class="loadmore">
+					<a href="#">ЗАГРУЗИТЬ ЕЩЕ</a>
 				</div>
 
 <?php require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

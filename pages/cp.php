@@ -94,15 +94,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>
 </div>
 
-<style>
-	.profile-edit {
-		padding-top: 10px;
-		float: right;
-		height: 240px;
-		width: 16px;
-	}
-</style>
-
 <div class="news-block">
 		<div class="news-header">
 			<h2 class="news-name" style="float:left;">
