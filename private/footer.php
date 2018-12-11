@@ -92,6 +92,10 @@
 					<script src=\"/js/jquery.Jcrop.min.js\"></script>
 					<link rel=\"stylesheet\" href=\"/css/jquery.Jcrop.min.css\">
 					<script src=\"/js/uploadAvatar.js\"></script>
+					<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dataTables.bootstrap.min.css\" />
+					<script src=\"/js/jquery.dataTables.min.js\"></script>
+					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
+					<script src=\"/js/tables.js\"></script>					
 				";
 			}
 		?>

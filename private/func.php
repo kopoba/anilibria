@@ -174,6 +174,7 @@ function login(){
 	$query->bindParam(':ip', $var['ip']);
 	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();
+	$sid = $db->lastInsertId();
 	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`");
 	$query->bindParam(':uid', $row['id']);
 	$query->execute();
@@ -188,8 +189,9 @@ function login(){
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':id', $row['id']);
 	$query->execute();
-	$query = $db->prepare("INSERT INTO `log_ip` (`uid`, `ip`, `time`, `info`) VALUES (:uid, INET6_ATON(:ip), :time, :info)");
+	$query = $db->prepare("INSERT INTO `log_ip` (`uid`, `sid`, `ip`, `time`, `info`) VALUES (:uid, :sid, INET6_ATON(:ip), :time, :info)");
 	$query->bindParam(':uid', $row['id']);
+	$query->bindParam(':sid', $sid);
 	$query->bindParam(':ip', $var['ip']);
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':info', $var['user_agent']);
@@ -1037,17 +1039,6 @@ function pageStat(){
 	return "Page generated in ".round((microtime(true) - $conf['start']), 4)." seconds. Peak memory usage: ".round(memory_get_peak_usage()/1048576, 2)." MB";
 }
 
-function show_sess(){
-	global $db, $user, $conf;
-	if(!$user){
-		_message('Unauthorized user', 'error');
-	}
-	$query = $db->prepare("SELECT * FROM `session` WHERE `uid` = :id");
-	$query->bindParam(':id', $user['id']);
-	$query->execute();
-	return $query->fetchAll();
-}
-
 function close_sess(){
 	global $db, $user, $conf;
 	if(!$user){
@@ -1063,7 +1054,7 @@ function close_sess(){
 	if($query->rowCount() != 1){
 		_message('Cant close session', 'error');
 	}
-	_message('Success');
+	_message2('Success');
 }
 
 function formatBytes($size, $precision = 2){
@@ -1298,4 +1289,22 @@ function check_block($arr){
 
 function getAge($time){
 	return date('Y', time()) - date('Y', $time);
+}
+
+function auth_history(){
+	global $db, $user, $var; $data = [];
+	$query = $db->prepare("SELECT * FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100");
+	$query->bindParam(':uid', $user['id']);
+	$query->execute();
+	while($row = $query->fetch()){
+		$status = false;
+		$tmp = $db->prepare("SELECT * FROM `session` WHERE `id` = :id AND `time` > UNIX_TIMESTAMP()");
+		$tmp->bindParam(':id', $row['sid']);
+		$tmp->execute();
+		if($tmp->rowCount() == 1){
+			$status = true;
+		}
+		$data[$row['time']] = [inet_ntop($row['ip']), base64_encode($row['info']), $status, $row['sid']];
+	}
+	return array_reverse($data, true);
 }

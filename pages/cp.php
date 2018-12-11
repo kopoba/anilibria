@@ -37,6 +37,27 @@ function profileMes($name){
 	return $x;
 }
 
+function tableSess($data){
+	$text = ''; $i = 0;	$td = count($data)-1;
+	foreach($data as $key => $val){
+		$i++; $status = 'Closed';
+		if($data[$key][2]){
+			$status = '<font color="green">Active</a>';
+		}
+		$text .= "<tr><td>$i</td><td>{$data[$key][0]}</td><td>".geoip_country_name_by_name($data[$key][0])."</td><td>".date("Y-m-d h:s", $key)."</td><td>$status</td>
+		<td><a href=\"#\" style=\"color: #383838;\" data-history-show-header=\"{$data[$key][1]}\"><span class=\"glyphicon glyphicon-edit\"></span></a>";
+		if($data[$key][2]){
+			$text .= "&nbsp;<a href=\"#\" style=\"color: #383838;\" data-session-id=\"{$data[$key][3]}\" data-session-td=\"$td\"><span class=\"glyphicon glyphicon-remove\"></span>";
+		}
+		$text .= "</td></tr>";
+		$td--;
+	}
+	return $text;
+}
+
+$test = tableSess(auth_history());
+
+//die;
 //var_dump($user);
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
@@ -150,6 +171,56 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</div>
 		<div class="clear"></div>
 		<div class="news_footer"></div>
+</div>
+
+<div class="news-block">
+	<div class="news-header">
+		<h2 class="news-name">
+			Активные сессии и авторизации
+		</h2>
+		<div class="clear"></div>	
+	</div>
+	<div class="clear"></div>
+	<div>
+		<style> td,th { text-align: center; vertical-align: middle; } </style>
+		<table id="tebleSess" class="table table-striped table-bordered" style="width:100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>IP</th>
+				<th>Country</th>
+				<th>Time</th>
+				<th>Session</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php echo $test; ?>
+		</tbody>
+		</table>
+	</div>
+	<div class="clear"></div>
+	<div class="news_footer"></div>
+</div>
+
+<div class="modal fade" id="headerModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" style="width: 800px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="avatarInfo">Загрузка аватара</h4>
+			</div>
+			<div  class="modal-body">
+			<pre id="showHeader">
+				
+			</pre>
+			
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-hidden="true">
