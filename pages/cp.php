@@ -55,11 +55,6 @@ function tableSess($data){
 	return $text;
 }
 
-$test = tableSess(auth_history());
-
-//die;
-//var_dump($user);
-
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
@@ -195,7 +190,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			</tr>
 		</thead>
 		<tbody>
-			<?php echo $test; ?>
+			<?php echo tableSess(auth_history()); ?>
 		</tbody>
 		</table>
 	</div>
