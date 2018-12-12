@@ -58,7 +58,7 @@
 			</div>
 			<div class="footer_center">
 				<div class="chat">
-				<a  href="/chat"><span class="chat-link"></span></a>
+				<a  href="/pages/chat.php"><span class="chat-link"></span></a>
 				</div>
 			</div>
 			<div class="footer_right">
@@ -97,6 +97,16 @@
 					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
 					<script src=\"/js/tables.js\"></script>					
 				";
+			}
+			if($_SERVER['REQUEST_URI'] == '/pages/chat.php'){
+				echo "
+					<script  src=\"/js/jquery.cookie.min.js\"></script>
+					<script src=\"/js/htmlentities.js\"></script>
+				";
+					
+				if(!empty($_SESSION["sex"]) || !empty($_SESSION["want"])){
+					echo "<script src=\"/js/chat.js\"></script>";
+				}
 			}
 		?>
 	</body>
