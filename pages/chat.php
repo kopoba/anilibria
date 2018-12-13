@@ -55,6 +55,21 @@ $chan = $cache->get('chan');
 		border-radius: 10px;
 	}
 	
+	.loading:after {
+		overflow: hidden;
+		display: inline-block;
+		vertical-align: bottom;
+		animation: ellipsis 2s infinite;
+		content: "\2026"; /* ascii code for the ellipsis character */
+	}
+	@keyframes ellipsis {
+		from {
+			width: 2px;
+		}
+		to {
+			width: 15px;
+		}
+	}
 </style>
 
 <div class="news-block">
@@ -72,7 +87,7 @@ $chan = $cache->get('chan');
 		<hr style="margin-top: 0px;"/>
 		<?php if(!empty($_SESSION["sex"]) || !empty($_SESSION["want"])){ ?>
 		<div class="chat-page">
-			<div id="chat"></div>	
+			<div id="chat"></div>
 			<div class="send">
 				<textarea class="textarea" name="text" id="clean" onkeypress="return runScript(event)"></textarea>
 				<center>
