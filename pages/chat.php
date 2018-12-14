@@ -15,8 +15,9 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $online = $cache->get('online');
-$kun = $cache->get('kun');
-$chan = $cache->get('chan');
+if($online !== false){
+	$online = json_decode($online, true);
+}
 
 ?>
 
@@ -79,7 +80,7 @@ $chan = $cache->get('chan');
 		</h2>
 		<h2 class="news-name" id="status" style="float:left; font-size: 15px; margin-left: 200px;"></h2>
 		<h2 class="news-name" style="float:right; font-size: 15px;">
-			Онлайн: <span id="online"><?php echo $online; ?></span> | Кунов: <span id="online_kun"><?php echo $kun; ?></span> | Тянок: <span id="online_chan"><?php echo $chan; ?></span>
+			Онлайн: <span id="online"><?php echo $online[0]; ?></span> | Кунов: <span id="online_kun"><?php echo $online[1]; ?></span> | Тянок: <span id="online_chan"><?php echo $online[2]; ?></span>
 		</h2>
 		<div class="clear"></div>
 	</div>

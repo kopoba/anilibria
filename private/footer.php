@@ -98,12 +98,7 @@
 					<script src=\"/js/tables.js\"></script>					
 				";
 			}
-			if($_SERVER['REQUEST_URI'] == '/pages/chat.php'){
-				echo "
-					<script  src=\"/js/jquery.cookie.min.js\"></script>
-					<script src=\"/js/htmlentities.js\"></script>
-				";
-					
+			if($_SERVER['REQUEST_URI'] == '/pages/chat.php'){					
 				if(!empty($_SESSION["sex"]) || !empty($_SESSION["want"])){
 					echo "<script src=\"/js/chat.js\"></script>";
 				}
