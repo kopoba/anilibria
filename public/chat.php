@@ -3,13 +3,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 
 $site = $_SERVER['HTTP_HOST'];
-
-header_remove("Pragma");
-header_remove("Expires");
-header_remove("Cache-Control");
 
 $time = time();
 $sid = session_id();
@@ -47,6 +42,18 @@ switch($_POST['do']){
 		$query->execute();
 		$cache->set($sid.'ping', $time, 60);
 		echo $online;
+		if(rand(1, 1000) == 100){
+			$timeout = $time-86400;
+			$query = $db->prepare("DELETE FROM `chat_sessions` WHERE `ping` < :time");
+			$query->bindParam(':time', $timeout);
+			$query->execute();
+			$query = $db->prepare("DELETE FROM `chat_talks` WHERE `start` < :time");
+			$query->bindParam(':time', $timeout);
+			$query->execute();
+			$query = $db->prepare("DELETE FROM `chat_messages` WHERE `time` < :time");
+			$query->bindParam(':time', $timeout);
+			$query->execute();
+		}
 	break;
 
 	case 'close':
@@ -70,15 +77,13 @@ switch($_POST['do']){
 	break;
 	
 	case 'stop':		
-		$query = $db->prepare("UPDATE `chat_talks` SET `status` = '1' WHERE (`one` = :sess OR `two` =:sess) AND `status` = '0'"); // Завершаем беседу
-		$query->bindParam(':sess', $sid);
-		$query->execute();
-
 		$query = $db->prepare("UPDATE `chat_sessions` SET `status` = '1' WHERE `sess` = :sess"); // Ставим флаг -> собеседник занят
 		$query->bindParam(':sess', $sid);
 		$query->execute();
-		
 		if(!empty($_SESSION['idt'])){
+			$query = $db->prepare("UPDATE `chat_talks` SET `status` = '1' WHERE `idt` = :idt"); // Завершаем беседу
+			$query->bindParam(':idt', $_SESSION['idt']);
+			$query->execute();
 			unset($_SESSION['idt']);
 		}
 	break;
@@ -131,7 +136,7 @@ switch($_POST['do']){
 			die;
 		}
 		$arr = []; $msg = '';
-		$query = $db->prepare("SELECT * FROM `chat_talks` WHERE `idt` = :idt AND `status` = 0"); // here
+		$query = $db->prepare("SELECT * FROM `chat_talks` WHERE `idt` = :idt AND `status` = 0");
 		$query->bindParam(':idt', $_SESSION['idt']);
 		$query->execute();
 		if($query->rowCount() != 1){ // Собеседник отключился

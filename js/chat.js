@@ -34,7 +34,7 @@ function sendMes(){
 	m = $('textarea[name=text]').val();
 	t = $.trim(m);
 	if(t.length > 1000){
-		alert("превышен лимит, не больше 1000 символов");
+		$("#chat").append("<span class='system'>Система</span>: превышен лимит, не больше 1000 символов<br/>");
 		return;
 	}
 	if(t.length > 0){
@@ -95,13 +95,15 @@ function getMsg(){
 			if(json != ""){
 				data = JSON.parse(json);
 				if(data.status == 'typing'){
-					if($("#status").html() != '<i>Собеседник печатает...</i>'){
-						$("#status").html('<i>Собеседник печатает...</i>');
+					tmp = '<i>Собеседник печатает...</i>';
+					if($("#status").html() != tmp){
+						$("#status").html(tmp);
 					}
 				}
 				if(data.status == 'offline'){
-					if($("#status").html() != '<font color="#DB0000">●</font> <i>собеседник оффлайн</i>'){
-						$("#status").html('<font color="#DB0000">●</font> <i>собеседник оффлайн</i>');
+					tmp = '<font color="#DB0000">●</font> <i>собеседник оффлайн</i>';
+					if($("#status").html() != tmp){
+						$("#status").html(tmp);
 					}
 				}
 				if(data.status == 'online'){
@@ -110,12 +112,10 @@ function getMsg(){
 					}
 				}
 				if(data.status == 'end'){
-					if($("#status").html() != '<i>Разговор закончен...</i>'){
-						$("#status").html('<i>Разговор закончен...</i>');
-						scrolls();
-						$("#send, #end, #clean").addClass("hidden");
-						$("#search, #exit, #ban").removeClass("hidden");
-					}
+					$("#status").html('<i>Разговор закончен...</i>');
+					scrolls();
+					$("#send, #end, #clean").addClass("hidden");
+					$("#search, #exit, #ban").removeClass("hidden");
 					return;
 				}
 				if(data.mes.length > 0){
