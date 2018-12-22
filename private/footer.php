@@ -10,35 +10,31 @@
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/1.jpg" alt="" width="245" height="352"></a>
-						<p class="lasttortext">Tokyo Ghoul:re / Токийский Гуль: Перерождение</p>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/1.jpg" alt="" width="240" height="350"></a>
 					</div>
 				</div>
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/2.jpg" alt="" width="245" height="352"></a>
-						<p class="lasttortext">Tokyo Ghoul:re / Токийский Гуль: Перерождение</p>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/2.jpg" alt="" width="240" height="350"></a>
 					</div>
 				</div>
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/3.jpg" alt="" width="245" height="352"></a>
-						<p class="lasttortext">Tensei shitara Slime Datta Ken /  О моём перерождении в слизь</p>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/3.jpg" alt="" width="240" height="350"></a>
 					</div>
 				</div>
 				
 				<div class="torrent-block">
 					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/4.jpg" alt="" width="245" height="352"></a>
-						<p class="lasttortext">ChaoS;HEAd / Вершина хаоса</p>
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/4.jpg" alt="" width="240" height="350"></a>
 					</div>
 				</div>
 				<?php 
 					$tmpURL = 1;
 					if(rand(1,10) > 5) $tmpURL = 2;
-					echo "<img src=\"/img/pushall$tmpURL.jpg\" alt=\"\">";
+					echo "<img src=\"/img/pushall$tmpURL.jpg\" alt=\"\" width=\"280\">";
 					unset($tmpURL);
 				?>
 			</div>
@@ -102,6 +98,15 @@
 				if(!empty($_SESSION["sex"]) || !empty($_SESSION["want"])){
 					echo "<script src=\"/js/chat.js\"></script>";
 				}
+			}
+			
+			if($xpage == 'release'){
+				echo "
+					<script src=\"/js/playerjs2.js\" type=\"text/javascript\"></script>	
+					<script>
+						var player = new Playerjs({ id:\"anilibriaPlayer\", file:[ {'title':'Серия 1', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0001/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0001-sd/playlist.m3u8', 'id': 's1'},{'title':'Серия 2', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0002/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0002-sd/playlist.m3u8', 'id': 's2'},{'title':'Серия 3', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0003/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0003-sd/playlist.m3u8', 'id': 's3'},{'title':'Серия 4', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0004/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0004-sd/playlist.m3u8', 'id': 's4'},{'title':'Серия 5', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0005/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0005-sd/playlist.m3u8', 'id': 's5'},{'title':'Серия 6', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0006/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0006-sd/playlist.m3u8', 'id': 's6'},{'title':'Серия 7', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0007/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0007-sd/playlist.m3u8', 'id': 's7'},{'title':'Серия 8', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0008/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0008-sd/playlist.m3u8', 'id': 's8'},{'title':'Серия 9', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0009/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0009-sd/playlist.m3u8', 'id': 's9'},{'title':'Серия 10', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0010/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0010-sd/playlist.m3u8', 'id': 's10'},{'title':'Серия 11', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0011/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0011-sd/playlist.m3u8', 'id': 's11'}, ], });
+					</script>
+				";
 			}
 		?>
 	</body>

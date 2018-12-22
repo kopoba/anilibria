@@ -21,6 +21,12 @@ $(document).ready(function() {
 		});
 	}
 	/* slider end */
+	
+	/* player release page start */
+	if ($('#moonPlayer').length > 0 ){
+		$('#moonPlayer').show();
+	}
+	/* player release page end */
 });
 
 $(document).on("click", "[data-submit-login]", function(e) {
@@ -266,4 +272,32 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 		}
 		$("#profileInfo").html('Редактировать профиль (<font color=red>'+data.mes+'</font>)');
 	});
+});
+
+$(document).on('click', '[data-tab]', function(e){
+	$(this).blur();
+	e.preventDefault();	
+	tabSwitch($(this).data('tab'));
+});
+
+function tabSwitch(tab){
+	$('[data-tab]').removeClass('active');
+	$("[data-tab="+tab+"]").addClass('active');
+	
+	$('.xplayer').hide();
+	$('#'+tab).show();
+}
+
+$(document).on('click', '[data-light]', function(e){
+	$(this).blur();
+	e.preventDefault();	
+	if ($('.light-off').length > 0 ){
+		if($('.light-off').is(":hidden")){
+			$('.light-off').show();
+			$(".xdark").css("background","#29003A");
+		}else{
+			$('.light-off').hide();
+			$(".xdark").css("background","transparent");
+		}
+	}
 });

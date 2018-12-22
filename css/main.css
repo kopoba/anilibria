@@ -1,7 +1,7 @@
 body {
     background-color: #D3D3D3;
-    min-width: 1180px;
-    max-width: 1180px;
+    min-width: 1175px;
+    max-width: 1175px;
     margin: 0 auto;
     //font:12pt 'Times New Roman';
     font-family: 'Open Sans', sans-serif;
@@ -46,14 +46,14 @@ body {
 }
 
 .side {
-	width: 285px;
+	width: 280px;
 	/*height: 1000px; */
 	float: right;
 	background-color: #383838;
 }
 
 .torrent-block {
-	width: 285px;
+	width: 280px;
 	background-color: #383838;
 }
 
@@ -61,7 +61,7 @@ body {
 	bottom: 0;
 	margin-top: 15px;
 	background-color: #383838;
-	width: 1180px;
+	width: 1175px;
 	height: 100px;
 }
 
@@ -112,7 +112,7 @@ body {
 
 .footer_right {
 	font-size:15.5px;
-	width: 490px;
+	width: 485px;
 	float: left;
 	color: #ddd;
 }
@@ -393,7 +393,7 @@ span.other-info {
 /* torrent side start */
 
 div.torrent_block {
-	width:265px;
+	width:260px;
 	height: auto;
 	padding-bottom:10px;
 	background-color:#282829;
