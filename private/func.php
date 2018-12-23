@@ -1334,6 +1334,7 @@ function footerJS(){
 					var player = new Playerjs({ id:\"anilibriaPlayer\", file:[ {'title':'Серия 1', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0001/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0001-sd/playlist.m3u8', 'id': 's1'},{'title':'Серия 2', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0002/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0002-sd/playlist.m3u8', 'id': 's2'},{'title':'Серия 3', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0003/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0003-sd/playlist.m3u8', 'id': 's3'},{'title':'Серия 4', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0004/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0004-sd/playlist.m3u8', 'id': 's4'},{'title':'Серия 5', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0005/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0005-sd/playlist.m3u8', 'id': 's5'},{'title':'Серия 6', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0006/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0006-sd/playlist.m3u8', 'id': 's6'},{'title':'Серия 7', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0007/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0007-sd/playlist.m3u8', 'id': 's7'},{'title':'Серия 8', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0008/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0008-sd/playlist.m3u8', 'id': 's8'},{'title':'Серия 9', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0009/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0009-sd/playlist.m3u8', 'id': 's9'},{'title':'Серия 10', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0010/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0010-sd/playlist.m3u8', 'id': 's10'},{'title':'Серия 11', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0011/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0011-sd/playlist.m3u8', 'id': 's11'}, ], });
 				</script>
 			";
+			$result .= wsInfo($var['release']);
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
@@ -1342,4 +1343,17 @@ function footerJS(){
 		break;
 	}
 	return $result;
+}
+
+function wsInfo($name){
+	global $conf;
+	if(!empty($name)){
+		$url = base64_encode(mb_strtolower(htmlspecialchars(explode('?', $_SERVER['REQUEST_URI'], 2)[0])));
+		$hash = hash('sha256', $name.$url.$conf['stat_secret']);
+		$result = str_replace('{ws}', $conf['stat_url'], getTemplate('stat'));
+		$result = str_replace('{hash}', $hash, $result);
+		$result = str_replace('{name}', $name, $result);
+		$result = str_replace('{url}', $url, $result);
+		return $result;
+	}
 }

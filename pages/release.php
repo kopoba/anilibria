@@ -10,6 +10,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'release';
+$var['release'] = 'super test';
 
 ?>
 
@@ -141,6 +142,7 @@ td:last-child { border-right: none; }
 .tab-switcher button.presence_online {
     background: #2d9c64;
     float: right;
+    display: none;
 }
 
 .light-off {
@@ -215,7 +217,7 @@ button.xdark {
 			<button data-tab="anilibriaPlayer" class="">Наш плеер</button>
 			<button data-light class="xdark z-fix">Свет</button>
 			
-			<button class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас">Смотрят: 158</button>
+			<button class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас"></button>
 			<div class="block_fix"></div>
 		</div>
 	</div>

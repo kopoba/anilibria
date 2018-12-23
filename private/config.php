@@ -33,3 +33,6 @@ $conf['sphinx_host'] = '127.0.0.1';
 $conf['sphinx_port'] = '9306';
 
 $conf['minify'] = true;
+
+$conf['stat_url'] = 'https://ws.poiuty.com/ws/';
+$conf['stat_secret'] = 'secret';

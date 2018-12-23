@@ -1,0 +1,36 @@
+<script src="/js/sockjs.min.js" type="text/javascript"></script>
+<script>
+	function bStat(){
+		function getRandomInt(min, max) {
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
+		var wsLast = 0;
+		var sock = new SockJS('{ws}');
+		sock.onopen = function() {
+			console.log('open');
+			hash = '{hash}';
+			name = '{name}';
+			url = '{url}';
+			message = hash+","+name+","+url;
+			sock.send(message);
+			wsStat();
+		};
+		sock.onmessage = function (evt) {
+			if(wsLast != evt.data){
+				if(!$('.presence_online').is(':visible')){
+					$('.presence_online').show();
+				}
+				$('.presence_online').html("Смотрят: "+evt.data);
+			}
+			wsLast = evt.data;
+		};
+		sock.onclose = function() {
+			console.log('close');
+		};
+		function wsStat() { 
+			sock.send('g');
+			setTimeout(wsStat, getRandomInt(5000, 10000));
+		}
+	}
+	bStat();
+</script>

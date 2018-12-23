@@ -1,5 +1,6 @@
 <?php
 $var['page'] = '';
+$var['release'] = '';
 $var['time'] = time();
 $var['ip'] = $_SERVER['REMOTE_ADDR'];
 $var['user_agent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT']);
