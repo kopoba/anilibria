@@ -8,9 +8,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 
-//var_dump($_SESSION);
-
-//die();
+$var['page'] = 'chat';
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 

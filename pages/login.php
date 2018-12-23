@@ -8,8 +8,11 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
+
+$var['page'] = 'login';
+
+if(!$user){ 
 ?>
-<?php if(!$user){ ?>
 <div class="news-block">
 		<div class="news-header">
 			<h2 class="news-name" style="float:left;">

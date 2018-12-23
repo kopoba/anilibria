@@ -1308,3 +1308,38 @@ function auth_history(){
 	}
 	return array_reverse($data, true);
 }
+
+function footerJS(){
+	global $var, $user; $result = '';
+	switch($var['page']){
+		default: break;
+		case 'login': if(!$user) $result = "<script src=\"https://www.google.com/recaptcha/api.js?render={$conf['recaptcha_public']}\"></script>"; break;
+		case 'cp':
+			if($user){
+				$result = "
+					<script src=\"/js/jquery.Jcrop.min.js\"></script>
+					<link rel=\"stylesheet\" href=\"/css/jquery.Jcrop.min.css\">
+					<script src=\"/js/uploadAvatar.js\"></script>
+					<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dataTables.bootstrap.min.css\" />
+					<script src=\"/js/jquery.dataTables.min.js\"></script>
+					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
+					<script src=\"/js/tables.js\"></script>					
+				";
+			}
+		break;
+		case 'release':
+			$result = "
+				<script src=\"/js/playerjs2.js\" type=\"text/javascript\"></script>
+				<script>
+					var player = new Playerjs({ id:\"anilibriaPlayer\", file:[ {'title':'Серия 1', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0001/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0001-sd/playlist.m3u8', 'id': 's1'},{'title':'Серия 2', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0002/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0002-sd/playlist.m3u8', 'id': 's2'},{'title':'Серия 3', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0003/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0003-sd/playlist.m3u8', 'id': 's3'},{'title':'Серия 4', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0004/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0004-sd/playlist.m3u8', 'id': 's4'},{'title':'Серия 5', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0005/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0005-sd/playlist.m3u8', 'id': 's5'},{'title':'Серия 6', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0006/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0006-sd/playlist.m3u8', 'id': 's6'},{'title':'Серия 7', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0007/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0007-sd/playlist.m3u8', 'id': 's7'},{'title':'Серия 8', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0008/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0008-sd/playlist.m3u8', 'id': 's8'},{'title':'Серия 9', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0009/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0009-sd/playlist.m3u8', 'id': 's9'},{'title':'Серия 10', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0010/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0010-sd/playlist.m3u8', 'id': 's10'},{'title':'Серия 11', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0011/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0011-sd/playlist.m3u8', 'id': 's11'}, ], });
+				</script>
+			";
+		break;
+		case 'chat':
+			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
+				$result = "<script src=\"/js/chat.js\"></script>";
+			}
+		break;
+	}
+	return $result;
+}

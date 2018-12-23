@@ -1,4 +1,5 @@
 <?php
+$var['page'] = '';
 $var['time'] = time();
 $var['ip'] = $_SERVER['REMOTE_ADDR'];
 $var['user_agent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT']);
@@ -41,4 +42,3 @@ $var['user_values'] = [
 	'twitter' => 'Twitter',
 	'telegram' => 'Telegram'
 ];
-

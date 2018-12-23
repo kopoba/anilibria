@@ -8,6 +8,8 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 
+$var['page'] = 'cp';
+
 if(!$user){
 	_message2('Unauthorized user', 'error');
 }

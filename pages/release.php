@@ -9,7 +9,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
-$xpage = 'release';
+$var['page'] = 'release';
 
 ?>
 
@@ -209,11 +209,11 @@ button.xdark {
 
 	<div class="clear"></div>
 
-	<div class="tab-switcher z-fix">
+	<div class="tab-switcher">
 		<div class="tab-content">
 			<button class="active" data-tab="moonPlayer">Внешний плеер</button>
 			<button data-tab="anilibriaPlayer" class="">Наш плеер</button>
-			<button data-light class="xdark">Свет</button>
+			<button data-light class="xdark z-fix">Свет</button>
 			
 			<button class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас">Смотрят: 158</button>
 			<div class="block_fix"></div>
