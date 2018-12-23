@@ -1357,3 +1357,16 @@ function wsInfo($name){
 		return $result;
 	}
 }
+
+function wsInfoShow(){
+	$result = '';
+	$arr = json_decode(file_get_contents("https://www.anilibria.tv/api/api.php?action=top"), true);
+	$all = array_sum($arr);
+	$arr = array_slice($arr, 0, 20);
+	
+	foreach($arr as $key => $val){
+		$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv/search/index.php?q=$key&where=iblock_Tracker\">$key</a></td><td class=\"tableCenter\">$val</a></td></tr>";
+	}
+	$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
+	return $result;
+}

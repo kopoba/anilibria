@@ -89,10 +89,10 @@ $var['release'] = 'super test';
 		width: 140px;
 	}
 	
-table { border-collapse: collapse; }
-tr { border: none; height: 30px; }
-td { border-right: solid 2px #d3d3d3; }
-td:last-child { border-right: none; }
+.download-torrent table { border-collapse: collapse; }
+.download-torrent tr { border: none; height: 30px; }
+.download-torrent td { border-right: solid 2px #d3d3d3; }
+.download-torrent td:last-child { border-right: none; }
 
 
 .xplayer {
@@ -165,6 +165,28 @@ button.xdark {
 	background: transparent;
 }
 
+
+.tableCenter {
+	text-align: center;
+}
+
+.table-borderless td,
+.table-borderless th {
+    border: 0;
+    padding: 0px;
+}
+
+.table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
+    padding: 0px;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 0px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 0px;
+}
+
 </style>
 
 <div class="light-off"></div>
@@ -217,7 +239,7 @@ button.xdark {
 			<button data-tab="anilibriaPlayer" class="">Наш плеер</button>
 			<button data-light class="xdark z-fix">Свет</button>
 			
-			<button class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас"></button>
+			<button data-online-table class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас"></button>
 			<div class="block_fix"></div>
 		</div>
 	</div>
@@ -255,6 +277,28 @@ button.xdark {
 
 	<div class="clear"></div>
 	<div class="news_footer"></div>
+</div>
+
+<div class="modal fade" id="statModal" tabindex="-1" role="dialog" aria-hidden="true" >
+	<div class="modal-dialog" style="width: 480px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<center><h4 class="modal-title">ТОП-20 ПРЯМО СЕЙЧАС</h4></center>
+			</div>
+			<div  class="modal-body">
+				<div class="tableStat">
+				<table class="table table-borderless table-condensed table-hover">
+  <tr>
+    <th>ТАЙТЛ</th>
+    <th class="tableCenter">ОНЛАЙН</th>
+  </tr>
+	<?php echo wsInfoShow(); ?>
+</table>
+			</div>
+			</div>
+
+		</div>
+	</div>
 </div>
 
 <?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
