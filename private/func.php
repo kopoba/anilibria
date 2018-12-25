@@ -1328,13 +1328,12 @@ function footerJS(){
 			}
 		break;
 		case 'release':
-			$result = "
-				<script src=\"/js/playerjs2.js\" type=\"text/javascript\"></script>
-				<script>
-					var player = new Playerjs({ id:\"anilibriaPlayer\", file:[ {'title':'Серия 1', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0001/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0001-sd/playlist.m3u8', 'id': 's1'},{'title':'Серия 2', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0002/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0002-sd/playlist.m3u8', 'id': 's2'},{'title':'Серия 3', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0003/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0003-sd/playlist.m3u8', 'id': 's3'},{'title':'Серия 4', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0004/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0004-sd/playlist.m3u8', 'id': 's4'},{'title':'Серия 5', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0005/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0005-sd/playlist.m3u8', 'id': 's5'},{'title':'Серия 6', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0006/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0006-sd/playlist.m3u8', 'id': 's6'},{'title':'Серия 7', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0007/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0007-sd/playlist.m3u8', 'id': 's7'},{'title':'Серия 8', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0008/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0008-sd/playlist.m3u8', 'id': 's8'},{'title':'Серия 9', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0009/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0009-sd/playlist.m3u8', 'id': 's9'},{'title':'Серия 10', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0010/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0010-sd/playlist.m3u8', 'id': 's10'},{'title':'Серия 11', 'file':'[720p]//x.anilibria.tv/videos/ts/7442/0011/playlist.m3u8,[480p]//x.anilibria.tv/videos/ts/7442/0011-sd/playlist.m3u8', 'id': 's11'}, ], });
-				</script>
-			";
-			$result .= wsInfo($var['release']);
+			$tmp = getReleaseVideo($var['release']['id']);
+			if(!empty($tmp[0])){
+				$result .= str_replace('{playlist}', $tmp[0], getTemplate('playerjs'));
+			}
+			unset($tmp);
+			$result .= wsInfo($var['release']['name']);
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
@@ -1363,10 +1362,35 @@ function wsInfoShow(){
 	$arr = json_decode(file_get_contents("https://www.anilibria.tv/api/api.php?action=top"), true);
 	$all = array_sum($arr);
 	$arr = array_slice($arr, 0, 20);
-	
 	foreach($arr as $key => $val){
 		$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv/search/index.php?q=$key&where=iblock_Tracker\">$key</a></td><td class=\"tableCenter\">$val</a></td></tr>";
 	}
 	$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
 	return $result;
+}
+
+function mp4_link($value){
+	global $conf, $var;
+	$time = time()+60*60*48;
+	$key = str_replace("=", "", strtr(base64_encode(md5("{$time}/videos/{$value}".$var['ip']." {$conf['nginx_secret']}", true)), "+/", "-_"));
+	$url = htmlspecialchars("{$conf['nginx_domain']}/get/$key/$time/$value");
+	return $url;
+}
+
+function getReleaseVideo($id){
+	global $conf;
+	$playlist = ''; 
+	$arr = json_decode(file_get_contents($conf['nginx_domain'].'/?id='.$id), true);
+	if(!empty($arr) && !empty($arr['updated'])){
+		unset($arr['updated']);
+		$arr = array_reverse($arr, true);
+		foreach($arr as $key => $val) {
+			$download = '';
+			if(!empty($val['file'])){
+				$download = mp4_link($val['file'].'.mp4');
+			}
+			$playlist .= "{'title':'Серия $key', 'file':'{$val['new']}', download:\"$download\", 'id': 's$key'},";
+		}
+	}
+	return [$playlist, $download];
 }

@@ -10,7 +10,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'release';
-$var['release'] = 'super test';
+$var['release'] = ['id' => 508, 'name' => 'super test'];
 
 ?>
 

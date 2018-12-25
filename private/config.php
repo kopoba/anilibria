@@ -36,3 +36,6 @@ $conf['minify'] = true;
 
 $conf['stat_url'] = 'https://ws.poiuty.com/ws/';
 $conf['stat_secret'] = 'secret';
+
+$conf['nginx_domain'] = 'https://x.anilibria.tv';
+$conf['nginx_secret'] = 'secret';
