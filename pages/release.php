@@ -12,190 +12,17 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 $var['page'] = 'release';
 $var['release'] = ['id' => 508, 'name' => 'super test'];
 
+/*	TODO
+	Page generated in 0.3303 seconds. Peak memory usage: 1.06 MB
+	file_get_contents use 97.98% time in func getReleaseVideo and wsInfoShow
+	we need cache data from remote servers 
+	https://img.poiuty.com/img/ae/293fcc66d6b2dcf71f4bf578f74d27ae.png
+*/
 ?>
 
-<style>
-	.title-rus {
-		color: #d83541;
-		text-align: center;
-		font-size: 23px;
-		font-weight: 600;
-	}
-	
-	.title-divider {
-		display: block;
-		height: 2px;
-		background: #d3d3d3;
-		margin: 15px 150px;
-	}
-	
-	.title-original {
-		color: #d83541;
-		font-size: 18px;
-		text-align: center;
-		font-weight: 600;
-	}
-	
-	.detail_torrent_side {
-		float: right;
-	}
-	
-	.detail_pic_corner {
-		background-color: #d3d3d3;
-		padding: 4px;
-	}
-	
-	.detail_torrent_info {
-		float: left;
-		width: 460px;
-		height: 500px;
-		overflow: hidden;
-	}
-	
-	#nextserial{
-		position: absolute;
-		font-family:'BebasBold', sans-serif;
-		color:#fff;
-		text-align:center;
-		font-size:15px;
-		background:rgba(0,0,0,.5);
-		width: 358px;
-		padding-top:5px;
-		padding-bottom:5px;
-	}
-	
-	.download-torrent {
-		margin-top: 10px;
-		background-color: #e0e0e0;
-		height: 100%;
-		width: 100%;
-		float: left;
-		text-align:center;
-	}
-	
-	.xtest1{
-		width: 240px;
-	}
-
-	.xtest2{
-		width: 260px;
-	}
-	
-	.xtest3{
-		width: 200px;
-	}
-	
-	.xtest4{
-		width: 140px;
-	}
-	
-.download-torrent table { border-collapse: collapse; }
-.download-torrent tr { border: none; height: 30px; }
-.download-torrent td { border-right: solid 2px #d3d3d3; }
-.download-torrent td:last-child { border-right: none; }
-
-
-.xplayer {
-	height: 530px;
-	display: none;
-}
-
-.release-title {
-    color: #d83541;
-    text-align: center;
-	font-size: 16px;
-	margin-top: 0px;
-}
-
-.tab-switcher {
-	margin-top: 10px;
-    padding: 10px 10px;
-    
-    background-image: linear-gradient(#282829, #282829, #000);
-    color: #fff;
-    text-transform: uppercase;
-    position: relative;
-    width: 100%;
-    height: 48px;
-}
-
-.tab-switcher button.active {
-    background: #4d4d4d;
-}
-
-.tab-switcher button {
-    color: #fff;
-    background: transparent;
-    border: none;
-    font-size: 13px;
-    padding: 5px 10px;
-    text-transform: uppercase;
-    float: left;
-    border-radius: 3px;
-    
-}
-
-.tab-switcher button:focus {
-	outline:0;
-}
-
-.tab-switcher button.presence_online {
-    background: #2d9c64;
-    float: right;
-    display: none;
-}
-
-.light-off {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.8);
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 998;
-    display: none;
-}
-
-.z-fix {
-    position: relative;
-    z-index: 999;
-}
-
-button.xdark {
-	background: transparent;
-}
-
-
-.tableCenter {
-	text-align: center;
-}
-
-.table-borderless td,
-.table-borderless th {
-    border: 0;
-    padding: 0px;
-}
-
-.table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
-    padding: 0px;
-}
-
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    padding: 0px;
-    line-height: 1.42857143;
-    vertical-align: top;
-    border-top: 0px;
-}
-
-</style>
-
 <div class="light-off"></div>
-
 <div class="news-block">
 	<div class="news-header"></div>
-	
-	
-
 	<div class="detail_torrent_info">
 		<h1 class="release-title">
 		Этот глупый свин не понимает мечту девочки-зайки<br/>
@@ -219,20 +46,14 @@ button.xdark {
 			И снова нас возвращают в этот прекрасный и огромный мир шиноби. Война против призраков далёкого прошлого уже как несколько лет закончилась. Жизнь вернулась в привычное русло и будучи "отсталым" от современности мир, как-то сделал резкий скачок вперед. Появилась развитая инфраструктура, технологии, о которых в "Ураганных хрониках" можно было только мечтать. Но погоня за современностью не затмила традиций. Воля огня, которая всегда была так близка жителям деревни скрытой в листве пылала пуще прежнего. Схема "шиноби-задания-деньги" всё так же актуальна и по сей день. Все эти генины, чунины и джоунины составляли несокрушимую веками иерархию во главе которой стоял лидер именуемый себя Кагэ.
 		</p>
 	</div>
-	
-
 	<div class="detail_torrent_side">
 		<div id="nextserial" style="display: block;">Серия выходит в понедельник</div>
 		<div class="detail_pic_corner">
 			<img class="detail_torrent_pic" border="0" src="/upload/release/1.jpg" width="350" height="500" alt="Radiant / Радиант" title="Radiant / Радиант">
 		</div>
-		
 		<a href="https://www.anilibria.tv/video/top10autumn/"><img width="355" src="https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/images/images/dopolnitelno%20top10gg.jpg" height="26" width="361"></a>
-
 	</div>
-
 	<div class="clear"></div>
-
 	<div class="tab-switcher">
 		<div class="tab-content">
 			<button class="active" data-tab="moonPlayer">Внешний плеер</button>
@@ -243,38 +64,28 @@ button.xdark {
 			<div class="block_fix"></div>
 		</div>
 	</div>
-	
 	<div class="xplayer z-fix" id="moonPlayer">
 		<iframe src="https://streamguard.cc/serial/8c04068d73cfada409d06effae051ca3/iframe?nocontrols_translations=1&amp;nocontrols_translations=1&amp;season=1" width="840" height="530" frameborder="0" allowfullscreen=""></iframe>
 	</div>
-	
-
-
 	<div class="xplayer z-fix" id="anilibriaPlayer"></div>
-
-	
 	<div class="download-torrent">
 		<table>
 			<tr>
-				<td class="xtest1">Серия 1-11 [HDTVRip 1080p]</td>
-				<td class="xtest2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> 8.46GB <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 100 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 424 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 8307</td>
-				<td class="xtest3">Добавлен 16.12.2018</td>
-				<td class="xtest4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/upload/torrents/5969.torrent">Cкачать</a>
+				<td class="torrentcol1">Серия 1-11 [HDTVRip 1080p]</td>
+				<td class="torrentcol2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> 8.46GB <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 100 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 424 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 8307</td>
+				<td class="torrentcol3">Добавлен 16.12.2018</td>
+				<td class="torrentcol4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/upload/torrents/5969.torrent">Cкачать</a>
 				</td>
 			</tr>
 			<tr>
-				<td class="xtest1">Серия 1-11 [HDTVRip 1080p]</td>
-				<td class="xtest2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> 8.46GB <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 100 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 424 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 8307</td>
-				<td class="xtest3">Добавлен 16.12.2018</td>
-				<td class="xtest4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/upload/torrents/5969.torrent">Cкачать</a>
+				<td class="torrentcol1">Серия 1-11 [HDTVRip 1080p]</td>
+				<td class="torrentcol2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> 8.46GB <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 100 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 424 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 8307</td>
+				<td class="torrentcol3">Добавлен 16.12.2018</td>
+				<td class="torrentcol4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/upload/torrents/5969.torrent">Cкачать</a>
 				</td>
 			</tr>
 		</table>			
 	</div>
-	
-	<!-- вам понравится -->
-	<!-- порядок просмотра -->
-
 	<div class="clear"></div>
 	<div class="news_footer"></div>
 </div>
@@ -287,16 +98,15 @@ button.xdark {
 			</div>
 			<div  class="modal-body">
 				<div class="tableStat">
-				<table class="table table-borderless table-condensed table-hover">
-  <tr>
-    <th>ТАЙТЛ</th>
-    <th class="tableCenter">ОНЛАЙН</th>
-  </tr>
-	<?php echo wsInfoShow(); ?>
-</table>
+					<table class="table table-borderless table-condensed table-hover">
+						<tr>
+							<th>ТАЙТЛ</th>
+							<th class="tableCenter">ОНЛАЙН</th>
+						</tr>
+						<?php echo wsInfoShow(); ?>
+					</table>
+				</div>
 			</div>
-			</div>
-
 		</div>
 	</div>
 </div>

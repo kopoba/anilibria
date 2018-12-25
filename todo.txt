@@ -16,7 +16,7 @@
 - Группы пользователей
 - Блокировка IP
 - Torrent stats
-
+- RSS (https://img.poiuty.com/img/b2/d774f923b32ba533897c38464cf49db2.png)
 
 
 == DONE ==

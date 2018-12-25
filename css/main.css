@@ -492,5 +492,158 @@ p.lasttortext {
 	margin: 0;
 }
 
-
 /* profile end */
+
+/* release start */
+
+.detail_torrent_side {
+	float: right;
+}
+	
+.detail_pic_corner {
+	background-color: #d3d3d3;
+	padding: 4px;
+}
+	
+.detail_torrent_info {
+	float: left;
+	width: 460px;
+	height: 520px;
+	overflow: hidden;
+}
+	
+#nextserial{
+	position: absolute;
+	font-family:'BebasBold', sans-serif;
+	color:#fff;
+	text-align:center;
+	font-size:15px;
+	background:rgba(0,0,0,.5);
+	width: 358px;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+	
+.download-torrent {
+	margin-top: 10px;
+	background-color: #e0e0e0;
+	height: 100%;
+	width: 100%;
+	float: left;
+	text-align:center;
+}
+	
+.torrentcol1{
+	width: 240px;
+}
+
+.torrentcol2{
+	width: 260px;
+}
+	
+.torrentcol3{
+	width: 200px;
+}
+
+.torrentcol4{
+	width: 140px;
+}
+	
+.download-torrent table { border-collapse: collapse; }
+.download-torrent tr { border: none; height: 30px; }
+.download-torrent td { border-right: solid 2px #d3d3d3; }
+.download-torrent td:last-child { border-right: none; }
+
+.xplayer {
+	height: 530px;
+	display: none;
+}
+
+.release-title {
+    color: #d83541;
+    text-align: center;
+	font-size: 16px;
+	margin-top: 0px;
+}
+
+.tab-switcher {
+	margin-top: 10px;
+    padding: 10px 10px;
+    
+    background-image: linear-gradient(#282829, #282829, #000);
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+    width: 100%;
+    height: 48px;
+}
+
+.tab-switcher button.active {
+    background: #4d4d4d;
+}
+
+.tab-switcher button {
+    color: #fff;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    padding: 5px 10px;
+    text-transform: uppercase;
+    float: left;
+    border-radius: 3px;
+    
+}
+
+.tab-switcher button:focus {
+	outline:0;
+}
+
+.tab-switcher button.presence_online {
+    background: #2d9c64;
+    float: right;
+    display: none;
+}
+
+.light-off {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 998;
+    display: none;
+}
+
+.z-fix {
+    position: relative;
+    z-index: 999;
+}
+
+button.xdark {
+	background: transparent;
+}
+
+
+.tableCenter {
+	text-align: center;
+}
+
+.table-borderless td,
+.table-borderless th {
+    border: 0;
+    padding: 0px;
+}
+
+.table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
+    padding: 0px;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 0px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 0px;
+}
+
+/* release end */
