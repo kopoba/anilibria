@@ -356,6 +356,20 @@ function auth(){
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
+		$query = $db->prepare("SELECT * FROM `xbt_users` WHERE `uid` = :id");
+		$query->bindParam(':id', $user['id']);
+		$query->execute();
+		if($query->rowCount() == 1){
+			$row = $query->fetch();
+			$user['downloaded'] = $row['downloaded'];
+			$user['uploaded'] = $row['uploaded'];
+			if(empty($user['uploaded'])) $user['uploaded'] = 1;
+			if(empty($user['downloaded'])) $user['downloaded'] = 1;
+			// upload/ download/ 1024, limit 100
+			// if uploaded > 5 TB and rating > 1 hide advertising
+			$user['rating'] = round($user['uploaded']/$user['downloaded']/1024, 2);
+			if($user['rating'] > 100) $user['rating'] = 100;
+		}
 	}
 }
 
@@ -1059,8 +1073,8 @@ function close_sess(){
 
 function formatBytes($size, $precision = 2){
     $base = log($size, 1024);
-    $suffixes = ['', 'KB', 'MB', 'GB', 'TB'];
-    return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+    $suffixes = ['', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
 }
 
 function showRelease(){
@@ -1108,7 +1122,12 @@ function showRelease(){
 			$torrent = str_replace('{seeders}', $row['seeders'], $torrent);
 			$torrent = str_replace('{leechers}', $row['leechers'], $torrent);
 			$torrent = str_replace('{completed}', $row['completed'], $torrent);
-			$torrent = str_replace('{fid}', $row['fid'], $torrent);
+			if($user){
+				$link = "/public/torrent_download.php?id={$row['fid']}";
+			}else{
+				$link = "/upload/torrents/{$row['fid']}.torrent";
+			}
+			$torrent = str_replace('{link}', $link, $torrent);
 			$torrent = str_replace('{rtype}', $tmp['0'], $torrent);
 			$torrent = str_replace('{rnum}', $tmp['1'], $torrent);
 			$torrent = str_replace('{rsize}', formatBytes($tmp['2']), $torrent);
@@ -1368,4 +1387,16 @@ function getReleaseVideo($id){
 		}
 	}
 	return [$playlist, $download];
+}
+
+function youtubeStat($id){
+	global $conf;
+	$view = $comment = 'Nan';
+	$json = file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=$id&key={$conf['youtube_secret']}");
+	if(!empty($json)){
+		$arr = json_decode($json, true);
+		if(!empty($arr['items']['0']['statistics']['viewCount'])) $view = $arr['items']['0']['statistics']['viewCount'];
+		if(!empty($arr['items']['0']['statistics']['commentCount'])) $comment = $arr['items']['0']['statistics']['commentCount'];
+	}
+	return [$view, $comment];
 }

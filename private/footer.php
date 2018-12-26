@@ -31,12 +31,22 @@
 						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/4.jpg" alt="" width="240" height="350"></a>
 					</div>
 				</div>
-				<?php 
-					$tmpURL = 1;
-					if(rand(1,10) > 5) $tmpURL = 2;
-					echo "<img src=\"/img/pushall$tmpURL.jpg\" alt=\"\" width=\"280\">";
-					unset($tmpURL);
+				
+				<div class="torrent-block">
+					<div class="torrent_block">
+						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/5.jpg" alt="" width="240" height="350"></a>
+					</div>
+				</div>
+								
+				<?php
+					if(!empty($var['release'])){
+						$tmpURL = 1;
+						if(rand(1,10) > 5) $tmpURL = 2;
+						echo "<img src=\"/img/pushall$tmpURL.jpg\" alt=\"\" width=\"280\">";
+						unset($tmpURL);
+					}
 				?>
+				
 			</div>
 		
 		</div>
@@ -80,5 +90,9 @@
 		<script src="/js/main.js"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
+		
+		<script>
+			
+		</script>
 	</body>
 </html>

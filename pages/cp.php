@@ -85,10 +85,14 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<p>Был в сети: <span><?php echo date('d.m.Y', $user['register_date']); ?></span></p>
 				<p>Регистрация: <span><?php echo date('d.m.Y', $user['last_activity']); ?></span></p>
 				<br/>
-				<h3 class="profile-content-title">Статистика</h3>
-				<p>Раздал: <span>200 TB</span></p>
-				<p>Скачал: <span>100 TB</span></p>
-				<p>Рейтинг: <span>10</span></p>
+				<?php if(!empty($user['downloaded'])){ ?>
+					<h3 class="profile-content-title">Статистика</h3>
+					<p>Раздал: <span><?php echo formatBytes($user['uploaded']); ?></span></p>
+					<?php if($user['downloaded'] > 1){ ?>
+						<p>Скачал: <span><?php echo formatBytes($user['downloaded']); ?></span></p>
+					<?php } ?>
+					<p>Рейтинг: <span><?php echo $user['rating']; ?></span></p>
+				<?php } ?>
 		</div>
 	</div>
 		
