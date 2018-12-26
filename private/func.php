@@ -1389,14 +1389,89 @@ function getReleaseVideo($id){
 	return [$playlist, $download];
 }
 
-function youtubeStat($id){
-	global $conf;
-	$view = $comment = 'Nan';
-	$json = file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=$id&key={$conf['youtube_secret']}");
-	if(!empty($json)){
-		$arr = json_decode($json, true);
-		if(!empty($arr['items']['0']['statistics']['viewCount'])) $view = $arr['items']['0']['statistics']['viewCount'];
-		if(!empty($arr['items']['0']['statistics']['commentCount'])) $comment = $arr['items']['0']['statistics']['commentCount'];
+function youtubeVideoExists($id) {
+	if(get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0] == 'HTTP/1.0 200 OK'){
+		return true;
 	}
-	return [$view, $comment];
+	return false;
+}
+
+function updateYoutubeStat(){
+	global $db;
+	$query = $db->query("SELECT * FROM `youtube`");
+	$query->execute();
+	
+	while($row = $query->fetch()){
+		$stat = youtubeStat($row['vid']);
+		if(!$stat){
+			continue;
+		}
+		$tmp = $db->prepare("UPDATE `youtube` SET `view` = :view, `comment` = :comment WHERE `id` = :id");
+		$tmp->bindParam(':view', $stat['0']);
+		$tmp->bindParam(':comment', $stat['1']);
+		$tmp->bindParam(':id', $row['id']);
+		$tmp->execute();
+	}
+}
+
+function youtubeStat($id){
+	global $db, $conf;	
+	if(youtubeVideoExists($id)){
+		$json = file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=$id&key={$conf['youtube_secret']}");
+		if(!empty($json)){
+			$arr = json_decode($json, true);
+			if(!empty($arr['items']['0']['statistics']['viewCount'])) $view = $arr['items']['0']['statistics']['viewCount'];
+			if(!empty($arr['items']['0']['statistics']['commentCount'])) $comment = $arr['items']['0']['statistics']['commentCount'];
+		}
+		return [$view, $comment];
+	}
+	return false;
+}
+
+function youtubeGetImage($id){
+	$data = fopen("https://img.youtube.com/vi/$id/maxresdefault.jpg", 'rb');
+	$img = new Imagick();
+	$img->readImageFile($data);
+	$img->resizeImage(840,415,Imagick::FILTER_LANCZOS, 1, false);
+	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+	$img->setImageCompressionQuality(80);
+	$img->stripImage();
+	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg', $img);
+}
+
+function updateYoutube(){
+	global $db, $conf;
+	$data = [];
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=5&key={$conf['youtube_secret']}"), true);
+	foreach($arr['items'] as $key => $val){
+		$query = $db->prepare("SELECT * FROM `youtube` WHERE `vid` = :vid");
+		$query->bindParam(':vid', $val['id']['videoId']);
+		$query->execute();
+		if($query->rowCount() == 1){
+			continue;
+		}
+		$query = $db->prepare("INSERT INTO `youtube` (`title`, `vid`) VALUES (:title, :vid)");
+		$query->bindParam(':title', $val['snippet']['title']);
+		$query->bindParam(':vid', $val['id']['videoId']);
+		$query->execute();
+		youtubeGetImage($val['id']['videoId']);
+	}	
+}
+
+function youtubeShow(){
+	global $db;
+	$result = '';
+	$query = $db->query("SELECT * FROM `youtube` ORDER BY `id` ASC LIMIT 3");
+	$query->execute();
+	while($row = $query->fetch()){
+		$youtube = getTemplate('youtube');
+		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$row['vid']}", $youtube);
+		$youtube = str_replace('{title}', $row['title'], $youtube);
+		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg', $youtube);
+		$youtube = str_replace('{comment}', $row['comment'], $youtube);
+		$youtube = str_replace('{view}', $row['view'], $youtube);
+		$result .= $youtube;
+		unset($youtube);
+	}
+	return $result;
 }
