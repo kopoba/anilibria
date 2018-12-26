@@ -1,51 +1,6 @@
-<article id="anime_detail">
-    <header>
-        <h1>{runame}<br/><span>{engname}</span></h1>
-    </header>
-    <div id="anime_detail_body">
-        <img id="torrent_poster" src="../upload/torrent/{img}.jpg" alt="{runame} / {engname}" title="{runame} / {engname}" />
-        <p>
-            <span><b>Жанры:&nbsp;</b></span>
-            {genre}
-            <br/>
-            <span><b>Озвучка:&nbsp;</b></span>
-            {voice}
-            <br/>
-            <span><b>Аниме сезон:&nbsp;</b></span>
-            {season}
-            <br/>
-            <span><b>Тип:&nbsp;</b>{type}</span>
-            <br/>
-            <span><b>Перевод:&nbsp;</b></span>
-            {translator}
-            <br/>
-            <span><b>Тайминг:&nbsp;</b></span>
-            {timing}
-            <br/>
-            <span><b>Формление:&nbsp;</b></span>
-            {design}
-            <br/>
-            <span><b>Состояние релиза:&nbsp;</b>{status}</span>
-            <br/>
-            <span><b>Технические параметры&nbsp;</b><small>(Спойлер)</small></span>
-            <br/><br/>
-            <b>Описание:&nbsp;</b>
-            {description}
-        </p>
-        <div style="clear:both; height:0"></div>
-        <hr class="red_hr"/>
-        <h2>Скачать торрентом</h2>
-		<table id="TorrentList" align="center">
-			{table}
-		</table>
-        <br/>
-		<div {edit}>
-			<input type="file" name="torrent" accept=".torrent">
-			<input type="text" name="rid">
-			<input type="text" name="quality">
-			<input type="text" name="episode">
-			<button class="link_button" data-upload-torrent >Загрузить торрент</button>
-		</div>
-        {hidden}
-    </div>
-</article>
+<tr>
+	<td class="torrentcol1">Серия {rnum} [{rtype}]</td>
+	<td class="torrentcol2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> {rsize} <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> {seeders} <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> {leechers} <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> {completed}</td>
+	<td class="torrentcol3">Добавлен {ctime}</td>
+		<td class="torrentcol4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/upload/torrents/{fid}.torrent">Cкачать</a></td>
+</tr>

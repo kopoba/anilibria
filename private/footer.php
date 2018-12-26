@@ -78,7 +78,7 @@
 		<script src="/js/jquery.bxslider.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
 		<script src="/js/main.js"></script>
-		<script>console.log("<?php echo pageStat(); ?>");</script>
 		<?php echo footerJS(); ?>
+		<script>console.log("<?php echo pageStat(); ?>");</script>
 	</body>
 </html>

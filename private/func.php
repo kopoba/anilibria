@@ -1065,81 +1065,56 @@ function formatBytes($size, $precision = 2){
 
 function showRelease(){
 	global $db, $user;
-	
-	function getList($text){
-		if(empty($text)){
-			return '-';
-		}
-		$arr = explode(',', $text);
-		if(!is_array($arr)){
-			return rtrim("<a href='#'>$text</a>");
-		}
-		$result = '';
-		foreach($arr as $k => $v){
-			$result .= "<a href='#'>".trim($v)."</a> ";
-		}
-		return rtrim($result);
-	}
-	
-	$query = $db->prepare("SELECT * FROM `page` WHERE `id` = :id");
+	$status = ['0' => 'В работе', '1' => 'Завершен'];
+	$query = $db->prepare("SELECT * FROM `release` WHERE `id` = :id");
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
-		return str_replace('{error}', 'К сожалению, такого релиза не существует.',  getTemplate('error'));
+		header('HTTP/1.0 404 Not Found');
+		return str_replace('{error}', '<img width="840" src="/img/404.jpg">',  getTemplate('error'));
 	}
-	$row = $query->fetch();
+	$release = $query->fetch();
 	
-	$status = ['0' => 'В работе', '1' => 'Завершен'];
-	
-	$page = str_replace('{runame}', $row['name'],  getTemplate('torrent'));
-	$page = str_replace('{engname}', $row['ename'],  $page);
-	$page = str_replace('{img}', $row['id'],  $page);
-	$page = str_replace('{genre}', getList($row['genre']),  $page);
-	$page = str_replace('{voice}', getList($row['voice']),  $page);
-	$page = str_replace('{season}', "<a href='#'>{$row['season']} {$row['year']}</a>",  $page);
-	$page = str_replace('{translator}', $row['translator'], $page);
-	$page = str_replace('{timing}', $row['timing'], $page);
-	$page = str_replace('{design}', $row['design'], $page);
-	$page = str_replace('{type}', $row['type'], $page);
-	$page = str_replace('{status}', $status[$row['status']], $page);
-	$page = str_replace('{description}', $row['description'], $page);
-	
-	if(!empty($user) && $user['access'] > 2){
-		$page = str_replace('{edit}', '', $page);
-		$page = str_replace('{hidden}', "<input type='hidden' id='rid' name='rid' value={$row['id']}>", $page);
+	if(mb_strlen($release['name'].$release['ename']) > 60){
+		$name = "{$release['name']}<br/>{$release['ename']}";
 	}else{
-		$page = str_replace('{edit}', 'style="display: none;"', $page);
-		$page = str_replace('{hidden}', '', $page);
+		$name = "{$release['name']} / {$release['ename']}";
 	}
 	
-	$torrent = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
-	$torrent->bindParam(':id', $row['id']);
-	$torrent->execute();
-	$showTorrent = '';
-	while($data = $torrent->fetch()){
-		
-		$download = "/upload/torrents/{$data['fid']}.torrent";
-		$control = '';
-		if(!empty($user)){
-			if($user['access'] > 2){
-				$control =  " | Удалить | Обновить";
+	$moon = str_replace('{moon}', $release['moonplayer'], getTemplate('moon'));
+	$page = str_replace('{name}', $name, getTemplate('release'));
+	$page = str_replace('{genre}', $release['genre'], $page);
+	$page = str_replace('{voice}', $release['voice'], $page);
+	$page = str_replace('{season}', "{$release['season']} {$release['year']}", $page);
+	$page = str_replace('{type}', $release['type'], $page);
+	$page = str_replace('{translator}', $release['translator'], $page);
+	$page = str_replace('{timing}', $release['timing'], $page);
+	$page = str_replace('{status}', $status[$release['status']], $page);
+	$page = str_replace('{description}', $release['description'], $page);
+	$page = str_replace('{img}', $release['id'], $page);
+	$page = str_replace('{moon}', $moon, $page);
+	
+	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
+	$query->bindParam(':id', $release['id']);
+	$query->execute();
+	if($query->rowCount() > 0){
+		$torrent = '';
+		while($row = $query->fetch()){
+			if(empty($torrent)){
+				$torrent = getTemplate('torrent');
 			}
-			$download = "/public/torrent_download.php?id={$data['fid']}";
+			$tmp = json_decode($row['info'], true);
+			$torrent = str_replace('{ctime}', date('d.m.Y', $row['ctime']), $torrent);
+			$torrent = str_replace('{seeders}', $row['seeders'], $torrent);
+			$torrent = str_replace('{leechers}', $row['leechers'], $torrent);
+			$torrent = str_replace('{completed}', $row['completed'], $torrent);
+			$torrent = str_replace('{fid}', $row['fid'], $torrent);
+			$torrent = str_replace('{rtype}', $tmp['0'], $torrent);
+			$torrent = str_replace('{rnum}', $tmp['1'], $torrent);
+			$torrent = str_replace('{rsize}', formatBytes($tmp['2']), $torrent);
 		}
-		
-		$data['info'] = json_decode($data['info'], true);
-		$data['info']['2'] = formatBytes($data['info']['2']);
-		$data['ctime'] = date('d.m.Y H:m', $data['ctime']);
-		$showTorrent .= "
-			<tr>
-			<td style='text-align:center;vertical-align:middle'>Серия {$data['info']['1']} [{$data['info']['0']}]</td>
-			<td style='text-align:center;vertical-align:middle'>Вес {$data['info']['2']} | Раздают {$data['seeders']} | Качают {$data['leechers']} | Скачало {$data['completed']}</td>
-			<td style='text-align:center;vertical-align:middle'>Добавлен {$data['ctime']}</td>
-			<td style='text-align:center;vertical-align:middle'><a href='$download'>Скачать</a>$control</td>
-			</tr>
-		";
+		$page = str_replace('{torrent}', $torrent, $page);
 	}
-	$page = str_replace('{table}', $showTorrent, $page);
 	return $page;
 }
 
@@ -1379,7 +1354,7 @@ function mp4_link($value){
 
 function getReleaseVideo($id){
 	global $conf;
-	$playlist = ''; 
+	$playlist = '';
 	$arr = json_decode(file_get_contents($conf['nginx_domain'].'/?id='.$id), true);
 	if(!empty($arr) && !empty($arr['updated'])){
 		unset($arr['updated']);

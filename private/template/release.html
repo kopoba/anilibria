@@ -1,0 +1,49 @@
+<div class="news-block">
+	<div class="news-header"></div>
+	<div class="detail_torrent_info">
+		<h1 class="release-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+			{name}
+		</h1>
+		<hr class="poloska-detail">
+		<b>Жанры:</b> {genre}
+		<br>
+		<b>Озвучка:</b> {voice}
+		<br>
+		<b>Аниме-сезон:</b> {season}<br/>
+		<b>Тип:</b> {type}<br>
+		<b>Перевод:</b> {translator}<br>
+		<b>Тайминг:</b> {timing}<br>
+		<b>Состояние релиза:</b> {status}<br>
+		<hr class="poloska-detail">
+		<p class="detail-description">{description}</p>
+	</div>
+	<div class="detail_torrent_side">
+		<div id="nextserial" style="display: block;">Серия выходит в понедельник</div>
+		<div class="detail_pic_corner">
+			<img class="detail_torrent_pic" border="0" src="/upload/release/{img}.jpg" width="350" height="500" alt="Radiant / Радиант" title="Radiant / Радиант">
+		</div>
+		<a href="https://www.anilibria.tv/video/top10autumn/"><img width="355" src="https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/images/images/dopolnitelno%20top10gg.jpg" height="26" width="361"></a>
+	</div>
+	<div class="clear"></div>
+	<div class="tab-switcher">
+		<div class="tab-content">
+			<button class="active" data-tab="moonPlayer">Внешний плеер</button>
+			<button data-tab="anilibriaPlayer" class="">Наш плеер</button>
+			<button data-light class="xdark z-fix">Свет</button>
+			
+			<button data-online-table class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас"></button>
+			<div class="block_fix"></div>
+		</div>
+	</div>
+	<div class="xplayer z-fix" id="moonPlayer">
+		{moon}
+	</div>
+	<div class="xplayer z-fix" id="anilibriaPlayer"></div>
+	<div class="download-torrent">
+		<table>
+			{torrent}
+		</table>			
+	</div>
+	<div class="clear"></div>
+	<div class="news_footer"></div>
+</div>
