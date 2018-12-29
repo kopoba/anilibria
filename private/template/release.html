@@ -18,11 +18,13 @@
 		<p class="detail-description">{description}</p>
 	</div>
 	<div class="detail_torrent_side">
-		<div id="nextserial" style="display: block;">Серия выходит в понедельник</div>
+		<div id="nextserial" style="display: block;">
+			<a href="" id="releaseAnnounce" data-change-announce style="color: white; text-decoration: none;">{announce}</a>
+			<input type="hidden" id="releaseID" value="{id}">
+		</div>
 		<div class="detail_pic_corner">
 			<img class="detail_torrent_pic" border="0" src="/upload/release/{img}.jpg" width="350" height="500" alt="Radiant / Радиант" title="Radiant / Радиант">
 		</div>
-		<a href="https://www.anilibria.tv/video/top10autumn/"><img width="355" src="https://www.anilibria.tv/bitrix/templates/AniLibria%20KD%20Design/images/images/dopolnitelno%20top10gg.jpg" height="26" width="361"></a>
 	</div>
 	<div class="clear"></div>
 	<div class="tab-switcher">
@@ -30,6 +32,10 @@
 			<button class="active" data-tab="moonPlayer">Внешний плеер</button>
 			<button data-tab="anilibriaPlayer" class="">Наш плеер</button>
 			<button data-light class="xdark z-fix">Свет</button>
+			<button data-torrent-edit class="">Торрент</button>
+			<button class="">Редактировать</button>
+			<button class="">Создать</button>
+			<button class="">Удалить</button>
 			
 			<button data-online-table class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас"></button>
 			<div class="block_fix"></div>

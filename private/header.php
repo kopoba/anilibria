@@ -14,6 +14,27 @@
 	</head>
 	<body>
 		<div class="header">
+			
+			<style>
+				div#headercontent {
+					position: absolute;
+					width: 1175px;
+					height: 120px;
+					margin: 0px auto;
+					z-index: 1000;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+				}
+			</style>
+			
+			
+			<img src="/img/29.png">
+			
+			<div id="headercontent">
+				<a href="/"><img id="logopic" src="/img/logo_new.png" alt="ALogo" style="width: 213px;"></a>
+			<!--</div>
             <div id="hslider">
                 <div id="slides_main_wrapper" class="slideshow">
                     <figure class="slider_main slide" style="background-image: url('/upload/slider/1.jpg')">
@@ -28,7 +49,8 @@
                     <figure class="slider_main slide" style="background-image: url('/upload/slider/4.jpg')">
                         <a href='#'>Slider Link</a>
                     </figure>
-                </div>
+                </div>-->
+                
 			</div>
 		</div>
 		<div class="main">

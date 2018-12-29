@@ -27,6 +27,7 @@ $(document).ready(function() {
 		$('#moonPlayer').show();
 	}
 	/* player release page end */
+	
 });
 
 $(document).on("click", "[data-submit-login]", function(e) {
@@ -290,14 +291,94 @@ function tabSwitch(tab){
 
 $(document).on('click', '[data-light]', function(e){
 	$(this).blur();
-	e.preventDefault();	
+	e.preventDefault();
+
 	if ($('.light-off').length > 0 ){
 		if($('.light-off').is(":hidden")){
 			$('.light-off').show();
+			$(".light-off").fadeTo(500, 1);
 			$(".xdark").css("background","#29003A");
 		}else{
-			$('.light-off').hide();
+			if($('.light-off').css('opacity') != 1){
+				return;
+			}
+			$(".light-off").fadeTo(500, 0, function(){ $('.light-off').hide(); });
 			$(".xdark").css("background","transparent");
 		}
 	}
+});
+
+$(document).on('click', '[data-online-table]', function(e){
+	$(this).blur();
+	e.preventDefault();	
+	$('#statModal').modal('show');
+});
+
+$(document).on('click', '[data-change-announce]', function(e){
+	$(this).blur();
+	e.preventDefault();
+	$('#changeAnnounce').modal('show');
+});
+
+$(document).on('click', '[data-send-announce]', function(e){
+	$(this).blur();
+	e.preventDefault();
+	id = $('input[id=releaseID]').val();
+	var announce = $('input[id=announce]').val();
+	$.post("//"+document.domain+"/public/release_announce.php", {'id': id, 'announce': announce }, function(json){
+		data = JSON.parse(json);
+		if(data.err != 'ok'){
+			$("#changeAnnounceMes").html('Изменить анонс (<font color=red>'+data.mes+'</font>)');
+			return;
+		}
+		$('#releaseAnnounce').html(announce);
+		$('#changeAnnounce').modal('hide');
+	});
+});
+
+$(document).on('click', '[data-torrent-edit]', function(e){
+	$(this).blur();
+	e.preventDefault();
+	$('#editTorrent').modal('show');
+});
+
+$('#uploadTorrent').change(function(e) {
+   $('#torrentFile').val(this.files[0].name);
+});
+
+$(document).on('click', '[data-send-torrent]', function(e){
+	$(this).blur();
+	e.preventDefault();
+
+	// {fid: "17", rid: "7", quality: "HDTVRip 720p", series: "1-8", ctime: "11.10.2018"}
+	$.each(editTorrentTable, function(i, val) {
+		
+		var fid = editTorrentTable[i]['fid'];
+		$.each(val, function(key) {	
+			if(key == 'fid'){
+				editTorrentTable[i][key] = $('input[id=torrentEditTableID'+fid+']').val();
+			}
+			if(key == 'rid'){
+				editTorrentTable[i][key] = $('input[id=releaseID]').val();
+			}
+			if(key == 'quality'){
+				editTorrentTable[i][key] = $('input[id=torrentEditTableQuality'+fid+']').val();
+			}
+			if(key == 'series'){
+				editTorrentTable[i][key] = $('input[id=torrentEditTableSeries'+fid+']').val();
+			}
+			if(key == 'ctime'){
+				editTorrentTable[i][key] = $('input[id=torrentEditTableDate'+fid+']').val();
+			}
+			if(key == 'delete'){
+				editTorrentTable[i][key] = $('input[id=torrentEditTableDelete'+fid+']').val();
+			}
+		});
+	});
+	
+	console.log(JSON.stringify(editTorrentTable));
+	
+	$.post("//"+document.domain+"/public/torrent.php", {'data': JSON.stringify(editTorrentTable)}, function(data){
+		console.log(data);
+	});
 });

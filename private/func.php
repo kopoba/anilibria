@@ -58,6 +58,7 @@ function _message($key, $err = 'ok'){
 		'maxSize' => 'Слишком большой файл',
 		'maxarg' => 'Слишком много аргументов',
 		'wrongData' => 'Неправильные данные',
+		'wrongRelease' => 'Неправильный релиз'
 	];
 	
 	die(json_encode(['err' => $err, 'mes' => $text[$key], 'key' => $key]));
@@ -573,6 +574,9 @@ function torrentExist($id){
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid`= :id");
 	$query->bindParam(':id', $id);
 	$query->execute();
+	if($query->rowCount() == 0){
+		return false;
+	}
 	return $query->fetch();
 }
 
@@ -604,35 +608,75 @@ function torrentDelete($id){
 	}
 }
 
+function isJson($string) {
+	json_decode($string);
+	return (json_last_error() == JSON_ERROR_NONE);
+}
+
 function torrent(){
 	global $conf, $db, $user, $var;
-	if(!$user){
-		_message('Unauthorized user', 'error');
+	function checkTD($key, $val){
+		if(empty($val)){
+			return false;
+		}
+		switch($key){
+			case 'rid':		if(!ctype_digit($val))	return false;	break;
+			case 'fid':		if(!ctype_digit($val))	return false;	break;
+			case 'ctime':	if(!strtotime($val))	return false;	break;
+			case 'quality': if(strlen($val) > 20)	return false;	break;
+			case 'series':	if(strlen($val) > 10)	return false;	break;
+		}
+		return true;
 	}
-	if($user['access'] < 4){
-		_message('Access denied', 'error');
+	if(empty($_POST['data']) || !isJson($_POST['data'])){
+		_message('empty');
 	}
-	if(empty($_POST['do'])){
-		_message('Empty GET', 'error');
+	if(!$user || $user['access'] < 2){
+		_message('access', 'error');
 	}
-	switch($_POST['do']){
-		case 'delete':
-			if(empty($_POST['edit_torrent']) || !ctype_digit($_POST['edit_torrent'])){
-				_message('No edit_torrent', 'error');
-			}
-			torrentDelete($_POST['edit_torrent']);
-			_message('Finish, we delete torrent');
-		break;
+	$data = json_decode($_POST['data'], true);
+	//var_dump($data);
+	foreach($data as $key => $val){
+		
+		//var_dump($val);
+		
+		
+		if(!checkTD('rid', $val['rid']) || !checkTD('ctime', $val['ctime']) || !checkTD('quality', $val['quality']) || !checkTD('series', $val['series'])){
+			
+			echo "???";
+			continue;
+		}
+		$ctime = strtotime($val['ctime']);
+		switch($val['do']){
+			case 'change':
+				if(!checkTD('fid', $val['fid'])){
+					continue;
+				}
+				if(($info = torrentExist($val['fid'])['info']) === false){
+					continue;
+				}
+				$tmp = json_decode($info, true);
+				$tmp = json_encode([$val['quality'], $val['series'], $tmp['2']]);
+				$query = $db->prepare("UPDATE `xbt_files` SET `ctime` = :ctime, `info` = :info WHERE `fid` = :fid");
+				$query->bindParam(':ctime', $ctime);
+				$query->bindParam(':info', $tmp);
+				$query->bindParam(':fid', $val['fid']);
+				$query->execute();
+			break;
+			
+			/*
+			case 'delete':
+			case 'add':
+			break;
+			*/
+		}
+	}
+}
+
+/*
+function torrent1(){
 		default:
-			if(empty($_POST['rid']) || empty($_POST['quality']) || empty($_POST['episode'])){
-				_message('Set release id, name, quality and episode', 'error');
-			}
-			if(!ctype_digit($_POST['rid'])){
-				_message('Release ID allow numeric', 'error');
-			}
-			if(strlen($_POST['quality']) > 200 || strlen($_POST['episode']) > 200){
-				_message('Max strlen 200', 'error');
-			}
+			
 			if(empty($_FILES['torrent'])){
 				_message('No upload file', 'error');
 			}
@@ -668,9 +712,9 @@ function torrent(){
 			$torrent->announce($conf['torrent_announce']);
 			$torrent->save($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
 			_message('Success');
-		break;
-	}
+
 }
+*/
 
 function downloadTorrent(){
 	global $db, $user, $conf;
@@ -1080,12 +1124,12 @@ function formatBytes($size, $precision = 2){
 function showRelease(){
 	global $db, $user;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
-	$query = $db->prepare("SELECT * FROM `release` WHERE `id` = :id");
+	$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
 		header('HTTP/1.0 404 Not Found');
-		return str_replace('{error}', '<img width="840" src="/img/404.jpg">',  getTemplate('error'));
+		return str_replace('{error}', '<center><img src="/img/404.png"></center>',  getTemplate('error'));
 	}
 	$release = $query->fetch();
 	
@@ -1105,9 +1149,14 @@ function showRelease(){
 	$page = str_replace('{timing}', $release['timing'], $page);
 	$page = str_replace('{status}', $status[$release['status']], $page);
 	$page = str_replace('{description}', $release['description'], $page);
-	$page = str_replace('{img}', $release['id'], $page);
+	$page = str_replace('{announce}', $release['announce'], $page);
+	$page = str_replace('{id}', $release['id'], $page);
 	$page = str_replace('{moon}', $moon, $page);
-	
+	if(!file_exists($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$release['id'].'.jpg')){
+		$page = str_replace('{img}', 'default', $page);
+	}else{
+		$page = str_replace('{img}', $release['id'], $page);
+	}
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
@@ -1432,7 +1481,8 @@ function youtubeGetImage($id){
 	$data = fopen("https://img.youtube.com/vi/$id/maxresdefault.jpg", 'rb');
 	$img = new Imagick();
 	$img->readImageFile($data);
-	$img->resizeImage(840,415,Imagick::FILTER_LANCZOS, 1, false);
+	$img->resizeImage(840,450,Imagick::FILTER_LANCZOS, 1, false);
+	//$img->resizeImage(840,450,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 	$img->setImageCompressionQuality(80);
 	$img->stripImage();
@@ -1442,8 +1492,12 @@ function youtubeGetImage($id){
 function updateYoutube(){
 	global $db, $conf;
 	$data = [];
-	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=5&key={$conf['youtube_secret']}"), true);
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=10&key={$conf['youtube_secret']}"), true);
+	$arr['items'] = array_reverse($arr['items']);
 	foreach($arr['items'] as $key => $val){
+		if(empty($val['id']['videoId'])){
+			continue;
+		}
 		$query = $db->prepare("SELECT * FROM `youtube` WHERE `vid` = :vid");
 		$query->bindParam(':vid', $val['id']['videoId']);
 		$query->execute();
@@ -1455,13 +1509,14 @@ function updateYoutube(){
 		$query->bindParam(':vid', $val['id']['videoId']);
 		$query->execute();
 		youtubeGetImage($val['id']['videoId']);
+		//sleep(1);
 	}	
 }
 
 function youtubeShow(){
 	global $db;
 	$result = '';
-	$query = $db->query("SELECT * FROM `youtube` ORDER BY `id` ASC LIMIT 3");
+	$query = $db->query("SELECT * FROM `youtube` ORDER BY `id` DESC  LIMIT 3");
 	$query->execute();
 	while($row = $query->fetch()){
 		$youtube = getTemplate('youtube');
@@ -1474,4 +1529,52 @@ function youtubeShow(){
 		unset($youtube);
 	}
 	return $result;
+}
+
+function updateReleaseAnnounce(){
+	global $db, $user, $var;
+	if(!$user || $user['access'] < 2){
+		_message('access', 'error');
+	}
+	if(empty($_POST['announce']) || empty($_POST['id'])){
+		_message('empty', 'error');
+	}
+	if(mb_strlen($_POST['announce']) > 200){
+		_message('long', 'error');
+	}
+	if(!ctype_digit($_POST['id'])){
+		_message('wrong', 'error');
+	}
+	$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	if($query->rowCount() == 0){
+		_message('wrongRelease', 'error');
+	}
+	$_POST['announce'] = htmlspecialchars($_POST['announce']);
+	$query = $db->prepare("UPDATE `xrelease` SET `announce` = :announce WHERE `id` = :id");
+	$query->bindParam(':announce', $_POST['announce']);
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	_message('success');
+}
+
+function showEditTorrentTable(){
+	global $db, $var; $result = ''; $arr = [];
+	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :rid");
+	$query->bindParam(':rid', $var['release']['rid']);
+	$query->execute();
+	while($row = $query->fetch()){
+		$date = date('d.m.Y', $row['ctime']);
+		$info = json_decode($row['info'], true);
+		$tmp = getTemplate('edit_torrent');
+		$tmp = str_replace('{id}', $row['fid'], $tmp);
+		$tmp = str_replace('{quality}', $info['0'], $tmp);
+		$tmp = str_replace('{series}', $info['1'], $tmp);
+		$tmp = str_replace('{date}', $date, $tmp);
+		$result .= $tmp;
+		
+		$arr[] = ['do' => 'change', 'fid' => $row['fid'], 'rid' => $row['rid'], 'quality' => $info['0'], 'series' => $info['1'], 'ctime' => $date, 'delete' => ''];
+	}
+	return [$result, json_encode($arr)];
 }

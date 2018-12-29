@@ -280,10 +280,13 @@ a#activelink6:hover{
 }
 
 .loadmore {
-	margin: 15px auto;
+	margin: 0 auto;
+	margin-top: 35px;
     width: 140px;
     background-color: white;
-    text-align: center; 
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .loadmore a {
@@ -359,7 +362,7 @@ div.news_footer {
 	font-size:10pt;
 	font-weight:400;
 	width:100%;
-	height:30px;
+	height:32px;
 	position:relative;
 	bottom:0px;
 }
@@ -508,7 +511,7 @@ p.lasttortext {
 .detail_torrent_info {
 	float: left;
 	width: 460px;
-	height: 520px;
+	height: 505px;
 	overflow: hidden;
 }
 	
@@ -613,6 +616,7 @@ p.lasttortext {
     top: 0;
     z-index: 998;
     display: none;
+    opacity: 0;
 }
 
 .z-fix {
