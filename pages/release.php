@@ -12,8 +12,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 $var['page'] = 'release';
 $var['release'] = ['id' => 508, 'rid' => 7, 'name' => 'super test'];
 
-$showTorrentEditTable = showEditTorrentTable();
-
 /*	TODO
 	Page generated in 0.3303 seconds. Peak memory usage: 1.06 MB
 	file_get_contents use 97.98% time in func getReleaseVideo and wsInfoShow
@@ -72,24 +70,19 @@ VK.Widgets.Comments("vk_comments", {limit: 5, attach: false});
 					<tbody>
 						<tr>
 							<td><input class="form-control" style="width: 265px;" type="text" id="torrentFile"  placeholder="File" readonly></td>
-							<td><input class="form-control" style="margin-left: 5px; width: 130px;" id="announce" type="text" placeholder="ID"></td>
-							<td><input class="form-control" style="margin-left: 5px; width: 258px;" id="announce" type="text" placeholder="1-8"></td>
-							<td><input class="form-control" style="margin-left: 5px; width: 130px;" id="announce" type="text" placeholder="HDTVRip 720p"></td>
+							<td><input class="form-control" style="margin-left: 5px; width: 130px;" id="torrentFileUpdateID" type="text" placeholder="ID"></td>
+							<td><input class="form-control" style="margin-left: 5px; width: 258px;" id="torrentFileSeries" type="text" placeholder="1-8"></td>
+							<td><input class="form-control" style="margin-left: 5px; width: 130px;" id="torrentFileSeriesQuality" type="text" placeholder="HDTVRip 720p"></td>
 						</tr>
 					</tbody>
 				</table>
 				<hr/>
 				<table id="editTorrentTable" style="margin-bottom: 10px;">
 					<tbody>
-						<?php echo $showTorrentEditTable['0']; ?>
+						<?php echo showEditTorrentTable(); ?>
 					</tbody>
 				</table>
-				
-				<script>
-					var editTorrentTable = JSON.parse('<?php echo $showTorrentEditTable['1']; ?>');
-				</script>
 			</div>
-			
 			<div class="clear"></div>
 			<div class="modal-footer">
 				<label class="btn btn-default">Загрузить <input id="uploadTorrent" type="file" name="test" style="display: none;"></label>

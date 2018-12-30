@@ -26,42 +26,8 @@ function _mail($email, $subject, $message){
 }
 
 function _message($key, $err = 'ok'){
-	$text = [
-		'success' => 'Успех',
-		'empty' => 'Пустое значение, заполните все поля',
-		'wrong' => 'Неправильное значение',
-		'authorized' => 'Уже авторизован',
-		'registered' => 'Уже зарегистрирован',
-		'long' => 'Слишком длинное значение',
-		'wrongLogin' => 'Неправильный логин',
-		'wrongEmail' => 'Неправильный email',
-		'wrongUserAgent' => 'Неправильный user agent',
-		'invalidUser' => 'Неправильный пользователь',
-		'wrong2FA' => 'Неправильный код 2FA',
-		'wrongPasswd' => 'Неправильный пароль',
-		'noUser' => 'Нет такого пользователя',
-		'wrongHash' => 'Неправильный hash',
-		'wrongLink' => 'Неправильная ссылка',
-		'reCaptcha3' => 'reCaptcha проверка не пройдена: низкий score',
-		'coinhive' => 'Coinhive проверка не пройдена',
-		'checkEmail' => 'Проверьте почту',
-		'unauthorized' => 'Неавторизованный пользователь',
-		'2FA' => '2FA уже активирована',
-		'2FAdisabled' => '2FA выключена',
-		'2FAenabled' => '2FA включена',
-		'access' => 'Доступ запрещен',
-		'same' => 'Одинаковые данные',
-		'used' => 'Уже занято',
-		'noUploadFile' => 'Неудачная загрузка',
-		'uploadError' => 'Неудачная загрузка',
-		'wrongType' => 'Неправильный формат файла',
-		'maxSize' => 'Слишком большой файл',
-		'maxarg' => 'Слишком много аргументов',
-		'wrongData' => 'Неправильные данные',
-		'wrongRelease' => 'Неправильный релиз'
-	];
-	
-	die(json_encode(['err' => $err, 'mes' => $text[$key], 'key' => $key]));
+	global $var;
+	die(json_encode(['err' => $err, 'mes' => $var['error'][$key], 'key' => $key]));
 }
 
 function _message2($mes){
@@ -635,86 +601,74 @@ function torrent(){
 		_message('access', 'error');
 	}
 	$data = json_decode($_POST['data'], true);
-	//var_dump($data);
 	foreach($data as $key => $val){
-		
-		//var_dump($val);
-		
-		
-		if(!checkTD('rid', $val['rid']) || !checkTD('ctime', $val['ctime']) || !checkTD('quality', $val['quality']) || !checkTD('series', $val['series'])){
-			
-			echo "???";
+		if(!checkTD('rid', $val['rid']) || !checkTD('quality', $val['quality']) || !checkTD('series', $val['series'])){
 			continue;
 		}
-		$ctime = strtotime($val['ctime']);
+		if(checkTD('ctime', $val['ctime'])){
+			$ctime = strtotime($val['ctime']);
+		}else{
+			$ctime = time();
+		}
 		switch($val['do']){
 			case 'change':
 				if(!checkTD('fid', $val['fid'])){
 					continue;
 				}
-				if(($info = torrentExist($val['fid'])['info']) === false){
+				$old = torrentExist($val['fid']);
+				if(!$old){
 					continue;
 				}
-				$tmp = json_decode($info, true);
+				$tmp = json_decode($old['info'], true);
 				$tmp = json_encode([$val['quality'], $val['series'], $tmp['2']]);
 				$query = $db->prepare("UPDATE `xbt_files` SET `ctime` = :ctime, `info` = :info WHERE `fid` = :fid");
 				$query->bindParam(':ctime', $ctime);
 				$query->bindParam(':info', $tmp);
 				$query->bindParam(':fid', $val['fid']);
 				$query->execute();
+				if(!empty($val['delete'])){
+					torrentDelete($val['fid']);
+				}
 			break;
-			
-			/*
-			case 'delete':
 			case 'add':
+				if(empty($_FILES['torrent'])){
+					_message('noUploadFile', 'error');
+				}
+				if($_FILES['torrent']['error'] != 0){
+					_message('uploadError', 'error');
+				}
+				if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
+					_message('wrongData', 'error');	
+				}
+				$torrent = new Torrent($_FILES['torrent']['tmp_name']);
+				if(empty($torrent->hash_info())){
+					_message('wrongData', 'error');
+				}
+				$pack_hash = pack('H*', $torrent->hash_info());
+				if(torrentHashExist($pack_hash)){
+					_message('exitTorrent', 'error');
+				}
+				$old = false;
+				$size = $torrent->size();
+				$json = json_encode([$val['quality'], $val['series'], $size]);
+				if(!empty($val['fid'])){
+					$old = torrentExist($val['fid']);
+				}
+				if($old){
+					torrentDelete($val['fid']);
+					$name = torrentAdd($pack_hash, $val['rid'], $json, $old['completed']);	
+				}else{
+					$name = torrentAdd($pack_hash, $val['rid'], $json);
+				}
+				$torrent->announce(false);
+				$torrent->announce($conf['torrent_announce']);
+				$torrent->save($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
+				die(json_encode(['err' => 'ok', 'mes' => $var['error']['success'], 'id' => $name, 'size' => formatBytes($size), 'date' => date('d.m.Y', time())]));
 			break;
-			*/
 		}
 	}
+	_message('success');
 }
-
-/*
-function torrent1(){
-		default:
-			
-			if(empty($_FILES['torrent'])){
-				_message('No upload file', 'error');
-			}
-			if($_FILES['torrent']['error'] != 0){
-				_message('Upload error', 'error');
-			}
-			if($_FILES['torrent']['type'] != 'application/x-bittorrent'){
-				_message('You can upload only torrents', 'error');	
-			}
-			$torrent = new Torrent($_FILES['torrent']['tmp_name']);
-			if(empty($torrent->hash_info())){
-				_message('Wrong torrent file', 'error');
-			}
-			$pack_hash = pack('H*', $torrent->hash_info());
-			if(torrentHashExist($pack_hash)){
-				_message('Torrent hash already exist', 'error');
-			}
-			$json = json_encode([$_POST['quality'], $_POST['episode'], $torrent->size()]);
-			if(empty($_POST['edit_torrent'])){
-				$name = torrentAdd($pack_hash, $_POST['rid'], $json);
-			}else{
-				if(!ctype_digit($_POST['edit_torrent'])){
-					_message('edit_torrent allow only numeric', 'error');
-				}
-				$old = torrentExist($_POST['edit_torrent']);
-				if(!is_array($old)){
-					_message('No old torrent', 'error');
-				}
-				$name = torrentAdd($pack_hash, $_POST['rid'], $json, $old['completed']);
-				torrentDelete($_POST['edit_torrent']);
-			}
-			$torrent->announce(false);
-			$torrent->announce($conf['torrent_announce']);
-			$torrent->save($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
-			_message('Success');
-
-}
-*/
 
 function downloadTorrent(){
 	global $db, $user, $conf;
@@ -1160,17 +1114,18 @@ function showRelease(){
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
-	if($query->rowCount() > 0){
+	if($query->rowCount() == 0){
+		$page = str_replace('{torrent}', '', $page);
+	}else{
 		$torrent = '';
 		while($row = $query->fetch()){
-			if(empty($torrent)){
-				$torrent = getTemplate('torrent');
-			}
+			$torrent .= getTemplate('torrent');
 			$tmp = json_decode($row['info'], true);
 			$torrent = str_replace('{ctime}', date('d.m.Y', $row['ctime']), $torrent);
 			$torrent = str_replace('{seeders}', $row['seeders'], $torrent);
 			$torrent = str_replace('{leechers}', $row['leechers'], $torrent);
 			$torrent = str_replace('{completed}', $row['completed'], $torrent);
+			$torrent = str_replace('{id}', $row['fid'], $torrent);
 			if($user){
 				$link = "/public/torrent_download.php?id={$row['fid']}";
 			}else{
@@ -1482,7 +1437,6 @@ function youtubeGetImage($id){
 	$img = new Imagick();
 	$img->readImageFile($data);
 	$img->resizeImage(840,450,Imagick::FILTER_LANCZOS, 1, false);
-	//$img->resizeImage(840,450,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 	$img->setImageCompressionQuality(80);
 	$img->stripImage();
@@ -1492,7 +1446,7 @@ function youtubeGetImage($id){
 function updateYoutube(){
 	global $db, $conf;
 	$data = [];
-	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=10&key={$conf['youtube_secret']}"), true);
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=5&key={$conf['youtube_secret']}"), true);
 	$arr['items'] = array_reverse($arr['items']);
 	foreach($arr['items'] as $key => $val){
 		if(empty($val['id']['videoId'])){
@@ -1509,7 +1463,6 @@ function updateYoutube(){
 		$query->bindParam(':vid', $val['id']['videoId']);
 		$query->execute();
 		youtubeGetImage($val['id']['videoId']);
-		//sleep(1);
 	}	
 }
 
@@ -1574,7 +1527,7 @@ function showEditTorrentTable(){
 		$tmp = str_replace('{date}', $date, $tmp);
 		$result .= $tmp;
 		
-		$arr[] = ['do' => 'change', 'fid' => $row['fid'], 'rid' => $row['rid'], 'quality' => $info['0'], 'series' => $info['1'], 'ctime' => $date, 'delete' => ''];
+		$arr[] = ['do' => 'change', 'fid' => $row['fid'], 'rid' => $row['rid'], 'series' => $info['1'], 'quality' => $info['0'], 'ctime' => $date, 'delete' => ''];
 	}
-	return [$result, json_encode($arr)];
+	return $result;
 }

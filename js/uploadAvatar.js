@@ -2,7 +2,6 @@ $(document).on('click', '[data-modal-show]', function(e) {
 	$('#avatarModal').modal('show');
 });
 
-
 $('#uploadAvatar').change(function(){
 	readURLProfile(this);	
 });

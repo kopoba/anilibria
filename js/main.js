@@ -343,42 +343,71 @@ $(document).on('click', '[data-torrent-edit]', function(e){
 });
 
 $('#uploadTorrent').change(function(e) {
-   $('#torrentFile').val(this.files[0].name);
+	if(this.files[0] !== undefined){
+		$('#torrentFile').val(this.files[0].name);
+	}
 });
 
 $(document).on('click', '[data-send-torrent]', function(e){
 	$(this).blur();
 	e.preventDefault();
-
-	// {fid: "17", rid: "7", quality: "HDTVRip 720p", series: "1-8", ctime: "11.10.2018"}
-	$.each(editTorrentTable, function(i, val) {
-		
-		var fid = editTorrentTable[i]['fid'];
-		$.each(val, function(key) {	
-			if(key == 'fid'){
-				editTorrentTable[i][key] = $('input[id=torrentEditTableID'+fid+']').val();
-			}
-			if(key == 'rid'){
-				editTorrentTable[i][key] = $('input[id=releaseID]').val();
-			}
-			if(key == 'quality'){
-				editTorrentTable[i][key] = $('input[id=torrentEditTableQuality'+fid+']').val();
-			}
-			if(key == 'series'){
-				editTorrentTable[i][key] = $('input[id=torrentEditTableSeries'+fid+']').val();
-			}
-			if(key == 'ctime'){
-				editTorrentTable[i][key] = $('input[id=torrentEditTableDate'+fid+']').val();
-			}
-			if(key == 'delete'){
-				editTorrentTable[i][key] = $('input[id=torrentEditTableDelete'+fid+']').val();
-			}
-		});
+	var sendData = [];
+	form_data = new FormData();
+	// {do: "add" ,fid: "17", rid: "7", quality: "HDTVRip 720p", series: "1-8", ctime: "11.10.2018"}
+	$('#editTorrentTable tr').each(function (i, row){ // get data from table
+		sendData[i] = {
+			'do': 'change',
+			fid: $(row).find('input[id^="torrentEditTableID"]').val(),
+			rid: $('input[id=releaseID]').val(),
+			quality: $(row).find('input[id^="torrentEditTableQuality"]').val(),
+			series: $(row).find('input[id^="torrentEditTableSeries"]').val(),
+			ctime: $(row).find('input[id^="torrentEditTableDate"]').val(),
+			'delete': $(row).find('input[id^="torrentEditTableDelete"]').val(),
+		};
 	});
-	
-	console.log(JSON.stringify(editTorrentTable));
-	
-	$.post("//"+document.domain+"/public/torrent.php", {'data': JSON.stringify(editTorrentTable)}, function(data){
-		console.log(data);
+	$.each(sendData, function(i){
+		$("#torrentTableInfo"+sendData[i]['fid']).html("Серия "+sendData[i]['series']+" ["+sendData[i]['quality']+"]");
+		$("#torrentTableDate"+sendData[i]['fid']).html("Добавлен "+sendData[i]['ctime']);
+		if(sendData[i]['delete'].length > 0){
+			$('table tr#torrentTableID'+sendData[i]['fid']).remove();
+			$('table tr#torrentEditTable'+sendData[i]['fid']).remove();
+		}
+	});
+	if(document.getElementById("uploadTorrent").files.length > 0){ // prepare file upload
+		sendData.push({ 
+			'do': 'add', 
+			fid: $('input[id=torrentFileUpdateID]').val(), 
+			rid: $('input[id=releaseID]').val(), 
+			quality: $('input[id=torrentFileSeriesQuality]').val(), 
+			series: $('input[id=torrentFileSeries]').val(), 
+			ctime: '',
+		});
+		form_data.append('torrent', $('#uploadTorrent').prop('files')[0]);
+	}
+	form_data.append('data', JSON.stringify(sendData));
+	$.ajax({
+		type: 'POST',
+		cache: false,
+		processData: false,
+		contentType: false,
+		data: form_data,
+		url: "//"+document.domain+"/public/torrent.php",
+		success: function(json) {
+			data = JSON.parse(json);			
+			if(data.err != 'ok'){
+				$("#changeAnnounceMes").html('Редактирование торрентов (<font color=red>'+data.mes+'</font>)');
+				return;
+			}
+			$("#changeAnnounceMes").html('Редактирование торрентов (<font color=green>'+data.mes+'</font>)');
+			tr = $('input[id=torrentFileUpdateID]').val();
+			if(tr.length > 0){
+				$('table tr#torrentTableID'+tr).remove();
+				$('table tr#torrentEditTable'+tr).remove();
+			}
+			if(data.id !== undefined){
+				$('#editTorrentTable').append('<tr id="torrentEditTable'+data.id+'"><td><input id="torrentEditTableID'+data.id+'" class="form-control" style="width: 130px;" type="text" value="'+data.id+'" readonly=""></td><td><input id="torrentEditTableSeries'+data.id+'" class="form-control" style="margin-left: 5px; width: 130px;" type="text" value="'+$('input[id=torrentFileSeries]').val()+'"></td><td><input id="torrentEditTableQuality'+data.id+'" class="form-control" style="margin-left: 5px; width: 130px;" type="text" value="'+$('input[id=torrentFileSeriesQuality]').val()+'"></td><td><input id="torrentEditTableDate'+data.id+'" class="form-control" style="margin-left: 5px; width: 258px;" type="text" value="'+data.date+'"></td><td><input id="torrentEditTableDelete'+data.id+'" class="form-control" style="margin-left: 5px; width: 130px;" type="text" placeholder="Удалить?"></td></tr>');
+				$('#publicTorrentTable').append('<tr id="torrentTableID'+data.id+'"><td id="torrentTableInfo28" class="torrentcol1">Серия '+$('input[id=torrentFileSeries]').val()+' ['+$('input[id=torrentFileSeriesQuality]').val()+']</td><td class="torrentcol2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> '+data.size+' <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 0 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 0 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 0</td><td id="torrentTableDate'+data.id+'" class="torrentcol3">Добавлен '+data.date+'</td><td class="torrentcol4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/public/torrent_download.php?id='+data.id+'">Cкачать</a></td></tr>');
+			}
+		}
 	});
 });
