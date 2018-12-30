@@ -11,13 +11,6 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'release';
 $var['release'] = ['id' => 508, 'rid' => 7, 'name' => 'super test'];
-
-/*	TODO
-	Page generated in 0.3303 seconds. Peak memory usage: 1.06 MB
-	file_get_contents use 97.98% time in func getReleaseVideo and wsInfoShow
-	we need cache data from remote servers 
-	https://img.poiuty.com/img/ae/293fcc66d6b2dcf71f4bf578f74d27ae.png
-*/
 ?>
 
 <div class="light-off"></div>

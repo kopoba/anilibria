@@ -1358,15 +1358,33 @@ function wsInfo($name){
 	}
 }
 
+function getRemote($url, $key){
+	global $cache;
+	$data = $cache->get('anilibria'.$key);
+	if(empty($data)){
+		if(!$data = file_get_contents($url)){
+			return false;
+		}
+		if(!isJson($data)){
+			return false;
+		}	
+		$cache->set('anilibria'.$key, $data, 300);
+	}
+	return $data;
+}
+
 function wsInfoShow(){
 	$result = '';
-	$arr = json_decode(file_get_contents("https://www.anilibria.tv/api/api.php?action=top"), true);
-	$all = array_sum($arr);
-	$arr = array_slice($arr, 0, 20);
-	foreach($arr as $key => $val){
-		$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv/search/index.php?q=$key&where=iblock_Tracker\">$key</a></td><td class=\"tableCenter\">$val</a></td></tr>";
+	$data = getRemote('https://www.anilibria.tv/api/api.php?action=top', 'top');
+	if($data){
+		$arr = json_decode($data, true);
+		$all = array_sum($arr);
+		$arr = array_slice($arr, 0, 20);
+		foreach($arr as $key => $val){
+			$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv/search/index.php?q=$key&where=iblock_Tracker\">$key</a></td><td class=\"tableCenter\">$val</a></td></tr>";
+		}
+		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
 	}
-	$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
 	return $result;
 }
 
@@ -1381,16 +1399,19 @@ function mp4_link($value){
 function getReleaseVideo($id){
 	global $conf;
 	$playlist = '';
-	$arr = json_decode(file_get_contents($conf['nginx_domain'].'/?id='.$id), true);
-	if(!empty($arr) && !empty($arr['updated'])){
-		unset($arr['updated']);
-		$arr = array_reverse($arr, true);
-		foreach($arr as $key => $val) {
-			$download = '';
-			if(!empty($val['file'])){
-				$download = mp4_link($val['file'].'.mp4');
+	$data = getRemote($conf['nginx_domain'].'/?id='.$id, 'video'.$id);
+	if($data){
+		$arr = json_decode($data, true);
+		if(!empty($arr) && !empty($arr['updated'])){
+			unset($arr['updated']);
+			$arr = array_reverse($arr, true);
+			foreach($arr as $key => $val) {
+				$download = '';
+				if(!empty($val['file'])){
+					$download = mp4_link($val['file'].'.mp4');
+				}
+				$playlist .= "{'title':'Серия $key', 'file':'{$val['new']}', download:\"$download\", 'id': 's$key'},";
 			}
-			$playlist .= "{'title':'Серия $key', 'file':'{$val['new']}', download:\"$download\", 'id': 's$key'},";
 		}
 	}
 	return [$playlist, $download];
