@@ -610,6 +610,9 @@ function torrent(){
 		}else{
 			$ctime = time();
 		}
+		$ctime = htmlspecialchars($ctime, ENT_QUOTES, 'UTF-8');
+		$val['quality'] = htmlspecialchars($val['quality'], ENT_QUOTES, 'UTF-8');
+		$val['series'] = htmlspecialchars($val['series'], ENT_QUOTES, 'UTF-8');
 		switch($val['do']){
 			case 'change':
 				if(!checkTD('fid', $val['fid'])){
@@ -913,7 +916,7 @@ function saveUserValues(){
 		if(mb_strlen($val) > 30){
 			_message('long', 'error');
 		}
-		$arr[$key] = htmlspecialchars($val);
+		$arr[$key] = htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
 	}
 	if(!empty($arr['sex']) && (!ctype_digit($arr['sex']) || ($arr['sex'] < 0 || $arr['sex'] > 2))){
 		_message('wrongData', 'error');
@@ -1169,7 +1172,7 @@ function add_release(){
 	$sql = ['col' => '', 'val' => ''];
 	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
 	foreach($arr as $key){
-		$_POST[$key] = htmlspecialchars($_POST[$key]);
+		$_POST[$key] = htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8');
 		$sql['col'] .= "`$key`,";
 		$sql['val'] .= ":$key,";
 		$data[] = $key;
@@ -1230,7 +1233,7 @@ function edit_release(){
 		$sql = rtrim($sql, ',');
 		$query = $db->prepare("UPDATE `page` SET $sql WHERE `id` = :id");
 		foreach($data as $k => $v){
-			$_POST[$v] = htmlspecialchars($_POST[$v]);
+			$_POST[$v] = htmlspecialchars($_POST[$v], ENT_QUOTES, 'UTF-8');
 			$query->bindParam(":$v", $_POST[$v]);
 		}
 		$query->bindParam(':id', $_POST['id']);
@@ -1253,7 +1256,7 @@ function set_nickname(){
 	if(mb_strlen($_POST['nickname']) > 20){
 		_message('Nickname max len 20', 'error');
 	}
-	$_POST['nickname'] = htmlspecialchars($_POST['nickname']);
+	$_POST['nickname'] = htmlspecialchars($_POST['nickname'], ENT_QUOTES, 'UTF-8');
 	$query = $db->prepare("SELECT `id` FROM `users` WHERE `nickname` = :nickname");
 	$query->bindParam(':nickname', $_POST['nickname']);
 	$query->execute();
@@ -1345,7 +1348,7 @@ function footerJS(){
 function wsInfo($name){
 	global $conf;
 	if(!empty($name)){
-		$url = base64_encode(mb_strtolower(htmlspecialchars(explode('?', $_SERVER['REQUEST_URI'], 2)[0])));
+		$url = base64_encode(mb_strtolower(htmlspecialchars(explode('?', $_SERVER['REQUEST_URI'], 2)[0], ENT_QUOTES, 'UTF-8')));
 		$hash = hash('sha256', $name.$url.$conf['stat_secret']);
 		$result = str_replace('{ws}', $conf['stat_url'], getTemplate('stat'));
 		$result = str_replace('{hash}', $hash, $result);
@@ -1371,7 +1374,7 @@ function mp4_link($value){
 	global $conf, $var;
 	$time = time()+60*60*48;
 	$key = str_replace("=", "", strtr(base64_encode(md5("{$time}/videos/{$value}".$var['ip']." {$conf['nginx_secret']}", true)), "+/", "-_"));
-	$url = htmlspecialchars("{$conf['nginx_domain']}/get/$key/$time/$value");
+	$url = htmlspecialchars("{$conf['nginx_domain']}/get/$key/$time/$value", ENT_QUOTES, 'UTF-8');
 	return $url;
 }
 
@@ -1515,7 +1518,7 @@ function updateReleaseAnnounce(){
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
-	$_POST['announce'] = htmlspecialchars($_POST['announce']);
+	$_POST['announce'] = htmlspecialchars($_POST['announce'], ENT_QUOTES, 'UTF-8');
 	$query = $db->prepare("UPDATE `xrelease` SET `announce` = :announce WHERE `id` = :id");
 	$query->bindParam(':announce', $_POST['announce']);
 	$query->bindParam(':id', $_POST['id']);

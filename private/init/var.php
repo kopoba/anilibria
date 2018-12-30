@@ -3,7 +3,7 @@ $var['page'] = '';
 $var['release'] = '';
 $var['time'] = time();
 $var['ip'] = $_SERVER['REMOTE_ADDR'];
-$var['user_agent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT']);
+$var['user_agent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, 'UTF-8');
 $var['default_user_values'] = '{"name":"","age":"","sex":"","vk":"","telegram":"","steam":"","phone":"","skype":"","facebook":"","instagram":"","youtube":"","twitch":"","twitter":""}';
 
 $var['sex'] = [
