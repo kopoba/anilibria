@@ -1566,3 +1566,31 @@ function showEditTorrentTable(){
 	}
 	return $result;
 }
+
+function removeRelease(){
+	global $db;
+	if(!$user || $user['access'] < 2){
+		_message('access', 'error');
+	}
+	if(empty($_POST['id'])){
+		_message('empty', 'error');
+	}
+	$query = $db->prepare("SELECT `id` FROM `release` WHERE `id` = :id");
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	if($query->rowCount() == 0){
+		_message('wrongRelease', 'error');
+	}
+	$query = $db->prepare("DELETE FROM `release` WHERE `id` = :id");
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	if($query->rowCount() > 0){
+		while($row = $query->fetch()){
+			torrentDelete($row['fid']);
+		}
+	}
+	_message('success');
+}	
