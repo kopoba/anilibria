@@ -1589,7 +1589,57 @@ function removeRelease(){
 
 function releaseTable(){
 	global $db, $var; $result = '';
-	$query = $db->query("SELECT * FROM `xrelease`");
+	$data = []; $order = 'DESC'; $column = 'id'; $search = '';
+	$arr = ['draw' => 1, 'start' => 0, 'length' => 10];
+	foreach($arr as $key => $val){
+		if(array_key_exists($key, $_POST)){
+			$_POST["$key"] = intval($_POST["$key"]);
+			if(!empty($_POST["$key"])){
+				$arr[$key] = $_POST["$key"];	
+			}
+		}	
+	}
+	if(!empty($_POST['order']['0']['dir'])){
+		if($_POST['order']['0']['dir'] == 'asc'){
+			$order = 'ASC';
+		}
+	}
+	if(!empty($_POST['order']['0']['column'])){
+		if($_POST['order']['0']['column'] == 1){
+			$order = 'name';
+		}
+		if($_POST['order']['0']['column'] == 2){
+			$order = 'status';
+		}
+	}
+	if($arr['length'] > 100){
+		$arr['length'] = 100;
+	}
+	
+	$query = $db->prepare("SELECT count(*) as count FROM `xrelease`");
+	$query->execute();
+	$total = $query->fetch();
+	
+	if(!empty($_POST['search']['value'])){
+		$search = $_POST['search']['value'];
+	}
+	if(empty($search)){
+		$query = $db->query("SELECT * FROM `xrelease` ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
+	}else{
+		$query = $db->prepare("SELECT * FROM `xrelease` WHERE `name` LIKE concat('%', :search, '%') ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
+		$query->bindParam(':search', $search);
+	}
+	$query->execute();
+	while($row = $query->fetch()){
+		$tmp['id'] = $row['id'];
+		$tmp['name'] = $row['name'];
+		$tmp['status'] = $var['status'][$row['status']];
+		$tmp['last'] = "<a data-admin-release-delete='{$row['id']}' href='#'<span class='glyphicon glyphicon-remove'></span></a>";
+		$data[] = array_values($tmp);
+	}
+	return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total['count'], 'recordsFiltered' => $total['count'], 'data' => $data];
+	
+	/*
 	$query->execute();
 	while($row = $query->fetch()){
 		$result .= "
@@ -1602,4 +1652,5 @@ function releaseTable(){
 		"; 
 	}
 	return $result;
+	*/	
 }

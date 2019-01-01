@@ -72,7 +72,6 @@ $var['page'] = 'new';
 			</tr>
 		</thead>
 		<tbody>
-			<? echo releaseTable(); ?>
 		</tbody>
 		</table>
 	</div>
