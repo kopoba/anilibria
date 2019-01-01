@@ -411,3 +411,64 @@ $(document).on('click', '[data-send-torrent]', function(e){
 		}
 	});
 });
+
+$(document).on('click', '[data-release-delete]', function(e){
+	$(this).blur();
+	e.preventDefault();
+	if(window.confirm('Действительно хотите удалить релиз?')){
+		$.post("//"+document.domain+"/public/release_delete.php", {'id': $('input[id=releaseID]').val()}, function(json){
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			window.location.replace('/');
+		}else{
+			console.log(data.mes);
+		}
+	});
+	}
+});
+
+$('#uploadPosterAdmin').change(function(e) {
+	if(this.files[0] !== undefined){
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			$('#adminPoster').attr('src', e.target.result);
+		}
+		reader.readAsDataURL(this.files[0]);		
+	}
+});
+
+$(document).on('click', '[data-release-new]', function(e){
+	$(this).blur();
+	e.preventDefault();
+	form_data = new FormData();
+	var sendData = {
+		'name': $('input[id=nName]').val(),
+		'ename': $('input[id=nEname]').val(),
+		'year': $('input[id=nYear]').val(),
+		'type': $('input[id=nType]').val(),
+		'genre': $('input[id=nGenre]').val(),
+		'voice': $('input[id=nVoice]').val(),
+		'other': $('input[id=nOther]').val(),
+		'announce': $('input[id=nAnnounce]').val(),
+		'status': $('select[id=nStatus]').val(),
+		'moonplayer': $('input[id=nMoon]').val(),
+		'description': $('textarea[id=nDescription]').val(),
+	};
+	if(document.getElementById("uploadPosterAdmin").files.length > 0){ // prepare file upload
+		form_data.append('poster', $('#uploadPosterAdmin').prop('files')[0]);
+	}
+	form_data.append('data', JSON.stringify(sendData));
+	console.log(JSON.stringify(sendData));
+	$.ajax({
+		type: 'POST',
+		cache: false,
+		processData: false,
+		contentType: false,
+		data: form_data,
+		url: "//"+document.domain+"/public/release.php",
+		success: function(json) {
+			console.log(json);			
+		}
+	});
+});
+

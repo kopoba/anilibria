@@ -500,7 +500,8 @@ p.lasttortext {
 /* release start */
 
 .detail_torrent_side {
-	float: right;
+	float: left;
+	margin-left: 12px;
 }
 	
 .detail_pic_corner {
@@ -510,7 +511,7 @@ p.lasttortext {
 	
 .detail_torrent_info {
 	float: left;
-	width: 460px;
+	width: 470px;
 	height: 505px;
 	overflow: hidden;
 }
@@ -631,23 +632,6 @@ button.xdark {
 
 .tableCenter {
 	text-align: center;
-}
-
-.table-borderless td,
-.table-borderless th {
-    border: 0;
-    padding: 0px;
-}
-
-.table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
-    padding: 0px;
-}
-
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    padding: 0px;
-    line-height: 1.42857143;
-    vertical-align: top;
-    border-top: 0px;
 }
 
 /* release end */

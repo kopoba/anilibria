@@ -568,10 +568,7 @@ function torrentDelete($id){
 	$query = $db->prepare("UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id");
 	$query->bindParam(':id', $id);
 	$query->execute();
-	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent';
-	if(file_exists($file)) {
-		unlink($file);
-	}
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent');
 }
 
 function isJson($string) {
@@ -764,17 +761,12 @@ function upload_avatar() {
 	}
 	file_put_contents($file, $img);
 	if(!empty($user['avatar']) && $user['avatar'] != $name){
-		$old = "$dir/{$user['avatar']}.jpg";
-		if(file_exists($old)){
-			unlink($old);
-		}
+		deleteFile("$dir/{$user['avatar']}.jpg");
 	}
-	
 	$query = $db->prepare("UPDATE `users` SET `avatar` = :avatar WHERE `id` = :id");
 	$query->bindParam(':avatar', $name);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
-
 	_message2("$tmp/$name.jpg");
 }
 
@@ -1100,11 +1092,9 @@ function showRelease(){
 	$page = str_replace('{name}', $name, getTemplate('release'));
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{voice}', $release['voice'], $page);
-	$page = str_replace('{season}', "{$release['season']} {$release['year']}", $page);
+	$page = str_replace('{year}', "{$release['year']}", $page);
 	$page = str_replace('{type}', $release['type'], $page);
-	$page = str_replace('{translator}', $release['translator'], $page);
-	$page = str_replace('{timing}', $release['timing'], $page);
-	$page = str_replace('{status}', $status[$release['status']], $page);
+	$page = str_replace('{other}', $release['other'], $page);
 	$page = str_replace('{description}', $release['description'], $page);
 	$page = str_replace('{announce}', $release['announce'], $page);
 	$page = str_replace('{id}', $release['id'], $page);
@@ -1144,56 +1134,64 @@ function showRelease(){
 	return $page;
 }
 
-function check_poster(){
+function uploadPoster($id){
 	if(empty($_FILES['poster'])){
-		return ['err' => false, 'mes' =>'No upload file'];
+		return;
 	}
+	
 	if($_FILES['poster']['error'] != 0){
-		return ['err' => false, 'mes' =>'Upload error'];
+		return;
 	}
-	if($_FILES['poster']['type'] != 'image/jpeg'){
-		return ['err' => false, 'mes' =>'You can upload only jpeg'];
+	if(!in_array(exif_imagetype($_FILES['poster']['tmp_name']), [IMAGETYPE_PNG, IMAGETYPE_JPEG])){
+		return;
 	}
 	if($_FILES['poster']['size'] > 1000000){
-		return ['err' => false, 'mes' =>'Max size'];
+		return;
 	}
-	return ['err' => true];
+	$img = new Imagick($_FILES['poster']['tmp_name']);
+	$img->setImageFormat('jpg');
+	$img->resizeImage(350,500,Imagick::FILTER_LANCZOS, 1, false);
+	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+	$img->setImageCompressionQuality(80);
+	$img->stripImage();
+	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$id.'.jpg', $img);
+	$img->resizeImage(240,350,Imagick::FILTER_LANCZOS, 1, false);
+	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$id.'.jpg', $img);
 }
 
 function add_release(){
 	global $db, $user, $var;
-	if(!$user){
-		_message('Unauthorized user', 'error');
+	$data = []; $sql = ['col' => '', 'val' => ''];
+	if(!$user || $user['access'] < 2){
+		_message('access', 'error');
 	}
-	if($user['access'] < 4){
-		_message('Access deny', 'error');
+	if(empty($_POST['data'])){
+		_message('empty', 'error');
 	}
-	$data = [];
-	$sql = ['col' => '', 'val' => ''];
-	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
+	$arr = ['name', 'ename', 'year', 'type', 'genre', 'voice', 'other', 'announce', 'status', 'moonplayer', 'description'];
+	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
-		$_POST[$key] = htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8');
-		$sql['col'] .= "`$key`,";
-		$sql['val'] .= ":$key,";
-		$data[] = $key;
+		if(array_key_exists($key, $post)){
+			if(empty($post["$key"])){
+				continue;
+			}
+			$data[$key] = htmlspecialchars($post["$key"], ENT_QUOTES, 'UTF-8');
+			$sql['col'] .= "`$key`,";
+			$sql['val'] .= ":$key,";
+		}
 	}
-	$sql['col'] = rtrim($sql['col'], ',');
-	$sql['val'] = rtrim($sql['val'], ',');
-	$check = check_poster();
-	if(!$check['err']){
-		_message($check['mes'], 'error');
+	if(!empty($sql['col'])){
+		$sql['col'] = rtrim($sql['col'], ',');
+		$sql['val'] = rtrim($sql['val'], ',');
+		echo "INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})";
+		$query = $db->prepare("INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})");
+		foreach($data as $k => &$v){ // https://stackoverflow.com/questions/12144557/php-pdo-bindparam-was-falling-in-a-foreach
+			$query->bindParam(':'.$k, $v);
+		}
+		$query->execute();
+		uploadPoster($db->lastInsertId());
+		_message('success');
 	}
-	if(empty($sql['col'])){
-		_message('Empty post', 'error');	
-	}
-	$query = $db->prepare("INSERT INTO `page` ({$sql['col']}) VALUES ({$sql['val']})");
-	foreach($data as $k => $v){
-		$query->bindParam(":$v", $_POST[$v]);
-	}
-	$query->execute();
-	$id = $db->lastInsertId();
-	move_uploaded_file($_FILES['poster']['tmp_name'], $_SERVER['DOCUMENT_ROOT']."/upload/torrent/$id.jpg");
-	_message('Success');
 }
 
 function edit_release(){
@@ -1215,10 +1213,7 @@ function edit_release(){
 	}
 	$check = check_poster();
 	if($check['err']){
-		$file = $_SERVER['DOCUMENT_ROOT']."/upload/torrent/{$_POST['id']}.jpg";
-		if(file_exists($file)){
-			unlink($file);
-		}
+		deleteFile($_SERVER['DOCUMENT_ROOT']."/upload/torrent/{$_POST['id']}.jpg");
 		move_uploaded_file($_FILES['poster']['tmp_name'], $file);
 	}
 	$data = []; $sql = '';
@@ -1270,29 +1265,11 @@ function set_nickname(){
 	_message('Success');
 }
 
-// block country, user access
-// ['RU, JP', 4], ['JP'], ['', 2]
-function check_block($arr){
-	global $db, $user, $var;
-	if(!is_array($arr)){
-		return true;
-	}
-	if(strpos($arr[0], geoip_country_code_by_name($var['ip'])) === false){
-		return false;
-	}
-	if(!empty($arr[1])){
-		if(empty($user) || $user['access'] < $arr[1]){
-			return false;
-		}
-	}
-	return true;
-}
-
 function getAge($time){
 	return date('Y', time()) - date('Y', $time);
 }
 
-function auth_history(){
+function auth_history(){ // test it
 	global $db, $user, $var; $data = [];
 	$query = $db->prepare("SELECT * FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100");
 	$query->bindParam(':uid', $user['id']);
@@ -1324,7 +1301,17 @@ function footerJS(){
 					<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dataTables.bootstrap.min.css\" />
 					<script src=\"/js/jquery.dataTables.min.js\"></script>
 					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
-					<script src=\"/js/tables.js\"></script>					
+					<script src=\"/js/tables.js\"></script>			
+				";
+			}
+		break;
+		case 'new':
+			if($user){
+				$result = "
+					<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dataTables.bootstrap.min.css\" />
+					<script src=\"/js/jquery.dataTables.min.js\"></script>
+					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
+					<script src=\"/js/tables.js\"></script>			
 				";
 			}
 		break;
@@ -1424,10 +1411,7 @@ function youtubeVideoExists($id) {
 		$query = $db->prepare("DELETE FROM `youtube` WHERE `vid` = :vid");
 		$query->bindParam(':vid', $id);
 		$query->execute();
-		$file = $_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg';
-		if(file_exists($file)){
-			unlink($file);
-		}
+		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg');
 	}
 	if($x == 'HTTP/1.0 200 OK'){
 		return true;
@@ -1567,21 +1551,27 @@ function showEditTorrentTable(){
 	return $result;
 }
 
+function deleteFile($f){
+	if(file_exists($f)){
+		unlink($f);
+	}
+}
+
 function removeRelease(){
-	global $db;
+	global $db, $user;
 	if(!$user || $user['access'] < 2){
 		_message('access', 'error');
 	}
 	if(empty($_POST['id'])){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `release` WHERE `id` = :id");
+	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
-	$query = $db->prepare("DELETE FROM `release` WHERE `id` = :id");
+	$query = $db->prepare("DELETE FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
@@ -1592,5 +1582,24 @@ function removeRelease(){
 			torrentDelete($row['fid']);
 		}
 	}
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$_POST['id'].'.jpg');
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$_POST['id'].'.jpg');
 	_message('success');
-}	
+}
+
+function releaseTable(){
+	global $db, $var; $result = '';
+	$query = $db->query("SELECT * FROM `xrelease`");
+	$query->execute();
+	while($row = $query->fetch()){
+		$result .= "
+			<tr>
+				<td><a href='/pages/release.php?id={$row['id']}'>{$row['id']}</a></td>
+				<td>{$row['name']}</td>
+				<td>{$var['status'][$row['status']]}</td>
+				<td><a data-admin-release-delete='{$row['id']}' href='#'<span class='glyphicon glyphicon-remove'></span></a></td>
+			</tr>
+		"; 
+	}
+	return $result;
+}

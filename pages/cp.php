@@ -184,7 +184,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div class="clear"></div>
 	<div>
 		<style> td,th { text-align: center; vertical-align: middle; } </style>
-		<table id="tebleSess" class="table table-striped table-bordered" style="width:100%">
+		<table id="tableSess" class="table table-striped table-bordered" style="width:100%">
 		<thead>
 			<tr>
 				<th>ID</th>
