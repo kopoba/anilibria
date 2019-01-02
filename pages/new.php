@@ -40,7 +40,7 @@ $var['page'] = 'new';
 					<option value="2">Скрыт</option>
 			</select>
 			<input id="nMoon" class="form-control" style="margin-top: 7px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." required="">
-			<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: none;" rows="4"></textarea>
+			<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: none;" rows="4" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ..."></textarea>
 		</div>
 		
 	<div class="detail_torrent_side">

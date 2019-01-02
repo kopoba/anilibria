@@ -1,8 +1,39 @@
 <div class="news-block">
-	<div class="news-header"></div>
-	<div class="detail_torrent_info">
+
+	<div id="emptyHeader" class="news-header"></div>
+	
+	<div id="editHeader" class="news-header" style="display: none;">
+			<h2 class="news-name" style="float:left;">
+				Редактировать
+			</h2>
+		<button data-release-update type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; ">Сохранить</button>
+		<label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Загрузить <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
+		<button data-release-delete type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Удалить</button>
+		<div class="clear"></div>	
+	</div>
+	
+<div id="xreleaseEdit" class="detail_torrent_info" style="display: none;">
+			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" value="{name}" required="">
+			<input id="nEname" class="form-control" style="margin-top: 7px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
+			<input id="nYear" class="form-control" style="margin-top: 7px;" type="text" placeholder="Год выхода: 2018" value="{year}" required="">
+			<input id="nType" class="form-control" style="margin-top: 7px;" type="text" placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
+			<input id="nGenre" class="form-control" style="margin-top: 7px;" type="text" placeholder="Жанры: фэнтези, приключения" value="{genre}" required="">
+			<input id="nVoice" class="form-control" style="margin-top: 7px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" value="{voice}" required="">
+			<input id="nOther" class="form-control" style="margin-top: 7px;" type="text" placeholder="Работа над релизом: Darkknight" value="{other}" required="">
+			<input id="nAnnounce" class="form-control" style="margin-top: 7px;" type="text" placeholder="Анонс: Серия выходит в понедельник" value="{announce}" required="">
+			<select id="nStatus" class="form-control" style="margin-top: 7px;">
+					<option value="" disabled selected>Состояние релиза</option>
+					<option value="1">В работе</option>
+					<option value="2">Завершен</option>
+					<option value="2">Скрыт</option>
+			</select>
+			<input id="nMoon" class="form-control" style="margin-top: 7px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
+			<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: none;" rows="4" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{description}</textarea>
+		</div>
+	
+	<div id="xreleaseInfo" class="detail_torrent_info">
 		<h1 class="release-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 0px;">
-			{name}
+			{fullname}
 		</h1>
 		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
 		<b>Год:</b> {year}<br>
@@ -19,7 +50,7 @@
 			<input type="hidden" id="releaseID" value="{id}">
 		</div>
 		<div class="detail_pic_corner">
-			<img class="detail_torrent_pic" border="0" src="/upload/release/{img}.jpg" width="350" height="500" alt="Radiant / Радиант" title="Radiant / Радиант">
+			<img id="adminPoster" class="detail_torrent_pic" border="0" src="/upload/release/{img}.jpg" width="350" height="500" alt="Radiant / Радиант" title="Radiant / Радиант">
 		</div>
 	</div>
 	<div class="clear"></div>
@@ -29,9 +60,10 @@
 			<button data-tab="anilibriaPlayer" class="">Наш плеер</button>
 			<button data-light class="xdark z-fix">Свет</button>
 			<button data-torrent-edit class="">Торрент</button>
-			<button class="">Редактировать</button>
-			<button class="">Создать</button>
-			<button data-release-delete class="">Удалить</button>
+			<button data-xrelease-edit class="">Редактировать</button>
+			<a href="/pages/new.php">
+				<button class="">Создать</button>
+			</a>
 			
 			<button data-online-table class="presence_online" title="Столько либрийцев смотрят это аниме прямо сейчас"></button>
 			<div class="block_fix"></div>

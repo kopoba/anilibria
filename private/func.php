@@ -1089,7 +1089,9 @@ function showRelease(){
 	}
 	
 	$moon = str_replace('{moon}', $release['moonplayer'], getTemplate('moon'));
-	$page = str_replace('{name}', $name, getTemplate('release'));
+	$page = str_replace('{name}', $release['name'], getTemplate('release'));
+	$page = str_replace('{ename}', $release['ename'], $page);
+	$page = str_replace('{fullname}', $name, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{voice}', $release['voice'], $page);
 	$page = str_replace('{year}', "{$release['year']}", $page);
@@ -1099,6 +1101,7 @@ function showRelease(){
 	$page = str_replace('{announce}', $release['announce'], $page);
 	$page = str_replace('{id}', $release['id'], $page);
 	$page = str_replace('{moon}', $moon, $page);
+	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
 	if(!file_exists($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$release['id'].'.jpg')){
 		$page = str_replace('{img}', 'default', $page);
 	}else{
@@ -1138,7 +1141,6 @@ function uploadPoster($id){
 	if(empty($_FILES['poster'])){
 		return;
 	}
-	
 	if($_FILES['poster']['error'] != 0){
 		return;
 	}
@@ -1154,14 +1156,18 @@ function uploadPoster($id){
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 	$img->setImageCompressionQuality(80);
 	$img->stripImage();
-	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$id.'.jpg', $img);
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$id.'.jpg';
+	deleteFile($file);
+	file_put_contents($file, $img);
 	$img->resizeImage(240,350,Imagick::FILTER_LANCZOS, 1, false);
-	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$id.'.jpg', $img);
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$id.'.jpg';
+	deleteFile($file);
+	file_put_contents($file, $img);
 }
 
-function add_release(){
+function xrelease(){
 	global $db, $user, $var;
-	$data = []; $sql = ['col' => '', 'val' => ''];
+	$data = []; $sql = ['col' => '', 'val' => '', 'update' => ''];
 	if(!$user || $user['access'] < 2){
 		_message('access', 'error');
 	}
@@ -1178,18 +1184,45 @@ function add_release(){
 			$data[$key] = htmlspecialchars($post["$key"], ENT_QUOTES, 'UTF-8');
 			$sql['col'] .= "`$key`,";
 			$sql['val'] .= ":$key,";
+			$sql['update'] .= "`$key` = :$key,";
 		}
 	}
+	if(!empty($data['status']) && array_key_exists($data['status'], $var['status'])){
+		$data['search_status'] = $var['status'][$data['status']];
+	}else{
+		$data['search_status'] = $var['status']['3'];
+	}
+	$sql['col'] .= '`search_status`,';
+	$sql['val'] .= ':search_status,';
+	$sql['update'] .= '`search_status` = :search_status,';
 	if(!empty($sql['col'])){
 		$sql['col'] = rtrim($sql['col'], ',');
 		$sql['val'] = rtrim($sql['val'], ',');
-		echo "INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})";
-		$query = $db->prepare("INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})");
+		$sql['update'] = rtrim($sql['update'], ',');
+		$id = '';
+		if(!empty($post['update'])){
+			$id = intval($post['update']);
+		}
+		if(!empty($id)){
+			$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+			$query->bindParam(':id', $id);
+			$query->execute();
+			if($query->rowCount() != 1){
+				_message('wrongRelease');
+			}
+			uploadPoster($id);
+			$query = $db->prepare("UPDATE `xrelease` SET {$sql['update']} WHERE `id` = :id");
+			$query->bindParam(':id', $id);
+		}else{
+			$query = $db->prepare("INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})");
+		}
 		foreach($data as $k => &$v){ // https://stackoverflow.com/questions/12144557/php-pdo-bindparam-was-falling-in-a-foreach
 			$query->bindParam(':'.$k, $v);
 		}
 		$query->execute();
-		uploadPoster($db->lastInsertId());
+		if(empty($id)){
+			uploadPoster($db->lastInsertId());
+		}
 		_message('success');
 	}
 }
@@ -1588,7 +1621,10 @@ function removeRelease(){
 }
 
 function releaseTable(){
-	global $db, $var; $result = '';
+	global $db, $user, $var; $result = '';
+	if(!$user || $user['access'] < 2){
+		_message('access', 'error');
+	}
 	$data = []; $order = 'DESC'; $column = 'id'; $search = '';
 	$arr = ['draw' => 1, 'start' => 0, 'length' => 10];
 	foreach($arr as $key => $val){
@@ -1606,51 +1642,36 @@ function releaseTable(){
 	}
 	if(!empty($_POST['order']['0']['column'])){
 		if($_POST['order']['0']['column'] == 1){
-			$order = 'name';
+			$column = 'name';
 		}
 		if($_POST['order']['0']['column'] == 2){
-			$order = 'status';
+			$column = 'status';
 		}
 	}
 	if($arr['length'] > 100){
 		$arr['length'] = 100;
 	}
-	
-	$query = $db->prepare("SELECT count(*) as count FROM `xrelease`");
-	$query->execute();
-	$total = $query->fetch();
-	
 	if(!empty($_POST['search']['value'])){
 		$search = $_POST['search']['value'];
 	}
 	if(empty($search)){
-		$query = $db->query("SELECT * FROM `xrelease` ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
+		$query = $db->query("SELECT count(*) OVER (), c.* FROM `xrelease` c ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
 	}else{
-		$query = $db->prepare("SELECT * FROM `xrelease` WHERE `name` LIKE concat('%', :search, '%') ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
+		$search = "*$search*";
+		$query = $db->prepare("SELECT count(*) OVER (), c.* FROM `xrelease` c WHERE MATCH(`name`, `ename`, `search_status`) AGAINST (:search IN BOOLEAN MODE) ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
 		$query->bindParam(':search', $search);
 	}
 	$query->execute();
+	$total = 0;
 	while($row = $query->fetch()){
-		$tmp['id'] = $row['id'];
+		if(empty($total)){
+			$total = $row['count(*) OVER ()'];
+		}
+		$tmp['id'] = "<a href='/pages/release.php?id={$row['id']}'>{$row['id']}</a>";
 		$tmp['name'] = $row['name'];
 		$tmp['status'] = $var['status'][$row['status']];
 		$tmp['last'] = "<a data-admin-release-delete='{$row['id']}' href='#'<span class='glyphicon glyphicon-remove'></span></a>";
 		$data[] = array_values($tmp);
 	}
-	return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total['count'], 'recordsFiltered' => $total['count'], 'data' => $data];
-	
-	/*
-	$query->execute();
-	while($row = $query->fetch()){
-		$result .= "
-			<tr>
-				<td><a href='/pages/release.php?id={$row['id']}'>{$row['id']}</a></td>
-				<td>{$row['name']}</td>
-				<td>{$var['status'][$row['status']]}</td>
-				<td><a data-admin-release-delete='{$row['id']}' href='#'<span class='glyphicon glyphicon-remove'></span></a></td>
-			</tr>
-		"; 
-	}
-	return $result;
-	*/	
+	return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];
 }

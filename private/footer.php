@@ -1,8 +1,14 @@
 			</div>
 			<div class="side">
 				<div class="asidehead" >
-					<div style="width: 91%; padding-top: 11px; margin: 0 auto;">
-					<input class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
+					<div style="width: 260px; padding-top: 11px; margin: 0 auto;">
+						
+						<div class="inner-addon right-addon">
+    <i class="glyphicon glyphicon-search"></i>
+    <input class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
+</div>
+						
+					
 					</div>
 				</div>
 				
@@ -49,6 +55,28 @@
 				
 			</div>
 		
+		
+		<style>
+/* enable absolute positioning */
+.inner-addon { 
+    position: relative; 
+}
+
+/* style icon */
+.inner-addon .glyphicon {
+  position: absolute;
+  padding: 7px;
+  pointer-events: none;
+}
+
+/* align icon */
+.left-addon .glyphicon  { left:  0px;}
+.right-addon .glyphicon { right: 0px;}
+
+/* add padding  */
+.left-addon input  { padding-left:  30px; }
+.right-addon input { padding-right: 30px; }
+		</style>
 		</div>
 		<div class="clear"></div>
 		<div class="footer">

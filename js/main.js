@@ -437,7 +437,7 @@ $('#uploadPosterAdmin').change(function(e) {
 	}
 });
 
-$(document).on('click', '[data-release-new]', function(e){
+$(document).on('click', '[data-release-new], [data-release-update]', function(e){
 	$(this).blur();
 	e.preventDefault();
 	form_data = new FormData();
@@ -454,6 +454,9 @@ $(document).on('click', '[data-release-new]', function(e){
 		'moonplayer': $('input[id=nMoon]').val(),
 		'description': $('textarea[id=nDescription]').val(),
 	};
+	if($(this).data('release-update') !== undefined){
+		sendData = $.extend(sendData, {'update': $('input[id=releaseID]').val()}); 
+	}
 	if(document.getElementById("uploadPosterAdmin").files.length > 0){ // prepare file upload
 		form_data.append('poster', $('#uploadPosterAdmin').prop('files')[0]);
 	}
@@ -470,5 +473,26 @@ $(document).on('click', '[data-release-new]', function(e){
 			console.log(json);			
 		}
 	});
+	if($(this).data('release-update') !== undefined){
+		location.reload();
+	}else{
+		$('#tableRelease').DataTable().ajax.reload( null, false );
+	}
 });
 
+$(document).on('click', '[data-xrelease-edit]', function(e){
+	$(this).blur();
+	e.preventDefault();	
+	if($('div#xreleaseEdit').is(':hidden')){
+		$('div#xreleaseInfo').hide();
+		$('div#emptyHeader').hide();
+		$('div#xreleaseEdit').show();
+		$('div#editHeader').show();
+		
+	}else{
+		$('div#xreleaseEdit').hide();
+		$('div#editHeader').hide();
+		$('div#xreleaseInfo').show();
+		$('div#emptyHeader').show();
+	}
+});
