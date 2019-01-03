@@ -112,15 +112,11 @@
 				</p>
 			</div>
 		</div>
-		<script src="/js/jquery.min.js"></script>
-		<script src="/js/jquery.bxslider.min.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
-		<script src="/js/main.js"></script>
+		<script src="<?php echo fileTime('/js/jquery.min.js');?>"></script>
+		<script src="<?php echo fileTime('/js/jquery.bxslider.min.js');?>"></script>
+		<script src="<?php echo fileTime('/js/bootstrap.min.js');?>"></script>
+		<script src="<?php echo fileTime('/js/main.js');?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
-		
-		<script>
-			
-		</script>
 	</body>
 </html>

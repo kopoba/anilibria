@@ -1102,10 +1102,11 @@ function showRelease(){
 	$page = str_replace('{id}', $release['id'], $page);
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
-	if(!file_exists($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$release['id'].'.jpg')){
+	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$release['id'].'.jpg';
+	if(!file_exists($poster)){
 		$page = str_replace('{img}', 'default', $page);
 	}else{
-		$page = str_replace('{img}', $release['id'], $page);
+		$page = str_replace('{img}', fileTime($poster), $page);
 	}
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
 	$query->bindParam(':id', $release['id']);
@@ -1137,7 +1138,7 @@ function showRelease(){
 	return $page;
 }
 
-function uploadPoster($id){
+function uploadPoster($id){	
 	if(empty($_FILES['poster'])){
 		return;
 	}
@@ -1322,43 +1323,45 @@ function auth_history(){ // test it
 
 function footerJS(){
 	global $var, $user; $result = '';
+	$tmplJS =  '<script src="{url}"></script>';
+	$tmplCSS =  '<link rel="stylesheet" type="text/css" href="{url}" />';
 	switch($var['page']){
 		default: break;
-		case 'login': if(!$user) $result = "<script src=\"https://www.google.com/recaptcha/api.js?render={$conf['recaptcha_public']}\"></script>"; break;
+		case 'login': 
+			if(!$user){
+				$result = str_replace('{url}', 'https://www.google.com/recaptcha/api.js?render='.$conf['recaptcha_public'], $tmplJS); 
+			}
+		break;
 		case 'cp':
 			if($user){
-				$result = "
-					<script src=\"/js/jquery.Jcrop.min.js\"></script>
-					<link rel=\"stylesheet\" href=\"/css/jquery.Jcrop.min.css\">
-					<script src=\"/js/uploadAvatar.js\"></script>
-					<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dataTables.bootstrap.min.css\" />
-					<script src=\"/js/jquery.dataTables.min.js\"></script>
-					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
-					<script src=\"/js/tables.js\"></script>			
-				";
+				$result .= str_replace('{url}', fileTime('/js/jquery.Jcrop.min.js'), $tmplJS);
+				$result .= str_replace('{url}', fileTime('/css/jquery.Jcrop.min.css'), $tmplCSS);
+				$result .= str_replace('{url}', fileTime('/js/uploadAvatar.js'), $tmplJS);
+				$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
+				$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
+				$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
+				$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
 			}
 		break;
 		case 'new':
 			if($user){
-				$result = "
-					<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/dataTables.bootstrap.min.css\" />
-					<script src=\"/js/jquery.dataTables.min.js\"></script>
-					<script src=\"/js/dataTables.bootstrap.min.js\"></script>
-					<script src=\"/js/tables.js\"></script>			
-				";
+				$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
+				$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
+				$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
+				$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
 			}
 		break;
 		case 'release':
 			$tmp = getReleaseVideo($var['release']['id']);
-			if(!empty($tmp[0])){
-				$result .= str_replace('{playlist}', $tmp[0], getTemplate('playerjs'));
+			if(!empty($tmp['0'])){
+				$result .= str_replace('{playlist}', $tmp['0'], getTemplate('playerjs'));
 			}
 			unset($tmp);
 			$result .= wsInfo($var['release']['name']);
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
-				$result = "<script src=\"/js/chat.js\"></script>";
+				$result .= str_replace('{url}', fileTime('/js/chat.js'), $tmplJS);
 			}
 		break;
 	}
@@ -1674,4 +1677,16 @@ function releaseTable(){
 		$data[] = array_values($tmp);
 	}
 	return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];
+}
+
+function fileTime($f){
+	if(!file_exists($f)){
+		$f = $_SERVER['DOCUMENT_ROOT'].$f;
+		if(!file_exists($f)){
+			return false;
+		}
+	}
+	$time = filemtime($f);
+	$f = str_replace($_SERVER['DOCUMENT_ROOT'], '', $f);
+	return $f.'?'.$time;
 }
