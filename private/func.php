@@ -1104,7 +1104,7 @@ function showRelease(){
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
 	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$release['id'].'.jpg';
 	if(!file_exists($poster)){
-		$page = str_replace('{img}', 'default', $page);
+		$page = str_replace('{img}', '/upload/release/default.jpg', $page);
 	}else{
 		$page = str_replace('{img}', fileTime($poster), $page);
 	}
@@ -1322,7 +1322,7 @@ function auth_history(){ // test it
 }
 
 function footerJS(){
-	global $var, $user; $result = '';
+	global $var, $user, $conf; $result = '';
 	$tmplJS =  '<script src="{url}"></script>';
 	$tmplCSS =  '<link rel="stylesheet" type="text/css" href="{url}" />';
 	switch($var['page']){
@@ -1731,4 +1731,20 @@ function xSearch(){
 		$result .= "<tr><td><a href='/pages/release.php?id={$row['id']}'>{$row['name']}</a>";
 	}
 	_message2($result);
+}
+
+function showPosters(){
+	global $db; $result = '';
+	$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `id` DESC LIMIT 5");
+	while($row=$query->fetch()){	
+		$img = fileTime('/upload/poster/'.$row['id'].'.jpg');
+		if(!$img){
+			$img = '/upload/poster/default.jpg';
+		}
+		$tmp = getTemplate('torrent-block');
+		$tmp = str_replace("{id}", $row['id'], $tmp);
+		$tmp = str_replace("{img}", $img, $tmp);
+		$result .= $tmp;
+	}
+	return $result;
 }

@@ -441,6 +441,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 	$(this).blur();
 	e.preventDefault();
 	form_data = new FormData();
+	var _this = $(this);
 	var sendData = {
 		'name': $('input[id=nName]').val(),
 		'ename': $('input[id=nEname]').val(),
@@ -470,13 +471,14 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		data: form_data,
 		url: "//"+document.domain+"/public/release.php",
 		success: function(json) {
-			console.log(json);			
+			console.log(json);
+			if(_this.data('release-update') !== undefined){
+				location.reload();
+			}		
 		}
 	});
-	if($(this).data('release-update') !== undefined){
-		location.reload(); // move into success
-	}else{
-		$('#tableRelease').DataTable().ajax.reload( null, false );
+	if($(this).data('release-update') === undefined){
+		$('#tableRelease').DataTable().ajax.reload(null, false);
 	}
 });
 
