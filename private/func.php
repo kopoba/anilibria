@@ -1690,3 +1690,45 @@ function fileTime($f){
 	$f = str_replace($_SERVER['DOCUMENT_ROOT'], '', $f);
 	return $f.'?'.$time;
 }
+
+function xSearch(){
+	global $sphinx, $db; $result = ''; $limit = '';
+	$data = []; $arr = ['search', 'key'];
+	$keys = ['name,ename', 'genre', 'year'];
+	foreach($arr as $key){
+		if(!empty($_POST["$key"])){
+			$data["$key"] = trim($_POST["$key"]);
+		}
+	}
+	if(empty($data['search'])){
+		die;
+	}
+	if(empty($data['key']) || !in_array($data['key'], $keys)){
+		$data['key'] = $keys['0'];
+	}
+	// https://github.com/yiisoft/yii2/issues/3668
+	// https://github.com/yiisoft/yii2/commit/603127712bb5ec90ddc4c461257dab4a92c7178f
+	$data['search'] = str_replace(
+		['\\', '/', '"', '(', ')', '|', '-', '!', '@', '~', '&', '^', '$', '=', '>', '<', "\x00", "\n", "\r", "\x1a"],
+		['\\\\', '\\/', '\\"', '\\(', '\\)', '\\|', '\\-', '\\!', '\\@', '\\~', '\\&', '\\^', '\\$', '\\=', '\\>', '\\<', "\\x00", "\\n", "\\r", "\\x1a"],
+		$data['search']
+	);	
+	if(!empty($_POST['small'])){
+		$limit = 'LIMIT 10';
+	}
+	$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) $limit");
+	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
+	$query->execute();
+	$tmp = $query->fetchAll();
+	foreach($tmp as $k => $v){
+		$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+		$query->bindParam(':id', $v['id']);
+		$query->execute();
+		if($query->rowCount() != 1){
+			continue;
+		}
+		$row = $query->fetch();
+		$result .= "<tr><td><a href='/pages/release.php?id={$row['id']}'>{$row['name']}</a>";
+	}
+	_message2($result);
+}

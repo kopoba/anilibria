@@ -474,7 +474,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		}
 	});
 	if($(this).data('release-update') !== undefined){
-		location.reload();
+		location.reload(); // move into success
 	}else{
 		$('#tableRelease').DataTable().ajax.reload( null, false );
 	}
@@ -488,11 +488,33 @@ $(document).on('click', '[data-xrelease-edit]', function(e){
 		$('div#emptyHeader').hide();
 		$('div#xreleaseEdit').show();
 		$('div#editHeader').show();
-		
 	}else{
 		$('div#xreleaseEdit').hide();
 		$('div#editHeader').hide();
 		$('div#xreleaseInfo').show();
 		$('div#emptyHeader').show();
+	}
+});
+
+$("#smallSearchInput").focus(function() {
+	console.log("sdsf");
+	$('#smallSearch').show();
+});
+
+$("#smallSearchInput").focusout(function(){
+	setTimeout(function(){$('#smallSearch').hide();},100);
+});
+
+$("#smallSearchInput").keyup(function(){	
+	if($('input[id=smallSearchInput]').val().length > 3){
+		$.post("//"+document.domain+"/public/search.php", {'search': $('input[id=smallSearchInput]').val(), 'small': '1'}, function(json){
+			if(json){
+				data = JSON.parse(json);
+				if(data.err == 'ok'){
+					$("#smallSearchTable tr").remove();
+					$('#smallSearchTable').append(data.mes);
+				}
+			}
+		});
 	}
 });

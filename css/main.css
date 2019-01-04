@@ -629,9 +629,25 @@ button.xdark {
 	background: transparent;
 }
 
-
 .tableCenter {
 	text-align: center;
 }
 
 /* release end */
+
+.smallSearch {
+	z-index: 1000;
+	width: 260px;
+	padding-bottom: 7px;
+	margin-left: 10px;
+	color: #ddd;
+	background-color: #383838;
+	position: absolute;
+	display: none;
+}
+
+.smallSearch a {
+	color: #ddd;
+	text-decoration: none;
+	font-size: 16px;
+}

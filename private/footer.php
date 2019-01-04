@@ -5,12 +5,18 @@
 						
 						<div class="inner-addon right-addon">
     <i class="glyphicon glyphicon-search"></i>
-    <input class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
+    <input id="smallSearchInput" class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
 </div>
-						
-					
-					</div>
+
 				</div>
+			</div>		
+				
+			<div id="smallSearch" class="smallSearch">
+				<table id="smallSearchTable" style="margin-left: 13px; ">
+					<tbody>
+					</tbody>
+				</table>
+				</div>	
 				
 				<div class="clear"></div>
 				
