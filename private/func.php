@@ -1351,6 +1351,15 @@ function footerJS(){
 				$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
 			}
 		break;
+		
+		case 'catalog':
+			$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
+			$result .='<script>$(".chosen").chosen({ height: "100px;" });</script>';
+			
+		break;
+		
 		case 'release':
 			$tmp = getReleaseVideo($var['release']['id']);
 			if(!empty($tmp['0'])){

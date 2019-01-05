@@ -35,6 +35,7 @@ body {
 	margin-top: 15px;
 	background-color: #fff;
 	padding: 10px 20px;
+	//height: 468px;
 }
 
 
@@ -238,12 +239,12 @@ a#activelink1 {
 }
 a#activelink2 {
 	background-color:#881919;
-	width:125px;
+	width:130px;
 	height: 50px;
 }
 a#activelink3 {
 	background-color:#731515;
-	width:150px;
+	width:145px;
 	height: 50px;
 }
 a#activelink4 {
@@ -282,6 +283,7 @@ a#activelink6:hover{
 .loadmore {
 	margin: 0 auto;
 	margin-top: 35px;
+	//margin-bottom: 25px;
     width: 140px;
     background-color: white;
     text-align: center;
@@ -650,4 +652,32 @@ button.xdark {
 	color: #ddd;
 	text-decoration: none;
 	font-size: 16px;
+}
+
+.inner-addon { 
+    position: relative; 
+}
+
+.inner-addon .glyphicon {
+  position: absolute;
+  padding: 7px;
+  pointer-events: none;
+}
+
+.left-addon .glyphicon  { left:  0px;}
+.right-addon .glyphicon { right: 0px;}
+
+.left-addon input  { padding-left:  30px; }
+.right-addon input { padding-right: 30px; }
+
+div#headercontent {
+	position: absolute;
+	width: 1175px;
+	height: 120px;
+	margin: 0px auto;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }

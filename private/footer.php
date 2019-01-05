@@ -19,70 +19,8 @@
 				</div>	
 				
 				<div class="clear"></div>
-				
-				<div class="torrent-block">
-					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/1.jpg" alt="" width="240" height="350"></a>
-					</div>
-				</div>
-				
-				<div class="torrent-block">
-					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/2.jpg" alt="" width="240" height="350"></a>
-					</div>
-				</div>
-				
-				<div class="torrent-block">
-					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/3.jpg" alt="" width="240" height="350"></a>
-					</div>
-				</div>
-				
-				<div class="torrent-block">
-					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/4.jpg" alt="" width="240" height="350"></a>
-					</div>
-				</div>
-				
-				<div class="torrent-block">
-					<div class="torrent_block">
-						<a href="/release/tokyo-ghoul-re.html"><img class="lasttorpic" src="/upload/poster/5.jpg" alt="" width="240" height="350"></a>
-					</div>
-				</div>
-								
-				<?php
-					if(!empty($var['release'])){
-						$tmpURL = 1;
-						if(rand(1,10) > 5) $tmpURL = 2;
-						echo "<img src=\"/img/pushall$tmpURL.jpg\" alt=\"\" width=\"280\">";
-						unset($tmpURL);
-					}
-				?>
-				
+				<?php echo showPosters(); ?>	
 			</div>
-		
-		
-		<style>
-/* enable absolute positioning */
-.inner-addon { 
-    position: relative; 
-}
-
-/* style icon */
-.inner-addon .glyphicon {
-  position: absolute;
-  padding: 7px;
-  pointer-events: none;
-}
-
-/* align icon */
-.left-addon .glyphicon  { left:  0px;}
-.right-addon .glyphicon { right: 0px;}
-
-/* add padding  */
-.left-addon input  { padding-left:  30px; }
-.right-addon input { padding-right: 30px; }
-		</style>
 		</div>
 		<div class="clear"></div>
 		<div class="footer">

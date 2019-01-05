@@ -14,24 +14,7 @@
 	</head>
 	<body>
 		<div class="header">
-			
-			<style>
-				div#headercontent {
-					position: absolute;
-					width: 1175px;
-					height: 120px;
-					margin: 0px auto;
-					z-index: 1000;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
-				}
-			</style>
-			
-			
 			<img src="/img/29.png">
-			
 			<div id="headercontent">
 				<a href="/"><img id="logopic" src="/img/logo_new.png" alt="ALogo" style="width: 213px;"></a>
 			<!--</div>
@@ -58,15 +41,14 @@
 				<div class="contentmenu">
 					<ul class="main-navigation">
 						<li><a id="activelink0" href="/">ГЛАВНАЯ</a></li>
-						<li><a id="activelink1" href="/novosti/">РЕЛИЗЫ</a></li>
-						<li><a id="activelink2" href="/video/" title="Случайное аниме">СЛУЧАЙНОЕ</a></li>
-						<li><a id="activelink3" href="/blog/">ПРИЛОЖЕНИЕ</a></li>
-						<li><a id="activelink4" href="/tracker/relizy.php">КОМАНДА</a></li>
-						<li><a id="activelink5" href="/anilibria.php">ССЫЛКИ</a></li>
-						<li><a id="activelink6" href="/">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
+						<li><a id="activelink1" href="/pages/catalog.php">РЕЛИЗЫ</a></li>
+						<li><a id="activelink2" href="/pages/schedule.php">РАСПИСАНИЕ</a></li>
+						<li><a id="activelink3" href="/pages/app.php">ПРИЛОЖЕНИЕ</a></li>
+						<li><a id="activelink4" href="/pages/team.php">КОМАНДА</a></li>
+						<li><a id="activelink5" href="/pages/links.php">ССЫЛКИ</a></li>
+						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
 				<div style="padding-top: 15px;">
-						<img src="/img/other/1.jpg" alt="" class="center">
+						<img src="/img/other/1.jpg" alt="" class="center" style="height: 150px; width: 880px;">
 				</div>
-
