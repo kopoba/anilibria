@@ -13,24 +13,7 @@ $var['page'] = 'catalog';
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
-
 <style>
-div.torrent_block_main1 {
-    position: relative;
-    background-color: #cf2525;
-    float: left;
-    margin: 0px 35px 30px 0px;
-    padding: 0;
-}
-
-div.torrent_block_main2 {
-    position: relative;
-    background-color: #cf2525;
-    float: left;
-    margin: 0px 0px 30px 0px;
-    padding: 0;
-}
-
 .simpleFilter {
 	background-color: #3e3e3e;
 	padding: 25px 25px;
@@ -41,15 +24,14 @@ div.torrent_block_main2 {
 .simpleCatalog tr:not(:first-child) td {
 	padding-top: 30px;
 }
+
 </style>
 
 
 <div class="simpleFilter">
 	<div style="margin-bottom: 25px;">
 	  <select class="form-control chosen" data-placeholder="Выбрать жанры ..." name="tags[]" multiple style="">
-		<option value="Engineering">Приключения</option>
-		<option value="Carpentry">Фантастика</option>
-		<option value="Plumbing">Школа</option>
+		<?php echo getGenreList(); ?>
 	  </select>
 	</div>
 

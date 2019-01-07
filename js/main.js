@@ -1,4 +1,6 @@
-$(document).ready(function() {	
+var loadmore = 1;
+
+$(document).ready(function() {
 	var recaptcha1;
 	var recaptcha2;
 	var CaptchaCallback1 = function() { recaptcha1 = grecaptcha.render('RecaptchaField1', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
@@ -447,7 +449,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		'ename': $('input[id=nEname]').val(),
 		'year': $('input[id=nYear]').val(),
 		'type': $('input[id=nType]').val(),
-		'genre': $('input[id=nGenre]').val(),
+		'genre': $.trim($('.chosen').val().toString().replace(/,/g, ", ")),
 		'voice': $('input[id=nVoice]').val(),
 		'other': $('input[id=nOther]').val(),
 		'announce': $('input[id=nAnnounce]').val(),
@@ -474,12 +476,12 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 			console.log(json);
 			if(_this.data('release-update') !== undefined){
 				location.reload();
-			}		
+			}
+			if(_this.data('release-new') !== undefined){
+				$('#tableRelease').DataTable().ajax.reload(null, false);
+			}
 		}
 	});
-	if($(this).data('release-update') === undefined){
-		$('#tableRelease').DataTable().ajax.reload(null, false);
-	}
 });
 
 $(document).on('click', '[data-xrelease-edit]', function(e){
@@ -490,6 +492,9 @@ $(document).on('click', '[data-xrelease-edit]', function(e){
 		$('div#emptyHeader').hide();
 		$('div#xreleaseEdit').show();
 		$('div#editHeader').show();
+		
+		$(".chosen").val(chosenGenre).trigger("chosen:updated.chosen");
+		
 	}else{
 		$('div#xreleaseEdit').hide();
 		$('div#editHeader').hide();

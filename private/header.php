@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<div class="header">
-			<img src="/img/29.png">
+			<img src="/img/28.png">
 			<div id="headercontent">
 				<a href="/"><img id="logopic" src="/img/logo_new.png" alt="ALogo" style="width: 213px;"></a>
 			<!--</div>

@@ -1092,7 +1092,17 @@ function showRelease(){
 	$page = str_replace('{name}', $release['name'], getTemplate('release'));
 	$page = str_replace('{ename}', $release['ename'], $page);
 	$page = str_replace('{fullname}', $name, $page);
+	
+	$xtmp =  explode(',', $release['genre']);
+	$str = '';
+	foreach($xtmp as $key => $val){
+		$val = trim($val);
+		$str .= "\"$val\",";
+	}
+	$str = rtrim($str, ',');
+	$page = str_replace('{chosen-genre}', $str, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
+	$page = str_replace('{chosen}', getGenreList(), $page);
 	$page = str_replace('{voice}', $release['voice'], $page);
 	$page = str_replace('{year}', "{$release['year']}", $page);
 	$page = str_replace('{type}', $release['type'], $page);
@@ -1344,29 +1354,32 @@ function footerJS(){
 			}
 		break;
 		case 'new':
-			if($user){
-				$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
-				$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
-				$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
-				$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
-			}
-		break;
-		
+			$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
 		case 'catalog':
 			$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
-			$result .='<script>$(".chosen").chosen({ height: "100px;" });</script>';
-			
+			$result .='<script>$(".chosen").chosen();</script>';
 		break;
-		
 		case 'release':
+			if($user && $user['access'] >= 2){
+				$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
+				$result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
+				$result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
+				$result .='<script>$(".chosen").chosen();</script>';
+				$result .='<style>.chosen-container { min-width:100%; }</style>';
+				$result .='$(".chosen").val("демоны, этти").trigger("chosen:updated.chosen");';
+			}
 			$tmp = getReleaseVideo($var['release']['id']);
 			if(!empty($tmp['0'])){
 				$result .= str_replace('{playlist}', $tmp['0'], getTemplate('playerjs'));
 			}
 			unset($tmp);
 			$result .= wsInfo($var['release']['name']);
+
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
@@ -1757,3 +1770,18 @@ function showPosters(){
 	}
 	return $result;
 }
+
+function getGenreList(){
+	global $db; $arr = []; $result = '';
+	$tmpl = '<option value="{name}">{name}</option>';
+	$query = $db->query("SELECT `name` from `genre`");
+	while($row = $query->fetch()){
+		$arr[] = $row['name'];
+	}
+	sort($arr);
+	foreach($arr as $k => $v){
+		$result .= str_replace('{name}', $v, $tmpl);
+	}
+	return $result;
+}
+

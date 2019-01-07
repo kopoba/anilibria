@@ -24,16 +24,24 @@ $var['page'] = 'new';
 			<div class="clear"></div>	
 		</div>
 		<div class="clear"></div>
-		<div class="detail_torrent_info">
+		<div class="detail_torrent_info" style="height: 550px;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" required="">
-			<input id="nEname" class="form-control" style="margin-top: 7px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
-			<input id="nYear" class="form-control" style="margin-top: 7px;" type="text" placeholder="Год выхода: 2018" required="">
-			<input id="nType" class="form-control" style="margin-top: 7px;" type="text" placeholder="Тип: ТВ 24 эпизода" required="">
-			<input id="nGenre" class="form-control" style="margin-top: 7px;" type="text" placeholder="Жанры: фэнтези, приключения " required="">
-			<input id="nVoice" class="form-control" style="margin-top: 7px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" required="">
-			<input id="nOther" class="form-control" style="margin-top: 7px;" type="text" placeholder="Работа над релизом: Darkknight" required="">
-			<input id="nAnnounce" class="form-control" style="margin-top: 7px;" type="text" placeholder="Анонс: Серия выходит в понедельник" required="">
-			<select id="nStatus" class="form-control" style="margin-top: 7px;">
+			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
+			<input id="nYear" class="form-control" style="margin-top: 6px;" type="text" placeholder="Год выхода: 2018" required="">
+			<input id="nType" class="form-control" style="margin-top: 6px; margin-bottom: 6px;" type="text" placeholder="Тип: ТВ 24 эпизода" required="">
+			
+			<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
+				<?php echo getGenreList(); ?>
+			</select>
+			
+			
+			<!-- <input id="nGenre" class="form-control" style="margin-top: 7px;" type="text" placeholder="Жанры: фэнтези, приключения " required=""> -->
+			
+			
+			<input id="nVoice" class="form-control" style="margin-top: 6px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" required="">
+			<input id="nOther" class="form-control" style="margin-top: 6px;" type="text" placeholder="Работа над релизом: Darkknight" required="">
+			<input id="nAnnounce" class="form-control" style="margin-top: 6px;" type="text" placeholder="Анонс: Серия выходит в понедельник" required="">
+			<select id="nStatus" class="form-control" style="margin-top: 6px;">
 					<option value="" disabled selected>Состояние релиза</option>
 					<option value="1">В работе</option>
 					<option value="2">Завершен</option>
@@ -45,7 +53,7 @@ $var['page'] = 'new';
 		
 	<div class="detail_torrent_side">
 		<div class="detail_pic_corner">
-			<img id="adminPoster" class="detail_torrent_pic" border="0" src="/upload/release/default.jpg" width="350" height="495" alt="">
+			<img id="adminPoster" class="detail_torrent_pic" border="0" src="/upload/release/default.jpg" width="350" height="497" alt="">
 		</div>
 	</div>	
 		<div class="clear"></div>
