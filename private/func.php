@@ -1360,9 +1360,12 @@ function footerJS(){
 			$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
 		case 'catalog':
 			$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/css/simplePagination.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/js/jquery.simplePagination.js'), $tmplJS);
 			$result .='<script>$(".chosen").chosen();</script>';
+			$result .= str_replace('{url}', fileTime('/js/catalog.js'), $tmplJS);
 		break;
 		case 'release':
 			if($user && $user['access'] >= 2){
@@ -1713,6 +1716,16 @@ function fileTime($f){
 	return $f.'?'.$time;
 }
 
+function sphinxPrepare($x){
+	// https://github.com/yiisoft/yii2/issues/3668
+	// https://github.com/yiisoft/yii2/commit/603127712bb5ec90ddc4c461257dab4a92c7178f
+	return str_replace(
+		['\\', '/', '"', '(', ')', '|', '-', '!', '@', '~', '&', '^', '$', '=', '>', '<', "\x00", "\n", "\r", "\x1a"],
+		['\\\\', '\\/', '\\"', '\\(', '\\)', '\\|', '\\-', '\\!', '\\@', '\\~', '\\&', '\\^', '\\$', '\\=', '\\>', '\\<', "\\x00", "\\n", "\\r", "\\x1a"],
+		$x
+	);	
+}
+
 function xSearch(){
 	global $sphinx, $db; $result = ''; $limit = '';
 	$data = []; $arr = ['search', 'key'];
@@ -1728,13 +1741,7 @@ function xSearch(){
 	if(empty($data['key']) || !in_array($data['key'], $keys)){
 		$data['key'] = $keys['0'];
 	}
-	// https://github.com/yiisoft/yii2/issues/3668
-	// https://github.com/yiisoft/yii2/commit/603127712bb5ec90ddc4c461257dab4a92c7178f
-	$data['search'] = str_replace(
-		['\\', '/', '"', '(', ')', '|', '-', '!', '@', '~', '&', '^', '$', '=', '>', '<', "\x00", "\n", "\r", "\x1a"],
-		['\\\\', '\\/', '\\"', '\\(', '\\)', '\\|', '\\-', '\\!', '\\@', '\\~', '\\&', '\\^', '\\$', '\\=', '\\>', '\\<', "\\x00", "\\n", "\\r", "\\x1a"],
-		$data['search']
-	);	
+	$data['search'] = sphinxPrepare($data['search']);
 	if(!empty($_POST['small'])){
 		$limit = 'LIMIT 10';
 	}
@@ -1772,7 +1779,7 @@ function showPosters(){
 }
 
 function getGenreList(){
-	global $db; $arr = []; $result = '';
+	global $db; $arr = []; $result = ''; $total = 0;
 	$tmpl = '<option value="{name}">{name}</option>';
 	$query = $db->query("SELECT `name` from `genre`");
 	while($row = $query->fetch()){
@@ -1785,3 +1792,79 @@ function getGenreList(){
 	return $result;
 }
 
+function showCatalog(){
+	global $sphinx, $db; $i=0; $arr = []; $result = ''; $page = 0;
+	$tmplTR = '<tr>{td}<tr>';
+	function aSearch($db, $page){
+		$query = $db->query("SELECT count(*) as total FROM `xrelease`");
+		$total =  $query->fetch()['total'];
+		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `id` DESC LIMIT $page, 12");
+		$data = $query->fetchAll();
+		return ['data' => $data, 'total' => $total];
+	}
+	function bSearch($sphinx, $page){
+		if(!empty($_POST['search'])){
+			$search = '';
+			$data = json_decode($_POST['search'], true);
+			foreach($data as $k => $v){
+				if(!empty($v)){
+					$search .= $v.',';
+				}
+			}
+			$search = rtrim($search, ',');
+			if(!empty($search)){
+				$search = sphinxPrepare($search);
+				$query = $sphinx->prepare("SELECT count(*) as total FROM anilibria WHERE MATCH(:search)");
+				$query->bindValue(':search', "@(genre,year) ($search)");
+				$query->execute();
+				$total =  $query->fetch()['total'];
+				
+				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) LIMIT $page, 12");
+				$query->bindValue(':search', "@(genre,year) ($search)");
+				$query->execute();
+				$data = $query->fetchAll();
+				return ['data' => $data, 'total' => $total];
+			}
+		}
+		return false;
+	}
+	function prepareSearchResult($data){
+		$arr = []; $i = 0;
+		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
+		foreach($data as $key => $val){
+			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$val['id'].'.jpg';
+			if(!file_exists($poster)){
+				$img = '/upload/release/default.jpg';
+			}else{
+				$img = fileTime($poster);
+			}
+			$arr[$i][] = str_replace('{id}', $val['id'], str_replace('{img}', $img, $tmplTD));  
+			if(count($arr[$i]) == 3){
+				$i++;
+			}
+		}
+		return $arr;
+	}
+	if(!empty($_POST['page'])){
+		$page = intval($_POST['page']);
+		if(empty($page) || $page == 1){
+			$page = 0;
+		}else{
+			$page = ($page-1) * 12;
+		}
+	}
+	$arr = bSearch($sphinx, $page);
+	if(!$arr){
+		$arr = aSearch($db, $page);
+	}
+	$arr['data'] = prepareSearchResult($arr['data']);
+	foreach($arr['data'] as $key => $val){
+		$tmp = '<tr>';
+		foreach($val as $k => $v){
+			$tmp .= $v;
+		}
+		$tmp .= '</tr>';		
+		$result .= $tmp;
+	}
+	die(json_encode(['err' => 'ok', 'table' => $result, 'total' => $arr['total'], 'update' => md5($arr['total'].$_POST['search']) ]));
+}
