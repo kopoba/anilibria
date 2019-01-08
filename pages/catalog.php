@@ -25,17 +25,18 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	padding-top: 30px;
 }
 
-.simpleCatalog tr td:first-child{
-	text-align:left;
+.simpleCatalog tr td:last-child {
+    text-align:right;
 }
 
 .simpleCatalog tr td:nth-child(2) {
     text-align:center;
 }
 
-.simpleCatalog tr td:last-child {
-    text-align:right;
+.simpleCatalog tr td:first-child{
+	text-align:left;
 }
+
 
 </style>
 

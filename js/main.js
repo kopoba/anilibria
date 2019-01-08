@@ -525,3 +525,18 @@ $("#smallSearchInput").keyup(function(){
 		});
 	}
 });
+
+$(document).on('click', '[data-release-favorites]', function(e){
+	var _this = $(this);
+	$.post("//"+document.domain+"/public/favorites.php", {'rid': $('input[id=releaseID]').val()}, function(json){
+		console.log(json);
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			if(_this.hasClass("favorites")){
+				_this.removeClass("favorites");
+			}else{
+				_this.addClass("favorites");
+			}
+		}
+	});
+});

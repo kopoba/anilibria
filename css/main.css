@@ -681,3 +681,7 @@ div#headercontent {
 	right: 0;
 	bottom: 0;
 }
+
+button.favorites {
+	background: #2a5885;
+}

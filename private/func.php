@@ -1118,6 +1118,16 @@ function showRelease(){
 	}else{
 		$page = str_replace('{img}', fileTime($poster), $page);
 	}
+	if($user){
+		$query = $db->prepare("SELECT * FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
+		$query->bindParam(':uid', $user['id']);
+		$query->bindParam(':rid', $release['id']);
+		$query->execute();
+		if($query->rowCount() == 1){
+			$page = str_replace('{favorites}', 'class="favorites"', $page);
+		}
+	}
+	$page = str_replace('{favorites}', '', $page);
 	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
@@ -1643,6 +1653,9 @@ function removeRelease(){
 			torrentDelete($row['fid']);
 		}
 	}
+	$query = $db->prepare("DELETE FROM `favorites` WHERE `rid` = :rid");
+	$query->bindParam(':rid', $_POST['id']);
+	$query->execute();
 	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$_POST['id'].'.jpg');
 	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$_POST['id'].'.jpg');
 	_message('success');
@@ -1819,7 +1832,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) LIMIT $page, 12");
+				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) ORDER BY `id` DESC LIMIT $page, 12");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll();
@@ -1830,7 +1843,7 @@ function showCatalog(){
 	}
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
+		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="350" alt="" title=""></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
@@ -1867,4 +1880,36 @@ function showCatalog(){
 		$result .= $tmp;
 	}
 	die(json_encode(['err' => 'ok', 'table' => $result, 'total' => $arr['total'], 'update' => md5($arr['total'].$_POST['search']) ]));
+}
+
+function releaseFavorite(){
+	global $db, $user;
+	if(!$user){
+		_message('access', 'error');
+	}
+	if(empty($_POST['rid'])){
+		_message('empty', 'error');
+	}
+	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+	$query->bindParam(':id', $_POST['rid']);
+	$query->execute();
+	if($query->rowCount() != 1){
+		_message('empty', 'error');
+	}
+	$query = $db->prepare("SELECT * FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
+	$query->bindParam(':uid', $user['id']);
+	$query->bindParam(':rid', $_POST['rid']);
+	$query->execute();
+	if($query->rowCount() == 0){
+		$query = $db->prepare("INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)");
+		$query->bindParam(':uid', $user['id']);
+		$query->bindParam(':rid', $_POST['rid']);
+		$query->execute();
+	}else{
+		$query = $db->prepare("DELETE FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
+		$query->bindParam(':uid', $user['id']);
+		$query->bindParam(':rid', $_POST['rid']);
+		$query->execute();
+	}
+	_message('success');
 }
