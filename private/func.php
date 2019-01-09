@@ -1384,7 +1384,6 @@ function footerJS(){
 				$result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
 				$result .='<script>$(".chosen").chosen();</script>';
 				$result .='<style>.chosen-container { min-width:100%; }</style>';
-				$result .='$(".chosen").val("демоны, этти").trigger("chosen:updated.chosen");';
 			}
 			$tmp = getReleaseVideo($var['release']['id']);
 			if(!empty($tmp['0'])){
@@ -1806,7 +1805,7 @@ function getGenreList(){
 }
 
 function showCatalog(){
-	global $sphinx, $db; $i=0; $arr = []; $result = ''; $page = 0;
+	global $sphinx, $db, $user; $i=0; $arr = []; $result = ''; $page = 0;
 	$tmplTR = '<tr>{td}<tr>';
 	function aSearch($db, $page){
 		$query = $db->query("SELECT count(*) as total FROM `xrelease`");
@@ -1841,9 +1840,25 @@ function showCatalog(){
 		}
 		return false;
 	}
+	
+	function cSearch($db, $user, $page){
+		$data = []; $total = 0;
+		$query = $db->prepare("SELECT count(*) as total FROM `favorites` WHERE `uid` = :uid");
+		$query->bindParam(':uid', $user['id']);
+		$query->execute();
+		$total = $query->fetch()['total'];
+		$query = $db->prepare("SELECT `rid` FROM `favorites` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT $page, 12");
+		$query->bindParam(':uid', $user['id']);
+		$query->execute();
+		while($row = $query->fetch()){
+			$data[]['id'] = $row['rid']; 
+		}
+		return ['data' => $data, 'total' => $total];
+	}
+	
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="350" alt="" title=""></a></td>';
+		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
@@ -1866,9 +1881,22 @@ function showCatalog(){
 			$page = ($page-1) * 12;
 		}
 	}
-	$arr = bSearch($sphinx, $page);
-	if(!$arr){
-		$arr = aSearch($db, $page);
+	
+	if(empty($_POST['xpage'])){
+		_message('empty', 'error');
+	}
+
+	if($_POST['xpage'] == 'favorites'){
+		if(!$user){
+			_message('access', 'error');
+		}
+		$arr = cSearch($db, $user, $page);
+	}else{
+	
+		$arr = bSearch($sphinx, $page);
+		if(!$arr){
+			$arr = aSearch($db, $page);
+		}
 	}
 	$arr['data'] = prepareSearchResult($arr['data']);
 	foreach($arr['data'] as $key => $val){
