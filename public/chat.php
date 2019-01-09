@@ -1,8 +1,8 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 
 $site = $_SERVER['HTTP_HOST'];
 

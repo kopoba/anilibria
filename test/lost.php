@@ -1,9 +1,9 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

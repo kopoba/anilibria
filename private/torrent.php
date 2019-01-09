@@ -12,7 +12,7 @@
  *
  * 2) Usage example
  * <code>
- * require_once 'Torrent.php';
+ * require 'Torrent.php';
  *
  * // get torrent infos
  * $torrent = new Torrent( './test.torrent' );
