@@ -49,17 +49,20 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>
 
 <div style="margin-bottom: 25px;">
-  <select id="catalogYear" class="form-control chosen" data-placeholder="Выбрать год ..." name="tags[]" multiple style="">
-    <option value="2018">2018</option>
-    <option value="2017">2017</option>
-    <option value="2016">2016</option>
-    <option value="2015">2015</option>
-    <option value="2014">2014</option>
-    <option value="2013">2013</option>
-  </select>
+	<select id="catalogYear" class="form-control chosen" data-placeholder="Выбрать год ..." name="tags[]" multiple style="">
+		<option value="2018">2018</option>
+		<option value="2017">2017</option>
+		<option value="2016">2016</option>
+		<option value="2015">2015</option>
+		<option value="2014">2014</option>
+		<option value="2013">2013</option>
+	  </select>
 	</div>
-  
-  <input data-catalog-update class="btn btn btn-default btn-block" style="width: 100px;" type="submit" value="Показать">
+    <select id="catalogSort" class="form-control" style="float: left; margin-top: 0px;  width: 140px;">
+    <option value="1">Новые</option>
+    <option value="2">Популярные</option>
+  </select>
+  <input data-catalog-update class="btn btn btn-default btn-block" style="float: left; margin-top: 0px; margin-left: 10px; width: 100px;" type="submit" value="Показать">
 </div>
 
 

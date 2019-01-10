@@ -1820,15 +1820,14 @@ function getGenreList(){
 
 function showCatalog(){
 	global $sphinx, $db, $user; $i=0; $arr = []; $result = ''; $page = 0;
-	$tmplTR = '<tr>{td}<tr>';
-	function aSearch($db, $page){
+	function aSearch($db, $page, $sort){
 		$query = $db->query("SELECT count(*) as total FROM `xrelease`");
 		$total =  $query->fetch()['total'];
-		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT $page, 12");
+		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `$sort` DESC LIMIT $page, 12");
 		$data = $query->fetchAll();
 		return ['data' => $data, 'total' => $total];
 	}
-	function bSearch($sphinx, $page){
+	function bSearch($sphinx, $page, $sort){
 		if(!empty($_POST['search'])){
 			$search = '';
 			$data = json_decode($_POST['search'], true);
@@ -1845,7 +1844,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) ORDER BY `last` DESC LIMIT $page, 12");
+				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) ORDER BY `$sort` DESC LIMIT $page, 12");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll();
@@ -1887,6 +1886,13 @@ function showCatalog(){
 		}
 		return $arr;
 	}
+	
+	$sort = ['1' => 'last', '2' => 'rating'];
+	if(!empty($_POST['sort']) && array_key_exists($_POST['sort'], $sort)){
+		$sort = $sort[$_POST['sort']];
+	}else{
+		$sort = $sort['1'];
+	}
 	if(!empty($_POST['page'])){
 		$page = intval($_POST['page']);
 		if(empty($page) || $page == 1){
@@ -1907,9 +1913,9 @@ function showCatalog(){
 		$arr = cSearch($db, $user, $page);
 	}else{
 	
-		$arr = bSearch($sphinx, $page);
+		$arr = bSearch($sphinx, $page, $sort);
 		if(!$arr){
-			$arr = aSearch($db, $page);
+			$arr = aSearch($db, $page, $sort);
 		}
 	}
 	$arr['data'] = prepareSearchResult($arr['data']);
