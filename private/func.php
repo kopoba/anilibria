@@ -294,7 +294,7 @@ function auth(){
 			_exit();
 		}
 		$session = $query->fetch();
-		$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+		$query = $db->prepare("SELECT `id`, `login`, `nickname`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id");
 		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -337,8 +337,6 @@ function auth(){
 			$user['uploaded'] = $row['uploaded'];
 			if(empty($user['uploaded'])) $user['uploaded'] = 1;
 			if(empty($user['downloaded'])) $user['downloaded'] = 1;
-			// upload/ download/ 1024, limit 100
-			// if uploaded > 5 TB and rating > 1 hide advertising
 			$user['rating'] = round($user['uploaded']/$user['downloaded']/1024, 2);
 			if($user['rating'] > 100) $user['rating'] = 100;
 		}
@@ -1078,7 +1076,7 @@ function formatBytes($size, $precision = 2){
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
-	$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare("SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day` FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -1142,7 +1140,7 @@ function showRelease(){
 		}
 	}
 	$page = str_replace('{favorites}', '', $page);
-	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
+	$query = $db->prepare("SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id");
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -1239,7 +1237,7 @@ function xrelease(){
 			$id = intval($post['update']);
 		}
 		if(!empty($id)){
-			$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+			$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
 			$query->bindParam(':id', $id);
 			$query->execute();
 			if($query->rowCount() != 1){
@@ -1260,49 +1258,6 @@ function xrelease(){
 		}
 		_message('success');
 	}
-}
-
-function edit_release(){
-	global $db, $user, $var;
-	if(!$user){
-		_message('Unauthorized user', 'error');
-	}
-	if($user['access'] < 4){
-		_message('Access deny', 'error');
-	}
-	if(empty($_POST['id']) || !ctype_digit($_POST['id'])){
-		_message('Wrong release id', 'error');
-	}
-	$query = $db->prepare("SELECT * FROM `page` WHERE `id` = :id");
-	$query->bindParam(':id', $_POST['id']);
-	$query->execute();
-	if($query->rowCount() != 1){
-		_message('Release not exists', 'error');
-	}
-	$check = check_poster();
-	if($check['err']){
-		deleteFile($_SERVER['DOCUMENT_ROOT']."/upload/torrent/{$_POST['id']}.jpg");
-		move_uploaded_file($_FILES['poster']['tmp_name'], $file);
-	}
-	$data = []; $sql = '';
-	$arr = ['name', 'ename', 'genre', 'voice', 'translator', 'timing', 'design', 'year', 'season', 'type', 'description'];
-	foreach($arr as $key){
-		if(!empty($_POST[$key])){
-			$sql .= "`$key` = :$key,";
-			$data[] = $key;
-		}
-	}
-	if(!empty($sql)){
-		$sql = rtrim($sql, ',');
-		$query = $db->prepare("UPDATE `page` SET $sql WHERE `id` = :id");
-		foreach($data as $k => $v){
-			$_POST[$v] = htmlspecialchars($_POST[$v], ENT_QUOTES, 'UTF-8');
-			$query->bindParam(":$v", $_POST[$v]);
-		}
-		$query->bindParam(':id', $_POST['id']);
-		$query->execute();
-	}
-	_message('Success');
 }
 
 function set_nickname(){
@@ -1339,12 +1294,12 @@ function getAge($time){
 
 function auth_history(){ // test it
 	global $db, $user, $var; $data = [];
-	$query = $db->prepare("SELECT * FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100");
+	$query = $db->prepare("SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100");
 	$query->bindParam(':uid', $user['id']);
 	$query->execute();
 	while($row = $query->fetch()){
 		$status = false;
-		$tmp = $db->prepare("SELECT * FROM `session` WHERE `id` = :id AND `time` > UNIX_TIMESTAMP()");
+		$tmp = $db->prepare("SELECT `id` FROM `session` WHERE `id` = :id AND `time` > UNIX_TIMESTAMP()");
 		$tmp->bindParam(':id', $row['sid']);
 		$tmp->execute();
 		if($tmp->rowCount() == 1){
@@ -1505,7 +1460,7 @@ function youtubeVideoExists($id) {
 
 function updateYoutubeStat(){
 	global $db;
-	$query = $db->query("SELECT * FROM `youtube`");
+	$query = $db->query("SELECT `id` FROM `youtube`");
 	$query->execute();
 	
 	while($row = $query->fetch()){
@@ -1555,7 +1510,7 @@ function updateYoutube(){
 		if(empty($val['id']['videoId'])){
 			continue;
 		}
-		$query = $db->prepare("SELECT * FROM `youtube` WHERE `vid` = :vid");
+		$query = $db->prepare("SELECT `id` FROM `youtube` WHERE `vid` = :vid");
 		$query->bindParam(':vid', $val['id']['videoId']);
 		$query->execute();
 		if($query->rowCount() == 1){
@@ -1572,12 +1527,11 @@ function updateYoutube(){
 function youtubeShow(){
 	global $db;
 	$result = '';
-	$query = $db->query("SELECT * FROM `youtube` ORDER BY `id` DESC  LIMIT 4");
+	$query = $db->query("SELECT `vid`, `comment`, `view` FROM `youtube` ORDER BY `id` DESC  LIMIT 4");
 	$query->execute();
 	while($row = $query->fetch()){
 		$youtube = getTemplate('youtube');
 		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$row['vid']}", $youtube);
-		$youtube = str_replace('{title}', $row['title'], $youtube);
 		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg', $youtube);
 		$youtube = str_replace('{comment}', $row['comment'], $youtube);
 		$youtube = str_replace('{view}', $row['view'], $youtube);
@@ -1601,7 +1555,7 @@ function updateReleaseAnnounce(){
 	if(!ctype_digit($_POST['id'])){
 		_message('wrong', 'error');
 	}
-	$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -1617,7 +1571,7 @@ function updateReleaseAnnounce(){
 
 function showEditTorrentTable(){
 	global $db, $var; $result = ''; $arr = [];
-	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :rid");
+	$query = $db->prepare("SELECT `fid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid");
 	$query->bindParam(':rid', $var['release']['rid']);
 	$query->execute();
 	while($row = $query->fetch()){
@@ -1658,7 +1612,7 @@ function removeRelease(){
 	$query = $db->prepare("DELETE FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
-	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `rid` = :id");
+	$query = $db->prepare("SELECT `fid` FROM `xbt_files` WHERE `rid` = :id");
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() > 0){
@@ -1771,12 +1725,12 @@ function xSearch(){
 	if(!empty($_POST['small'])){
 		$limit = 'LIMIT 10';
 	}
-	$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) $limit");
+	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) $limit");
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
 	foreach($tmp as $k => $v){
-		$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
+		$query = $db->prepare("SELECT `id`, `name` FROM `xrelease` WHERE `id` = :id");
 		$query->bindParam(':id', $v['id']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -1844,7 +1798,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) ORDER BY `$sort` DESC LIMIT $page, 12");
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `$sort` DESC LIMIT $page, 12");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll();
