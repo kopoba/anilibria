@@ -1,13 +1,13 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'login';
 
@@ -93,4 +93,4 @@ if(!$user){
 		<div class="news_footer"></div>
 </div>
 	
-<?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

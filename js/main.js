@@ -333,8 +333,7 @@ $(document).on('click', '[data-send-announce]', function(e){
 			$("#changeAnnounceMes").html('Изменить анонс (<font color=red>'+data.mes+'</font>)');
 			return;
 		}
-		$('#releaseAnnounce').html(announce);
-		$('#changeAnnounce').modal('hide');
+		location.reload();
 	});
 });
 
@@ -454,6 +453,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		'other': $('input[id=nOther]').val(),
 		'announce': $('input[id=nAnnounce]').val(),
 		'status': $('select[id=nStatus]').val(),
+		'day': $('select[id=nDay]').val(),
 		'moonplayer': $('input[id=nMoon]').val(),
 		'description': $('textarea[id=nDescription]').val(),
 	};
@@ -537,6 +537,16 @@ $(document).on('click', '[data-release-favorites]', function(e){
 			}else{
 				_this.addClass("favorites");
 			}
+		}
+	});
+});
+
+$(document).on('click', '[data-release-last]', function(e){
+	var _this = $(this);
+	$.post("//"+document.domain+"/public/release_last.php", {'id': $('input[id=releaseID]').val()}, function(json){
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			location.reload();
 		}
 	});
 });

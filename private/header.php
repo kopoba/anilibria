@@ -49,6 +49,6 @@
 						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
-				<div style="padding-top: 15px;">
-						<img src="/img/other/1.jpg" alt="" class="center" style="height: 150px; width: 880px;">
-				</div>
+				<!--<div style="padding-top: 15px;">
+						<img src="/img/other/1.jpg" alt="" class="center" style="height: 120px; width: 880px;">
+				</div> -->

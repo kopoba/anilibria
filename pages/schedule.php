@@ -8,47 +8,47 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 
-$var['page'] = 'catalog';
+$var['page'] = 'schedule';
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
+
 <style>
-.simpleFilter {
-	background-color: #3e3e3e;
-	padding: 25px 25px;
-	margin-top: 15px;
-	height: 217px;
+.day {
+    background: #4a4a4a;
+    text-align: center;
+    margin: 10px 0 10px 0;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 7px;
+    color: white;
 }
 
-.simpleCatalog tr:not(:first-child) td {
-	padding-top: 30px;
+.test {
+	border-collapse: separate;
+    border-spacing: 8px;
 }
 
-.simpleCatalog tr td:nth-child(1){
-	text-align:left;
-	width: 306px;
+.goodcell .info[title] {
+    background: #4a4a4a;
 }
 
-.simpleCatalog tr td:nth-child(2) {
-    text-align:left;
+.goodcell img {
+    border: 3px solid #4a4a4a;
 }
 
-.simpleCatalog tr td:nth-child(3) {
-    text-align:right;
+.goodcell img:hover {
+    border: 3px solid #e04e4e;
 }
 </style>
 
-
-<div style="margin-top: 15px;">
-	<table class="simpleCatalog" style="width: 100%;">
-		<tbody>
-		</tbody>	
-	</table>
-</div>
-	
-<div id="xpagination" style="display: table; text-align: center; margin: 15px auto 0; padding: none;"></div>
-
+<div class="news-block">
+	<div>			
+		<?php echo showSchedule(); ?>
+	</div>
+	<div class="clear"></div>
+	<div class="news_footer"></div>
 </div>
 
 <?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

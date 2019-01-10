@@ -1,13 +1,13 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'new';
 ?>
@@ -18,8 +18,8 @@ $var['page'] = 'new';
 				Новый релиз
 			</h2>
 		
-		<button data-release-new type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; ">Сохранить</button>
-		<label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Загрузить <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
+		<button data-release-new type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; ">Save</button>
+		<label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Upload <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
 			
 			<div class="clear"></div>	
 		</div>
@@ -32,20 +32,27 @@ $var['page'] = 'new';
 			
 			<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
 				<?php echo getGenreList(); ?>
-			</select>
-			
-			
-			<!-- <input id="nGenre" class="form-control" style="margin-top: 7px;" type="text" placeholder="Жанры: фэнтези, приключения " required=""> -->
-			
+			</select>			
 			
 			<input id="nVoice" class="form-control" style="margin-top: 6px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" required="">
 			<input id="nOther" class="form-control" style="margin-top: 6px;" type="text" placeholder="Работа над релизом: Darkknight" required="">
-			<input id="nAnnounce" class="form-control" style="margin-top: 6px;" type="text" placeholder="Анонс: Серия выходит в понедельник" required="">
+			
+			<select id="nDay" class="form-control" style="margin-top: 6px;">
+				<option value="" disabled selected>Серия выходит</option>
+				<option value="1">Понедельник</option>
+				<option value="2">Вторник</option>
+				<option value="3">Среда</option>
+				<option value="4">Четверг</option>
+				<option value="5">Пятница</option>
+				<option value="6">Субота</option>
+				<option value="7">Воскресение</option>
+			</select>
+			
 			<select id="nStatus" class="form-control" style="margin-top: 6px;">
-					<option value="" disabled selected>Состояние релиза</option>
-					<option value="1">В работе</option>
-					<option value="2">Завершен</option>
-					<option value="2">Скрыт</option>
+				<option value="" disabled selected>Состояние релиза</option>
+				<option value="1">В работе</option>
+				<option value="2">Завершен</option>
+				<option value="2">Скрыт</option>
 			</select>
 			<input id="nMoon" class="form-control" style="margin-top: 7px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." required="">
 			<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: none;" rows="4" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ..."></textarea>
@@ -100,4 +107,4 @@ $var['page'] = 'new';
 VK.Widgets.Comments("vk_comments", {limit: 5, attach: "*"});
 </script>
 
-<?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

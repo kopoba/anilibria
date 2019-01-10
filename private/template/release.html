@@ -6,9 +6,10 @@
 			<h2 class="news-name" style="float:left;">
 				Редактировать
 			</h2>
-		<button data-release-update type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; ">Сохранить</button>
-		<label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Загрузить <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
-		<button data-release-delete type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Удалить</button>
+		<button data-release-update type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; ">Save</button>
+		<label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Upload <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
+		<button data-release-delete type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Delete</button>
+		<button data-release-last type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Update</button>
 		<div class="clear"></div>	
 	</div>
 	
@@ -24,12 +25,23 @@
 			</select>
 			<input id="nVoice" class="form-control" style="margin-top: 4px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" value="{voice}" required="">
 			<input id="nOther" class="form-control" style="margin-top: 4px;" type="text" placeholder="Работа над релизом: Darkknight" value="{other}" required="">
-			<input id="nAnnounce" class="form-control" style="margin-top: 4px;" type="text" placeholder="Анонс: Серия выходит в понедельник" value="{announce}" required="">
+			
+			<select id="nDay" class="form-control" style="margin-top: 6px;">
+				<option value="" disabled selected>Серия выходит</option>
+				<option value="1">Понедельник</option>
+				<option value="2">Вторник</option>
+				<option value="3">Среда</option>
+				<option value="4">Четверг</option>
+				<option value="5">Пятница</option>
+				<option value="6">Субота</option>
+				<option value="7">Воскресение</option>
+			</select>
+			
 			<select id="nStatus" class="form-control" style="margin-top: 4px;">
-					<option value="" disabled selected>Состояние релиза</option>
-					<option value="1">В работе</option>
-					<option value="2">Завершен</option>
-					<option value="2">Скрыт</option>
+				<option value="" disabled selected>Состояние релиза</option>
+				<option value="1">В работе</option>
+				<option value="2">Завершен</option>
+				<option value="2">Скрыт</option>
 			</select>
 			<input id="nMoon" class="form-control" style="margin-top: 4px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
 			<textarea id="nDescription" class="form-control" style="margin-top: 4px; resize: none;" rows="4" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{description}</textarea>

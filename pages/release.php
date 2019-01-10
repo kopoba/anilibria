@@ -89,7 +89,7 @@ VK.Widgets.Comments("vk_comments", {limit: 5, attach: false});
 	<div class="modal-dialog" style="width: 480px;">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="changeAnnounceMes">Изменить дату выхода серии</h4>
+				<h4 class="modal-title" id="changeAnnounceMes">Изменить анонс</h4>
 			</div>
 			<div  class="modal-body">
 				<input class="form-control" id="announce" type="text" placeholder="Серия выходит в понедельник" >
@@ -102,4 +102,4 @@ VK.Widgets.Comments("vk_comments", {limit: 5, attach: false});
 	</div>
 </div>
 
-<?require_once($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

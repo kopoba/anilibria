@@ -107,7 +107,7 @@ function login(){
 	if(strlen($var['user_agent']) > 256){
 		_message('wrongUserAgent', 'error');
 	}
-	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login");
+	$query = $db->prepare("SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login");
 	$query->bindValue(':login', $_POST['login']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -174,7 +174,7 @@ function password_link(){
 	if(!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])){
 		_message('Wrong id or time', 'error');	
 	}
-	$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+	$query = $db->prepare("SELECT `id`, `mail`, `passwd` FROM `users` WHERE `id` = :id");
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -229,7 +229,7 @@ function password_recovery(){
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('wrongEmail', 'error');
 	}
-	$query = $db->prepare("SELECT * FROM `users` WHERE `mail` = :mail");
+	$query = $db->prepare("SELECT `id`, `mail`, `passwd` FROM `users` WHERE `mail` = :mail");
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -262,8 +262,13 @@ function registration(){
 		_message('wrongEmail', 'error');
 	}
 	$_POST['mail'] = mb_strtolower($_POST['mail']);
-	$query = $db->prepare("SELECT * FROM `users` WHERE `login` = :login OR `mail`= :mail");
+	$query = $db->prepare("SELECT `id` FROM `users` WHERE `login` = :login");
 	$query->bindValue(':login', $_POST['login']);
+	$query->execute();
+	if($query->rowCount() > 0){
+		_message('registered', 'error');
+	}
+	$query = $db->prepare("SELECT `id` FROM `users` WHERE `mail`= :mail");
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
@@ -282,7 +287,7 @@ function registration(){
 function auth(){
 	global $conf, $db, $var, $user;
 	if(!empty($_SESSION['sess'])){
-		$query = $db->prepare("SELECT * FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())");
+		$query = $db->prepare("SELECT `id`, `uid`, `hash`, `time` FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())");
 		$query->bindParam(':hash', $_SESSION['sess']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -323,7 +328,7 @@ function auth(){
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
-		$query = $db->prepare("SELECT * FROM `xbt_users` WHERE `uid` = :id");
+		$query = $db->prepare("SELECT `downloaded`, `uploaded` FROM `xbt_users` WHERE `uid` = :id");
 		$query->bindParam(':id', $user['id']);
 		$query->execute();
 		if($query->rowCount() == 1){
@@ -526,7 +531,7 @@ function simple_http_filter(){
 
 function torrentHashExist($hash){
 	global $db;
-	$query = $db->prepare("SELECT * FROM xbt_files WHERE `info_hash` = :hash");
+	$query = $db->prepare("SELECT `fid` FROM xbt_files WHERE `info_hash` = :hash");
 	$query->bindParam(':hash', $hash);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -537,7 +542,7 @@ function torrentHashExist($hash){
 
 function torrentExist($id){
 	global $db;
-	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid`= :id");
+	$query = $db->prepare("SELECT `fid`, `completed`, `info` FROM `xbt_files` WHERE `fid`= :id");
 	$query->bindParam(':id', $id);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -681,15 +686,15 @@ function downloadTorrent(){
 	if(!ctype_digit($_GET['id'])){
 		_message('Wrong id', 'error');
 	}
-	$query = $db->prepare("SELECT * FROM `xbt_files` WHERE `fid` = :id");
+	$query = $db->prepare("SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id");
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('Wrong id', 'error');
 	}
-	$info_hash = $query->fetch()['info_hash'];	
+	$info_hash = $query->fetch()['info_hash'];
 
-	$query = $db->prepare("SELECT * FROM `xbt_users` WHERE `torrent_pass_version` = :id");
+	$query = $db->prepare("SELECT `uid` FROM `xbt_users` WHERE `torrent_pass_version` = :id");
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -805,7 +810,7 @@ function userInfo($id){
 		];
 	}
 	if(empty($result)){
-		$query = $db->prepare("SELECT * FROM `users` WHERE `id` = :id");
+		$query = $db->prepare("SELECT `id`, `login`, `nickname`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id");
 		$query->bindValue(':id', $id);
 		$query->execute();
 		if($query->rowCount() == 0){
@@ -1071,7 +1076,7 @@ function formatBytes($size, $precision = 2){
 }
 
 function showRelease(){
-	global $db, $user;
+	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
 	$query = $db->prepare("SELECT * FROM `xrelease` WHERE `id` = :id");
 	$query->bindParam(':id', $_GET['id']);
@@ -1108,7 +1113,20 @@ function showRelease(){
 	$page = str_replace('{type}', $release['type'], $page);
 	$page = str_replace('{other}', $release['other'], $page);
 	$page = str_replace('{description}', $release['description'], $page);
-	$page = str_replace('{announce}', $release['announce'], $page);
+	
+	if($release['status'] == '2'){
+		$page = str_replace('{announce}', 'Релиз завершен', $page);
+	}elseif(!empty($release['announce'])){
+		$page = str_replace('{announce}', $release['announce'], $page);
+	}else{
+		$a = $var['day']['1'];
+		if(array_key_exists($release['day'], $var['day'])){
+			$a = $var['day'][$release['day']];
+		}
+		$page = str_replace('{announce}', 'Новая серия каждый '.mb_strtolower($a), $page);
+		unset($a);
+	}
+	
 	$page = str_replace('{id}', $release['id'], $page);
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
@@ -1118,12 +1136,8 @@ function showRelease(){
 	}else{
 		$page = str_replace('{img}', fileTime($poster), $page);
 	}
-	if($user){
-		$query = $db->prepare("SELECT * FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
-		$query->bindParam(':uid', $user['id']);
-		$query->bindParam(':rid', $release['id']);
-		$query->execute();
-		if($query->rowCount() == 1){
+	if($user){		
+		if(isFavorite($user['id'], $release['id'])){
 			$page = str_replace('{favorites}', 'class="favorites"', $page);
 		}
 	}
@@ -1195,7 +1209,7 @@ function xrelease(){
 	if(empty($_POST['data'])){
 		_message('empty', 'error');
 	}
-	$arr = ['name', 'ename', 'year', 'type', 'genre', 'voice', 'other', 'announce', 'status', 'moonplayer', 'description'];
+	$arr = ['name', 'ename', 'year', 'type', 'genre', 'voice', 'other', 'announce', 'status', 'moonplayer', 'description', 'day'];
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){
@@ -1525,9 +1539,9 @@ function youtubeGetImage($id){
 	$data = fopen("https://img.youtube.com/vi/$id/maxresdefault.jpg", 'rb');
 	$img = new Imagick();
 	$img->readImageFile($data);
-	$img->resizeImage(840,450,Imagick::FILTER_LANCZOS, 1, false);
+	$img->resizeImage(840,400,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-	$img->setImageCompressionQuality(80);
+	$img->setImageCompressionQuality(85);
 	$img->stripImage();
 	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg', $img);
 }
@@ -1558,7 +1572,7 @@ function updateYoutube(){
 function youtubeShow(){
 	global $db;
 	$result = '';
-	$query = $db->query("SELECT * FROM `youtube` ORDER BY `id` DESC  LIMIT 3");
+	$query = $db->query("SELECT * FROM `youtube` ORDER BY `id` DESC  LIMIT 4");
 	$query->execute();
 	while($row = $query->fetch()){
 		$youtube = getTemplate('youtube');
@@ -1578,7 +1592,7 @@ function updateReleaseAnnounce(){
 	if(!$user || $user['access'] < 2){
 		_message('access', 'error');
 	}
-	if(empty($_POST['announce']) || empty($_POST['id'])){
+	if(empty($_POST['id'])){
 		_message('empty', 'error');
 	}
 	if(mb_strlen($_POST['announce']) > 200){
@@ -1776,7 +1790,7 @@ function xSearch(){
 
 function showPosters(){
 	global $db; $result = '';
-	$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `id` DESC LIMIT 5");
+	$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT 5");
 	while($row=$query->fetch()){	
 		$img = fileTime('/upload/poster/'.$row['id'].'.jpg');
 		if(!$img){
@@ -1810,7 +1824,7 @@ function showCatalog(){
 	function aSearch($db, $page){
 		$query = $db->query("SELECT count(*) as total FROM `xrelease`");
 		$total =  $query->fetch()['total'];
-		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `id` DESC LIMIT $page, 12");
+		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT $page, 12");
 		$data = $query->fetchAll();
 		return ['data' => $data, 'total' => $total];
 	}
@@ -1831,7 +1845,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) ORDER BY `id` DESC LIMIT $page, 12");
+				$query = $sphinx->prepare("SELECT * FROM anilibria WHERE MATCH(:search) ORDER BY `last` DESC LIMIT $page, 12");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll();
@@ -1910,6 +1924,18 @@ function showCatalog(){
 	die(json_encode(['err' => 'ok', 'table' => $result, 'total' => $arr['total'], 'update' => md5($arr['total'].$_POST['search']) ]));
 }
 
+function isFavorite($uid, $rid){
+	global $db;
+	$query = $db->prepare("SELECT `id` FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
+	$query->bindParam(':uid', $uid);
+	$query->bindParam(':rid', $rid);
+	$query->execute();
+	if($query->rowCount() == 0){
+		return false;
+	}
+	return true;
+}
+
 function releaseFavorite(){
 	global $db, $user;
 	if(!$user){
@@ -1924,11 +1950,7 @@ function releaseFavorite(){
 	if($query->rowCount() != 1){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare("SELECT * FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
-	$query->bindParam(':uid', $user['id']);
-	$query->bindParam(':rid', $_POST['rid']);
-	$query->execute();
-	if($query->rowCount() == 0){
+	if(!isFavorite($user['id'], $_POST['rid'])){
 		$query = $db->prepare("INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)");
 		$query->bindParam(':uid', $user['id']);
 		$query->bindParam(':rid', $_POST['rid']);
@@ -1940,4 +1962,63 @@ function releaseFavorite(){
 		$query->execute();
 	}
 	_message('success');
+}
+
+function releaseUpdateLast(){ // todo add announce to pushall and telegram
+	global $db, $user, $var;
+	if(!$user || $user['access'] < 2){
+		_message('access', 'error');
+	}
+	if(empty($_POST['id'])){
+		_message('empty', 'error');
+	}
+	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	if($query->rowCount() == 0){
+		_message('wrongRelease', 'error');
+	}
+	$query = $db->prepare("UPDATE `xrelease` SET `last` = :time WHERE `id` = :id");
+	$query->bindParam(':time', $var['time']);
+	$query->bindParam(':id', $_POST['id']);
+	$query->execute();
+	_message('success');
+}
+
+function showSchedule(){
+	global $db, $var; $arr = []; $result = ''; $i = 0;
+	$tmpl1 = '<div class="day">{day}</div>';
+	$tmpl2 = '<td class="goodcell"><a href="/pages/release.php?id={id}"> <img width="200" height="280" src="{img}"></a></td>';
+	foreach($var['day'] as $key => $val){
+		$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `day` = :day AND `status` = '1'");
+		$query->bindParam(':day', $key);
+		$query->execute();
+		while($row=$query->fetch()){
+			$poster = $_SERVER['DOCUMENT_ROOT']."/upload/poster/{$row['id']}.jpg";
+			if(!file_exists($poster)){
+				$img = '/upload/poster/default.jpg';
+			}else{
+				$img = fileTime($poster);
+			}
+			$arr["$key"][$i][] = [ 
+				str_replace('{id}', $row['id'], str_replace('{img}', $img, $tmpl2))
+			];
+			if(count($arr["$key"][$i]) == 4){
+				$i++;
+			}
+		}
+	}
+	foreach($arr as $key => $val){
+		$result .= str_replace('{day}', $var['day']["$key"], $tmpl1);
+		$result .= '<table class="test"><tbody>';
+		foreach($val as $v){
+			$result .= '<tr>';
+			foreach($v as $item){
+				$result .= $item['0'];
+			}
+			$result .= '</tr>';	
+		}
+		$result .='</tbody></table>';
+	}
+	return $result;
 }
