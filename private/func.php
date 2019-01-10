@@ -2022,3 +2022,20 @@ function showSchedule(){
 	}
 	return $result;
 }
+
+function countRating(){
+	global $db;
+	$query = $db->query("SELECT `id` FROM `xrelease` WHERE `status` != '3'");
+	while($row=$query->fetch()){
+		$tmp = $db->prepare("SELECT count(`id`) as total FROM `favorites` WHERE `rid` = :rid ");
+		$tmp->bindParam(':rid', $row['id']);
+		$tmp->execute();
+		$count = $tmp->rowCount();
+		if($count > 0){
+			$tmp = $db->prepare("UPDATE `xrelease` SET `rating` = :rating WHERE `id` = :id");
+			$tmp->bindParam(':rating', $count);
+			$tmp->bindParam(':id', $row['id']);
+			$tmp->execute();
+		}
+	}
+}
