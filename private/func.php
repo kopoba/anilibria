@@ -1578,7 +1578,7 @@ function updateReleaseAnnounce(){
 
 function showEditTorrentTable(){
 	global $db, $var; $result = ''; $arr = [];
-	$query = $db->prepare('SELECT `fid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid');
+	$query = $db->prepare('SELECT `fid`, `rid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid');
 	$query->bindParam(':rid', $var['release']['rid']);
 	$query->execute();
 	while($row = $query->fetch()){
@@ -2006,5 +2006,114 @@ function countRating(){
 			$tmp->bindParam(':id', $row['id']);
 			$tmp->execute();
 		}
+	}
+}
+
+function apiInfo(){
+	global $db, $cache;
+	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `type`, `status` FROM `xrelease` WHERE `status` != 3');
+	while($row=$query->fetch()){
+		$info[$row['id']] = [
+			'rid' => $row['id'],
+			'name' => [
+				$row['name'],
+				$row['ename']
+			], 
+			'rating' => $row['rating'], 
+			'last' => $row['last'],
+			'moon' => $row['moonplayer'],
+			'status' => $row['status'],
+			'type' => $row['type'],
+			'genre' => $row['genre'],
+			'year' => $row['year'],
+			'day' => $row['day'],
+			'description' => $row['description'],
+		];
+		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
+		$tmp->bindParam(':rid', $row['id']);
+		$tmp->execute();
+		while($xrow=$tmp->fetch()){
+			$data = json_decode($xrow['info'], true);
+			$torrent[$row['id']][] = [
+				'fid' => $xrow['fid'],
+				'hash' => unpack('H*', $xrow['info_hash'])['1'],
+				'leechers' => $xrow['leechers'],
+				'seeders' => $xrow['seeders'],
+				'completed' => $xrow['completed'],
+				'quality' => $data['0'],
+				'series' => $data['1'],
+				'size' => $data['2']
+			];
+		}
+	}
+	$cache->set('apiInfo', json_encode($info), 300);
+	$cache->set('apiTorrent', json_encode($torrent), 300);
+}
+
+function apiList(){
+	global $cache; $result = []; 
+	$info = json_decode($cache->get('apiInfo'), true);
+	$torrent = json_decode($cache->get('apiTorrent'), true);
+	if($info === false || $torrent === false){
+		die('api not ready');
+	}
+	if(!isset($_GET['query'])){
+		die('no query isset');
+	}
+	function apiEcho($a){
+		die(json_encode($a));
+	}
+	function apiGetTorrent($torrent, $id){
+		$result = [];
+		$list = array_unique(explode(',', $id));
+		if(!empty($list)){
+			foreach($list as $val){
+				if(array_key_exists($val, $torrent)){
+					$result["$val"] = $torrent["$val"];
+				}
+			}
+		}
+		return $result;
+	}
+	function apiGetInfo($info, $torrent){
+		$result = []; $list = ''; 
+		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent'];
+		if(!empty($_GET['id'])){
+			$list = array_unique(explode(',', $_GET['id']));
+		}
+		foreach($info as $key => $val){
+			if(!empty($list) && !in_array($val['rid'], $list)){
+				continue;
+			}
+			$val['torrent'] = apiGetTorrent($torrent, $val['rid']);
+			if(isset($_GET['filter'])){
+				$filterList = array_unique(explode(',', $_GET['filter']));
+				foreach($filter as $v){
+					if(!isset($_GET['rm'])){
+						if(!in_array($v, $filterList)){
+							unset($val["$v"]);
+						}
+					}else{
+						if(in_array($v, $filterList)){
+							unset($val["$v"]);
+						}
+					}
+				}
+			}
+			$result[] = $val;
+		}
+		return $result;
+	}
+	switch($_GET['query']){
+		case 'torrent':
+			if(!empty($_GET['id'])){
+				apiEcho(apiGetTorrent($torrent, $_GET['id']));
+			}else{
+				apiEcho($torrent);
+			}
+		break;
+		case 'info':
+			apiEcho(apiGetInfo($info, $torrent));
+		break;
 	}
 }
