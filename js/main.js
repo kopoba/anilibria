@@ -97,7 +97,7 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 	submit.hide(); // recaptchav3 has some delay
 	if($("div#RecaptchaField2").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
-			$.post("//"+document.domain+"/public/password_recovery.php", { 'mail': mail, 'g-recaptcha-response': token }, function(json){
+			$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';
 				if(data.err != 'ok'){
@@ -112,7 +112,7 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 			});
 		});
 	}else{
-		$.post("//"+document.domain+"/public/password_recovery.php", { 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha2), 'recaptcha': 2 }, function(json){
+		$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha2), 'recaptcha': 2 }, function(json){
 			data = JSON.parse(json);
 			color = 'green';
 			if(data.err == 'ok'){
@@ -173,7 +173,7 @@ $(document).on("click", "[data-change-email]", function(e) {
 	e.preventDefault();
 	mail = $('input[id=changeEmail]').val();
 	passwd = $('input[id=changeEmailPasswd]').val();
-	$.post("//"+document.domain+"/public/change_mail.php", {'mail': mail, 'passwd': passwd }, function(json){
+	$.post("//"+document.domain+"/public/change/mail.php", {'mail': mail, 'passwd': passwd }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -188,7 +188,7 @@ $(document).on("click", "[data-change-passwd]", function(e) {
 	$(this).blur();
 	e.preventDefault();
 	passwd = $('input[id=changePasswd]').val();
-	$.post("//"+document.domain+"/public/change_passwd.php", {'passwd': passwd }, function(json){
+	$.post("//"+document.domain+"/public/change/passwd.php", {'passwd': passwd }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -208,7 +208,7 @@ $(document).on("click", "[data-edit-profile]", function(e) {
 $(document).on("click", "[data-reset-user-values]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	$.post("//"+document.domain+"/public/save_user_values.php", {'reset': 1 }, function(json){
+	$.post("//"+document.domain+"/public/save.php", {'reset': 1 }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			text = 'Не указано';
@@ -248,7 +248,7 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 	var youtube = $('input[id=youtube]').val();
 	var twitch = $('input[id=twitch]').val();
 	var twitter = $('input[id=twitter]').val();
-	$.post("//"+document.domain+"/public/save_user_values.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter }, function(json){
+	$.post("//"+document.domain+"/public/save.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			if(name != "") $("#name").text(name);
@@ -327,7 +327,7 @@ $(document).on('click', '[data-send-announce]', function(e){
 	e.preventDefault();
 	id = $('input[id=releaseID]').val();
 	var announce = $('input[id=announce]').val();
-	$.post("//"+document.domain+"/public/release_announce.php", {'id': id, 'announce': announce }, function(json){
+	$.post("//"+document.domain+"/public/release/announce.php", {'id': id, 'announce': announce }, function(json){
 		data = JSON.parse(json);
 		if(data.err != 'ok'){
 			$("#changeAnnounceMes").html('Изменить анонс (<font color=red>'+data.mes+'</font>)');
@@ -392,7 +392,7 @@ $(document).on('click', '[data-send-torrent]', function(e){
 		processData: false,
 		contentType: false,
 		data: form_data,
-		url: "//"+document.domain+"/public/torrent.php",
+		url: "//"+document.domain+"/public/torrent/index.php",
 		success: function(json) {
 			data = JSON.parse(json);			
 			if(data.err != 'ok'){
@@ -407,7 +407,7 @@ $(document).on('click', '[data-send-torrent]', function(e){
 			}
 			if(data.id !== undefined){
 				$('#editTorrentTable').append('<tr id="torrentEditTable'+data.id+'"><td><input id="torrentEditTableID'+data.id+'" class="form-control" style="width: 130px;" type="text" value="'+data.id+'" readonly=""></td><td><input id="torrentEditTableSeries'+data.id+'" class="form-control" style="margin-left: 5px; width: 130px;" type="text" value="'+$('input[id=torrentFileSeries]').val()+'"></td><td><input id="torrentEditTableQuality'+data.id+'" class="form-control" style="margin-left: 5px; width: 130px;" type="text" value="'+$('input[id=torrentFileSeriesQuality]').val()+'"></td><td><input id="torrentEditTableDate'+data.id+'" class="form-control" style="margin-left: 5px; width: 258px;" type="text" value="'+data.date+'"></td><td><input id="torrentEditTableDelete'+data.id+'" class="form-control" style="margin-left: 5px; width: 130px;" type="text" placeholder="Удалить?"></td></tr>');
-				$('#publicTorrentTable').append('<tr id="torrentTableID'+data.id+'"><td id="torrentTableInfo28" class="torrentcol1">Серия '+$('input[id=torrentFileSeries]').val()+' ['+$('input[id=torrentFileSeriesQuality]').val()+']</td><td class="torrentcol2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> '+data.size+' <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 0 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 0 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 0</td><td id="torrentTableDate'+data.id+'" class="torrentcol3">Добавлен '+data.date+'</td><td class="torrentcol4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/public/torrent_download.php?id='+data.id+'">Cкачать</a></td></tr>');
+				$('#publicTorrentTable').append('<tr id="torrentTableID'+data.id+'"><td id="torrentTableInfo28" class="torrentcol1">Серия '+$('input[id=torrentFileSeries]').val()+' ['+$('input[id=torrentFileSeriesQuality]').val()+']</td><td class="torrentcol2"><img style="margin-bottom: 3px;" src="/img/other/1.png" alt="dl"> '+data.size+' <img style="margin-bottom: 3px;" src="/img/other/2.png" alt="dl"> 0 <img style="margin-bottom: 3px;" src="/img/other/3.png" alt="dl"> 0 <img style="margin-bottom: 3px;" src="/img/other/4.png" alt="dl"> 0</td><td id="torrentTableDate'+data.id+'" class="torrentcol3">Добавлен '+data.date+'</td><td class="torrentcol4"><img style="margin-bottom: 3px;" src="/img/other/5.png" alt="dl"> <a class="torrent-download-link" href="/public/torrent/download.php?id='+data.id+'">Cкачать</a></td></tr>');
 			}
 		}
 	});
@@ -417,7 +417,7 @@ $(document).on('click', '[data-release-delete]', function(e){
 	$(this).blur();
 	e.preventDefault();
 	if(window.confirm('Действительно хотите удалить релиз?')){
-		$.post("//"+document.domain+"/public/release_delete.php", {'id': $('input[id=releaseID]').val()}, function(json){
+		$.post("//"+document.domain+"/public/release/delete.php", {'id': $('input[id=releaseID]').val()}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			window.location.replace('/');
@@ -471,7 +471,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		processData: false,
 		contentType: false,
 		data: form_data,
-		url: "//"+document.domain+"/public/release.php",
+		url: "//"+document.domain+"/public/release/index.php",
 		success: function(json) {
 			console.log(json);
 			if(_this.data('release-update') !== undefined){
@@ -543,7 +543,7 @@ $(document).on('click', '[data-release-favorites]', function(e){
 
 $(document).on('click', '[data-release-last]', function(e){
 	var _this = $(this);
-	$.post("//"+document.domain+"/public/release_last.php", {'id': $('input[id=releaseID]').val()}, function(json){
+	$.post("//"+document.domain+"/public/release/last.php", {'id': $('input[id=releaseID]').val()}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			location.reload();

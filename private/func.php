@@ -238,7 +238,7 @@ function password_recovery(){
 	$row = $query->fetch();
 	$time = $var['time']+43200;
 	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string($row['passwd'])));
-	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/password_link.php?id={$row['id']}&time={$time}&hash={$hash}";
+	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/password.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('checkEmail');
 }
@@ -987,7 +987,7 @@ function change_mail(){
 	}
     $time = $var['time'] + 43200;
     $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
-    $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/mail_link.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
+    $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/mail.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
     _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
     _message('checkEmail');
 }
@@ -1156,7 +1156,7 @@ function showRelease(){
 			$torrent = str_replace('{completed}', $row['completed'], $torrent);
 			$torrent = str_replace('{id}', $row['fid'], $torrent);
 			if($user){
-				$link = "/public/torrent_download.php?id={$row['fid']}";
+				$link = "/public/torrent/download.php?id={$row['fid']}";
 			}else{
 				$link = "/upload/torrents/{$row['fid']}.torrent";
 			}
@@ -1244,10 +1244,10 @@ function xrelease(){
 				_message('wrongRelease');
 			}
 			uploadPoster($id);
-			$query = $db->prepare('UPDATE `xrelease` SET '.$sql['update'].' WHERE `id` = :id');
+			$query = $db->prepare("UPDATE `xrelease` SET {$sql['update']} WHERE `id` = :id");
 			$query->bindParam(':id', $id);
 		}else{
-			$query = $db->prepare('INSERT INTO `xrelease` ('.$sql['col'].') VALUES ('.$sql['val'].')');
+			$query = $db->prepare("INSERT INTO `xrelease` {$sql['col']} VALUES ({$sql['val']})");
 		}
 		foreach($data as $k => &$v){ // https://stackoverflow.com/questions/12144557/php-pdo-bindparam-was-falling-in-a-foreach
 			$query->bindParam(':'.$k, $v);
@@ -1662,10 +1662,10 @@ function releaseTable(){
 		$search = $_POST['search']['value'];
 	}
 	if(empty($search)){
-		$query = $db->query('SELECT count(*) OVER (), c.* FROM `xrelease` c ORDER BY `'.$column.'` $order LIMIT '.$arr['start'].', '.$arr['length']);
+		$query = $db->query("SELECT count(*) OVER (), c.* FROM `xrelease` c ORDER BY `{$column}` $order LIMIT {$arr['start']}, {$arr['length']}");
 	}else{
 		$search = "*$search*";
-		$query = $db->prepare('SELECT count(*) OVER (), c.* FROM `xrelease` c WHERE MATCH(`name`, `ename`, `search_status`) AGAINST (:search IN BOOLEAN MODE) ORDER BY `'.$column.'` '.$order.' LIMIT '.$arr['start'].', '.$arr['length']);
+		$query = $db->prepare("SELECT count(*) OVER (), c.* FROM `xrelease` c WHERE MATCH(`name`, `ename`, `search_status`) AGAINST (:search IN BOOLEAN MODE) ORDER BY `{$column}` {$order} LIMIT {$arr['start']}, {$arr['length']}");
 		$query->bindParam(':search', $search);
 	}
 	$query->execute();
@@ -1724,7 +1724,7 @@ function xSearch(){
 	if(!empty($_POST['small'])){
 		$limit = 'LIMIT 10';
 	}
-	$query = $sphinx->prepare('SELECT `id` FROM anilibria WHERE MATCH(:search) '.$limit);
+	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) {$limit}");
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
@@ -1776,7 +1776,7 @@ function showCatalog(){
 	function aSearch($db, $page, $sort){
 		$query = $db->query('SELECT count(*) as total FROM `xrelease`');
 		$total =  $query->fetch()['total'];
-		$query = $db->query('SELECT `id` FROM `xrelease` ORDER BY `'.$sort.'` DESC LIMIT '.$page.', 12');
+		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
 		$data = $query->fetchAll();
 		return ['data' => $data, 'total' => $total];
 	}
@@ -1797,7 +1797,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare('SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `'.$sort.'` DESC LIMIT '.$page.', 12');
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll();
@@ -1813,7 +1813,7 @@ function showCatalog(){
 		$query->bindParam(':uid', $user['id']);
 		$query->execute();
 		$total = $query->fetch()['total'];
-		$query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT '.$page.', 12');
+		$query = $db->prepare("SELECT `rid` FROM `favorites` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT {$page}, 12");
 		$query->bindParam(':uid', $user['id']);
 		$query->execute();
 		while($row = $query->fetch()){

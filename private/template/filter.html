@@ -15,7 +15,7 @@
 <script>
 grecaptcha.ready(function() {
 grecaptcha.execute('{recaptcha}').then(function(token) {
-	$.post('//'+document.domain+'/public/simple_http_filter.php?do=recaptcha', {'g-recaptcha-response': token}, function(json){
+	$.post('//'+document.domain+'/public/filter.php?do=recaptcha', {'g-recaptcha-response': token}, function(json){
 		data = JSON.parse(json);
 		if(data.mes.status != 'yes'){
 			$('#aniCheck').html('reCaptcha test failed.');
@@ -34,7 +34,7 @@ grecaptcha.execute('{recaptcha}').then(function(token) {
 });
 });
 function sendProof(token) {
-	$.post('//'+document.domain+'/public/simple_http_filter.php?do=coinhive', {'coinhive-captcha-token': token}, function(json){
+	$.post('//'+document.domain+'/public/filter.php?do=coinhive', {'coinhive-captcha-token': token}, function(json){
 		if(data.mes.status == 'yes'){
 			location.reload();
 			return;
