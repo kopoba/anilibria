@@ -60,7 +60,7 @@ $var['page'] = 'new';
 		
 	<div class="detail_torrent_side">
 		<div class="detail_pic_corner">
-			<img id="adminPoster" class="detail_torrent_pic" border="0" src="/upload/release/default.jpg" width="350" height="497" alt="">
+			<img id="adminPoster" class="detail_torrent_pic" border="0" src="/upload/release/350x500/default.jpg" width="350" height="497" alt="">
 		</div>
 	</div>	
 		<div class="clear"></div>

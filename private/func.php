@@ -1128,9 +1128,9 @@ function showRelease(){
 	$page = str_replace('{id}', $release['id'], $page);
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
-	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$release['id'].'.jpg';
+	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
 	if(!file_exists($poster)){
-		$page = str_replace('{img}', '/upload/release/default.jpg', $page);
+		$page = str_replace('{img}', '/upload/release/350x500/default.jpg', $page);
 	}else{
 		$page = str_replace('{img}', fileTime($poster), $page);
 	}
@@ -1189,13 +1189,21 @@ function uploadPoster($id){
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 	$img->setImageCompressionQuality(80);
 	$img->stripImage();
-	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$id.'.jpg';
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$id.'.jpg';
+	deleteFile($file);
+	file_put_contents($file, $img);
+	$img->resizeImage(270,390,Imagick::FILTER_LANCZOS, 1, false);
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$id.'.jpg';
 	deleteFile($file);
 	file_put_contents($file, $img);
 	$img->resizeImage(240,350,Imagick::FILTER_LANCZOS, 1, false);
-	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$id.'.jpg';
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/240x350/'.$id.'.jpg';
 	deleteFile($file);
 	file_put_contents($file, $img);
+	$img->resizeImage(200,280,Imagick::FILTER_LANCZOS, 1, false);
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/200x280/'.$id.'.jpg';
+	deleteFile($file);
+	file_put_contents($file, $img);	
 }
 
 function xrelease(){
@@ -1622,8 +1630,10 @@ function removeRelease(){
 	$query = $db->prepare('DELETE FROM `favorites` WHERE `rid` = :rid');
 	$query->bindParam(':rid', $_POST['id']);
 	$query->execute();
-	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$_POST['id'].'.jpg');
-	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$_POST['id'].'.jpg');
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/200x280/'.$_POST['id'].'.jpg');
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/240x350/'.$_POST['id'].'.jpg');
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$_POST['id'].'.jpg');
+	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$_POST['id'].'.jpg');
 	_message('success');
 }
 
@@ -1745,9 +1755,9 @@ function showPosters(){
 	global $db; $result = '';
 	$query = $db->query('SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
 	while($row=$query->fetch()){	
-		$img = fileTime('/upload/poster/'.$row['id'].'.jpg');
+		$img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
 		if(!$img){
-			$img = '/upload/poster/default.jpg';
+			$img = '/upload/release/240x350/default.jpg';
 		}
 		$tmp = getTemplate('torrent-block');
 		$tmp = str_replace("{id}", $row['id'], $tmp);
@@ -1826,9 +1836,9 @@ function showCatalog(){
 		$arr = []; $i = 0;
 		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
 		foreach($data as $key => $val){
-			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/'.$val['id'].'.jpg';
+			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
-				$img = '/upload/release/default.jpg';
+				$img = '/upload/release/270x390/default.jpg';
 			}else{
 				$img = fileTime($poster);
 			}
@@ -1953,9 +1963,9 @@ function showSchedule(){
 		$query->bindParam(':day', $key);
 		$query->execute();
 		while($row=$query->fetch()){
-			$poster = $_SERVER['DOCUMENT_ROOT']."/upload/poster/{$row['id']}.jpg";
+			$poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
 			if(!file_exists($poster)){
-				$img = '/upload/poster/default.jpg';
+				$img = '/upload/release/200x280/default.jpg';
 			}else{
 				$img = fileTime($poster);
 			}
