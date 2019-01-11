@@ -78,7 +78,7 @@ function _exit(){
 	global $db;
 	if(session_status() != PHP_SESSION_NONE){
 		if(!empty($_SESSION['sess'])){
-			$query = $db->prepare("DELETE FROM `session` WHERE `hash` = :hash");
+			$query = $db->prepare('DELETE FROM `session` WHERE `hash` = :hash');
 			$query->bindParam(':hash', $_SESSION["sess"]);
 			$query->execute();
 		}
@@ -107,7 +107,7 @@ function login(){
 	if(strlen($var['user_agent']) > 256){
 		_message('wrongUserAgent', 'error');
 	}
-	$query = $db->prepare("SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login");
+	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
 	$query->bindValue(':login', $_POST['login']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -127,14 +127,14 @@ function login(){
 	}
 	if(password_needs_rehash($row['passwd'], PASSWORD_DEFAULT)){
 		$passwd = createPasswd($_POST['passwd']);
-		$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
+		$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
 		$query->bindParam(':passwd', $passwd[1]);
 		$query->bindParam(':id', $row['id']);
 		$query->execute();
 		$row['passwd'] = $passwd[1];
 	}
 	$hash = session_hash($row['login'], $row['passwd']);
-	$query = $db->prepare("INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)");
+	$query = $db->prepare('INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)');
 	$query->bindParam(':uid', $row['id']);
 	$query->bindParam(':hash', $hash[0]);
 	$query->bindParam(':time', $hash[1]);
@@ -142,21 +142,21 @@ function login(){
 	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();
 	$sid = $db->lastInsertId();
-	$query = $db->prepare("SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`");
+	$query = $db->prepare('SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`');
 	$query->bindParam(':uid', $row['id']);
 	$query->execute();
 	if($query->rowCount() > 10){
 		$row = $query->fetch();
-		$query = $db->prepare("DELETE FROM `session` WHERE `id` = :id");
+		$query = $db->prepare('DELETE FROM `session` WHERE `id` = :id');
 		$query->bindParam(':id', $row['id']);
 		$query->execute();
 	}
 	$_SESSION['sess'] = $hash[0];
-	$query = $db->prepare("UPDATE `users` SET `last_activity` = :time WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `last_activity` = :time WHERE `id` = :id');
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':id', $row['id']);
 	$query->execute();
-	$query = $db->prepare("INSERT INTO `log_ip` (`uid`, `sid`, `ip`, `time`, `info`) VALUES (:uid, :sid, INET6_ATON(:ip), :time, :info)");
+	$query = $db->prepare('INSERT INTO `log_ip` (`uid`, `sid`, `ip`, `time`, `info`) VALUES (:uid, :sid, INET6_ATON(:ip), :time, :info)');
 	$query->bindParam(':uid', $row['id']);
 	$query->bindParam(':sid', $sid);
 	$query->bindParam(':ip', $var['ip']);
@@ -174,7 +174,7 @@ function password_link(){
 	if(!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])){
 		_message('Wrong id or time', 'error');	
 	}
-	$query = $db->prepare("SELECT `id`, `mail`, `passwd` FROM `users` WHERE `id` = :id");
+	$query = $db->prepare('SELECT `id`, `mail`, `passwd` FROM `users` WHERE `id` = :id');
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -189,7 +189,7 @@ function password_link(){
 		_message('Invalid link', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
 	$query->bindValue(':id', $row['id']);
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
@@ -229,7 +229,7 @@ function password_recovery(){
 	if(!filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL)){
 		_message('wrongEmail', 'error');
 	}
-	$query = $db->prepare("SELECT `id`, `mail`, `passwd` FROM `users` WHERE `mail` = :mail");
+	$query = $db->prepare('SELECT `id`, `mail`, `passwd` FROM `users` WHERE `mail` = :mail');
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -262,20 +262,20 @@ function registration(){
 		_message('wrongEmail', 'error');
 	}
 	$_POST['mail'] = mb_strtolower($_POST['mail']);
-	$query = $db->prepare("SELECT `id` FROM `users` WHERE `login` = :login");
+	$query = $db->prepare('SELECT `id` FROM `users` WHERE `login` = :login');
 	$query->bindValue(':login', $_POST['login']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('registered', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `users` WHERE `mail`= :mail");
+	$query = $db->prepare('SELECT `id` FROM `users` WHERE `mail`= :mail');
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('registered', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))");
+	$query = $db->prepare('INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))');
 	$query->bindValue(':login', $_POST['login']);
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->bindParam(':passwd', $passwd[1]);
@@ -287,14 +287,14 @@ function registration(){
 function auth(){
 	global $conf, $db, $var, $user;
 	if(!empty($_SESSION['sess'])){
-		$query = $db->prepare("SELECT `id`, `uid`, `hash`, `time` FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())");
+		$query = $db->prepare('SELECT `id`, `uid`, `hash`, `time` FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())');
 		$query->bindParam(':hash', $_SESSION['sess']);
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
 		}
 		$session = $query->fetch();
-		$query = $db->prepare("SELECT `id`, `login`, `nickname`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id");
+		$query = $db->prepare('SELECT `id`, `login`, `nickname`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
 		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -328,7 +328,7 @@ function auth(){
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
-		$query = $db->prepare("SELECT `downloaded`, `uploaded` FROM `xbt_users` WHERE `uid` = :id");
+		$query = $db->prepare('SELECT `downloaded`, `uploaded` FROM `xbt_users` WHERE `uid` = :id');
 		$query->bindParam(':id', $user['id']);
 		$query->execute();
 		if($query->rowCount() == 1){
@@ -453,13 +453,13 @@ function auth2FA(){
 				_message('wrongPasswd', 'error');
 			}
 			if(!empty($user['2fa'])){
-				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
+				$query = $db->prepare('UPDATE `users` SET `2fa` = :code WHERE `id` = :uid');
 				$query->bindValue(':code', null, PDO::PARAM_INT);
 				$query->bindParam(':uid', $user['id']);
 				$query->execute();
 				_message('2FAdisabled');
 			}else{
-				$query = $db->prepare("UPDATE `users` SET `2fa` = :code WHERE `id` = :uid");
+				$query = $db->prepare('UPDATE `users` SET `2fa` = :code WHERE `id` = :uid');
 				$query->bindParam(':code', $_POST['2fa']);
 				$query->bindParam(':uid', $user['id']);
 				$query->execute();
@@ -529,7 +529,7 @@ function simple_http_filter(){
 
 function torrentHashExist($hash){
 	global $db;
-	$query = $db->prepare("SELECT `fid` FROM xbt_files WHERE `info_hash` = :hash");
+	$query = $db->prepare('SELECT `fid` FROM xbt_files WHERE `info_hash` = :hash');
 	$query->bindParam(':hash', $hash);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -540,7 +540,7 @@ function torrentHashExist($hash){
 
 function torrentExist($id){
 	global $db;
-	$query = $db->prepare("SELECT `fid`, `completed`, `info` FROM `xbt_files` WHERE `fid`= :id");
+	$query = $db->prepare('SELECT `fid`, `completed`, `info` FROM `xbt_files` WHERE `fid`= :id');
 	$query->bindParam(':id', $id);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -551,7 +551,7 @@ function torrentExist($id){
 
 function torrentAdd($hash, $rid, $json, $completed = 0){
 	global $db;
-	$query = $db->prepare("INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, :completed, :rid, :info)");
+	$query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, :completed, :rid, :info)');
 	$query->bindParam(':hash', $hash);
 	$query->bindParam(':rid', $rid);
 	$query->bindParam(':completed', $completed);
@@ -568,7 +568,7 @@ function torrentAdd($hash, $rid, $json, $completed = 0){
 // Also I dont find it in source.
 function torrentDelete($id){
 	global $db;
-	$query = $db->prepare("UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id");
+	$query = $db->prepare('UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id');
 	$query->bindParam(':id', $id);
 	$query->execute();
 	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent');
@@ -624,7 +624,7 @@ function torrent(){
 				}
 				$tmp = json_decode($old['info'], true);
 				$tmp = json_encode([$val['quality'], $val['series'], $tmp['2']]);
-				$query = $db->prepare("UPDATE `xbt_files` SET `ctime` = :ctime, `info` = :info WHERE `fid` = :fid");
+				$query = $db->prepare('UPDATE `xbt_files` SET `ctime` = :ctime, `info` = :info WHERE `fid` = :fid');
 				$query->bindParam(':ctime', $ctime);
 				$query->bindParam(':info', $tmp);
 				$query->bindParam(':fid', $val['fid']);
@@ -684,7 +684,7 @@ function downloadTorrent(){
 	if(!ctype_digit($_GET['id'])){
 		_message('Wrong id', 'error');
 	}
-	$query = $db->prepare("SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id");
+	$query = $db->prepare('SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id');
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -692,11 +692,11 @@ function downloadTorrent(){
 	}
 	$info_hash = $query->fetch()['info_hash'];
 
-	$query = $db->prepare("SELECT `uid` FROM `xbt_users` WHERE `torrent_pass_version` = :id");
+	$query = $db->prepare('SELECT `uid` FROM `xbt_users` WHERE `torrent_pass_version` = :id');
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
-		$query = $db->prepare("INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)");
+		$query = $db->prepare('INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)');
 		$query->bindParam(':id', $user['id']);
 		$query->execute();
 		$uid = $db->lastInsertId();
@@ -766,7 +766,7 @@ function upload_avatar() {
 	if(!empty($user['avatar']) && $user['avatar'] != $name){
 		deleteFile("$dir/{$user['avatar']}.jpg");
 	}
-	$query = $db->prepare("UPDATE `users` SET `avatar` = :avatar WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `avatar` = :avatar WHERE `id` = :id');
 	$query->bindParam(':avatar', $name);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
@@ -808,7 +808,7 @@ function userInfo($id){
 		];
 	}
 	if(empty($result)){
-		$query = $db->prepare("SELECT `id`, `login`, `nickname`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id");
+		$query = $db->prepare('SELECT `id`, `login`, `nickname`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
 		$query->bindValue(':id', $id);
 		$query->execute();
 		if($query->rowCount() == 0){
@@ -895,7 +895,7 @@ function saveUserValues(){
 		_message('maxarg', 'error');
 	}
 	if(!empty($_POST['reset'])){
-		$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
+		$query = $db->prepare('UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id');
 		$query->bindParam(':user_values', $var['default_user_values']);
 		$query->bindParam(':id', $user['id']);
 		$query->execute();
@@ -932,7 +932,7 @@ function saveUserValues(){
     if(strlen($json) > 1024){
 		_message('long', 'error');
 	}
-	$query = $db->prepare("UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id');
 	$query->bindParam(':user_values', $json);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
@@ -979,7 +979,7 @@ function change_mail(){
 		_message('same', 'error');
 	}
     $_POST['mail'] = mb_strtolower($_POST['mail']);
-    $query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
+    $query = $db->prepare('SELECT `id` FROM `users` WHERE `mail` = :mail');
     $query->bindParam(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
@@ -1011,13 +1011,13 @@ function mail_link(){
 	if($hash != $_GET['hash']){
 		_message('Wrong hash', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `users` WHERE `mail` = :mail");
+	$query = $db->prepare('SELECT `id` FROM `users` WHERE `mail` = :mail');
 	$query->bindParam(':mail', $_GET['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('Email already use', 'error');
 	}
-	$query = $db->prepare("UPDATE `users` SET `mail` = :mail WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `mail` = :mail WHERE `id` = :id');
 	$query->bindParam(':mail', $_GET['mail']);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
@@ -1036,7 +1036,7 @@ function change_passwd(){
 		_message('wrongPasswd', 'error');
 	}
 	$passwd = createPasswd();
-	$query = $db->prepare("UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
@@ -1057,7 +1057,7 @@ function close_sess(){
 	if(empty($_POST['id']) || !ctype_digit($_POST['id'])){
 		_message('Wrong sess id', 'error');
 	}
-	$query = $db->prepare("DELETE FROM `session` WHERE `id` = :id AND `uid` = :uid");
+	$query = $db->prepare('DELETE FROM `session` WHERE `id` = :id AND `uid` = :uid');
 	$query->bindParam(':id', $_POST['id']);
 	$query->bindParam(':uid', $user['id']);
 	$query->execute();
@@ -1076,7 +1076,7 @@ function formatBytes($size, $precision = 2){
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
-	$query = $db->prepare("SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day` FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -1140,7 +1140,7 @@ function showRelease(){
 		}
 	}
 	$page = str_replace('{favorites}', '', $page);
-	$query = $db->prepare("SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id");
+	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -1237,17 +1237,17 @@ function xrelease(){
 			$id = intval($post['update']);
 		}
 		if(!empty($id)){
-			$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+			$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `id` = :id');
 			$query->bindParam(':id', $id);
 			$query->execute();
 			if($query->rowCount() != 1){
 				_message('wrongRelease');
 			}
 			uploadPoster($id);
-			$query = $db->prepare("UPDATE `xrelease` SET {$sql['update']} WHERE `id` = :id");
+			$query = $db->prepare('UPDATE `xrelease` SET '.$sql['update'].' WHERE `id` = :id');
 			$query->bindParam(':id', $id);
 		}else{
-			$query = $db->prepare("INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})");
+			$query = $db->prepare('INSERT INTO `xrelease` ('.$sql['col'].') VALUES ('.$sql['val'].')');
 		}
 		foreach($data as $k => &$v){ // https://stackoverflow.com/questions/12144557/php-pdo-bindparam-was-falling-in-a-foreach
 			$query->bindParam(':'.$k, $v);
@@ -1275,13 +1275,13 @@ function set_nickname(){
 		_message('Nickname max len 20', 'error');
 	}
 	$_POST['nickname'] = htmlspecialchars($_POST['nickname'], ENT_QUOTES, 'UTF-8');
-	$query = $db->prepare("SELECT `id` FROM `users` WHERE `nickname` = :nickname");
+	$query = $db->prepare('SELECT `id` FROM `users` WHERE `nickname` = :nickname');
 	$query->bindParam(':nickname', $_POST['nickname']);
 	$query->execute();
 	if($query->rowCount() > 0){
 		_message('Nickname already use', 'error');
 	}
-	$query = $db->prepare("UPDATE `users` SET `nickname` = :nickname WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `users` SET `nickname` = :nickname WHERE `id` = :id');
 	$query->bindParam(':nickname', $_POST['nickname']);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
@@ -1294,12 +1294,12 @@ function getAge($time){
 
 function auth_history(){ // test it
 	global $db, $user, $var; $data = [];
-	$query = $db->prepare("SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100");
+	$query = $db->prepare('SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100');
 	$query->bindParam(':uid', $user['id']);
 	$query->execute();
 	while($row = $query->fetch()){
 		$status = false;
-		$tmp = $db->prepare("SELECT `id` FROM `session` WHERE `id` = :id AND `time` > UNIX_TIMESTAMP()");
+		$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > UNIX_TIMESTAMP()');
 		$tmp->bindParam(':id', $row['sid']);
 		$tmp->execute();
 		if($tmp->rowCount() == 1){
@@ -1447,7 +1447,7 @@ function youtubeVideoExists($id) {
 	global $db;
 	$x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
 	if($x == 'HTTP/1.0 404 Not Found'){
-		$query = $db->prepare("DELETE FROM `youtube` WHERE `vid` = :vid");
+		$query = $db->prepare('DELETE FROM `youtube` WHERE `vid` = :vid');
 		$query->bindParam(':vid', $id);
 		$query->execute();
 		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg');
@@ -1460,15 +1460,14 @@ function youtubeVideoExists($id) {
 
 function updateYoutubeStat(){
 	global $db;
-	$query = $db->query("SELECT `id` FROM `youtube`");
+	$query = $db->query('SELECT `id`, `vid` FROM `youtube`');
 	$query->execute();
-	
 	while($row = $query->fetch()){
 		$stat = youtubeStat($row['vid']);
 		if(!$stat){
 			continue;
 		}
-		$tmp = $db->prepare("UPDATE `youtube` SET `view` = :view, `comment` = :comment WHERE `id` = :id");
+		$tmp = $db->prepare('UPDATE `youtube` SET `view` = :view, `comment` = :comment WHERE `id` = :id');
 		$tmp->bindParam(':view', $stat['0']);
 		$tmp->bindParam(':comment', $stat['1']);
 		$tmp->bindParam(':id', $row['id']);
@@ -1510,13 +1509,13 @@ function updateYoutube(){
 		if(empty($val['id']['videoId'])){
 			continue;
 		}
-		$query = $db->prepare("SELECT `id` FROM `youtube` WHERE `vid` = :vid");
+		$query = $db->prepare('SELECT `id` FROM `youtube` WHERE `vid` = :vid');
 		$query->bindParam(':vid', $val['id']['videoId']);
 		$query->execute();
 		if($query->rowCount() == 1){
 			continue;
 		}
-		$query = $db->prepare("INSERT INTO `youtube` (`title`, `vid`) VALUES (:title, :vid)");
+		$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`) VALUES (:title, :vid)');
 		$query->bindParam(':title', $val['snippet']['title']);
 		$query->bindParam(':vid', $val['id']['videoId']);
 		$query->execute();
@@ -1527,7 +1526,7 @@ function updateYoutube(){
 function youtubeShow(){
 	global $db;
 	$result = '';
-	$query = $db->query("SELECT `vid`, `comment`, `view` FROM `youtube` ORDER BY `id` DESC  LIMIT 4");
+	$query = $db->query('SELECT `vid`, `comment`, `view` FROM `youtube` ORDER BY `id` DESC  LIMIT 4');
 	$query->execute();
 	while($row = $query->fetch()){
 		$youtube = getTemplate('youtube');
@@ -1555,14 +1554,14 @@ function updateReleaseAnnounce(){
 	if(!ctype_digit($_POST['id'])){
 		_message('wrong', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
 	$_POST['announce'] = htmlspecialchars($_POST['announce'], ENT_QUOTES, 'UTF-8');
-	$query = $db->prepare("UPDATE `xrelease` SET `announce` = :announce WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `xrelease` SET `announce` = :announce WHERE `id` = :id');
 	$query->bindParam(':announce', $_POST['announce']);
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
@@ -1571,7 +1570,7 @@ function updateReleaseAnnounce(){
 
 function showEditTorrentTable(){
 	global $db, $var; $result = ''; $arr = [];
-	$query = $db->prepare("SELECT `fid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid");
+	$query = $db->prepare('SELECT `fid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid');
 	$query->bindParam(':rid', $var['release']['rid']);
 	$query->execute();
 	while($row = $query->fetch()){
@@ -1603,16 +1602,16 @@ function removeRelease(){
 	if(empty($_POST['id'])){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
-	$query = $db->prepare("DELETE FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare('DELETE FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
-	$query = $db->prepare("SELECT `fid` FROM `xbt_files` WHERE `rid` = :id");
+	$query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() > 0){
@@ -1620,7 +1619,7 @@ function removeRelease(){
 			torrentDelete($row['fid']);
 		}
 	}
-	$query = $db->prepare("DELETE FROM `favorites` WHERE `rid` = :rid");
+	$query = $db->prepare('DELETE FROM `favorites` WHERE `rid` = :rid');
 	$query->bindParam(':rid', $_POST['id']);
 	$query->execute();
 	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/poster/'.$_POST['id'].'.jpg');
@@ -1663,10 +1662,10 @@ function releaseTable(){
 		$search = $_POST['search']['value'];
 	}
 	if(empty($search)){
-		$query = $db->query("SELECT count(*) OVER (), c.* FROM `xrelease` c ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
+		$query = $db->query('SELECT count(*) OVER (), c.* FROM `xrelease` c ORDER BY `'.$column.'` $order LIMIT '.$arr['start'].', '.$arr['length']);
 	}else{
 		$search = "*$search*";
-		$query = $db->prepare("SELECT count(*) OVER (), c.* FROM `xrelease` c WHERE MATCH(`name`, `ename`, `search_status`) AGAINST (:search IN BOOLEAN MODE) ORDER BY `$column` $order LIMIT {$arr['start']}, {$arr['length']}");
+		$query = $db->prepare('SELECT count(*) OVER (), c.* FROM `xrelease` c WHERE MATCH(`name`, `ename`, `search_status`) AGAINST (:search IN BOOLEAN MODE) ORDER BY `'.$column.'` '.$order.' LIMIT '.$arr['start'].', '.$arr['length']);
 		$query->bindParam(':search', $search);
 	}
 	$query->execute();
@@ -1725,12 +1724,12 @@ function xSearch(){
 	if(!empty($_POST['small'])){
 		$limit = 'LIMIT 10';
 	}
-	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) $limit");
+	$query = $sphinx->prepare('SELECT `id` FROM anilibria WHERE MATCH(:search) '.$limit);
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
 	foreach($tmp as $k => $v){
-		$query = $db->prepare("SELECT `id`, `name` FROM `xrelease` WHERE `id` = :id");
+		$query = $db->prepare('SELECT `id`, `name` FROM `xrelease` WHERE `id` = :id');
 		$query->bindParam(':id', $v['id']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -1744,7 +1743,7 @@ function xSearch(){
 
 function showPosters(){
 	global $db; $result = '';
-	$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT 5");
+	$query = $db->query('SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
 	while($row=$query->fetch()){	
 		$img = fileTime('/upload/poster/'.$row['id'].'.jpg');
 		if(!$img){
@@ -1761,7 +1760,7 @@ function showPosters(){
 function getGenreList(){
 	global $db; $arr = []; $result = ''; $total = 0;
 	$tmpl = '<option value="{name}">{name}</option>';
-	$query = $db->query("SELECT `name` from `genre`");
+	$query = $db->query('SELECT `name` from `genre`');
 	while($row = $query->fetch()){
 		$arr[] = $row['name'];
 	}
@@ -1775,9 +1774,9 @@ function getGenreList(){
 function showCatalog(){
 	global $sphinx, $db, $user; $i=0; $arr = []; $result = ''; $page = 0;
 	function aSearch($db, $page, $sort){
-		$query = $db->query("SELECT count(*) as total FROM `xrelease`");
+		$query = $db->query('SELECT count(*) as total FROM `xrelease`');
 		$total =  $query->fetch()['total'];
-		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `$sort` DESC LIMIT $page, 12");
+		$query = $db->query('SELECT `id` FROM `xrelease` ORDER BY `'.$sort.'` DESC LIMIT '.$page.', 12');
 		$data = $query->fetchAll();
 		return ['data' => $data, 'total' => $total];
 	}
@@ -1793,12 +1792,12 @@ function showCatalog(){
 			$search = rtrim($search, ',');
 			if(!empty($search)){
 				$search = sphinxPrepare($search);
-				$query = $sphinx->prepare("SELECT count(*) as total FROM anilibria WHERE MATCH(:search)");
+				$query = $sphinx->prepare('SELECT count(*) as total FROM anilibria WHERE MATCH(:search)');
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `$sort` DESC LIMIT $page, 12");
+				$query = $sphinx->prepare('SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `'.$sort.'` DESC LIMIT '.$page.', 12');
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll();
@@ -1810,11 +1809,11 @@ function showCatalog(){
 	
 	function cSearch($db, $user, $page){
 		$data = []; $total = 0;
-		$query = $db->prepare("SELECT count(*) as total FROM `favorites` WHERE `uid` = :uid");
+		$query = $db->prepare('SELECT count(*) as total FROM `favorites` WHERE `uid` = :uid');
 		$query->bindParam(':uid', $user['id']);
 		$query->execute();
 		$total = $query->fetch()['total'];
-		$query = $db->prepare("SELECT `rid` FROM `favorites` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT $page, 12");
+		$query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT '.$page.', 12');
 		$query->bindParam(':uid', $user['id']);
 		$query->execute();
 		while($row = $query->fetch()){
@@ -1886,7 +1885,7 @@ function showCatalog(){
 
 function isFavorite($uid, $rid){
 	global $db;
-	$query = $db->prepare("SELECT `id` FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
+	$query = $db->prepare('SELECT `id` FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid');
 	$query->bindParam(':uid', $uid);
 	$query->bindParam(':rid', $rid);
 	$query->execute();
@@ -1904,19 +1903,19 @@ function releaseFavorite(){
 	if(empty($_POST['rid'])){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['rid']);
 	$query->execute();
 	if($query->rowCount() != 1){
 		_message('empty', 'error');
 	}
 	if(!isFavorite($user['id'], $_POST['rid'])){
-		$query = $db->prepare("INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)");
+		$query = $db->prepare('INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)');
 		$query->bindParam(':uid', $user['id']);
 		$query->bindParam(':rid', $_POST['rid']);
 		$query->execute();
 	}else{
-		$query = $db->prepare("DELETE FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid");
+		$query = $db->prepare('DELETE FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid');
 		$query->bindParam(':uid', $user['id']);
 		$query->bindParam(':rid', $_POST['rid']);
 		$query->execute();
@@ -1932,13 +1931,13 @@ function releaseUpdateLast(){ // todo add announce to pushall and telegram
 	if(empty($_POST['id'])){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `id` = :id");
+	$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
-	$query = $db->prepare("UPDATE `xrelease` SET `last` = :time WHERE `id` = :id");
+	$query = $db->prepare('UPDATE `xrelease` SET `last` = :time WHERE `id` = :id');
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
@@ -1950,7 +1949,7 @@ function showSchedule(){
 	$tmpl1 = '<div class="day">{day}</div>';
 	$tmpl2 = '<td class="goodcell"><a href="/pages/release.php?id={id}"> <img width="200" height="280" src="{img}"></a></td>';
 	foreach($var['day'] as $key => $val){
-		$query = $db->prepare("SELECT `id` FROM `xrelease` WHERE `day` = :day AND `status` = '1'");
+		$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `day` = :day AND `status` = 1');
 		$query->bindParam(':day', $key);
 		$query->execute();
 		while($row=$query->fetch()){
@@ -1985,14 +1984,14 @@ function showSchedule(){
 
 function countRating(){
 	global $db;
-	$query = $db->query("SELECT `id` FROM `xrelease` WHERE `status` != '3'");
+	$query = $db->query('SELECT `id` FROM `xrelease` WHERE `status` != 3');
 	while($row=$query->fetch()){
-		$tmp = $db->prepare("SELECT count(`id`) as total FROM `favorites` WHERE `rid` = :rid ");
+		$tmp = $db->prepare('SELECT count(`id`) as total FROM `favorites` WHERE `rid` = :rid');
 		$tmp->bindParam(':rid', $row['id']);
 		$tmp->execute();
 		$count = $tmp->rowCount();
 		if($count > 0){
-			$tmp = $db->prepare("UPDATE `xrelease` SET `rating` = :rating WHERE `id` = :id");
+			$tmp = $db->prepare('UPDATE `xrelease` SET `rating` = :rating WHERE `id` = :id');
 			$tmp->bindParam(':rating', $count);
 			$tmp->bindParam(':id', $row['id']);
 			$tmp->execute();
