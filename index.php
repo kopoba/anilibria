@@ -7,15 +7,8 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
-
-//updateYoutube();
-//var_dump($user);
-
-//updateYoutubeStat();
-
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 echo youtubeShow();
-?>
 
-<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');
