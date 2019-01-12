@@ -3,7 +3,7 @@ select.form-control + .chosen-container.chosen-container-single .chosen-single {
     width: 100%;
     height: 34px;
     padding: 6px 12px;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.428571429;
     color: #555;
     vertical-align: middle;
@@ -39,7 +39,7 @@ select.form-control + .chosen-container .chosen-search input[type=text] {
     width: 100%;
     height: 34px;
     padding: 6px 12px;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.428571429;
     color: #555;
     vertical-align: middle;
@@ -56,7 +56,7 @@ select.form-control + .chosen-container .chosen-search input[type=text] {
 select.form-control + .chosen-container .chosen-results {
     margin: 2px 0 0;
     padding: 5px 0;
-    font-size: 14px;
+    font-size: 15px;
     list-style: none;
     background-color: #fff;
     margin-bottom: 5px;
@@ -89,7 +89,7 @@ select.form-control + .chosen-container-multi .chosen-choices {
     min-height: 34px;
     //padding: 6px;
     padding: 6px 12px;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.428571429;
     color: #555;
     vertical-align: middle;
@@ -113,7 +113,7 @@ select.form-control + .chosen-container-multi .chosen-choices li.search-choice {
     background-image: none;
     padding: 3px 24px 3px 5px;
     margin: 0 6px 0 0;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: normal;
     line-height: 1.428571429;
     text-align: center;

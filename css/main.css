@@ -3,9 +3,9 @@ body {
     min-width: 1175px;
     max-width: 1175px;
     margin: 0 auto;
-    //font:12pt 'Times New Roman';
-    font-family: 'Open Sans', sans-serif;
-    //font:11pt;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
 }
 
 .header img	{
@@ -23,7 +23,7 @@ body {
 }
 
 .contentmenu {
-	font-size:15.1px;
+	font-size:15.6px;
 	height: 50px;
 	background-color: #d3d3d3;
 	text-align: center;
@@ -112,7 +112,7 @@ body {
 }
 
 .footer_right {
-	font-size:15.5px;
+	font-size:17.8px;
 	width: 485px;
 	float: left;
 	color: #ddd;
@@ -136,7 +136,7 @@ body {
 }
 
 .footer_right p {
-	font-size: 9.3px; padding: 10px 0 0 10px;
+	font-size: 10.5px; padding: 7px 0 0 10px;
 }
 
 .footer a{
@@ -220,47 +220,42 @@ ul.main-navigation li {
   float: left;
 }
 
-ul.main-navigation li a {
+ul.main-navigation a {
   display: block;
-  padding: 1em;
   text-decoration: none;
   color: #fff;
+  height: 50px;
+  padding: 14px;
+  font-size: 12.2pt;
 }
 
 a#activelink0 {
 	background-color:#b32121;
 	width:100px;
-	height: 50px;
 }
 a#activelink1 {
 	background-color: #a01e1e;
 	width:95px;
-	height: 50px;
 }
 a#activelink2 {
 	background-color:#881919;
 	width:130px;
-	height: 50px;
 }
 a#activelink3 {
 	background-color:#731515;
 	width:145px;
-	height: 50px;
 }
 a#activelink4 {
 	background-color:#641212;
 	width:110px;
-	height: 50px;
 }
 a#activelink5 {
 	background-color:#560f0f;
 	width:100px;
-	height: 50px;
 }
 a#activelink6 {
 	background-color:#460c0c;
 	width:200px;
-	height: 50px;
 }
 
 a#activelink0:hover,
@@ -387,7 +382,7 @@ span.other-info {
 	float:right;
 	margin: 0px 0px 0px 5px;
 	font-style:italic;
-	font-size: 15px;
+	font-size: 16px;
 	line-height:30px;
 	color:#e74c3c;
 }
@@ -537,6 +532,7 @@ p.lasttortext {
 	width: 100%;
 	float: left;
 	text-align:center;
+	font-size: 15px;
 }
 	
 .torrentcol1{
@@ -592,7 +588,7 @@ p.lasttortext {
     color: #fff;
     background: transparent;
     border: none;
-    font-size: 13px;
+    font-size: 14px;
     padding: 5px 10px;
     text-transform: uppercase;
     float: left;
@@ -684,4 +680,12 @@ div#headercontent {
 
 button.favorites {
 	background: #2a5885;
+}
+
+.form-control {
+    font-size: 15px !important;
+}
+
+.btn {
+	font-size: 15px !important;
 }
