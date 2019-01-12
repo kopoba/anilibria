@@ -20,6 +20,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     text-align: center;
     margin: 10px 0 10px 0;
     height: 30px;
+    font-size: 20px;
     line-height: 30px;
     border-radius: 7px;
     color: white;

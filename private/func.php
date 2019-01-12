@@ -2117,3 +2117,74 @@ function apiList(){
 		break;
 	}
 }
+
+function sendHH(){
+	global $cache, $var;
+	$ip = md5($var['ip']);
+	if($cache->get($ip) !== false){
+		_message('access', 'error');
+	}
+	$result = '';
+	$info = [
+		'rPosition' => 'Заявка', 
+		'rName' => 'Имя',
+		'rNickname' => 'Никнейм/ творческий псевдоним', 
+		'rAge' => 'Возраст', 
+		'rCity' => 'Город', 
+		'rEmail' => 'Почта', 
+		'rTelegram' => 'Телеграм', 
+		'rAbout' => 'Немного о себе', 
+		'rWhy' => 'Почему вы выбрали именно наш проект', 
+		'rWhere' => 'На каких проектах были, причина ухода', 
+		'techTask' => 'Ссылка на выполненное задание', 
+		'voiceAge' => 'Сколько лет занимаетесь озвучкой', 
+		'voiceEquip' => 'Модель микрофона и звуковой карты', 
+		'voiceExample' => 'Ссылка на пример озвучки', 
+		'voiceTiming' => 'Умеете ли вы сами таймить и сводить звук', 
+		'subExp' => 'Опыт работы с субтитрами', 
+		'subPosition' => 'Какую должность вы хотите занимать? (Переводчик / Оформитель)'
+	];
+	$position = ['1' => 'Технарь', '2' => 'Войсер', '3' => 'Саббер', '4' => 'Сидер', '5' => 'Пиарщик'];
+	$filter = ['1' => ['techTask'], '2' => ['voiceAge', 'voiceEquip', 'voiceExample', 'voiceTiming'], '3' => ['subExp', 'subPosition']];
+	if(empty($_POST['info'])){
+		_message('empty', 'error');
+	}
+	$arr = json_decode($_POST['info'], true);
+	if(empty($arr['rPosition'])){
+		_message('empty', 'error');
+	}
+	if(array_key_exists($arr['rPosition'], $filter)){
+		foreach($filter[$arr['rPosition']] as $val){
+			if(empty($arr["$val"])){
+				_message('empty', 'error');
+			}
+		}
+	}
+	foreach($filter as $key => $val){
+		if($arr['rPosition'] != $key){
+			foreach($val as $v){
+				unset($arr["$v"]);
+			}
+		}
+	}
+	foreach($arr as $key => $val){
+		if(empty($val)){
+			_message('empty', 'error');
+		}
+		if(mb_strlen($val) > 300){
+			_message('long', 'error');
+		}
+		if(!array_key_exists($key, $info)){
+			_message('wrong', 'error');
+		}
+		
+		if($key == 'rPosition'){
+			$val =	$position[$arr['rPosition']];
+		}
+		$result .= "<b>{$info["$key"]}:</b><br/>";
+		$result .= htmlspecialchars($val, ENT_QUOTES, 'UTF-8')."<br/><br/>";		
+	}
+	_mail('poiuty@lepus.su', "[{$position[$arr['rPosition']]}] новая заявка", $result);
+	$cache->set($ip, 1, 86400);
+	_message('success');
+}

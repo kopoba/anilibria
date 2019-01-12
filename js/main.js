@@ -550,3 +550,73 @@ $(document).on('click', '[data-release-last]', function(e){
 		}
 	});
 });
+
+$('#rPosition').on('change', function() {
+	var selectRequest = this.value;
+	var listRequest = {
+		1: {
+			1: 'techTask',
+		},
+		2: {
+			1: 'voiceAge',
+			2: 'voiceEquip',
+			3: 'voiceExample',
+			4: 'voiceTiming',
+		},
+		3: {
+			1: 'subExp',
+			2: 'subPosition',
+		}
+	}
+	for(key in listRequest){
+		for(k in listRequest[key]){
+			$('#'+listRequest[key][k]).hide();
+			$('#'+listRequest[key][k]).val(''); // clean
+		}
+	}
+	if(selectRequest in listRequest){
+		for(key in listRequest[selectRequest]){
+			$('#'+listRequest[selectRequest][key]).show();
+		}
+	}
+});
+
+$('#rAccept').on('change', function() {
+	$("#rAccept").attr("disabled", true);
+	$('#sendRequest').show();
+});
+
+$(document).on('click', '[data-send-request]', function(e){
+	if($('select[id=rPosition]').val() === null){
+		return;
+	}
+	var fields = {
+		"rPosition": $('select[id=rPosition]').val(),
+		"rName": $('input[id=rName]').val(),
+		"rNickname": $('input[id=rNickname]').val(),
+		"rAge": $('input[id=rAge]').val(),
+		"rCity": $('input[id=rCity]').val(),
+		"rEmail": $('input[id=rEmail]').val(),
+		"rTelegram": $('input[id=rTelegram]').val(),
+		"rAbout": $('textarea[id=rAbout]').val(),
+		"rWhy": $('textarea[id=rWhy]').val(),
+		"rWhere": $('textarea[id=rWhere]').val(),
+		"techTask": $('input[id=techTask]').val(),
+		"voiceAge": $('input[id=voiceAge]').val(),
+		"voiceEquip": $('input[id=voiceEquip]').val(),
+		"voiceExample": $('input[id=voiceExample]').val(),
+		"voiceTiming": $('input[id=voiceTiming]').val(),
+		"subExp": $('input[id=subExp]').val(),
+		"subPosition": $('input[id=subPosition]').val(),	
+	}
+	$.post("//"+document.domain+"/public/hh.php", {'info': JSON.stringify(fields)}, function(json){
+		if(json){
+			data = JSON.parse(json);
+			if(data.err == 'ok'){
+				$('#requestModal').modal('show');
+			}else{
+				$("#sendHHMes").html('Пожалуйста, заполните (<font color=red>'+data.mes+'</font>)');
+			}
+		}
+	});
+});
