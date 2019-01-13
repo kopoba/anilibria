@@ -1073,15 +1073,22 @@ function formatBytes($size, $precision = 2){
     return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
 }
 
+function page404(){
+	header('HTTP/1.0 404 Not Found');
+	return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
+}
+
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day` FROM `xrelease` WHERE `id` = :id');
-	$query->bindParam(':id', $_GET['id']);
+	if(empty($_GET['code'])){
+		return page404();
+	}
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day` FROM `xrelease` WHERE `code` = :code');
+	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
-		header('HTTP/1.0 404 Not Found');
-		return str_replace('{error}', '<center><img src="/img/404.png"></center>',  getTemplate('error'));
+		return page404();
 	}
 	$release = $query->fetch();
 	
@@ -1684,7 +1691,7 @@ function releaseTable(){
 		if(empty($total)){
 			$total = $row['count(*) OVER ()'];
 		}
-		$tmp['id'] = "<a href='/pages/release.php?id={$row['id']}'>{$row['id']}</a>";
+		$tmp['id'] = "<a href='/release/".releaseCodeByID($row['id']).".html'>{$row['id']}</a>";
 		$tmp['name'] = $row['name'];
 		$tmp['status'] = $var['status'][$row['status']];
 		$tmp['last'] = "<a data-admin-release-delete='{$row['id']}' href='#'<span class='glyphicon glyphicon-remove'></span></a>";
@@ -1746,21 +1753,21 @@ function xSearch(){
 			continue;
 		}
 		$row = $query->fetch();
-		$result .= "<tr><td><a href='/pages/release.php?id={$row['id']}'>{$row['name']}</a>";
+		$result .= "<tr><td><a href='/release/".releaseCodeByID($row['id']).".html'>{$row['name']}</a>";
 	}
 	_message2($result);
 }
 
 function showPosters(){
 	global $db; $result = '';
-	$query = $db->query('SELECT `id` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
+	$query = $db->query('SELECT `id`, `code` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
 	while($row=$query->fetch()){	
 		$img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
 		if(!$img){
 			$img = '/upload/release/240x350/default.jpg';
 		}
 		$tmp = getTemplate('torrent-block');
-		$tmp = str_replace("{id}", $row['id'], $tmp);
+		$tmp = str_replace("{id}", $row['code'], $tmp);
 		$tmp = str_replace("{img}", $img, $tmp);
 		$result .= $tmp;
 	}
@@ -1779,6 +1786,14 @@ function getGenreList(){
 		$result .= str_replace('{name}', $v, $tmpl);
 	}
 	return $result;
+}
+
+function releaseCodeByID($id){
+	global $db;
+	$query = $db->prepare('SELECT `code` FROM `xrelease` WHERE `id` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	return $query->fetch()['code'];
 }
 
 function showCatalog(){
@@ -1834,7 +1849,7 @@ function showCatalog(){
 	
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$tmplTD = '<td><a href="/pages/release.php?id={id}"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
+		$tmplTD = '<td><a href="/release/{id}.html"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
@@ -1842,7 +1857,7 @@ function showCatalog(){
 			}else{
 				$img = fileTime($poster);
 			}
-			$arr[$i][] = str_replace('{id}', $val['id'], str_replace('{img}', $img, $tmplTD));  
+			$arr[$i][] = str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD));  
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
@@ -1957,7 +1972,7 @@ function releaseUpdateLast(){ // todo add announce to pushall and telegram
 function showSchedule(){
 	global $db, $var; $arr = []; $result = ''; $i = 0;
 	$tmpl1 = '<div class="day">{day}</div>';
-	$tmpl2 = '<td class="goodcell"><a href="/pages/release.php?id={id}"> <img width="200" height="280" src="{img}"></a></td>';
+	$tmpl2 = '<td class="goodcell"><a href="/release/{id}.html"> <img width="200" height="280" src="{img}"></a></td>';
 	foreach($var['day'] as $key => $val){
 		$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `day` = :day AND `status` = 1');
 		$query->bindParam(':day', $key);
@@ -1970,7 +1985,7 @@ function showSchedule(){
 				$img = fileTime($poster);
 			}
 			$arr["$key"][$i][] = [ 
-				str_replace('{id}', $row['id'], str_replace('{img}', $img, $tmpl2))
+				str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, $tmpl2))
 			];
 			if(count($arr["$key"][$i]) == 4){
 				$i++;
