@@ -17,7 +17,7 @@ function getCatalog(page){
 	year = '';
 	genre = '';
 	xpage = 'favorites';
-	if(location.pathname.substring(1) != 'pages/favorites.php'){
+	if(location.pathname.substring(1) != 'pages/favorites.php' && location.pathname.substring(1) != 'pages/new.php'){
 		year = $.trim($('#catalogYear').val().toString().replace(/,/g, ", "));
 		genre = $.trim($('#catalogGenre').val().toString().replace(/,/g, ", "));
 		xpage = 'catalog';

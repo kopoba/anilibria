@@ -1310,21 +1310,27 @@ function xrelease(){
 			$query->execute();
 			if($query->rowCount() != 1){
 				_message('wrongRelease');
-			}
+			}		
 			uploadPoster($id);
 			$query = $db->prepare("UPDATE `xrelease` SET {$sql['update']} WHERE `id` = :id");
 			$query->bindParam(':id', $id);
 		}else{
-			$query = $db->prepare("INSERT INTO `xrelease` {$sql['col']} VALUES ({$sql['val']})");
+			$query = $db->prepare("INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})");
 		}
 		foreach($data as $k => &$v){ // https://stackoverflow.com/questions/12144557/php-pdo-bindparam-was-falling-in-a-foreach
 			$query->bindParam(':'.$k, $v);
 		}
 		$query->execute();
 		if(empty($id)){
-			uploadPoster($db->lastInsertId());
+			$id = $db->lastInsertId();
+			uploadPoster($id);
 		}
-		_message('success');
+		if(empty($data['ename'])){
+			$data['ename'] = '';
+		}
+		
+		//$url = ;
+		die(json_encode(['err' => 'ok', 'url' => urlCode($id, $data['ename']),  'mes' => 'success']));
 	}
 }
 
@@ -2255,4 +2261,33 @@ function sendHH(){
 	_mail('poiuty@lepus.su', "[{$position[$arr['rPosition']]}] новая заявка", $result);
 	$cache->set($ip, 1, 86400);
 	_message('success');
+}
+
+function urlCode($id ,$ename){
+	global $db; $result = '';
+	$code = preg_replace('/[^a-z0-9-]/', '', str_replace(" ", "-", mb_strtolower(preg_replace('/\s+/u', " ", trim($ename)))));
+	function updateUrlCode($db, $code, $id){
+		$query = $db->prepare('UPDATE `xrelease` SET `code` = :code WHERE `id` = :id');
+		$query->bindParam(':code', $code);
+		$query->bindParam(':id', $id);
+		$query->execute();
+		return $code;
+	}
+	$query = $db->prepare('SELECT `code` FROM `xrelease` WHERE `code` = :code');
+	$query->bindParam(':code', $code);
+	$query->execute();
+	if($query->rowCount() != 0 || empty($code)){
+		$code = rand(1000000, 10000000);
+	}
+	$query = $db->prepare('SELECT `code` FROM `xrelease` WHERE `id` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	$row = $query->fetch();
+	$result = $row['code'];
+	if(empty($row['code'])){
+		$result = updateUrlCode($db, $code, $id);
+	}elseif(ctype_alnum($code) && ctype_digit($row['code'])){
+		$result = updateUrlCode($db, $code, $id);
+	}
+	return "/release/$result.html";
 }

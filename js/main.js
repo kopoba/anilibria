@@ -425,7 +425,7 @@ $(document).on('click', '[data-release-delete]', function(e){
 		$.post("//"+document.domain+"/public/release/delete.php", {'id': $('input[id=releaseID]').val()}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
-			window.location.replace('/');
+			window.location.replace('/pages/new.php');
 		}else{
 			console.log(data.mes);
 		}
@@ -479,8 +479,10 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		url: "//"+document.domain+"/public/release/index.php",
 		success: function(json) {
 			console.log(json);
+			data = JSON.parse(json);
 			if(_this.data('release-update') !== undefined){
-				location.reload();
+				window.location=data.url;
+				//location.reload();
 			}
 			if(_this.data('release-new') !== undefined){
 				$('#tableRelease').DataTable().ajax.reload(null, false);
