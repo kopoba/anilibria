@@ -1078,6 +1078,25 @@ function page404(){
 	return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
 }
 
+function parse_code_bb($text){
+	$text = str_replace('<br>', '[br]', $text);
+    $find = [
+        '~\<b\>(.*?)\</b\>~s',
+        '~\<i\>(.*?)\</i\>~s',
+        '~\<u\>(.*?)\</u\>~s',
+        '~\<s\>(.*?)\</s\>~s',
+        '~\<a href=\"((?:http|https?)://.*?)\" target=\"\_blank\"\>(.*?)\</a\>~s',
+    ];
+    $replace = [
+        '[b]$1[/b]',
+        '[i]$1[/i]',
+        '[u]$1[/u]',
+        '[s]$1[/s]',
+        '[url=$1]$2[/url]',
+    ];
+    return preg_replace($find, $replace, $text);
+}
+
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
@@ -1092,13 +1111,19 @@ function showRelease(){
 	}
 	$release = $query->fetch();
 	
+	$var['release']['id'] = $release['id'];
+	$var['release']['name'] = $release['ename'];
+	
 	if(mb_strlen($release['name'].$release['ename']) > 60){
 		$name = "{$release['name']}<br/>{$release['ename']}";
 	}else{
 		$name = "{$release['name']} / {$release['ename']}";
 	}
 	
-	$moon = str_replace('{moon}', $release['moonplayer'], getTemplate('moon'));
+	$moon = '';
+	if(!empty($release['moonplayer'])){
+		$moon = str_replace('{moon}', $release['moonplayer'], getTemplate('moon'));
+	}
 	$page = str_replace('{name}', $release['name'], getTemplate('release'));
 	$page = str_replace('{ename}', $release['ename'], $page);
 	$page = str_replace('{fullname}', $name, $page);
@@ -1118,6 +1143,7 @@ function showRelease(){
 	$page = str_replace('{type}', $release['type'], $page);
 	$page = str_replace('{other}', $release['other'], $page);
 	$page = str_replace('{description}', $release['description'], $page);
+	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
 	
 	if($release['status'] == '2'){
 		$page = str_replace('{announce}', 'Релиз завершен', $page);
@@ -1132,7 +1158,7 @@ function showRelease(){
 		unset($a);
 	}
 	
-	$page = str_replace('{id}', $release['id'], $page);
+	$page = str_replace('{id}', $release['id'], $page);	
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
 	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
@@ -1213,6 +1239,27 @@ function uploadPoster($id){
 	file_put_contents($file, $img);	
 }
 
+function parse_bb_code($text){
+	$text = str_replace('[br]', '<br>', $text);
+    $find = [
+        '~\[b\](.*?)\[/b\]~s',
+        '~\[i\](.*?)\[/i\]~s',
+        '~\[u\](.*?)\[/u\]~s',
+        '~\[s\](.*?)\[/s\]~s',
+        '~\[url\]((?:http|https?)://.*?)\[/url\]~s',
+        '~\[url=((?:http|https?)://.*?)\](.*?)\[/url\]~s',
+    ];
+    $replace = [
+        '<b>$1</b>',
+        '<i>$1</i>',
+        '<u>$1</u>',
+        '<s>$1</s>',
+        '<a href="$1" target="_blank">$1</a>',
+        '<a href="$1" target="_blank">$2</a>',
+    ];
+    return preg_replace($find, $replace, $text);
+}
+
 function xrelease(){
 	global $db, $user, $var;
 	$data = []; $sql = ['col' => '', 'val' => '', 'update' => ''];
@@ -1230,6 +1277,12 @@ function xrelease(){
 				continue;
 			}
 			$data[$key] = htmlspecialchars($post["$key"], ENT_QUOTES, 'UTF-8');
+			if($key == 'description'){
+				$data[$key] = parse_bb_code($data[$key]);
+			}
+			if(mb_strlen($data[$key]) > 1000){
+				_message('long', 'error');
+			}
 			$sql['col'] .= "`$key`,";
 			$sql['val'] .= ":$key,";
 			$sql['update'] .= "`$key` = :$key,";
@@ -1586,7 +1639,7 @@ function updateReleaseAnnounce(){
 function showEditTorrentTable(){
 	global $db, $var; $result = ''; $arr = [];
 	$query = $db->prepare('SELECT `fid`, `rid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid');
-	$query->bindParam(':rid', $var['release']['rid']);
+	$query->bindParam(':rid', $var['release']['id']);
 	$query->execute();
 	while($row = $query->fetch()){
 		$date = date('d.m.Y', $row['ctime']);

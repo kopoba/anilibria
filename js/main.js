@@ -25,8 +25,13 @@ $(document).ready(function() {
 	/* slider end */
 	
 	/* player release page start */
-	if ($('#moonPlayer').length > 0 ){
+	if ($('div#moonPlayer iframe').length > 0){
+		$('#buttonMoon').show();
 		$('#moonPlayer').show();
+		$("#buttonAni").removeClass("active");
+		$("#buttonMoon").addClass("active");
+	}else{
+		tabSwitch('anilibriaPlayer');
 	}
 	/* player release page end */
 	
@@ -513,7 +518,7 @@ $("#smallSearchInput").focusout(function(){
 });
 
 $("#smallSearchInput").keyup(function(){	
-	if($('input[id=smallSearchInput]').val().length > 3){
+	if($('input[id=smallSearchInput]').val().length > 2){
 		$.post("//"+document.domain+"/public/search.php", {'search': $('input[id=smallSearchInput]').val(), 'small': '1'}, function(json){
 			if(json){
 				data = JSON.parse(json);
@@ -620,3 +625,5 @@ $(document).on('click', '[data-send-request]', function(e){
 		}
 	});
 });
+
+

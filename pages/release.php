@@ -10,8 +10,27 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'release';
-$var['release'] = ['id' => 508, 'rid' => 7, 'name' => 'super test'];
 ?>
+
+<style>
+.tableCenter {
+	text-align: center;
+}
+.onlineStat>.table-borderless td,
+.onlineStat>.table-borderless th {
+    border: 0;
+    padding: 0px;
+}
+.onlineStat>.table-condensed>tbody>tr>td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th {
+    padding: 0px;
+}
+.onlineStat>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 0px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 0px;
+}
+</style>
 
 <div class="light-off"></div>
 
@@ -38,7 +57,7 @@ VK.Widgets.Comments("vk_comments", {limit: 5, attach: false});
 			</div>
 			<div  class="modal-body">
 				<div class="tableStat">
-					<table class="table table-borderless table-condensed table-hover">
+					<table class="onlineStat table table-borderless table-condensed table-hover">
 						<tr>
 							<th>ТАЙТЛ</th>
 							<th class="tableCenter">ОНЛАЙН</th>
