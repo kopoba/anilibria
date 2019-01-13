@@ -22,7 +22,8 @@ $(document).on('click', '[data-admin-release-delete]', function(e){
 	e.preventDefault();
 	if(window.confirm('Действительно хотите удалить релиз?')){
 		$.post("//"+document.domain+"/public/release/delete.php", {'id': $(this).data("admin-release-delete")});
-		$('#tableRelease').DataTable().row( $(this).parents('tr') ).remove().draw();
+		setTimeout(function(){$('#tableRelease').DataTable().row( $(this).parents('tr') ).remove().draw();},200);
+		
 	}
 });
 

@@ -482,7 +482,6 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 			data = JSON.parse(json);
 			if(_this.data('release-update') !== undefined){
 				window.location=data.url;
-				//location.reload();
 			}
 			if(_this.data('release-new') !== undefined){
 				$('#tableRelease').DataTable().ajax.reload(null, false);

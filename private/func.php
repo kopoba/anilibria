@@ -1328,8 +1328,6 @@ function xrelease(){
 		if(empty($data['ename'])){
 			$data['ename'] = '';
 		}
-		
-		//$url = ;
 		die(json_encode(['err' => 'ok', 'url' => urlCode($id, $data['ename']),  'mes' => 'success']));
 	}
 }
@@ -2286,7 +2284,7 @@ function urlCode($id ,$ename){
 	$result = $row['code'];
 	if(empty($row['code'])){
 		$result = updateUrlCode($db, $code, $id);
-	}elseif(ctype_alnum($code) && ctype_digit($row['code'])){
+	}elseif(!ctype_digit($code) && ctype_digit($row['code'])){
 		$result = updateUrlCode($db, $code, $id);
 	}
 	return "/release/$result.html";
