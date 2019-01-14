@@ -12,8 +12,17 @@ function xPagination(a){
 		}
 	});
 }
+
+$("#switcher").change(function(){
+    getCatalog(1, true);
+});
   
-function getCatalog(page){
+function getCatalog(page, update = false){
+	if($("#switcher").prop("checked")){
+		var sort = 1;
+	}else{
+		var sort = 2;
+	}
 	year = '';
 	genre = '';
 	xpage = 'favorites';
@@ -23,11 +32,11 @@ function getCatalog(page){
 		xpage = 'catalog';
 	}
 	search = {year, genre};
-	$.post("//"+document.domain+"/public/catalog.php", { 'page': page, 'search': JSON.stringify(search), 'xpage': xpage, 'sort': $('select[id=catalogSort]').val() }, function(json){
+	$.post("//"+document.domain+"/public/catalog.php", { 'page': page, 'search': JSON.stringify(search), 'xpage': xpage, 'sort': sort }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			$('.simpleCatalog tbody').html(data.table);
-			if(needUpdate != data.update){
+			if(needUpdate != data.update || update){
 				xPagination(data.total);
 				needUpdate = data.update;
 			}
@@ -42,5 +51,5 @@ $(document).ready(function() {
 $(document).on('click', '[data-catalog-update]', function(e){
 	$(this).blur();
 	e.preventDefault();	
-	getCatalog(1);
+	getCatalog(1, true);
 });

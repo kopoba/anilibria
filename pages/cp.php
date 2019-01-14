@@ -69,7 +69,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			</div>
 			<div class="user-status">
 				Зритель<br/>
-				Сообщений: 550
+				Сообщений: -
 			</div>
 		</div>
 	</div>

@@ -41,6 +41,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 </style>
 
 
+
 <div class="simpleFilter">
 	<div style="margin-bottom: 25px;">
 	  <select id="catalogGenre" class="form-control chosen" data-placeholder="Выбрать жанры ..." name="tags[]" multiple style="">
@@ -58,10 +59,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<option value="2013">2013</option>
 	  </select>
 	</div>
-    <select id="catalogSort" class="form-control" style="float: left; margin-top: 0px;  width: 140px;">
-    <option value="1">Новые</option>
-    <option value="2">Популярные</option>
-  </select>
+	
+	<div style="float: left; margin-top: 0px;" >
+		<input id="switcher" type="checkbox" data-toggle="toggle" data-on="Новое" data-off="Популярное" data-onstyle="default" data-offstyle="default">
+	</div>
+	
+
   <input data-catalog-update class="btn btn btn-default btn-block" style="float: left; margin-top: 0px; margin-left: 10px; width: 100px;" type="submit" value="Показать">
 </div>
 

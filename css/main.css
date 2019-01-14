@@ -453,7 +453,7 @@ p.lasttortext {
 
 .profile-line {
 	float: left;
-	height: 250px;
+	height: 265px;
 	border-left: 2px solid #383838;
 }
 
@@ -478,12 +478,6 @@ p.lasttortext {
 	margin: 2px 0;
 }
 
-.profile-right-block-content span, a {
-	color: #f04646;
-	font-weight: 400;
-	text-decoration: none;
-	outline: none;
-}
 
 .profile-content-title {
 	font-size: 14pt;
@@ -509,7 +503,7 @@ p.lasttortext {
 .detail_torrent_info {
 	float: left;
 	width: 470px;
-	height: 505px;
+	height: 508px;
 	overflow: hidden;
 }
 	

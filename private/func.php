@@ -1412,9 +1412,11 @@ function footerJS(){
 		case 'catalog':
 			$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/css/simplePagination.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/css/bootstrap-toggle.min.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
 			$result .= str_replace('{url}', fileTime('/js/jquery.simplePagination.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/js/bootstrap-toggle.min.js'), $tmplJS);
 			$result .='<script>$(".chosen").chosen();</script>';
 			$result .= str_replace('{url}', fileTime('/js/catalog.js'), $tmplJS);
 		break;
@@ -1748,10 +1750,10 @@ function releaseTable(){
 		if(empty($total)){
 			$total = $row['count(*) OVER ()'];
 		}
-		$tmp['id'] = "<a href='/release/".releaseCodeByID($row['id']).".html'>{$row['id']}</a>";
+		$tmp['id'] = "<a href='/release/".releaseCodeByID($row['id']).".html' style='color: #383838;'>{$row['id']}</a>";
 		$tmp['name'] = $row['name'];
 		$tmp['status'] = $var['status'][$row['status']];
-		$tmp['last'] = "<a data-admin-release-delete='{$row['id']}' href='#'<span class='glyphicon glyphicon-remove'></span></a>";
+		$tmp['last'] = "<a data-admin-release-delete='{$row['id']}' href='#' style='color: #383838;'><span class='glyphicon glyphicon-remove'></span></a>";
 		$data[] = array_values($tmp);
 	}
 	return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];
