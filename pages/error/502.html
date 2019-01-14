@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>502</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="test">
+    <meta name="keywords" content="anime, tracker, video">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css?1547051403">
+    <link rel="stylesheet" type="text/css" href="/css/main.css?1547387291">
+    <link href="//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700&amp;subset=latin,cyrillic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,400italic&amp;subset=latin,cyrillic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700&amp;subset=latin,cyrillic" rel="stylesheet" type="text/css">
+</head>
+<style>
+	body {
+		background-color: #D3D3D3;
+		width: 880px !important;
+		min-width: 880px !important;
+		max-width: 880px !important;
+		margin: 0 auto;
+		font-family: 'PT Sans', sans-serif;
+		font-size: 16px;
+		font-weight: normal;
+	}
+</style>
+<body>
+    <div class="main">
+        <div class="content">
+            <div class="contentmenu">
+                <ul class="main-navigation">
+                    <li><a id="activelink0" href="/">ГЛАВНАЯ</a></li>
+                    <li><a id="activelink1" href="/pages/catalog.php">РЕЛИЗЫ</a></li>
+                    <li><a id="activelink2" href="/pages/schedule.php">РАСПИСАНИЕ</a></li>
+                    <li><a id="activelink3" href="/pages/app.php">ПРИЛОЖЕНИЕ</a></li>
+                    <li><a id="activelink4" href="/pages/team.php">КОМАНДА</a></li>
+                    <li><a id="activelink5" href="/pages/links.php">ССЫЛКИ</a></li>
+                    <li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
+                </ul>
+            </div>
+            <div class="news-block">
+                <div>
+                    <div class="news-block">
+                        <center><img src="/img/502.jpg"></center>
+                        <div class="news_footer" style="height: 10px;"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!-- Put this script tag to the <head> of your page -->
+            <script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>
+            <script type="text/javascript">
+                VK.init({
+                    apiId: 6798605,
+                    onlyWidgets: true
+                });
+            </script>
+            <!-- Put this div tag to the place, where the Comments block will be -->
+            <div id="vk_comments" style="margin-top: 15px;"></div>
+            <script type="text/javascript">
+                VK.Widgets.Comments("vk_comments", {
+                    limit: 5,
+                    pageUrl: "/pages/error/502.html",
+                    attach: false
+                });
+            </script>
+        </div>
+    </div>
+    <div class="clear"></div>
+</body>
+</html>
