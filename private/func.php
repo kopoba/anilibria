@@ -2066,12 +2066,12 @@ function showSchedule(){
 
 function countRating(){
 	global $db;
-	$query = $db->query('SELECT `id` FROM `xrelease` WHERE `status` != 3');
+	$query = $db->query('SELECT `id` FROM `xrelease`');
 	while($row=$query->fetch()){
 		$tmp = $db->prepare('SELECT count(`id`) as total FROM `favorites` WHERE `rid` = :rid');
 		$tmp->bindParam(':rid', $row['id']);
 		$tmp->execute();
-		$count = $tmp->rowCount();
+		$count = $tmp->fetch()['total'];
 		if($count > 0){
 			$tmp = $db->prepare('UPDATE `xrelease` SET `rating` = :rating WHERE `id` = :id');
 			$tmp->bindParam(':rating', $count);
@@ -2083,7 +2083,7 @@ function countRating(){
 
 function apiInfo(){
 	global $db, $cache;
-	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `type`, `status` FROM `xrelease` WHERE `status` != 3');
+	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `type`, `status`, `code` FROM `xrelease` WHERE `status` != 3');
 	while($row=$query->fetch()){
 		$info[$row['id']] = [
 			'rid' => $row['id'],
@@ -2100,6 +2100,7 @@ function apiInfo(){
 			'year' => $row['year'],
 			'day' => $row['day'],
 			'description' => $row['description'],
+			'code' => $row['code']
 		];
 		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
 		$tmp->bindParam(':rid', $row['id']);
@@ -2149,7 +2150,7 @@ function apiList(){
 	}
 	function apiGetInfo($info, $torrent){
 		$result = []; $list = ''; 
-		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent'];
+		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
 		if(!empty($_GET['id'])){
 			$list = array_unique(explode(',', $_GET['id']));
 		}
