@@ -1,6 +1,7 @@
 <?php
 require($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
+require($_SERVER['DOCUMENT_ROOT'].'/private/init/sphinx.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
@@ -51,12 +52,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <div style="margin-bottom: 25px;">
 	<select id="catalogYear" class="form-control chosen" data-placeholder="Выбрать год ..." name="tags[]" multiple style="">
-		<option value="2018">2018</option>
-		<option value="2017">2017</option>
-		<option value="2016">2016</option>
-		<option value="2015">2015</option>
-		<option value="2014">2014</option>
-		<option value="2013">2013</option>
+		<?php echo catalogYear(); ?>
 	  </select>
 	</div>
 	

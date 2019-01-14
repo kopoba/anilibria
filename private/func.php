@@ -2292,3 +2292,23 @@ function urlCode($id ,$ename){
 	}
 	return "/release/$result.html";
 }
+
+function catalogYear(){
+	global $sphinx, $cache;
+	$result = $cache->get('catalogYear');
+	if($result === false){
+		$result = '';
+		$tmpl = '<option value="{year}">{year}</option>';
+		$arr = array_reverse(range(1990, date('Y', time())));		
+		foreach($arr as $search){
+			$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
+			$query->bindValue(':search', "@(year) ($search)");
+			$query->execute();
+			if($query->rowCount() > 0){
+				$result .= str_replace('{year}', $search, $tmpl);
+			}
+		}
+		$cache->set('catalogYear', $result, 300);
+	}
+	return $result;
+}
