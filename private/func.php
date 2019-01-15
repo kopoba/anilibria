@@ -1724,13 +1724,24 @@ function releaseTable(){
 }
 
 function fileTime($f){
+	global $cache;
 	if(!file_exists($f)){
 		$f = $_SERVER['DOCUMENT_ROOT'].$f;
 		if(!file_exists($f)){
 			return false;
 		}
 	}
-	$time = filemtime($f);
+	$hash = md5($f);
+	$time = $cache->get("file{$hash}");
+	if($time === false){
+		$time = filemtime($f);
+	}else{
+		$t = filemtime($f);
+		if($time > $t+600){ // delay for lsyncd
+			$time = $t;
+		}
+	}
+	$cache->set("file{$hash}", $time, 600);
 	$f = str_replace($_SERVER['DOCUMENT_ROOT'], '', $f);
 	return $f.'?'.$time;
 }
