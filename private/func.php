@@ -95,20 +95,15 @@ function login(){
 	if($user){
 		_message('authorized', 'error');
 	}
-	if(empty($_POST['login']) || empty($_POST['passwd'])){
+	if(empty($_POST['mail']) || empty($_POST['passwd'])){
 		_message('empty', 'error');
-	}
-	if(strlen($_POST['login']) > 20){
-		_message('long', 'error');
-	}
-	if(preg_match('/[^0-9A-Za-z]/', $_POST['login'])){
-		_message('wrongLogin', 'error');
 	}
 	if(strlen($var['user_agent']) > 256){
 		_message('wrongUserAgent', 'error');
 	}
-	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
-	$query->bindValue(':login', $_POST['login']);
+	$_POST['mail'] = mb_strtolower($_POST['mail']);
+	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `mail` = :mail');
+	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('Invalid user', 'error');
@@ -194,7 +189,7 @@ function password_link(){
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
 	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd[0]");
-	_message('Success');
+	_message('success');
 }
 
 function testRecaptcha(){
@@ -294,7 +289,7 @@ function auth(){
 			_exit();
 		}
 		$session = $query->fetch();
-		$query = $db->prepare('SELECT `id`, `login`, `nickname`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
+		$query = $db->prepare('SELECT `id`, `login`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
 		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -315,7 +310,6 @@ function auth(){
 		}
 		$user = [	'id' => $row['id'], 
 					'login' => $row['login'], 
-					'nickname' => $row['nickname'],
 					'avatar' => $row['avatar'],
 					'passwd' => $row['passwd'], 
 					'mail' => $row['mail'], 
@@ -800,7 +794,6 @@ function userInfo($id){
 			'id' => $user['id'],
 			'mail' => $user['mail'],
 			'login' => $user['login'],
-			'nickname' => $user['nickname'] ?? $user['login'],
 			'access' => $user['access'],
 			'register_date' => $user['register_date'],
 			'last_activity' => $user['last_activity'],
@@ -808,7 +801,7 @@ function userInfo($id){
 		];
 	}
 	if(empty($result)){
-		$query = $db->prepare('SELECT `id`, `login`, `nickname`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
+		$query = $db->prepare('SELECT `id`, `login`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
 		$query->bindValue(':id', $id);
 		$query->execute();
 		if($query->rowCount() == 0){
@@ -817,7 +810,7 @@ function userInfo($id){
 		$row = $query->fetch();
 		$result = [
 			'id' => $row['id'],
-			'nickname' => $row['nickname'] ?? $row['login'],
+			'login' => $row['login'],
 			'access' => $row['access'],
 			'register_date' => $row['register_date'],
 			'last_activity' => $row['last_activity'],
@@ -1332,34 +1325,6 @@ function xrelease(){
 	}
 }
 
-function set_nickname(){
-	global $db, $user;
-	if(!$user){
-		_message('Unauthorized user', 'error');
-	}
-	if(!empty($user['nickname'])){
-		_message('Already set nickname', 'error');
-	}
-	if(empty($_POST['nickname'])){
-		_message('Empty nickname', 'error');
-	}
-	if(mb_strlen($_POST['nickname']) > 20){
-		_message('Nickname max len 20', 'error');
-	}
-	$_POST['nickname'] = htmlspecialchars($_POST['nickname'], ENT_QUOTES, 'UTF-8');
-	$query = $db->prepare('SELECT `id` FROM `users` WHERE `nickname` = :nickname');
-	$query->bindParam(':nickname', $_POST['nickname']);
-	$query->execute();
-	if($query->rowCount() > 0){
-		_message('Nickname already use', 'error');
-	}
-	$query = $db->prepare('UPDATE `users` SET `nickname` = :nickname WHERE `id` = :id');
-	$query->bindParam(':nickname', $_POST['nickname']);
-	$query->bindParam(':id', $user['id']);
-	$query->execute();
-	_message('Success');
-}
-
 function getAge($time){
 	return date('Y', time()) - date('Y', $time);
 }
@@ -1434,7 +1399,6 @@ function footerJS(){
 			}
 			unset($tmp);
 			$result .= wsInfo($var['release']['name']);
-
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
@@ -2311,4 +2275,26 @@ function catalogYear(){
 		$cache->set('catalogYear', $result, 300);
 	}
 	return $result;
+}
+
+function apiUser(){
+	global $db, $user;
+	if($user){
+		$result = $user;
+		unset($result['passwd']);
+		die(json_encode($result));
+	}
+}
+
+function apiFavorites(){
+	global $db, $user; $result = [];
+	if($user){
+		$query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid');
+		$query->bindParam(':uid', $user['id']);
+		$query->execute();
+		while($row=$query->fetch()){
+			$result[] = $row['rid'];
+		}
+		die(json_encode($result));
+	}
 }

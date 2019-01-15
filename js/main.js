@@ -40,10 +40,10 @@ $(document).ready(function() {
 $(document).on("click", "[data-submit-login]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	login = $('input[id=newLogin]').val();
+	mail = $('input[id=newMail]').val();
 	passwd = $('input[id=newPasswd]').val();
 	fa2code = $('input[id=fa2code]').val();
-	$.post("//"+document.domain+"/public/login.php", { 'login': login, 'passwd': passwd, 'fa2code': fa2code }, function(json){
+	$.post("//"+document.domain+"/public/login.php", { 'mail': mail, 'passwd': passwd, 'fa2code': fa2code }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			document.location.href="/";

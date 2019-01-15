@@ -15,7 +15,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <div class="news-block">
 	<div>			
-		links
+		<a href="https://discordapp.com/invite/anilibria"><img src="/img/discord.png" style="margin-top: 10px;"></a>
+		<a href="https://www.youtube.com/channel/UCuF8ghQWaa7K-28llm-K3Zg"><img src="/img/youtube.png" style="margin-top: 10px;"></a>
+		<a href="https://t.me/anilibria_tv"><img src="/img/telegram.png" style="margin-top: 10px;"></a>
+		<a href="https://vk.com/anilibria"><img src="/img/vk.png" style="margin-top: 10px;"></a>
 	</div>
 	<div class="clear"></div>
 	<div class="news_footer"></div>
@@ -25,7 +28,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>
 
 <script type="text/javascript">
-  VK.init({apiId: 6798605, color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6', onlyWidgets: true});
+  VK.init({apiId: 6820072, onlyWidgets: true});
 </script>
 
 <!-- Put this div tag to the place, where the Comments block will be -->

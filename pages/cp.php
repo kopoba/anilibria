@@ -63,7 +63,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <div class="news-block">		
 	<div class="profile-info-left-side">
 		<div class="profile-left-block-wrapper">
-			<span class="profile-nickname"><b>VKuser323907417</b></span>			
+			<span class="profile-nickname"><b><?php echo $user['login']; ?></b></span>			
 			<div class="profile-avatar-wrapper">
 				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/<?php echo $tmpAvatar; ?>" id="profile-avatar" alt="" width="150" height="150"></a>
 			</div>

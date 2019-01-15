@@ -24,7 +24,7 @@ if(!$user){
 
 		<div class="clear"></div>
 		<div>
-			<input class="form-control" id="newLogin" placeholder="Логин" type="text" required>
+			<input class="form-control" id="newMail" placeholder="Логин" type="text" required>
 			<input class="form-control" id="newPasswd" style="margin-top: 10px;"  type="password" placeholder="Пароль" required>
 			<input class="form-control" id="fa2code" style="margin-top: 10px;" type="text" placeholder="2FA code">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" name="login" data-submit-login value="ВХОД">
@@ -44,7 +44,6 @@ if(!$user){
 		<div class="clear"></div>
 		<div>
 			<input class="form-control" id="regLogin" placeholder="Логин" type="email" required>
-			<input class="form-control" id="regNickname" style="margin-top: 10px;" placeholder="Nickname" type="email" required>
 			<input class="form-control" id="regEmail" style="margin-top: 10px;" placeholder="E-mail" type="email" required>
 			<div id="RecaptchaField1" style="margin-top: 10px; display: none;"></div>
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" data-submit-register value="ОТПРАВИТЬ" />

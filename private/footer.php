@@ -20,8 +20,11 @@
 				
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>	
+				<img src="/img/test1.png" style="margin-top: 7px;">
 			</div>
+			
 		</div>
+		
 		<div class="clear"></div>
 		<div class="footer">
 			<div class="footer_left">

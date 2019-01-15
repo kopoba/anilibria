@@ -15,8 +15,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
 <div class="news-block">
-	<div>			
-		<img src="/img/404.png">
+	<div>
+		<center>			
+		<img src="/img/403.png">
+		</center>
 	</div>
 	<div class="clear"></div>
 	<div class="news_footer"></div>
@@ -26,7 +28,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>
 
 <script type="text/javascript">
-  VK.init({apiId: 6798605, onlyWidgets: true});
+  VK.init({apiId: 6820072, onlyWidgets: true});
 </script>
 
 <!-- Put this div tag to the place, where the Comments block will be -->
