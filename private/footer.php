@@ -60,7 +60,6 @@
 			</div>
 		</div>
 		<script src="<?php echo fileTime('/js/jquery.min.js');?>"></script>
-		<script src="<?php echo fileTime('/js/jquery.bxslider.min.js');?>"></script>
 		<script src="<?php echo fileTime('/js/bootstrap.min.js');?>"></script>
 		<script src="<?php echo fileTime('/js/main.js');?>"></script>
 		<?php echo footerJS(); ?>

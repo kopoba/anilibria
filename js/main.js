@@ -1,5 +1,3 @@
-var loadmore = 1;
-
 $(document).ready(function() {
 	var recaptcha1;
 	var recaptcha2;
@@ -11,18 +9,6 @@ $(document).ready(function() {
 			scrollTop: $("#rules").offset().top
 		}, 500);
 	}
-	
-	/* slider start */
-	const hslider = $('#hslider');
-	if ($('.slide', hslider).length > 1) {
-		$('.slideshow', hslider).bxSlider({
-			auto: true,
-			autoHover: true,
-			mode: 'fade',
-			speed: 1000
-		});
-	}
-	/* slider end */
 	
 	/* player release page start */
 	if ($('div#moonPlayer iframe').length > 0){

@@ -3,11 +3,8 @@
 	<head>
 		<title>Main page</title>
 		<meta charset="UTF-8">
-		<meta name="description" content="test">
-		<meta name="keywords" content="anime, tracker, video">
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/bootstrap.min.css');?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/slider.css');?>" />
 		<link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
@@ -17,23 +14,6 @@
 			<img src="/img/28.png">
 			<div id="headercontent">
 				<a href="/"><img id="logopic" src="/img/logo_new.png" alt="ALogo" style="width: 213px;"></a>
-			<!--</div>
-            <div id="hslider">
-                <div id="slides_main_wrapper" class="slideshow">
-                    <figure class="slider_main slide" style="background-image: url('/upload/slider/1.jpg')">
-                        <a href='#'>Slider Link</a>
-                    </figure>
-                    <figure class="slider_main slide" style="background-image: url('/upload/slider/2.jpg')">
-                        <a href='#'>Slider Link</a>
-                    </figure>
-                    <figure class="slider_main slide" style="background-image: url('/upload/slider/3.jpg')">
-                        <a href='#'>Slider Link</a>
-                    </figure>
-                    <figure class="slider_main slide" style="background-image: url('/upload/slider/4.jpg')">
-                        <a href='#'>Slider Link</a>
-                    </figure>
-                </div>-->
-                
 			</div>
 		</div>
 		<div class="main">
@@ -49,6 +29,3 @@
 						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
-				<!--<div style="padding-top: 15px;">
-						<img src="/img/other/1.jpg" alt="" class="center" style="height: 120px; width: 880px;">
-				</div> -->

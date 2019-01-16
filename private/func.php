@@ -106,7 +106,7 @@ function login(){
 	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
-		_message('Invalid user', 'error');
+		_message('invalidUser', 'error');
 	}
 	$row = $query->fetch();
 	if(!empty($row['2fa'])){

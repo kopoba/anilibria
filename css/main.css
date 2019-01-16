@@ -275,30 +275,6 @@ a#activelink6:hover{
 	width: 16px;
 }
 
-.loadmore {
-	margin: 0 auto;
-	margin-top: 35px;
-	//margin-bottom: 25px;
-    width: 140px;
-    background-color: white;
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.loadmore a {
-	vertical-align: middle;
-	color: #383838;
-}
-
-.loadmore a:hover,
-.loadmore a:active,
-.loadmore a:visited,
-.loadmore a:focus {
-	color: #282829;
-	text-decoration: none;
-}
-
 /* nemu end */
 
 
