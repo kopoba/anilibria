@@ -39,3 +39,6 @@ $conf['nginx_domain'] = 'https://x.anilibria.tv';
 $conf['nginx_secret'] = 'secret';
 
 $conf['youtube_secret'] = 'secret';
+
+$conf['push_all'] = 'secret';
+$conf['push_sanasol'] = 'secret';

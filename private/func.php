@@ -1941,7 +1941,7 @@ function releaseFavorite(){
 	_message('success');
 }
 
-function releaseUpdateLast(){ // todo add announce to pushall and telegram
+function releaseUpdateLast(){
 	global $db, $user, $var;
 	if(!$user || $user['access'] < 2){
 		_message('access', 'error');
@@ -1949,12 +1949,14 @@ function releaseUpdateLast(){ // todo add announce to pushall and telegram
 	if(empty($_POST['id'])){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `id` = :id');
+	$query = $db->prepare('SELECT `id`, `name`, `ename` `code` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
+	$row = $query->fetch();
+	pushAll("{$row['ename']} / {$row['name']}", $row['code']);
 	$query = $db->prepare('UPDATE `xrelease` SET `last` = :time WHERE `id` = :id');
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':id', $_POST['id']);
@@ -2267,4 +2269,32 @@ function apiFavorites(){
 		}
 		die(json_encode($result));
 	}
+}
+
+function pushAll($name, $code){
+	global $conf; 
+	$url = 'https://anilibria.tv/release/'.$code.'.html';
+	function sendPush($api, $data){
+		curl_setopt_array($ch = curl_init(), [
+			CURLOPT_URL => $api,
+			CURLOPT_POSTFIELDS => $data,
+			CURLOPT_RETURNTRANSFER => true
+		]);
+		curl_exec($ch);
+		curl_close($ch);
+	}
+	sendPush('https://pushall.ru/api.php', [
+        'type' => 'broadcast',
+        'id' => '943',
+        'key' => $conf['push_all'],
+        'text' =>  $name,
+        'title' => '[AnilibriaTV] новая серия!',
+		'url' => $url
+	]);
+	sendPush('http://sanasol-test.ru/librbot/hook.php', [
+		'key' => $conf['push_sanasol'],
+		'text' =>  $name,
+		'title' => 'Вышла новая серия!',
+		'url' => $url
+	]);
 }
