@@ -1,0 +1,21 @@
+User-Agent: *
+Allow: /$
+Allow: /pages/catalog.php$
+Allow: /pages/schedule.php$
+Allow: /pages/app.php$
+Allow: /pages/team.php$
+Allow: /pages/request.php$
+Allow: /pages/links.php$
+Allow: /pages/donate.php$
+Allow: /pages/chat.php$
+Allow: /pages/login.php$
+Allow: /release/*.html$
+
+Allow: .js
+Allow: .css
+Allow: .png
+Allow: .jpg
+
+Disallow: /
+
+Host: https://www.anilibria.tv
