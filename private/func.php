@@ -1034,6 +1034,22 @@ function showRelease(){
 	$page = str_replace('{description}', $release['description'], $page);
 	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
 	
+	$button = '';
+	if($user){
+		$button .= '<button data-release-favorites {favorites}>Избранное</button>';
+		if(isFavorite($user['id'], $release['id'])){
+			$button = str_replace('{favorites}', 'class="favorites"', $button);
+		}
+		if($user['access'] > 1){
+			$button .= '<button data-torrent-edit class="">Торрент</button>';
+		}
+		if($user['access'] > 2){
+			$button .= '<button data-xrelease-edit class="">Редактировать</button>';
+			$button .= '<a href="/pages/new.php"><button class="">Создать</button></a>';	
+		}
+	}
+	$page = str_replace('{button}', $button, $page);
+	
 	if($release['status'] == '2'){
 		$page = str_replace('{announce}', 'Релиз завершен', $page);
 	}elseif(!empty($release['announce'])){
@@ -1055,11 +1071,6 @@ function showRelease(){
 		$page = str_replace('{img}', '/upload/release/350x500/default.jpg', $page);
 	}else{
 		$page = str_replace('{img}', fileTime($poster), $page);
-	}
-	if($user){		
-		if(isFavorite($user['id'], $release['id'])){
-			$page = str_replace('{favorites}', 'class="favorites"', $page);
-		}
 	}
 	$page = str_replace('{favorites}', '', $page);
 	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');

@@ -23,7 +23,7 @@ if(!empty($user['2fa'])){
 if(!empty($user['avatar'])){
 	$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
 }else{
-	$tmpAvatar = "noavatar.jpg";
+	$tmpAvatar = 'noavatar.jpg';
 }
 
 function profileMes($name){
@@ -32,7 +32,7 @@ function profileMes($name){
 	if($x){
 		switch($name){
 			case 'sex': $x = $var['sex'][$x]; break;
-			case 'age': $x = getAge($x); break;
+			case 'age': $x = date('Y', time()) - date('Y', $x); break;
 		}
 	}
 	if(!$x) $x = 'Не указано';
