@@ -1724,7 +1724,7 @@ function releaseTable(){
 }
 
 function fileTime($f){
-	global $cache;
+	global $cache, $var;
 	if(!file_exists($f)){
 		$f = $_SERVER['DOCUMENT_ROOT'].$f;
 		if(!file_exists($f)){
@@ -1737,7 +1737,7 @@ function fileTime($f){
 		$time = filemtime($f);
 	}else{
 		$t = filemtime($f);
-		if($time > $t+600){ // delay for lsyncd
+		if($time != $t && $var['time'] > $t+600){ // delay for lsyncd
 			$time = $t;
 		}
 	}
