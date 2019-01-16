@@ -6,9 +6,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
-require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'release';
+$tmpPage = showRelease();
+
+require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
+
 ?>
 
 <style>
@@ -33,7 +36,7 @@ $var['page'] = 'release';
 
 <div class="light-off"></div>
 
-<?php echo showRelease(); ?>
+<?php echo $tmpPage; ?>
 
 <!-- Put this script tag to the <head> of your page -->
 <script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>

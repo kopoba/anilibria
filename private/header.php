@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 	<head>
-		<title>Main page</title>
+		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/bootstrap.min.css');?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />

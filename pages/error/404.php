@@ -6,7 +6,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
-
+$var['title'] = '404';
 $var['page'] = '404';
 
 header('HTTP/1.0 404 Not Found');

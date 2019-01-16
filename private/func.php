@@ -823,48 +823,6 @@ function userInfo($id){
 	return ['err' => false, 'mes' => $result];
 }
 
-function userInfoShow($id){
-	global $var;
-	if(!empty($id) && ctype_digit($id)){
-		$profile = userInfo($id);
-	}else{
-		$profile = ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
-	}
-	if($profile['err']) {	
-		return str_replace('{error}', $profile['mes'],  getTemplate('error'));
-	}else{
-		$a = $b = '';
-		foreach($profile['mes'] as $key => $val){
-			if($key == 'user_values'){
-				if(empty($val)){
-					continue;
-				}
-				foreach($val as $k => $v){
-					if($k == 'sex'){
-						$v = $var['sex'][$v];
-					}
-					if($k == 'age'){
-						$v = floor(($var['time'] - $v) / 31556926);
-					}
-					$a .= "<b>{$var['user_values'][$k]}</b><span>&nbsp;$v</span><br/>";
-				}
-				continue;
-			}
-			if($key == 'register_date' || $key == 'last_activity'){
-				$val = date('Y-m-d', $val);
-			}
-			if($key == 'access'){
-				$val = $var['group'][$val];
-			}
-			$a .= "<b>{$var['user_values'][$key]}:</b><span>&nbsp;$val</span><br/>";
-		}
-		$b = "<img class=\"rounded\" id=\"avatar\" src=\"".getUserAvatar($id)."\" alt=\"avatar\">";
-		$a = str_replace('{userinfo}', $a,  getTemplate('user_info'));
-		$b = str_replace('{avatar}', $b,  getTemplate('user_avatar'));
-		return $a.$b;
-	}
-}
-
 function getTemplate($template){
 	$file = $_SERVER['DOCUMENT_ROOT']."/private/template/$template.html";
 	if(!file_exists($file)){
@@ -1104,6 +1062,7 @@ function showRelease(){
 	}
 	$release = $query->fetch();
 	
+	$var['title'] = "{$release['name']} / {$release['ename']} &raquo; смотреть онлайн или скачать бесплатно";
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
 	

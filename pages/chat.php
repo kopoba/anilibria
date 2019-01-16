@@ -8,6 +8,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 $var['page'] = 'chat';
+$var['title'] = 'Анонимный чат';
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 

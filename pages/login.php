@@ -6,9 +6,13 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+
+$var['title'] = 'Авторизация, правила';
+$var['page'] = 'login';
+
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
-$var['page'] = 'login';
+
 
 if(!$user){ 
 ?>

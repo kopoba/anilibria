@@ -8,6 +8,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
+$var['title'] = 'Топ аниме по жанрам';
 $var['page'] = 'catalog';
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');

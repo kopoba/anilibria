@@ -7,6 +7,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
+$var['title'] = 'Мобильное приложение';
 $var['page'] = 'app';
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
