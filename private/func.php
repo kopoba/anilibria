@@ -767,62 +767,6 @@ function upload_avatar() {
 	_message2("$tmp/$name.jpg");
 }
 
-function getUserAvatar($id = ''){
-	global $user;
-	if(empty($id) && !empty($user['id'])){
-		$id = $user['id'];
-	}
-	if(empty($id) || !ctype_digit($id)){
-		return ['err' => true, 'mes' => 'Wrong ID'];
-	}
-	$img = "https://".$_SERVER['SERVER_NAME']."/upload/avatars/noavatar.png";
-	$dir = substr(md5($id), 0, 2);
-	$path = "/upload/avatars/$dir/$id.jpg";
-	if(file_exists($_SERVER['DOCUMENT_ROOT'].$path)){
-		$img = "https://".$_SERVER['SERVER_NAME'].$path;
-	}
-	return $img;
-}
-
-function userInfo($id){
-	global $db, $user, $var; $result = [];
-	if(empty($id) || !ctype_digit($id)){
-		return ['err' => true, 'mes' => 'Wrong ID'];
-	}
-	if(!empty($user['id']) && $user['id'] == $id){
-		$result = [
-			'id' => $user['id'],
-			'mail' => $user['mail'],
-			'login' => $user['login'],
-			'access' => $user['access'],
-			'register_date' => $user['register_date'],
-			'last_activity' => $user['last_activity'],
-			'user_values' => @$user['user_values']
-		];
-	}
-	if(empty($result)){
-		$query = $db->prepare('SELECT `id`, `login`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
-		$query->bindValue(':id', $id);
-		$query->execute();
-		if($query->rowCount() == 0){
-			return ['err' => true, 'mes' => 'К сожалению, такого пользователя не существует.'];
-		}
-		$row = $query->fetch();
-		$result = [
-			'id' => $row['id'],
-			'login' => $row['login'],
-			'access' => $row['access'],
-			'register_date' => $row['register_date'],
-			'last_activity' => $row['last_activity'],
-			'user_values' => $row['user_values']
-		];
-		if(!empty($result['user_values'])){
-			$result['user_values'] = json_decode($result['user_values'], true);
-		}
-	}
-	return ['err' => false, 'mes' => $result];
-}
-
 function getTemplate($template){
 	$file = $_SERVER['DOCUMENT_ROOT']."/private/template/$template.html";
 	if(!file_exists($file)){
@@ -831,9 +775,6 @@ function getTemplate($template){
 	return file_get_contents($file);
 }
 
-// {"name":"","age":"","sex":"","vk":"","telegram":"","steam":"","phone":"","skype":"","facebook":"","instagram":"","youtube":"","twitch":"","twitter":""}
-// sex	int 0, 1, 2
-// age	strtotime
 function saveUserValues(){
 	global $db, $user, $var; $arr = [];
 	if(!$user){
@@ -1024,11 +965,6 @@ function formatBytes($size, $precision = 2){
     return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
 }
 
-function page404(){
-	header('HTTP/1.0 404 Not Found');
-	return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
-}
-
 function parse_code_bb($text){
 	$text = str_replace('<br>', '[br]', $text);
     $find = [
@@ -1058,7 +994,8 @@ function showRelease(){
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
-		return page404();
+		header('HTTP/1.0 404 Not Found');
+		return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
 	}
 	$release = $query->fetch();
 	
@@ -1172,7 +1109,7 @@ function uploadPoster($id){
 	$img->setImageFormat('jpg');
 	$img->resizeImage(350,500,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-	$img->setImageCompressionQuality(80);
+	$img->setImageCompressionQuality(85);
 	$img->stripImage();
 	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$id.'.jpg';
 	deleteFile($file);
@@ -1282,10 +1219,6 @@ function xrelease(){
 		}
 		die(json_encode(['err' => 'ok', 'url' => urlCode($id, $data['ename']),  'mes' => 'success']));
 	}
-}
-
-function getAge($time){
-	return date('Y', time()) - date('Y', $time);
 }
 
 function auth_history(){ // test it
