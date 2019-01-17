@@ -2169,6 +2169,21 @@ function apiFavorites(){
 	}
 }
 
+function apiYoutube(){
+	global $db; $result = [];
+	$query = $db->query('SELECT * FROM `youtube`');
+	while($row=$query->fetch()){
+		$result[] = [
+			'id' => $row['id'],
+			'title' => base64_encode($row['title']),
+			'vid' => $row['vid'],
+			'view' => $row['view'],
+			'comment' => $row['comment']
+		];
+	}
+	die(json_encode($result));
+}
+
 function pushAll($name, $code){
 	global $conf; 
 	$url = 'https://anilibria.tv/release/'.$code.'.html';
