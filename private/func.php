@@ -49,31 +49,6 @@ function session_hash($login, $passwd, $rand = '', $time = ''){
 	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string($passwd))), $time];
 }
 
-function coinhive_proof(){
-	global $conf;
-	if(empty($_POST['coinhive-captcha-token'])){
-		return false;	
-	}
-	$post_data = [
-		'secret' => $conf['coinhive_secret'],
-		'token' => $_POST['coinhive-captcha-token'],
-		'hashes' => 1024
-	];
-	$post_context = stream_context_create([
-		'http' => [
-			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-			'method'  => 'POST',
-			'content' => http_build_query($post_data)
-		]
-	]);
-	$url = 'https://api.coinhive.com/token/verify';
-	$response = json_decode(file_get_contents($url, false, $post_context));
-	if($response && $response->success) {
-		return true;
-	}
-	return false;
-}
-
 function _exit(){
 	global $db;
 	if(session_status() != PHP_SESSION_NONE){
@@ -207,12 +182,6 @@ function testRecaptcha(){
 	}
 	if($v == 3 && $result['score'] < 0.5){
 		_message('reCaptcha test failed: score too low', 'error');
-	}
-}
-
-function testCoinhive(){
-	if(!coinhive_proof()){
-		_message('Coinhive captcha error', 'error');
 	}
 }
 
@@ -485,44 +454,6 @@ function recaptcha($v = 3){
 	$result = json_decode(curl_exec($verify), true);
 	curl_close($verify);
 	return $result;
-}
-
-function xSpiderBot($name){
-	$arr = ['Google' => '/\.googlebot\.com$/i', 'Yandex' => '/\.spider\.yandex\.com$/i'];
-	if(strpos($_SERVER['HTTP_USER_AGENT'], $name) !== false){
-		return preg_match($arr["$name"], gethostbyaddr($_SERVER['REMOTE_ADDR']));
-	}
-	return false;
-}
-
-function secret_cookie(){
-	global $conf, $var;
-	$rand = genRandStr(8);
-	$hash = hash($conf['hash_algo'], $var['ip'].$rand.$conf['sign_secret']);
-	setcookie("ani_test", $hash.$_SERVER['REMOTE_ADDR'].$rand, $var['time'] + 86400, '/');
-}
-
-function simple_http_filter(){
-	global $conf, $var;
-	$flag = false;
-	if(!empty($_COOKIE['ani_test'])){
-		$string = $_COOKIE['ani_test'];
-		$hash = substr($string, 0, $conf['hash_len']);
-		$rand = substr($string, $conf['hash_len']+strlen($var['ip']));
-		$test = hash($conf['hash_algo'], $var['ip'].$rand.$conf['sign_secret']);
-		if($hash == $test){ 
-			$flag = true;
-		}
-	}
-	$list = ['RU', 'UA', 'BY', 'LV', 'EE', 'LT', 'TM', 'KG', 'KZ', 'MD', 'UZ', 'AZ', 'AM', 'GE'];
-	if(!in_array(geoip_country_code_by_name($_SERVER['REMOTE_ADDR']), $list) && !$flag){
-		if(xSpiderBot('Google') == false || xSpiderBot('Yandex') == false){			
-			$tmpFilter = str_replace("{coinhive}", $conf['coinhive_public'], getTemplate('filter'));
-			$tmpFilter = str_replace("{recaptcha}", $conf['recaptcha_public'], $tmpFilter);
-			echo $tmpFilter;
-			die;
-		}
-	}
 }
 
 function torrentHashExist($hash){
@@ -1680,7 +1611,7 @@ function xSearch(){
 	}
 	$data['search'] = sphinxPrepare($data['search']);
 	if(!empty($_POST['small'])){
-		$limit = 'LIMIT 10';
+		$limit = 'LIMIT 12';
 	}
 	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) {$limit}");
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
