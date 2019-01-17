@@ -11,9 +11,6 @@ $conf['mysql_base'] = 'anilibria';
 $conf['email'] = 'poiuty@poiuty.com';
 $conf['email_from'] = 'Test anilibria';
 
-$conf['coinhive_secret'] = 'secret';
-$conf['coinhive_public'] = 'public';
-
 // v3
 $conf['recaptcha_secret'] = 'secret';
 $conf['recaptcha_public'] = 'public';

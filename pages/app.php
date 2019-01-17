@@ -75,4 +75,4 @@ a#join-team-link, a#join-team-link:visited {
 
 <?php echo str_replace('{page}', '', getTemplate('vk')); ?>
 
-<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

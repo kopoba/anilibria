@@ -77,4 +77,4 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 </div>
 
-<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

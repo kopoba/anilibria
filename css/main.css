@@ -357,8 +357,11 @@ div.news_footer {
 	color: #f04646;
 }
 
-span.other-info {
+.news_footer_right{
 	float:right;
+}
+
+span.other-info {
 	margin: 0px 0px 0px 5px;
 	font-style:italic;
 	font-size: 16px;

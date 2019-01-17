@@ -26,4 +26,4 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <?php echo str_replace('{page}', 'pageUrl: "/pages/error/404.php",', getTemplate('vk')); ?>
 
-<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

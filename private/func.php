@@ -545,11 +545,11 @@ function torrent(){
 		switch($val['do']){
 			case 'change':
 				if(!checkTD('fid', $val['fid'])){
-					continue;
+					continue 2;
 				}
 				$old = torrentExist($val['fid']);
 				if(!$old){
-					continue;
+					continue 2;
 				}
 				$tmp = json_decode($old['info'], true);
 				$tmp = json_encode([$val['quality'], $val['series'], $tmp['2']]);
@@ -1610,22 +1610,24 @@ function xSearch(){
 		$data['key'] = $keys['0'];
 	}
 	$data['search'] = sphinxPrepare($data['search']);
-	if(!empty($_POST['small'])){
-		$limit = 'LIMIT 12';
-	}
-	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) {$limit}");
+	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `rating` DESC LIMIT 12");
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
 	foreach($tmp as $k => $v){
-		$query = $db->prepare('SELECT `id`, `name` FROM `xrelease` WHERE `id` = :id');
+		$query = $db->prepare('SELECT `id`, `name`, `ename` FROM `xrelease` WHERE `id` = :id');
 		$query->bindParam(':id', $v['id']);
 		$query->execute();
 		if($query->rowCount() != 1){
 			continue;
 		}
 		$row = $query->fetch();
-		$result .= "<tr><td><a href='/release/".releaseCodeByID($row['id']).".html'><span style='display: block; width: 247px; margin-left: 13px; margin-top: 7px; margin-bottom: 7px;'>{$row['name']}</span></a>";
+		$code = releaseCodeByID($row['id']);
+		$json[] =  ['id' => $row['id'], 'name' => base64_encode($row['name']), 'ename' => $row['ename'], 'code' => $code];
+		$result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; margin-top: 7px; margin-bottom: 7px;'>{$row['name']}</span></a>";
+	}
+	if(isset($_POST['json'])){
+		$result = $json;
 	}
 	_message2($result);
 }
@@ -1670,11 +1672,14 @@ function releaseCodeByID($id){
 
 function showCatalog(){
 	global $sphinx, $db, $user; $i=0; $arr = []; $result = ''; $page = 0;
+	if(!isset($_POST['search'])){
+		$_POST['search'] = '';
+	}
 	function aSearch($db, $page, $sort){
 		$query = $db->query('SELECT count(*) as total FROM `xrelease`');
 		$total =  $query->fetch()['total'];
 		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
-		$data = $query->fetchAll();
+		$data = $query->fetchAll(PDO::FETCH_ASSOC);
 		return ['data' => $data, 'total' => $total];
 	}
 	function bSearch($sphinx, $page, $sort){
@@ -1697,7 +1702,7 @@ function showCatalog(){
 				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
-				$data = $query->fetchAll();
+				$data = $query->fetchAll(PDO::FETCH_ASSOC);
 				return ['data' => $data, 'total' => $total];
 			}
 		}
@@ -1768,14 +1773,18 @@ function showCatalog(){
 			$arr = aSearch($db, $page, $sort);
 		}
 	}
-	$arr['data'] = prepareSearchResult($arr['data']);
-	foreach($arr['data'] as $key => $val){
-		$tmp = '<tr>';
-		foreach($val as $k => $v){
-			$tmp .= $v;
+	if(!isset($_POST['json'])){
+		$arr['data'] = prepareSearchResult($arr['data']);
+		foreach($arr['data'] as $key => $val){
+			$tmp = '<tr>';
+			foreach($val as $k => $v){
+				$tmp .= $v;
+			}
+			$tmp .= '</tr>';		
+			$result .= $tmp;
 		}
-		$tmp .= '</tr>';		
-		$result .= $tmp;
+	}else{
+		$result = $arr['data'];
 	}
 	die(json_encode(['err' => 'ok', 'table' => $result, 'total' => $arr['total'], 'update' => md5($arr['total'].$_POST['search']) ]));
 }
@@ -1905,18 +1914,18 @@ function apiInfo(){
 		$info[$row['id']] = [
 			'rid' => $row['id'],
 			'name' => [
-				$row['name'],
+				base64_encode($row['name']),
 				$row['ename']
 			], 
 			'rating' => $row['rating'], 
 			'last' => $row['last'],
 			'moon' => $row['moonplayer'],
 			'status' => $row['status'],
-			'type' => $row['type'],
-			'genre' => $row['genre'],
+			'type' => base64_encode($row['type']),
+			'genre' => base64_encode($row['genre']),
 			'year' => $row['year'],
 			'day' => $row['day'],
-			'description' => $row['description'],
+			'description' => base64_encode($row['description']),
 			'code' => $row['code']
 		];
 		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
@@ -1936,18 +1945,28 @@ function apiInfo(){
 			];
 		}
 	}
-	$cache->set('apiInfo', json_encode($info), 300);
+	$chunk = array_chunk($info, 100, true);
+	foreach($chunk as $k => $v){
+		$cache->set("apiInfo$k", json_encode($v), 300);
+	}
+	$cache->set('apiInfo', count($chunk), 300);
 	$cache->set('apiTorrent', json_encode($torrent), 300);
 }
 
 function apiList(){
-	global $cache; $result = []; 
-	$info = json_decode($cache->get('apiInfo'), true);
+	global $cache; $result = [];
+	$count = $cache->get('apiInfo');
 	$torrent = json_decode($cache->get('apiTorrent'), true);
+	for($i=0; $i < $count; $i++){
+		$tmp = json_decode($cache->get("apiInfo$i"), true);
+		foreach($tmp as $k => $v){
+			$info["$k"] = $v; 
+		}
+	}
 	if($info === false || $torrent === false){
 		die('api not ready');
 	}
-	if(!isset($_GET['query'])){
+	if(!isset($_POST['query'])){
 		die('no query isset');
 	}
 	function apiEcho($a){
@@ -1968,18 +1987,18 @@ function apiList(){
 	function apiGetInfo($info, $torrent){
 		$result = []; $list = ''; 
 		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
-		if(!empty($_GET['id'])){
-			$list = array_unique(explode(',', $_GET['id']));
+		if(!empty($_POST['id'])){
+			$list = array_unique(explode(',', $_POST['id']));
 		}
 		foreach($info as $key => $val){
 			if(!empty($list) && !in_array($val['rid'], $list)){
 				continue;
 			}
 			$val['torrent'] = apiGetTorrent($torrent, $val['rid']);
-			if(isset($_GET['filter'])){
-				$filterList = array_unique(explode(',', $_GET['filter']));
+			if(isset($_POST['filter'])){
+				$filterList = array_unique(explode(',', $_POST['filter']));
 				foreach($filter as $v){
-					if(!isset($_GET['rm'])){
+					if(!isset($_POST['rm'])){
 						if(!in_array($v, $filterList)){
 							unset($val["$v"]);
 						}
@@ -1994,10 +2013,10 @@ function apiList(){
 		}
 		return $result;
 	}
-	switch($_GET['query']){
+	switch($_POST['query']){
 		case 'torrent':
-			if(!empty($_GET['id'])){
-				apiEcho(apiGetTorrent($torrent, $_GET['id']));
+			if(!empty($_POST['id'])){
+				apiEcho(apiGetTorrent($torrent, $_POST['id']));
 			}else{
 				apiEcho($torrent);
 			}

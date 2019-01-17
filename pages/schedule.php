@@ -53,4 +53,4 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div style="margin-top:10px;"></div>
 </div>
 
-<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

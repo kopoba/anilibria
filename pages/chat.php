@@ -123,4 +123,4 @@ if($online !== false){
 	<div class="clear"></div>
 	<div class="news_footer"></div>
 </div>
-<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

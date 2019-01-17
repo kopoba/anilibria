@@ -6,6 +6,5 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
-require($_SERVER['DOCUMENT_ROOT'].'/private/minify.php');
 
 countRating();

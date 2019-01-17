@@ -188,4 +188,4 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>
 </div>
 
-<?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
+<?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

@@ -1,7 +1,7 @@
 <?php
 $var['title'] = 'AniLibria - так звучит аниме!';
 $var['page'] = '';
-$var['release'] = '';
+$var['release'] = [];
 $var['time'] = time();
 $var['ip'] = $_SERVER['REMOTE_ADDR'];
 $var['user_agent'] = '';
