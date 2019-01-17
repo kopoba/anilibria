@@ -11,7 +11,9 @@ $var['title'] = 'Личный кабинет';
 $var['page'] = 'cp';
 
 if(!$user){
-	_message2('Unauthorized user', 'error');
+	header('HTTP/1.0 403 Forbidden');
+	header('Location: /pages/login.php');
+	die;
 }
 
 if(!empty($user['2fa'])){
@@ -131,7 +133,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-email type="submit" value="ОТПРАВИТЬ">
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 
 <div class="news-block">
@@ -148,7 +150,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-passwd type="submit" value="ОТПРАВИТЬ">
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 
 <div class="news-block">
@@ -171,7 +173,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" id="send2fa" data-2fa-start value="<?php echo $tmpMes; ?>">
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 
 <div class="news-block">
@@ -201,7 +203,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</table>
 	</div>
 	<div class="clear"></div>
-	<div class="news_footer"></div>
+	<div style="margin-top:10px;"></div>
 </div>
 
 <div class="modal fade" id="headerModal" tabindex="-1" role="dialog" aria-hidden="true">

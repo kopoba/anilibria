@@ -6,6 +6,13 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/session.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
+
+if(!$user || $user['access'] < 2){
+	header('HTTP/1.0 403 Forbidden');
+	header('Location: /pages/error/403.php');
+	die;
+}
+
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 $var['page'] = 'new';
@@ -23,7 +30,7 @@ $var['page'] = 'new';
 			<div class="clear"></div>	
 		</div>
 		<div class="clear"></div>
-		<div class="detail_torrent_info" style="height: 550px;">
+		<div class="detail_torrent_info" style="height: 540px;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" required="">
 			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
 			<input id="nYear" class="form-control" style="margin-top: 6px;" type="text" placeholder="Год выхода: 2018" required="">
@@ -63,7 +70,7 @@ $var['page'] = 'new';
 		</div>
 	</div>	
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 
 <div class="news-block">
@@ -90,20 +97,9 @@ $var['page'] = 'new';
 		</table>
 	</div>
 	<div class="clear"></div>
-	<div class="news_footer"></div>
+	<div style="margin-top:10px;"></div>
 </div>
 
-<!-- Put this script tag to the <head> of your page -->
-<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>
-
-<script type="text/javascript">
-  VK.init({apiId: 6820072, color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6', onlyWidgets: true});
-</script>
-
-<!-- Put this div tag to the place, where the Comments block will be -->
-<div id="vk_comments" style="margin-top: 15px;"></div>
-<script type="text/javascript">
-VK.Widgets.Comments("vk_comments", {limit: 5, attach: "*"});
-</script>
+<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
 
 <?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

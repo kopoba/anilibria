@@ -50,7 +50,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<?php echo showSchedule(); ?>
 	</div>
 	<div class="clear"></div>
-	<div class="news_footer"></div>
+	<div style="margin-top:10px;"></div>
 </div>
 
 <?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

@@ -167,18 +167,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div class="news_footer"></div>
 </div>
 
-<!-- Put this script tag to the <head> of your page -->
-<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160"></script>
-
-<script type="text/javascript">
-  VK.init({apiId: 6820072, color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6', onlyWidgets: true});
-</script>
-
-<!-- Put this div tag to the place, where the Comments block will be -->
-<div id="vk_comments" style="margin-top: 15px;"></div>
-<script type="text/javascript">
-VK.Widgets.Comments("vk_comments", {limit: 5, attach: false});
-</script>
+<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
 
 <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog" style="width: 600px;">

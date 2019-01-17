@@ -33,7 +33,7 @@ if(!$user){
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" name="login" data-submit-login value="ВХОД">
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 
 <div class="news-block">
@@ -52,7 +52,7 @@ if(!$user){
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" data-submit-register value="ОТПРАВИТЬ" />
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 
 <div class="news-block">
@@ -69,7 +69,7 @@ if(!$user){
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" data-submit-passwdrecovery value="ОТПРАВИТЬ" />
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 <?php } ?>	
 
@@ -92,7 +92,7 @@ if(!$user){
 			<p>7.1. Запрещаются ссылки на любые ресурсы по озвучке аниме-сериалов и дорам (искл. AniLibria.tv).</p>
 		</div>
 		<div class="clear"></div>
-		<div class="news_footer"></div>
+		<div style="margin-top:10px;"></div>
 </div>
 	
 <?require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

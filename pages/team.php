@@ -14,13 +14,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
 <div class="news-block">
-	<div>
+	<div class="news-body">
 		<center>
 			<img src="/img/team.png">
 		</center>
-		<br/>
 		<center>
-		<p>
+		<p style="margin-top: 8px;">
 			AniLibria — некоммерческий проект по озвучиванию и адаптации зарубежных сериалов, мультфильмов и аниме, аниме-обзорам, видеоблогам, рецензиям.
 			Нашей особенностью является стабильная и качественная работа над тем контентом, который мы предоставляем пользователям.
 			Нашей целью является достижение большой популярности ресурса anilibria.tv, чтобы впоследствии начать озвучивать аниме в дубляже по лицензии от японцев и/или выпускать на постоянной основе собственные мультфильмы в стиле, максимально приближенном к аниме.<br>
@@ -167,7 +166,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</ul>
 	</div>
 	<div class="clear"></div>
-	<div class="news_footer"></div>
+	<div style="margin-top:10px;"></div>
 </div>
 
 
