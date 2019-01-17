@@ -10,9 +10,17 @@
 
 				</div>
 			</div>		
+			
+			<style>
+
+				
+				#smallSearchTable td:hover {
+background-color: #460c0c;
+}
+			</style>
 				
 			<div id="smallSearch" class="smallSearch">
-				<table id="smallSearchTable" style="margin-left: 13px; ">
+				<table id="smallSearchTable">
 					<tbody>
 					</tbody>
 				</table>
@@ -20,7 +28,7 @@
 				
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>	
-				<img src="/img/test1.png" style="margin-top: 7px;">
+				<img src="/img/test1.png">
 			</div>
 			
 		</div>

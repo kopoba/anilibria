@@ -35,9 +35,11 @@ body {
 	margin-top: 15px;
 	background-color: #fff;
 	padding: 10px 20px;
-	//height: 468px;
 }
 
+.news-body {
+	margin-top: 10px;
+}
 
 .page-navigation {
 	width: 900px;
@@ -330,7 +332,8 @@ a.chitat-dalee:hover {
 }
 
 div.news_footer {
-	padding: 10px 0px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 	color:#000;
 	font-size:10pt;
 	font-weight:400;
@@ -606,7 +609,7 @@ button.xdark {
 .smallSearch {
 	z-index: 1000;
 	width: 260px;
-	padding-bottom: 7px;
+	//padding-bottom: 7px;
 	margin-left: 10px;
 	color: #ddd;
 	background-color: #383838;

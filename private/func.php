@@ -161,27 +161,31 @@ function login(){
 	_message('success');
 }
 
+function moveErrPage($page = 403){
+	die(header("Location: /pages/error/$page.php"));
+}
+
 function password_link(){
 	global $conf, $db, $var;
 	if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
-		_message('Empty get value', 'error');
+		moveErrPage();
 	}
 	if(!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])){
-		_message('Wrong id or time', 'error');	
+		moveErrPage();
 	}
 	$query = $db->prepare('SELECT `id`, `mail`, `passwd` FROM `users` WHERE `id` = :id');
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
-		_message('No such user', 'error');
+		moveErrPage();
 	}
 	$row = $query->fetch();
 	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].sha1(half_string($row['passwd'])));
 	if($_GET['hash'] != $hash){
-		_message('Wrong hash', 'error');
+		moveErrPage();
 	}
 	if($var['time'] > $_GET['time']){
-		_message('Invalid link', 'error');
+		moveErrPage();
 	}
 	$passwd = createPasswd();
 	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
@@ -189,7 +193,7 @@ function password_link(){
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
 	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd[0]");
-	_message('success');
+	die(header('Location: /'));
 }
 
 function testRecaptcha(){
@@ -887,33 +891,33 @@ function change_mail(){
 function mail_link(){
 	global $db, $user, $var, $conf;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		moveErrPage();
 	}
 	if(empty($_GET['time']) || empty($_GET['mail']) || empty($_GET['hash'])){
-		_message('Empty $_GET', 'error');
+		moveErrPage();
 	}
 	if($var['time'] > $_GET['time']){
-		_message('Too late $_GET', 'error');	
+		moveErrPage();
 	}
 	$_GET['mail'] = urldecode($_GET['mail']);
 	if(!filter_var($_GET['mail'], FILTER_VALIDATE_EMAIL)){
-		_message('Wrong email', 'error');
+		moveErrPage();
 	}
 	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_GET['mail'].$_GET['time'].sha1(half_string($user['passwd'])));
 	if($hash != $_GET['hash']){
-		_message('Wrong hash', 'error');
+		moveErrPage();
 	}
 	$query = $db->prepare('SELECT `id` FROM `users` WHERE `mail` = :mail');
 	$query->bindParam(':mail', $_GET['mail']);
 	$query->execute();
 	if($query->rowCount() > 0){
-		_message('Email already use', 'error');
+		moveErrPage();
 	}
 	$query = $db->prepare('UPDATE `users` SET `mail` = :mail WHERE `id` = :id');
 	$query->bindParam(':mail', $_GET['mail']);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
-	_message('Success');
+	die(header('Location: /'));
 }
 
 function change_passwd(){
@@ -1690,7 +1694,7 @@ function xSearch(){
 			continue;
 		}
 		$row = $query->fetch();
-		$result .= "<tr><td><a href='/release/".releaseCodeByID($row['id']).".html'>{$row['name']}</a>";
+		$result .= "<tr><td><a href='/release/".releaseCodeByID($row['id']).".html'><span style='display: block; width: 247px; margin-left: 13px; margin-top: 7px; margin-bottom: 7px;'>{$row['name']}</span></a>";
 	}
 	_message2($result);
 }
