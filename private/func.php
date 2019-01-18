@@ -4,7 +4,7 @@ function createPasswd($passwd = ''){
 	if(empty($passwd)){
 		$passwd = genRandStr(8);
 	}
-	return [$passwd, password_hash($passwd, PASSWORD_DEFAULT)];
+	return [$passwd, password_hash($passwd, PASSWORD_ARGON2ID)];
 }
 
 function genRandStr($length = 10) {
@@ -34,8 +34,9 @@ function _message2($mes){
 	die(json_encode(['err' => 'ok', 'mes' => $mes]));
 }
 
-function half_string($s){
-	return substr($s, round(strlen($s)/2));
+function half_string_hash($s){
+	global $conf;
+	return hash($conf['hash_algo'], substr($s, round(strlen($s)/2)));
 }
 
 function session_hash($login, $passwd, $rand = '', $time = ''){
@@ -46,7 +47,7 @@ function session_hash($login, $passwd, $rand = '', $time = ''){
 	if(empty($time)){
 		$time = $var['time']+86400;
 	}
-	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string($passwd))), $time];
+	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
 }
 
 function _exit(){
@@ -95,7 +96,7 @@ function login(){
 	if(!password_verify($_POST['passwd'], $row['passwd'])){
 		_message('wrongPasswd', 'error');
 	}
-	if(password_needs_rehash($row['passwd'], PASSWORD_DEFAULT)){
+	if(password_needs_rehash($row['passwd'], PASSWORD_ARGON2ID)){
 		$passwd = createPasswd($_POST['passwd']);
 		$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
 		$query->bindParam(':passwd', $passwd[1]);
@@ -155,7 +156,7 @@ function password_link(){
 		moveErrPage();
 	}
 	$row = $query->fetch();
-	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].sha1(half_string($row['passwd'])));
+	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].sha1(half_string_hash($row['passwd'])));
 	if($_GET['hash'] != $hash){
 		moveErrPage();
 	}
@@ -205,7 +206,7 @@ function password_recovery(){
 	}
 	$row = $query->fetch();
 	$time = $var['time']+43200;
-	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string($row['passwd'])));
+	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string_hash($row['passwd'])));
 	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/password.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('checkEmail');
@@ -813,7 +814,7 @@ function change_mail(){
 		_message('used', 'error');
 	}
     $time = $var['time'] + 43200;
-    $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string($user['passwd'])));
+    $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string_hash($user['passwd'])));
     $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/mail.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
     _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
     _message('checkEmail');
@@ -834,7 +835,7 @@ function mail_link(){
 	if(!filter_var($_GET['mail'], FILTER_VALIDATE_EMAIL)){
 		moveErrPage();
 	}
-	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_GET['mail'].$_GET['time'].sha1(half_string($user['passwd'])));
+	$hash = hash($conf['hash_algo'], $var['ip'].$user['id'].$user['mail'].$_GET['mail'].$_GET['time'].sha1(half_string_hash($user['passwd'])));
 	if($hash != $_GET['hash']){
 		moveErrPage();
 	}
