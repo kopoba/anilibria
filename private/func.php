@@ -4,7 +4,7 @@ function createPasswd($passwd = ''){
 	if(empty($passwd)){
 		$passwd = genRandStr(8);
 	}
-	return [$passwd, password_hash($passwd, PASSWORD_ARGON2ID)];
+	return [$passwd, password_hash($passwd, PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2])];
 }
 
 function genRandStr($length = 10) {
@@ -96,7 +96,7 @@ function login(){
 	if(!password_verify($_POST['passwd'], $row['passwd'])){
 		_message('wrongPasswd', 'error');
 	}
-	if(password_needs_rehash($row['passwd'], PASSWORD_ARGON2ID)){
+	if(password_needs_rehash($row['passwd'], PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2])){
 		$passwd = createPasswd($_POST['passwd']);
 		$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
 		$query->bindParam(':passwd', $passwd[1]);
