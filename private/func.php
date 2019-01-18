@@ -1332,16 +1332,14 @@ function getReleaseVideo($id){
 function youtubeVideoExists($id) {
 	global $db;
 	$x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
-	if($x == 'HTTP/1.0 404 Not Found'){
+	if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized' ){
 		$query = $db->prepare('DELETE FROM `youtube` WHERE `vid` = :vid');
 		$query->bindParam(':vid', $id);
 		$query->execute();
 		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg');
+		return false;
 	}
-	if($x == 'HTTP/1.0 200 OK'){
-		return true;
-	}
-	return false;
+	return true;
 }
 
 function updateYoutubeStat(){
