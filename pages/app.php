@@ -64,7 +64,7 @@ a#join-team-link, a#join-team-link:visited {
 		</p>
 		<div class="day">Скриншоты</div>
 		<p style="text-align: center;">
-			<img alt="001app.jpg" src="/img/001app.jpg" title="001app.jpg" width="230" height="410">&nbsp; <img alt="002app.jpg" src="/img/002app.jpg" title="002app.jpg" width="230" height="410">&nbsp; <img alt="003app.jpg" src="/img/003app.jpg" title="003app.jpg" width="230" height="410">
+			<img alt="001app.jpg" src="/img/001app.jpg" width="230" height="410">&nbsp; <img alt="002app.jpg" src="/img/002app.jpg" width="230" height="410">&nbsp; <img alt="003app.jpg" src="/img/003app.jpg" width="230" height="410">
 		</p>
 		<hr/>
 		Внимание! Приложение работает на Android от версии 4.4. На более старых версиях приложение работать не будет! Свои отзывы о приложении оставляйте в комментариях. Спасибо, что выбираете нас!

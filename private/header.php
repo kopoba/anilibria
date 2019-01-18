@@ -3,6 +3,7 @@
 	<head>
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
+		<meta name="description" content="<?php echo $var['description']; ?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/bootstrap.min.css');?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />
 		<link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
@@ -13,7 +14,7 @@
 		<div class="header">
 			<img src="/img/28.png">
 			<div id="headercontent">
-				<a href="/"><img id="logopic" src="/img/logo_new.png" alt="ALogo" style="width: 213px;"></a>
+				<img id="logopic" src="/img/logo_new.png" alt="AniLibria логотип" style="width: 213px;">
 			</div>
 		</div>
 		<div class="main">

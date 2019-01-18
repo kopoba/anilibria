@@ -1,5 +1,6 @@
 <?php
 $var['title'] = 'AniLibria - так звучит аниме!';
+$var['description'] = '';
 $var['page'] = '';
 $var['release'] = [];
 $var['time'] = time();

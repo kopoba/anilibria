@@ -14,7 +14,6 @@ $var['page'] = 'schedule';
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
-
 <style>
 .day {
     background: #4a4a4a;

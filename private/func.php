@@ -951,6 +951,7 @@ function showRelease(){
 	$page = str_replace('{name}', $release['name'], getTemplate('release'));
 	$page = str_replace('{ename}', $release['ename'], $page);
 	$page = str_replace('{fullname}', $name, $page);
+	$page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
 	
 	$xtmp =  explode(',', $release['genre']);
 	$str = '';
@@ -1410,12 +1411,13 @@ function updateYoutube(){
 function youtubeShow(){
 	global $db;
 	$result = '';
-	$query = $db->query('SELECT `vid`, `comment`, `view` FROM `youtube` ORDER BY `id` DESC  LIMIT 4');
+	$query = $db->query('SELECT `title`, `vid`, `comment`, `view` FROM `youtube` ORDER BY `id` DESC  LIMIT 4');
 	$query->execute();
 	while($row = $query->fetch()){
 		$youtube = getTemplate('youtube');
 		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$row['vid']}", $youtube);
 		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg', $youtube);
+		$youtube = str_replace('{alt}', str_replace('"', '', $row['title']), $youtube);
 		$youtube = str_replace('{comment}', $row['comment'], $youtube);
 		$youtube = str_replace('{view}', $row['view'], $youtube);
 		$result .= $youtube;
@@ -1642,15 +1644,16 @@ function xSearch(){
 
 function showPosters(){
 	global $db; $result = '';
-	$query = $db->query('SELECT `id`, `code` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
+	$query = $db->query('SELECT `id`, `name`, `ename`, `code` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
 	while($row=$query->fetch()){	
 		$img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
 		if(!$img){
 			$img = '/upload/release/240x350/default.jpg';
 		}
 		$tmp = getTemplate('torrent-block');
-		$tmp = str_replace("{id}", $row['code'], $tmp);
-		$tmp = str_replace("{img}", $img, $tmp);
+		$tmp = str_replace('{id}', $row['code'], $tmp);
+		$tmp = str_replace('{img}', $img, $tmp);
+		$tmp = str_replace('{alt}', "{$row['name']} / {$row['ename']}", $tmp);
 		$result .= $tmp;
 	}
 	return $result;
@@ -1668,6 +1671,15 @@ function getGenreList(){
 		$result .= str_replace('{name}', $v, $tmpl);
 	}
 	return $result;
+}
+
+function releaseNameByID($id){
+	global $db;
+	$query = $db->prepare('SELECT `name`, `ename` FROM `xrelease` WHERE `id` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	$result = $query->fetch();
+	return [$result['name'], $result['ename'] ];
 }
 
 function releaseCodeByID($id){
@@ -1734,7 +1746,7 @@ function showCatalog(){
 	
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$tmplTD = '<td><a href="/release/{id}.html"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="" title=""></a></td>';
+		$tmplTD = '<td><a href="/release/{id}.html"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
@@ -1742,7 +1754,8 @@ function showCatalog(){
 			}else{
 				$img = fileTime($poster);
 			}
-			$arr[$i][] = str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD));  
+			$xname = releaseNameByID($val['id']);
+			$arr[$i][] =  str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));  
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
@@ -1863,9 +1876,9 @@ function releaseUpdateLast(){
 function showSchedule(){
 	global $db, $var; $arr = []; $result = ''; $i = 0;
 	$tmpl1 = '<div class="day">{day}</div>';
-	$tmpl2 = '<td class="goodcell"><a href="/release/{id}.html"> <img width="200" height="280" src="{img}"></a></td>';
+	$tmpl2 = '<td class="goodcell"><a href="/release/{id}.html"> <img width="200" height="280" src="{img}" alt="{alt}"}></a></td>';
 	foreach($var['day'] as $key => $val){
-		$query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `day` = :day AND `status` = 1');
+		$query = $db->prepare('SELECT `id`, `name`, `ename` FROM `xrelease` WHERE `day` = :day AND `status` = 1');
 		$query->bindParam(':day', $key);
 		$query->execute();
 		while($row=$query->fetch()){
@@ -1876,7 +1889,7 @@ function showSchedule(){
 				$img = fileTime($poster);
 			}
 			$arr["$key"][$i][] = [ 
-				str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, $tmpl2))
+				str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, $tmpl2)))
 			];
 			if(count($arr["$key"][$i]) == 4){
 				$i++;

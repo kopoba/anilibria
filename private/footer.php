@@ -12,11 +12,9 @@
 			</div>		
 			
 			<style>
-
-				
 				#smallSearchTable td:hover {
-background-color: #460c0c;
-}
+					background-color: #460c0c;
+				}
 			</style>
 				
 			<div id="smallSearch" class="smallSearch">
@@ -28,7 +26,7 @@ background-color: #460c0c;
 				
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>	
-				<img src="/img/test1.png">
+				<a href="https://pushall.ru/?fs=943"><img src="/img/test1.png"></a>
 			</div>
 			
 		</div>

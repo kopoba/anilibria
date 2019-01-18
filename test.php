@@ -23,8 +23,8 @@ function auth(){
 		$result = sendApi(
 			'https://dev.anilibria.tv/public/login.php', 
 			[
-				'mail' => 'mail',
-				'passwd' => 'passwd',
+				'mail' => 'poiuty@lepus.su',
+				'passwd' => '~VBHHOPx',
 			]
 		);
 		preg_match("/PHPSESSID=(.*?);/s", $result['1']['5'], $phpsessid);
