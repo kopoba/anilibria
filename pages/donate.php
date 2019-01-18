@@ -17,11 +17,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div class="news-body">			
 		<img src="/img/donate.jpg" width="840" height="216">
 		<hr/>
-		<center><i>Мы тратим деньги на премии команде проекта.
-		Благодаря этому наша озвучка выходит быстрее конкуретнов.</i></center>
-		<br/>
-		<center><a href="https://www.patreon.com/anilibria">https://www.patreon.com/anilibria</a> - ежемесячный платёж через Патреон! Самый лучший способ поддержать проект.</center>
-		<br>
+		<center><i>Мы тратим деньги на премии команде.
+		Благодаря этому наша озвучка выходит быстрее.</i></center>
+
+		<center style="margin-top:12px; margin-bottom:12px;"><a href="https://www.patreon.com/anilibria">https://www.patreon.com/anilibria</a> - ежемесячный платёж через Патреон! Самый лучший способ поддержать проект.</center>
 		
 		<table class="table table-bordered">
 			<tbody>

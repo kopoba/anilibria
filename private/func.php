@@ -1260,10 +1260,18 @@ function wsInfo($name){
 	}
 }
 
-function getRemote($url, $key){
+function getRemoteCache(){
+	global $db, $conf;
+	$query = $db->query('SELECT `id` FROM `xrelease`');
+	while($row=$query->fetch()){
+		getRemote($conf['nginx_domain'].'/?id='.$row['id'], 'video'.$row['id'], true);
+	}
+}
+
+function getRemote($url, $key, $update = false){
 	global $cache;
 	$data = $cache->get('anilibria'.$key);
-	if(empty($data)){
+	if(empty($data) || $update){
 		if(!$data = file_get_contents($url)){
 			return false;
 		}
