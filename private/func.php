@@ -926,7 +926,7 @@ function showRelease(){
 	if(empty($_GET['code'])){
 		return page404();
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day` FROM `xrelease` WHERE `code` = :code');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day`, `code` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -939,6 +939,10 @@ function showRelease(){
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
 	
+	$var['og'] .= "<meta property='og:title' content='{$release['name']} / {$release['ename']}' />";
+	$var['og'] .= "<meta property='og:description' content='{$release['description']}' />";
+	$var['og'] .= "<meta property='og:url' content='/release/{$release['code']}.html' />";
+			
 	if(mb_strlen($release['name'].$release['ename']) > 60){
 		$name = "{$release['name']}<br/>{$release['ename']}";
 	}else{
@@ -1006,8 +1010,11 @@ function showRelease(){
 	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
 	if(!file_exists($poster)){
 		$page = str_replace('{img}', '/upload/release/350x500/default.jpg', $page);
+		$var['og'] .= "<meta property='og:image' content='/upload/release/350x500/default.jpg' />";
 	}else{
-		$page = str_replace('{img}', fileTime($poster), $page);
+		$tmpImg = fileTime($poster);
+		$page = str_replace('{img}', $tmpImg, $page);
+		$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
 	}
 	$page = str_replace('{favorites}', '', $page);
 	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');

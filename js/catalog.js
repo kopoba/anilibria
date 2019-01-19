@@ -6,7 +6,6 @@ function xPagination(a){
 		itemsOnPage: 12,
 		cssStyle: 'light-theme',
 		onPageClick: function(page){
-			event.preventDefault();
 			getCatalog(page);
 			$('html, body').animate({scrollTop: $(".content").offset().top }, 0);
 		}

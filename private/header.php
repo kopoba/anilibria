@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html prefix="og: http://ogp.me/ns#">
 	<head>
+		<?php echo $var['og']; ?>
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<meta name="description" content="<?php echo $var['description']; ?>" />
