@@ -1355,10 +1355,10 @@ function updateYoutubeStat(){
 	$query->execute();
 	while($row = $query->fetch()){
 		$stat = youtubeStat($row['vid']);
-		youtubeGetImage($row['vid']);
 		if(!$stat){
 			continue;
 		}
+		youtubeGetImage($row['vid']);
 		$tmp = $db->prepare('UPDATE `youtube` SET `view` = :view, `comment` = :comment WHERE `id` = :id');
 		$tmp->bindParam(':view', $stat['0']);
 		$tmp->bindParam(':comment', $stat['1']);
