@@ -2239,3 +2239,29 @@ function pushAll($name, $code){
 		'url' => $url
 	]);
 }
+
+function telegram_send($chanel, $msg){
+	global $conf;
+	$arr = [
+		'chat_id' => $chanel,
+		'text' => $msg
+	];
+	file_get_contents("https://api.telegram.org/bot{$conf['telegram']}/sendMessage?".http_build_query($arr));
+}
+
+function helpSeed(){
+	global $db; $url = false;
+	$query = $db->query('SELECT `rid` FROM `xbt_files` WHERE `seeders` < 10 ORDER BY `seeders` DESC');
+	while($row=$query->fetch()){
+		$tmp = $db->prepare('SELECT `code` FROM `xrelease` WHERE `id` = :id AND `status` != 3 ');
+		$tmp->bindParam(':id', $row['rid']);
+		$tmp->execute();
+		if($tmp->rowCount() == 1){
+			$url = 'https://dev.anilibria.tv/release/'.$tmp->fetch()['code'].'.html';
+			break;
+		}
+	}
+	if($url){
+		telegram_send('@anilibriahelpseed', $url);
+	}
+}
