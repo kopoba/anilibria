@@ -1355,6 +1355,7 @@ function updateYoutubeStat(){
 	$query->execute();
 	while($row = $query->fetch()){
 		$stat = youtubeStat($row['vid']);
+		youtubeGetImage($row['vid']);
 		if(!$stat){
 			continue;
 		}
@@ -1381,14 +1382,28 @@ function youtubeStat($id){
 }
 
 function youtubeGetImage($id){
-	$data = fopen("https://img.youtube.com/vi/$id/maxresdefault.jpg", 'rb');
-	$img = new Imagick();
-	$img->readImageFile($data);
-	$img->resizeImage(840,400,Imagick::FILTER_LANCZOS, 1, false);
-	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-	$img->setImageCompressionQuality(85);
-	$img->stripImage();
-	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg', $img);
+	global $db;
+	$remote = "https://img.youtube.com/vi/$id/maxresdefault.jpg";
+	$hash = md5(file_get_contents($remote));
+	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg';
+	$query = $db->prepare('SELECT `hash` FROM `youtube` WHERE `vid` = :vid');
+	$query->bindParam(':vid', $id);
+	$query->execute();
+	$row = $query->fetch();
+	if($hash != $row['hash'] || !file_exists($file)){
+		$data = fopen($remote, 'rb');
+		$img = new Imagick();
+		$img->readImageFile($data);
+		$img->resizeImage(840,400,Imagick::FILTER_LANCZOS, 1, false);
+		$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+		$img->setImageCompressionQuality(85);
+		$img->stripImage();
+		file_put_contents($file, $img);
+		$query = $db->prepare('UPDATE `youtube` SET `hash` = :hash WHERE `vid` = :vid');
+		$query->bindParam(':hash', $hash);
+		$query->bindParam(':vid', $id);
+		$query->execute();
+	}
 }
 
 function updateYoutube(){
@@ -1406,7 +1421,7 @@ function updateYoutube(){
 		if($query->rowCount() == 1){
 			continue;
 		}
-		$val['snippet']['title'] = htmlspecialchars($val['snippet']['title']);		
+		$val['snippet']['title'] = htmlspecialchars($val['snippet']['title'], ENT_QUOTES, 'UTF-8');
 		$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`) VALUES (:title, :vid)');
 		$query->bindParam(':title', $val['snippet']['title']);
 		$query->bindParam(':vid', $val['id']['videoId']);
