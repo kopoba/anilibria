@@ -682,7 +682,7 @@ function upload_avatar() {
 	if($crop) $img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
 	$img->resizeImage(160,160,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-	$img->setImageCompressionQuality(90);
+	$img->setImageCompressionQuality(85);
 	$img->stripImage();
 	
 	$name = hash('crc32', $img);
@@ -1329,10 +1329,10 @@ function getReleaseVideo($id){
 	return [$playlist, $download];
 }
 
-function youtubeVideoExists($id) {
+function youtubeVideoExists($id){
 	global $db;
 	$x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
-	if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized' ){
+	if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized'){
 		$query = $db->prepare('DELETE FROM `youtube` WHERE `vid` = :vid');
 		$query->bindParam(':vid', $id);
 		$query->execute();
@@ -1399,6 +1399,7 @@ function updateYoutube(){
 		if($query->rowCount() == 1){
 			continue;
 		}
+		$val['snippet']['title'] = htmlspecialchars($val['snippet']['title']);		
 		$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`) VALUES (:title, :vid)');
 		$query->bindParam(':title', $val['snippet']['title']);
 		$query->bindParam(':vid', $val['id']['videoId']);
@@ -1416,7 +1417,7 @@ function youtubeShow(){
 		$youtube = getTemplate('youtube');
 		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$row['vid']}", $youtube);
 		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg', $youtube);
-		$youtube = str_replace('{alt}', str_replace('"', '', $row['title']), $youtube);
+		$youtube = str_replace('{alt}', $row['title'], $youtube);
 		$youtube = str_replace('{comment}', $row['comment'], $youtube);
 		$youtube = str_replace('{view}', $row['view'], $youtube);
 		$result .= $youtube;
