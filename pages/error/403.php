@@ -23,6 +23,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div class="news_footer"></div>
 </div>
 
-<?php echo str_replace('{page}', 'pageUrl: "/pages/error/403.php",', getTemplate('vk')); ?>
+<div id="vk_comments" style="margin-top: 15px;"></div>
 
 <?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

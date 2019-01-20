@@ -50,8 +50,8 @@ $var['page'] = 'new';
 				<option value="3">Среда</option>
 				<option value="4">Четверг</option>
 				<option value="5">Пятница</option>
-				<option value="6">Субота</option>
-				<option value="7">Воскресение</option>
+				<option value="6">Суббота</option>
+				<option value="7">Воскресенье</option>
 			</select>
 			
 			<select id="nStatus" class="form-control" style="margin-top: 6px;">

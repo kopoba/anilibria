@@ -33,8 +33,8 @@
 				<option value="3">Среда</option>
 				<option value="4">Четверг</option>
 				<option value="5">Пятница</option>
-				<option value="6">Субота</option>
-				<option value="7">Воскресение</option>
+				<option value="6">Суббота</option>
+				<option value="7">Воскресенье</option>
 			</select>
 			
 			<select id="nStatus" class="form-control" style="margin-top: 4px;">
@@ -44,7 +44,15 @@
 				<option value="2">Скрыт</option>
 			</select>
 			<input id="nMoon" class="form-control" style="margin-top: 4px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
-			<textarea id="nDescription" class="form-control" style="margin-top: 4px; resize: none;" rows="4" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{xdescription}</textarea>
+<pre style="margin-top: 10px; max-height: 100px; overflow-y: scroll;">[b]жирный шрифт[/b] => <b>жирный шрифт</b>
+[i]наклонный шрифт[/i] => <i>наклонный шрифт</i>
+[u]подчеркнутый текст[/u] => <u>подчеркнутый текст</u>
+[s]зачеркнутый шрифт[/s] => <s>зачеркнутый шрифт</s><br/>
+[url]http://google.ru[/url] => <a href="http://google.ru" target="_blank">http://google.ru</a>
+[url]https://google.ru[/url] => <a href="https://google.ru" target="_blank">https://google.ru</a><br>
+[url=http://google.ru]google[/url] => <a href="http://google.ru" target="_blank"> google</a>
+[url=https://google.ru]google[/url] => <a href="https://google.ru" target="_blank">google</a>
+</pre>
 		</div>
 	
 	<div id="xreleaseInfo" class="detail_torrent_info">
@@ -70,6 +78,9 @@
 		</div>
 	</div>
 	<div class="clear"></div>
+	<div id="xreleaseDesc" style="display: none;">
+		<textarea id="nDescription" class="form-control" style="margin-top: 4px; resize: vertical;" rows="10" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{xdescription}</textarea>
+	</div>
 	<div class="tab-switcher">
 		<div class="tab-content">
 			<button id="buttonMoon" data-tab="moonPlayer" style="display: none;">Внешний плеер</button>

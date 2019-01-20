@@ -996,11 +996,11 @@ function showRelease(){
 	}elseif(!empty($release['announce'])){
 		$page = str_replace('{announce}', $release['announce'], $page);
 	}else{
-		$a = $var['day']['1'];
-		if(array_key_exists($release['day'], $var['day'])){
-			$a = $var['day'][$release['day']];
+		$a = $var['announce']['1'];
+		if(array_key_exists($release['day'], $var['announce'])){
+			$a = $var['announce'][$release['day']];
 		}
-		$page = str_replace('{announce}', 'Новая серия каждый '.mb_strtolower($a), $page);
+		$page = str_replace('{announce}', $a, $page);
 		unset($a);
 	}
 	
@@ -1105,7 +1105,7 @@ function parse_bb_code($text){
 
 function xrelease(){
 	global $db, $user, $var;
-	$data = []; $sql = ['col' => '', 'val' => '', 'update' => ''];
+	$data = []; $sql = ['col' => [], 'val' => [], 'update' => []];
 	if(!$user || $user['access'] < 2){
 		_message('access', 'error');
 	}
@@ -1126,24 +1126,23 @@ function xrelease(){
 			if(mb_strlen($data[$key]) > 1000){
 				_message('long', 'error');
 			}
-			$sql['col'] .= "`$key`,";
-			$sql['val'] .= ":$key,";
-			$sql['update'] .= "`$key` = :$key,";
-		}
+			$sql['col'][] = "`$key`";
+			$sql['val'][] = ":$key";
+			$sql['update'][] = "`$key` = :$key";
+        }
 	}
 	if(!empty($data['status']) && array_key_exists($data['status'], $var['status'])){
 		$data['search_status'] = $var['status'][$data['status']];
 	}else{
 		$data['search_status'] = $var['status']['3'];
 	}
-	$sql['col'] .= '`search_status`,';
-	$sql['val'] .= ':search_status,';
-	$sql['update'] .= '`search_status` = :search_status,';
+	$sql['col'][] = '`search_status`';
+	$sql['val'][] = ':search_status';
+	$sql['update'][] = '`search_status` = :search_status';
 	if(!empty($sql['col'])){
-		$sql['col'] = rtrim($sql['col'], ',');
-		$sql['val'] = rtrim($sql['val'], ',');
-		$sql['update'] = rtrim($sql['update'], ',');
 		$id = '';
+		$sqlCol = implode(',', $sql['col']);
+		$sqlVal = implode(',', $sql['val']);
 		if(!empty($post['update'])){
 			$id = intval($post['update']);
 		}
@@ -1155,10 +1154,11 @@ function xrelease(){
 				_message('wrongRelease');
 			}		
 			uploadPoster($id);
-			$query = $db->prepare("UPDATE `xrelease` SET {$sql['update']} WHERE `id` = :id");
+			$sqlUpdate = implode(',', $sql['update']);
+            $query = $db->prepare("UPDATE `xrelease` SET $sqlUpdate WHERE `id` = :id");
 			$query->bindParam(':id', $id);
 		}else{
-			$query = $db->prepare("INSERT INTO `xrelease` ({$sql['col']}) VALUES ({$sql['val']})");
+			$query = $db->prepare("INSERT INTO `xrelease` ($sqlCol) VALUES ($sqlVal)");
 		}
 		foreach($data as $k => &$v){ // https://stackoverflow.com/questions/12144557/php-pdo-bindparam-was-falling-in-a-foreach
 			$query->bindParam(':'.$k, $v);
@@ -1197,7 +1197,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 5, {page} attach: false});" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 
@@ -1206,15 +1206,13 @@ function footerJS(){
 			}
 		break;
 		case 'cp':
-			if($user){
-				$result .= str_replace('{url}', fileTime('/js/jquery.Jcrop.min.js'), $tmplJS);
-				$result .= str_replace('{url}', fileTime('/css/jquery.Jcrop.min.css'), $tmplCSS);
-				$result .= str_replace('{url}', fileTime('/js/uploadAvatar.js'), $tmplJS);
-				$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
-				$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
-				$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
-				$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
-			}
+			$result .= str_replace('{url}', fileTime('/js/jquery.Jcrop.min.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/css/jquery.Jcrop.min.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/js/uploadAvatar.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
+			$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
+			$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
 		break;
 		case 'new':
 			$result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
@@ -1242,8 +1240,8 @@ function footerJS(){
 				$result .='<style>.chosen-container { min-width:100%; }</style>';
 			}
 			$tmp = getReleaseVideo($var['release']['id']);
-			if(!empty($tmp['0'])){
-				$result .= str_replace('{playlist}', $tmp['0'], getTemplate('playerjs'));
+			if(!empty($tmp)){
+				$result .= str_replace('{playlist}', $tmp, getTemplate('playerjs'));
 			}
 			unset($tmp);
 			$result .= wsInfo($var['release']['name']);
@@ -1254,6 +1252,10 @@ function footerJS(){
 		case 'links':
 		case 'donate':
 			$result .= str_replace('{page}', '', $vk);
+		break;
+		case '404':
+		case '403':
+			$result .= str_replace('{page}', "pageURL: '/pages/error/{$var['page']}.php',", $vk);
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
@@ -1341,7 +1343,7 @@ function getReleaseVideo($id){
 			}
 		}
 	}
-	return [$playlist, $download];
+	return $playlist;
 }
 
 function youtubeVideoExists($id){
