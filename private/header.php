@@ -5,17 +5,17 @@
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<meta name="description" content="<?php echo $var['description']; ?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo $conf['domain'].fileTime('/css/bootstrap.min.css');?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo $conf['domain'].fileTime('/css/main.css');?>" />
+		<link rel="stylesheet" type="text/css" href="fileTime('/css/bootstrap.min.css');?>" />
+		<link rel="stylesheet" type="text/css" href="fileTime('/css/main.css');?>" />
 		<link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>		
 	</head>
 	<body>
 		<div class="header">
-			<img src="<?php echo $conf['domain']; ?>/img/28.png">
+			<img src="/img/28.png">
 			<div id="headercontent">
-				<img id="logopic" src="<?php echo $conf['domain']; ?>/img/logo_new.png" alt="AniLibria логотип" style="width: 213px;">
+				<img id="logopic" src="/img/logo_new.png" alt="AniLibria логотип" style="width: 213px;">
 			</div>
 		</div>
 		<div class="main">
