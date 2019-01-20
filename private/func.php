@@ -117,9 +117,9 @@ function login(){
 	$query->bindParam(':uid', $row['id']);
 	$query->execute();
 	if($query->rowCount() > 10){
-		$row = $query->fetch();
+		$close = $query->fetch();
 		$query = $db->prepare('DELETE FROM `session` WHERE `id` = :id');
-		$query->bindParam(':id', $row['id']);
+		$query->bindParam(':id', $close['id']);
 		$query->execute();
 	}
 	$_SESSION['sess'] = $hash[0];
@@ -133,7 +133,7 @@ function login(){
 	$query->bindParam(':ip', $var['ip']);
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':info', $var['user_agent']);
-	$query->execute();
+	$query->execute();	
 	_message('success');
 }
 
@@ -1175,7 +1175,7 @@ function xrelease(){
 	}
 }
 
-function auth_history(){ // test it
+function auth_history(){
 	global $db, $user, $var; $data = [];
 	$query = $db->prepare('SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100');
 	$query->bindParam(':uid', $user['id']);
@@ -1197,7 +1197,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 5, {page} attach: false});" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 5, {page} attach: false});" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 

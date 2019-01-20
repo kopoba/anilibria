@@ -5,8 +5,8 @@
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<meta name="description" content="<?php echo $var['description']; ?>" />
-		<link rel="stylesheet" type="text/css" href="fileTime('/css/bootstrap.min.css');?>" />
-		<link rel="stylesheet" type="text/css" href="fileTime('/css/main.css');?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/bootstrap.min.css');?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />
 		<link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 		<link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>		
