@@ -139,8 +139,9 @@ $("#send").click(function(e){
 });
 
 $("#exit").click(function(e){
-	$.post("https://"+site+"/public/chat.php", {do: "exit"});
-	window.location.href = "https://"+site+"/pages/chat.php";
+	$.post("https://"+site+"/public/chat.php", {do: "exit"}, function(json){
+		window.location.href = "https://"+site+"/pages/chat.php";
+	});
 });
 
 $("#ban").click(function(e){

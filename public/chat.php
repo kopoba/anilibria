@@ -12,7 +12,7 @@ $online = $cache->get('online');
 
 if($online === false){
 	$all = 0; $kun = 0; $chan = 0;
-	$query = $db->prepare("SELECT * FROM `chat_sessions` WHERE `ping` > UNIX_TIMESTAMP()-90");
+	$query = $db->prepare('SELECT * FROM `chat_sessions` WHERE `ping` > UNIX_TIMESTAMP()-90');
 	$query->execute();
 	while($row = $query->fetch()){
 		$all++;
@@ -36,7 +36,7 @@ switch($_POST['do']){
 	case 'typing': $cache->set($sid.'typing', $time, 60); break;
 
 	case 'ping':
-		$query = $db->prepare("UPDATE `chat_sessions` SET `ping` = :time WHERE `sess` = :sess");
+		$query = $db->prepare('UPDATE `chat_sessions` SET `ping` = :time WHERE `sess` = :sess');
 		$query->bindParam(':time', $time);
 		$query->bindParam(':sess', $sid);
 		$query->execute();
@@ -44,20 +44,20 @@ switch($_POST['do']){
 		echo $online;
 		if(rand(1, 1000) == 100){
 			$timeout = $time-86400;
-			$query = $db->prepare("DELETE FROM `chat_sessions` WHERE `ping` < :time");
+			$query = $db->prepare('DELETE FROM `chat_sessions` WHERE `ping` < :time');
 			$query->bindParam(':time', $timeout);
 			$query->execute();
-			$query = $db->prepare("DELETE FROM `chat_talks` WHERE `start` < :time");
+			$query = $db->prepare('DELETE FROM `chat_talks` WHERE `start` < :time');
 			$query->bindParam(':time', $timeout);
 			$query->execute();
-			$query = $db->prepare("DELETE FROM `chat_messages` WHERE `time` < :time");
+			$query = $db->prepare('DELETE FROM `chat_messages` WHERE `time` < :time');
 			$query->bindParam(':time', $timeout);
 			$query->execute();
 		}
 	break;
 
 	case 'close':
-		$query = $db->prepare("UPDATE `chat_talks` SET `status` = '1', `end` = :time WHERE `idt` = :idt");
+		$query = $db->prepare('UPDATE `chat_talks` SET `status` = \'1\', `end` = :time WHERE `idt` = :idt');
 		$query->bindParam(':time', $time);
 		$query->bindParam(':idt', $_SESSION['idt']);
 		$query->execute();
@@ -68,7 +68,7 @@ switch($_POST['do']){
 	break;
 	
 	case 'exit':
-		$query = $db->prepare("DELETE FROM `chat_sessions` WHERE `sess` = :sess");
+		$query = $db->prepare('DELETE FROM `chat_sessions` WHERE `sess` = :sess');
 		$query->bindParam(':sess', $sid);
 		$query->execute();
 		unset($_SESSION['sex']);
@@ -77,11 +77,11 @@ switch($_POST['do']){
 	break;
 	
 	case 'stop':		
-		$query = $db->prepare("UPDATE `chat_sessions` SET `status` = '1' WHERE `sess` = :sess"); // Ставим флаг -> собеседник занят
+		$query = $db->prepare('UPDATE `chat_sessions` SET `status` = \'1\' WHERE `sess` = :sess'); // Ставим флаг -> собеседник занят
 		$query->bindParam(':sess', $sid);
 		$query->execute();
 		if(!empty($_SESSION['idt'])){
-			$query = $db->prepare("UPDATE `chat_talks` SET `status` = '1' WHERE `idt` = :idt"); // Завершаем беседу
+			$query = $db->prepare('UPDATE `chat_talks` SET `status` = \'1\' WHERE `idt` = :idt'); // Завершаем беседу
 			$query->bindParam(':idt', $_SESSION['idt']);
 			$query->execute();
 			unset($_SESSION['idt']);
@@ -92,7 +92,7 @@ switch($_POST['do']){
 		if(empty($_SESSION['idt_last'])){
 			die;
 		}
-		$query = $db->prepare("SELECT * FROM `chat_talks` WHERE `idt` = :idt");
+		$query = $db->prepare('SELECT * FROM `chat_talks` WHERE `idt` = :idt');
 		$query->bindParam(':idt', $_SESSION['idt_last']);
 		$query->execute();
 		if($query->rowCount() == 1){	
@@ -111,18 +111,18 @@ switch($_POST['do']){
 		if(strlen($_POST['mes']) == 0 || mb_strlen($_POST['mes'], 'UTF-8') > 1000){
 			die;
 		}
-		$query = $db->prepare("SELECT * FROM `chat_talks` WHERE `idt` = :idt AND `status` = 0");
+		$query = $db->prepare('SELECT * FROM `chat_talks` WHERE `idt` = :idt AND `status` = 0');
 		$query->bindParam(':idt', $_SESSION["idt"]);
 		$query->execute();
 		if($query->rowCount() != 1){	
-			 die($_SESSION["idt"]);
+			 die($_SESSION['idt']);
 		}
 		$row = $query->fetch();
 		if($cache->get($sid.'message') > round(microtime(true) * 1000)){
 			die(json_encode(['status' => 'spam', 'mes' => 'вы слишком быстро отправляете сообщения.']));
 		}
 		$cache->set($sid.'message', round(microtime(true) * 1000)+500, 600);
-		$query = $db->prepare("INSERT INTO `chat_messages` (`idt`, `session`, `message`, `time`) VALUES (:idt, :session, :message, :time) ");
+		$query = $db->prepare('INSERT INTO `chat_messages` (`idt`, `session`, `message`, `time`) VALUES (:idt, :session, :message, :time) ');
 		$query->bindParam(':idt', $_SESSION['idt']);
 		$query->bindParam(':session', $sid);
 		$query->bindParam(':message', $_POST['mes']);
@@ -136,7 +136,7 @@ switch($_POST['do']){
 			die;
 		}
 		$arr = []; $msg = '';
-		$query = $db->prepare("SELECT * FROM `chat_talks` WHERE `idt` = :idt AND `status` = 0");
+		$query = $db->prepare('SELECT * FROM `chat_talks` WHERE `idt` = :idt AND `status` = 0');
 		$query->bindParam(':idt', $_SESSION['idt']);
 		$query->execute();
 		if($query->rowCount() != 1){ // Собеседник отключился
@@ -157,7 +157,7 @@ switch($_POST['do']){
 		if($cache->get($j.'typing') > time()-2){
 			$arr['status'] = 'typing';
 		}
-		$query = $db->prepare("SELECT * FROM `chat_messages` WHERE `idt` = :idt AND `send` != '1' AND `session` != :session");
+		$query = $db->prepare('SELECT * FROM `chat_messages` WHERE `idt` = :idt AND `send` != \'1\' AND `session` != :session');
 		$query->bindParam(':idt', $_SESSION["idt"]);
 		$query->bindParam(':session', $sid);
 		$query->execute();
@@ -188,11 +188,11 @@ switch($_POST['do']){
 		}else{
 			$cache->delete('an.'.$sid);
 		}
-		$query = $db->prepare("SELECT * FROM `chat_sessions` WHERE `sess` = :sess");
+		$query = $db->prepare('SELECT * FROM `chat_sessions` WHERE `sess` = :sess');
 		$query->bindParam(':sess', $sid);
 		$query->execute();
 		if($query->rowCount() == 0){
-			$query = $db->prepare("INSERT INTO `chat_sessions` (`sess`, `ip`, `sex`, `search`, `enter`) VALUE (:sess, :ip, :sex, :search, :enter)");
+			$query = $db->prepare('INSERT INTO `chat_sessions` (`sess`, `ip`, `sex`, `search`, `enter`) VALUE (:sess, :ip, :sex, :search, :enter)');
 			$query->bindParam(':sess', $sid);
 			$query->bindParam(':ip', $_SERVER['REMOTE_ADDR']);
 			$query->bindParam(':sex', $sex);
@@ -201,15 +201,15 @@ switch($_POST['do']){
 			$query->execute();
 		}
 		if($query->rowCount() == 1){
-			$query = $db->prepare("UPDATE `chat_sessions` SET `sex` = :sex, `search` = :search, `enter` = :enter WHERE `sess`=:sess");
+			$query = $db->prepare('UPDATE `chat_sessions` SET `sex` = :sex, `search` = :search, `enter` = :enter WHERE `sess`=:sess');
 			$query->bindParam(':sess', $sid);
 			$query->bindParam(':sex', $sex);
 			$query->bindParam(':search', $search);
 			$query->bindParam(':enter', $time);
 			$query->execute();
 		}
-		$_SESSION["sex"]  = $sex;
-		$_SESSION["want"] = $search;
+		$_SESSION['sex']  = $sex;
+		$_SESSION['want'] = $search;
 		header("Location: https://$site/pages/chat.php");
 	break;
 
@@ -217,10 +217,21 @@ switch($_POST['do']){
 		if(empty($_SESSION['want']) || empty($_SESSION['sex'])){
 			die;
 		}
-		$query = $db->prepare("SELECT * FROM `chat_talks` WHERE (`one` = :sess OR `two` =:sess) AND `status` = 0");
+		$xflag = false;
+		$query = $db->prepare('SELECT * FROM `chat_talks` WHERE `one` = :sess AND `status` = 0');
 		$query->bindParam(':sess', $sid);
 		$query->execute();
 		if($query->rowCount() == 1){
+			$xflag = true;
+		}else{
+			$query = $db->prepare('SELECT * FROM `chat_talks` WHERE `two` = :sess AND `status` = 0');
+			$query->bindParam(':sess', $sid);
+			$query->execute();
+			if($query->rowCount() == 1){
+				$xflag = true;
+			}
+		}
+		if($xflag){
 			$row = $query->fetch();
 			$_SESSION['idt'] = $row['idt'];
 			if($cache->get('hello'.$sid.$_SESSION['idt']) == 1){
@@ -232,7 +243,7 @@ switch($_POST['do']){
 			if($cache->get('an.'.$j) == 1){ // Не показываем пол собеседника
 				die(json_encode(['status' => 'find', 'mes' => "Собеседник найден! Общайтесь!<br/>"]));
 			}
-			$query = $db->prepare("SELECT * FROM `chat_sessions` WHERE `sess` = :sess");
+			$query = $db->prepare('SELECT * FROM `chat_sessions` WHERE `sess` = :sess');
 			$query->bindParam(':sess', $j);
 			$query->execute();
 			$row = $query->fetch();
@@ -244,13 +255,13 @@ switch($_POST['do']){
 			die(json_encode(['status' => 'find', 'mes' => "$sex. Общайтесь!<br/>"]));
 		}
 		
-		$query = $db->prepare("UPDATE `chat_sessions` SET `status` = '0' WHERE `sess` = :sess");
+		$query = $db->prepare('UPDATE `chat_sessions` SET `status` = \'0\' WHERE `sess` = :sess');
 		$query->bindParam(':sess', $sid);
 		$query->execute();
 		$timeout = $time-30;
-		$sql = "SELECT * FROM `chat_sessions` WHERE `status` = '0' AND `sess` != :sess AND `ping` > :time"; // default want 3
+		$sql = 'SELECT * FROM `chat_sessions` WHERE `status` = \'0\' AND `sess` != :sess AND `ping` > :time'; // default want 3
 		if($_SESSION["want"] != 3){
-			$sql .= " AND `sex` = :want AND `search` = :sex";
+			$sql .= ' AND `sex` = :want AND `search` = :sex';
 		}
 		$query = $db->prepare($sql);
 		$query->bindParam(':sess', $sid);
@@ -264,23 +275,23 @@ switch($_POST['do']){
 			if($cache->get('ban'.$sid.$row['sess']) == '1' || $cache->get('ban'.$row['sess'].$sid) == '1'){ // Проверка на бан.
 				continue;
 			}
-			$tmp = $db->prepare("SELECT * FROM `chat_sessions` WHERE `sess` = :sess AND `status` = '0'"); 
+			$tmp = $db->prepare('SELECT * FROM `chat_sessions` WHERE `sess` = :sess AND `status` = \'0\''); 
 			$tmp->bindParam(':sess', $row['sess']);
 			$tmp->execute();
 			if($tmp->rowCount() != 1){ // Возможно уже нашел собеседника?
 				continue;
 			}
-			$tmp = $db->prepare("INSERT INTO `chat_talks` (`one`, `two`, `start`) VALUES (:one, :two, :time)");
+			$tmp = $db->prepare('INSERT INTO `chat_talks` (`one`, `two`, `start`) VALUES (:one, :two, :time)');
 			$tmp->bindParam(':one', $sid);
 			$tmp->bindParam(':two', $row['sess']);
 			$tmp->bindParam(':time', $time);
 			$tmp->execute();
 			
-			$tmp = $db->prepare("UPDATE `chat_sessions` SET `status` = '1' WHERE `sess` = :one");
+			$tmp = $db->prepare('UPDATE `chat_sessions` SET `status` = \'1\' WHERE `sess` = :one');
 			$tmp->bindParam(':one', $sid);
 			$tmp->execute();
 
-			$tmp = $db->prepare("UPDATE `chat_sessions` SET `status` = '1' WHERE `sess` = :two");
+			$tmp = $db->prepare('UPDATE `chat_sessions` SET `status` = \'1\' WHERE `sess` = :two');
 			$tmp->bindParam(':two', $row['sess']);
 			$tmp->execute();
 			break; // Как нашли, завершаем цикл
