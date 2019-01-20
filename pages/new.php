@@ -30,7 +30,7 @@ $var['page'] = 'new';
 			<div class="clear"></div>	
 		</div>
 		<div class="clear"></div>
-		<div class="detail_torrent_info" style="height: 540px;">
+		<div class="detail_torrent_info" style="height: 511px;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" required="">
 			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
 			<input id="nYear" class="form-control" style="margin-top: 6px;" type="text" placeholder="Год выхода: 2018" required="">
@@ -61,7 +61,15 @@ $var['page'] = 'new';
 				<option value="2">Скрыт</option>
 			</select>
 			<input id="nMoon" class="form-control" style="margin-top: 7px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." required="">
-			<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: none;" rows="4" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ..."></textarea>
+<pre style="margin-top: 7px; max-height: 100px; overflow-y: scroll;">[b]жирный шрифт[/b] => <b>жирный шрифт</b>
+[i]наклонный шрифт[/i] => <i>наклонный шрифт</i>
+[u]подчеркнутый текст[/u] => <u>подчеркнутый текст</u>
+[s]зачеркнутый шрифт[/s] => <s>зачеркнутый шрифт</s><br/>
+[url]http://google.ru[/url] => <a href="http://google.ru" target="_blank">http://google.ru</a>
+[url]https://google.ru[/url] => <a href="https://google.ru" target="_blank">https://google.ru</a><br>
+[url=http://google.ru]google[/url] => <a href="http://google.ru" target="_blank"> google</a>
+[url=https://google.ru]google[/url] => <a href="https://google.ru" target="_blank">google</a>
+</pre>
 		</div>
 		
 	<div class="detail_torrent_side">
@@ -70,8 +78,15 @@ $var['page'] = 'new';
 		</div>
 	</div>	
 		<div class="clear"></div>
+ 
+<div>	
+	<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: vertical;" rows="10" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ..."></textarea>
+</div>
+
 		<div style="margin-top:10px;"></div>
 </div>
+
+
 
 <div class="news-block">
 	<div class="news-header">

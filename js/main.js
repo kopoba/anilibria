@@ -484,12 +484,13 @@ $(document).on('click', '[data-xrelease-edit]', function(e){
 		$('div#emptyHeader').hide();
 		$('div#xreleaseEdit').show();
 		$('div#editHeader').show();
-		
+		$('div#xreleaseDesc').show();
 		$(".chosen").val(chosenGenre).trigger("chosen:updated.chosen");
 		
 	}else{
 		$('div#xreleaseEdit').hide();
 		$('div#editHeader').hide();
+		$('div#xreleaseDesc').hide();
 		$('div#xreleaseInfo').show();
 		$('div#emptyHeader').show();
 	}
