@@ -40,7 +40,7 @@ a#join-team-link, a#join-team-link:visited {
 
 <div class="news-block">
 	<div class="news-body">	
-		<img alt="apppic1.jpg" src="/img/apppic1.jpg" title="apppic1.jpg" width="840" height="103">
+		<img src="/img/apppic1.jpg" width="840" height="103">
 		<img src="/img/logo.png" width="200" height="200" align="left">
 		<div class="day">AniLibria.TV (версия 2.1.7)</div>
 		<p style="text-align: right;">
@@ -64,7 +64,9 @@ a#join-team-link, a#join-team-link:visited {
 		</p>
 		<div class="day">Скриншоты</div>
 		<p style="text-align: center;">
-			<img alt="001app.jpg" src="/img/001app.jpg" width="230" height="410">&nbsp; <img alt="002app.jpg" src="/img/002app.jpg" width="230" height="410">&nbsp; <img alt="003app.jpg" src="/img/003app.jpg" width="230" height="410">
+			<img src="/img/001app.jpg" width="230" height="410">&nbsp; 
+			<img src="/img/002app.jpg" width="230" height="410">&nbsp; 
+			<img src="/img/003app.jpg" width="230" height="410">
 		</p>
 		<hr/>
 		Внимание! Приложение работает на Android от версии 4.4. На более старых версиях приложение работать не будет! Свои отзывы о приложении оставляйте в комментариях. Спасибо, что выбираете нас!
@@ -73,6 +75,6 @@ a#join-team-link, a#join-team-link:visited {
 	<div style="margin-top:10px;"></div>
 </div>
 
-<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
+<div id="vk_comments" style="margin-top: 15px;"></div>
 
 <?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

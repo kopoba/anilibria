@@ -1009,13 +1009,12 @@ function showRelease(){
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
 	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
 	if(!file_exists($poster)){
-		$page = str_replace('{img}', '/upload/release/350x500/default.jpg', $page);
-		$var['og'] .= "<meta property='og:image' content='/upload/release/350x500/default.jpg' />";
+		$tmpImg = '/upload/release/350x500/default.jpg';
 	}else{
 		$tmpImg = fileTime($poster);
-		$page = str_replace('{img}', $tmpImg, $page);
-		$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
 	}
+	$page = str_replace('{img}', $tmpImg, $page);
+	$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
 	$page = str_replace('{favorites}', '', $page);
 	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');
 	$query->bindParam(':id', $release['id']);
@@ -1196,8 +1195,9 @@ function auth_history(){ // test it
 
 function footerJS(){
 	global $var, $user, $conf; $result = '';
-	$tmplJS =  '<script src="{url}"></script>';
-	$tmplCSS =  '<link rel="stylesheet" type="text/css" href="{url}" />';
+	$tmplJS = '<script src="{url}"></script>';
+	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 5, {page} attach: false});" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 
@@ -1221,6 +1221,7 @@ function footerJS(){
 			$result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
 			$result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
 			$result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
+			$result .= str_replace('{page}', '', $vk);
 		case 'catalog':
 			$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
 			$result .= str_replace('{url}', fileTime('/css/simplePagination.css'), $tmplCSS);
@@ -1246,6 +1247,13 @@ function footerJS(){
 			}
 			unset($tmp);
 			$result .= wsInfo($var['release']['name']);
+			$result .= str_replace('{page}', '', $vk);
+		break;
+		case 'app':
+		case 'request':
+		case 'links':
+		case 'donate':
+			$result .= str_replace('{page}', '', $vk);
 		break;
 		case 'chat':
 			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){

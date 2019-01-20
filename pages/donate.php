@@ -8,7 +8,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 $var['title'] = 'Поддержать проект';
-$var['page'] = 'app';
+$var['page'] = 'donate';
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
@@ -49,6 +49,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div style="margin-top:10px;"></div>
 </div>
 
-<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
+<div id="vk_comments" style="margin-top: 15px;"></div>
 
 <?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

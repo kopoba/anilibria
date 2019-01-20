@@ -26,7 +26,7 @@
 				
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>	
-				<a href="https://pushall.ru/?fs=943"><img src="/img/test1.png"></a>
+				<a href="https://t.me/anilibria_tv"><img src="/img/test1.png"></a>
 			</div>
 			
 		</div>

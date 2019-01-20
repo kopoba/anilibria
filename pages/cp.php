@@ -70,7 +70,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/<?php echo $tmpAvatar; ?>" id="profile-avatar" alt="" width="150" height="150"></a>
 			</div>
 			<div class="user-status">
-				Зритель<br/>
+				<?php echo $var['group'][$user['access']]; ?><br/>
 				Сообщений: -
 			</div>
 		</div>

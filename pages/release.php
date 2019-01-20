@@ -37,7 +37,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <div class="light-off"></div>
 
 <?php echo $tmpPage; ?>
-<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
+<div id="vk_comments" style="margin-top: 15px;"></div>
 
 <div class="modal fade" id="statModal" tabindex="-1" role="dialog" aria-hidden="true" >
 	<div class="modal-dialog" style="width: 480px;">

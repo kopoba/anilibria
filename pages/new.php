@@ -100,6 +100,6 @@ $var['page'] = 'new';
 	<div style="margin-top:10px;"></div>
 </div>
 
-<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
+<div id="vk_comments" style="margin-top: 15px;"></div>
 
 <?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>

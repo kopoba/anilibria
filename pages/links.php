@@ -9,7 +9,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 $var['title'] = 'Ссылки';
 
-$var['page'] = 'app';
+$var['page'] = 'links';
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
@@ -25,6 +25,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div style="margin-top:10px;"></div>
 </div>
 
-<?php echo str_replace('{page}', '', getTemplate('vk')); ?>
+<div id="vk_comments" style="margin-top: 15px;"></div>
 
 <?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
