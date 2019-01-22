@@ -34,7 +34,12 @@ body {
 	word-wrap: break-word;
 	margin-top: 15px;
 	background-color: #fff;
-	padding: 10px 20px;
+	padding: 10px 20px;	
+}
+
+.supertest {
+	width: 380px;
+	float: left;
 }
 
 .news-body {

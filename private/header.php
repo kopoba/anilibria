@@ -31,3 +31,4 @@
 						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
+

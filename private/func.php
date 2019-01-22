@@ -1404,7 +1404,7 @@ function youtubeGetImage($id){
 		$data = fopen($remote, 'rb');
 		$img = new Imagick();
 		$img->readImageFile($data);
-		$img->resizeImage(840,400,Imagick::FILTER_LANCZOS, 1, false);
+		$img->resizeImage(435,245,Imagick::FILTER_LANCZOS, 1, true);
 		$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 		$img->setImageCompressionQuality(85);
 		$img->stripImage();
@@ -1417,43 +1417,90 @@ function youtubeGetImage($id){
 }
 
 function updateYoutube(){
-	global $db, $conf;
-	$data = [];
-	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=5&key={$conf['youtube_secret']}"), true);
-	$arr['items'] = array_reverse($arr['items']);
-	foreach($arr['items'] as $key => $val){
-		if(empty($val['id']['videoId'])){
-			continue;
-		}
-		$query = $db->prepare('SELECT `id` FROM `youtube` WHERE `vid` = :vid');
-		$query->bindParam(':vid', $val['id']['videoId']);
-		$query->execute();
-		if($query->rowCount() == 1){
-			continue;
-		}
-		$val['snippet']['title'] = htmlspecialchars($val['snippet']['title'], ENT_QUOTES, 'UTF-8');
-		$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`) VALUES (:title, :vid)');
-		$query->bindParam(':title', $val['snippet']['title']);
-		$query->bindParam(':vid', $val['id']['videoId']);
-		$query->execute();
-		youtubeGetImage($val['id']['videoId']);
-	}	
+	function saveYoutube($arr, $type){
+		global $db;
+		$arr['items'] = array_reverse($arr['items']);
+		foreach($arr['items'] as $val){
+			if($type == 1){
+				if(empty($val['id']['videoId'])){
+					continue;
+				}
+				$id = $val['id']['videoId'];
+			}
+			if($type == 2){
+				if(empty($val['snippet']['resourceId']['videoId'])){
+					continue;
+				}
+				$id = $val['snippet']['resourceId']['videoId'];
+			}
+			
+			$query = $db->prepare('SELECT `id` FROM `youtube` WHERE `vid` = :vid');
+			$query->bindParam(':vid', $id);
+			$query->execute();
+			if($query->rowCount() == 1){
+				continue;
+			}
+			$val['snippet']['title'] = htmlspecialchars($val['snippet']['title'], ENT_QUOTES, 'UTF-8');
+			$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`, `type`) VALUES (:title, :vid, :type)');
+			$query->bindParam(':title', $val['snippet']['title']);
+			$query->bindParam(':vid', $id);
+			$query->bindParam(':type', $type);
+			$query->execute();
+			youtubeGetImage($id);
+		}	
+	}
+	global $conf;
+	
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId={$conf['youtube_playlist']}&key={$conf['youtube_secret']}"), true);
+	saveYoutube($arr, 2); // playlist
+	
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=50&key={$conf['youtube_secret']}"), true);
+	saveYoutube($arr, 1); // video
 }
 
 function youtubeShow(){
-	global $db;
+	global $db; $i = 0; $arr = []; $result = '';
+	
+	$tmpl = '<td><a href="{url}"><img src="{img}" alt="{alt}" height="245" style="{style}"></a></td>';
+	
 	$result = '';
-	$query = $db->query('SELECT `title`, `vid`, `comment`, `view` FROM `youtube` ORDER BY `id` DESC  LIMIT 4');
+	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'1\' ORDER BY `id` DESC  LIMIT 12');
 	$query->execute();
 	while($row = $query->fetch()){
-		$youtube = getTemplate('youtube');
-		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$row['vid']}", $youtube);
-		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg', $youtube);
-		$youtube = str_replace('{alt}', $row['title'], $youtube);
-		$youtube = str_replace('{comment}', $row['comment'], $youtube);
-		$youtube = str_replace('{view}', $row['view'], $youtube);
-		$result .= $youtube;
+		$arr1[] = $row['vid'];
+	}
+	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'2\' ORDER BY `id` DESC  LIMIT 12');
+	$query->execute();
+	while($row = $query->fetch()){
+		$arr2[] = $row['vid'];
+	}
+	$arr1 = array_slice($arr1, 0, count($arr2));
+	foreach($arr1 as $k => $v){
+		$data[] = $arr2["$k"];
+		$data[] = $v;
+		if(count($data) == 12){
+			break;
+		}
+	}
+	$i = 0;
+	foreach($data as $v){
+		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v=$v", $tmpl);
+		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $v).'.jpg', $youtube);
+		$arr["$i"][] = $youtube;
+		if(count($arr[$i]) == 2){
+			$i++;
+		}
 		unset($youtube);
+	}
+	if(!empty($arr)){
+		foreach($arr as $key => $val){
+			$tmp = '<tr>';	
+			foreach($val as $k => $v){
+				$tmp .= $v;
+			}
+			$tmp .= '</tr>';		
+			$result .= $tmp;
+		}	
 	}
 	return $result;
 }
@@ -1675,8 +1722,14 @@ function xSearch(){
 }
 
 function showPosters(){
-	global $db; $result = '';
-	$query = $db->query('SELECT `id`, `name`, `ename`, `code` FROM `xrelease` ORDER BY `last` DESC LIMIT 5');
+	global $db, $var; $result = '';
+	
+	switch($var['page']){
+		case 'main': $limit = 4; break;
+		default: $limit = 5; break;
+	}
+	
+	$query = $db->query('SELECT `id`, `name`, `ename`, `code` FROM `xrelease` ORDER BY `last` DESC LIMIT '.$limit);
 	while($row=$query->fetch()){	
 		$img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
 		if(!$img){

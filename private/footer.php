@@ -25,8 +25,7 @@
 				</div>	
 				
 				<div class="clear"></div>
-				<?php echo showPosters(); ?>	
-				<a href="https://t.me/anilibria_tv"><img src="/img/test1.png"></a>
+				<?php echo showPosters(); ?>
 			</div>
 			
 		</div>
