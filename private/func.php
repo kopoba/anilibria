@@ -1441,9 +1441,11 @@ function updateYoutube(){
 				continue;
 			}
 			$val['snippet']['title'] = htmlspecialchars($val['snippet']['title'], ENT_QUOTES, 'UTF-8');
-			$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`, `type`) VALUES (:title, :vid, :type)');
+			$time = strtotime($val['snippet']['publishedAt']);
+			$query = $db->prepare('INSERT INTO `youtube` (`title`, `vid`, `time`, `type`) VALUES (:title, :vid, :time, :type)');
 			$query->bindParam(':title', $val['snippet']['title']);
 			$query->bindParam(':vid', $id);
+			$query->bindParam(':time', $time);
 			$query->bindParam(':type', $type);
 			$query->execute();
 			youtubeGetImage($id);
@@ -1464,12 +1466,12 @@ function youtubeShow(){
 	$tmpl = '<td><a href="{url}"><img src="{img}" alt="{alt}" height="245" style="{style}"></a></td>';
 	
 	$result = '';
-	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'1\' ORDER BY `id` DESC  LIMIT 12');
+	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'1\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
 	while($row = $query->fetch()){
 		$arr1[] = $row['vid'];
 	}
-	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'2\' ORDER BY `id` DESC  LIMIT 12');
+	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'2\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
 	while($row = $query->fetch()){
 		$arr2[] = $row['vid'];
