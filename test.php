@@ -1,7 +1,22 @@
+<style>
+    body{
+        margin: 0;
+    }
+    .code{
+        font-family: monospace;
+        background: hsla(0, 0%, 0%, 0.05);
+        padding: 1em
+    }
+    pre{
+        margin: 0;
+    }
+</style>
+
+
 <?php
 require($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/init/memcache.php');
-
+    
 function sendApi($url, $data, $cookie = ''){
 	$options = [
 		'http' => [
@@ -22,7 +37,7 @@ function auth(){
 	$result = $cache->get('testAuth');
 	if($result === false){
 		$result = sendApi(
-			'https://dev.anilibria.tv/public/login.php', 
+			'https://test.anilibria.tv/public/login.php', 
 			[
 				'mail' => 'poiuty@lepus.su',
 				'passwd' => '~VBHHOPx',
@@ -43,14 +58,16 @@ function simpleSend($url, $data){
 }
 
 function testPrint($url, $data){
-    echo '<div style="font-family:monospace;">'
-        .'<b>'.$url.'</b><br>'
+    echo '<div class="code">'
+        .'<b>'.$url.' : '.json_encode($data).'</b><br>'
+        .'<pre>'
         .simpleSend($url, $data)
+        .'</pre>'
         .'</div><br><br>'.PHP_EOL;
 }
 
 testPrint(
-	'https://dev.anilibria.tv/public/catalog.php', 
+	'https://test.anilibria.tv/public/catalog.php', 
 	[
 		'page' => '1', // num page
 		'genre' => 'комендия,магия',
@@ -61,7 +78,7 @@ testPrint(
 );
 
 testPrint(
-	'https://dev.anilibria.tv/public/search.php', 
+	'https://test.anilibria.tv/public/search.php', 
 	[
 		'search' => 'наруто',
 		'json' => ''
@@ -69,7 +86,7 @@ testPrint(
 );
 
 testPrint(
-	'https://dev.anilibria.tv/public/api/index.php', 
+	'https://test.anilibria.tv/public/api/index.php', 
 	[
 		'query' => 'torrent',
 		'id' => '1202, 473',
@@ -77,16 +94,16 @@ testPrint(
 );
 
 testPrint(
-	'https://dev.anilibria.tv/public/api/index.php', 
+	'https://test.anilibria.tv/public/api/index.php', 
 	[
 		'query' => 'info',
 		'id' => '1202, 473',
-		'filter' => 'name,torrent', // show only
+		//'filter' => 'name,torrent', // show only
 	]
 );
 
 testPrint(
-	'https://dev.anilibria.tv/public/api/index.php', 
+	'https://test.anilibria.tv/public/api/index.php', 
 	[
 		'query' => 'info',
 		'id' => '1202, 473',
@@ -96,19 +113,28 @@ testPrint(
 );
 
 testPrint(
-	'https://dev.anilibria.tv/public/api/favorite.php', 
+	'https://test.anilibria.tv/public/api/favorite.php', 
 	[]
 );
 
 // add and remove favorite (first send add, second remove)
 testPrint(
-	'https://dev.anilibria.tv/public/favorites.php', 
+	'https://test.anilibria.tv/public/favorites.php', 
 	[
-		'rid' => '8055' 
+		'rid' => '1202' 
 	]
 );
 
 testPrint(
-	'https://dev.anilibria.tv/public/api/youtube.php', 
+	'https://test.anilibria.tv/public/api/youtube.php', 
 	[]
+);
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+		'query' => 'list',
+        'page' => '1',
+        'perPage' => '3'
+	]
 );

@@ -2016,40 +2016,86 @@ function countRating(){
 }
 
 function apiInfo(){
-	global $db, $cache;
-	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `type`, `status`, `code` FROM `xrelease` WHERE `status` != 3');
+	global $db, $cache, $user;
+	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
 	while($row=$query->fetch()){
+        
+        $names = [];
+        $firstName = trim($row['name']);
+        $secondName = trim($row['ename']);
+        if(!empty($firstName)){
+            $names[] = $firstName;
+        }
+        if(!empty($secondName)){
+            $names[] = $secondName;
+        }
+        
+        $poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$row['id'].'.jpg';
+        if(!file_exists($poster)){
+            $poster = '/upload/release/270x390/default.jpg';
+        }else{
+            $poster = fileTime($poster);
+        }
+        
+        $posterFull = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$row['id'].'.jpg';
+        if(!file_exists($poster)){
+            $posterFull = '/upload/release/350x500/default.jpg';
+        }else{
+            $posterFull = fileTime($poster);
+        }
+        
+        $genres = [];
+        $genresTmp = array_unique(explode(',', $row['genre']));
+        foreach($genresTmp as $genre){
+            $genres[] = trim($genre);
+        }
+        
+        $voices = [];
+        $voicesTmp = array_unique(explode(',', $row['voice']));
+        foreach($voicesTmp as $voice){
+            $voices[] = trim($voice);
+        }
+        
 		$info[$row['id']] = [
-			'rid' => $row['id'],
-			'name' => [
-				base64_encode($row['name']),
-				$row['ename']
-			], 
-			'rating' => $row['rating'], 
+			'id' => intval($row['id']),
+			'code' => $row['code'],
+			'names' => $names, 
+            'poster' => $poster,
+            'posterFull' => $posterFull,
+			'favorite' => [
+                'rating' => intval($row['rating']),
+                'added' => isFavorite($user['id'], $row['id'])
+            ], 
 			'last' => $row['last'],
 			'moon' => $row['moonplayer'],
 			'status' => $row['status'],
-			'type' => base64_encode($row['type']),
-			'genre' => base64_encode($row['genre']),
+			'type' => $row['type'],
+			'genres' => $genres,
+			'voices' => $voices,
 			'year' => $row['year'],
 			'day' => $row['day'],
 			'description' => base64_encode($row['description']),
-			'code' => $row['code']
+            //Для блокировки релизов
+            'blockedInfo' => [
+                'blocked' => FALSE,
+                'reason' => NULL
+            ]
 		];
+        
 		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
 		$tmp->bindParam(':rid', $row['id']);
 		$tmp->execute();
 		while($xrow=$tmp->fetch()){
 			$data = json_decode($xrow['info'], true);
 			$torrent[$row['id']][] = [
-				'fid' => $xrow['fid'],
+				'id' => intval($xrow['fid']),
 				'hash' => unpack('H*', $xrow['info_hash'])['1'],
-				'leechers' => $xrow['leechers'],
-				'seeders' => $xrow['seeders'],
-				'completed' => $xrow['completed'],
+				'leechers' => intval($xrow['leechers']),
+				'seeders' => intval($xrow['seeders']),
+				'completed' => intval($xrow['completed']),
 				'quality' => $data['0'],
 				'series' => $data['1'],
-				'size' => $data['2']
+				'size' => intval($data['2'])
 			];
 		}
 	}
@@ -2062,6 +2108,8 @@ function apiInfo(){
 }
 
 function apiList(){
+    //only for testing
+    apiInfo();
 	global $cache; $result = [];
 	$count = $cache->get('apiInfo');
 	$torrent = json_decode($cache->get('apiTorrent'), true);
@@ -2078,31 +2126,81 @@ function apiList(){
 		die('no query isset');
 	}
 	function apiEcho($a){
-		die(json_encode($a));
+        //only for testing
+		die(json_encode($a, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+		//die(json_encode($a));
 	}
-	function apiGetTorrent($torrent, $id){
+	function apiGetTorrentsMap($torrents, $idsString){
 		$result = [];
-		$list = array_unique(explode(',', $id));
-		if(!empty($list)){
-			foreach($list as $val){
-				if(array_key_exists($val, $torrent)){
-					$result["$val"] = $torrent["$val"];
+		$ids = array_unique(explode(',', $idsString));
+		if(!empty($ids)){
+			foreach($ids as $id){
+				if(array_key_exists($id, $torrents)){
+					$result["$id"] = $torrents["$id"];
 				}
 			}
 		}
 		return $result;
 	}
-	function apiGetInfo($info, $torrent){
-		$result = []; $list = ''; 
-		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
-		if(!empty($_POST['id'])){
-			$list = array_unique(explode(',', $_POST['id']));
+    
+    function apiGetTorrentsList($torrents, $id){
+        if(array_key_exists($id, $torrents)){
+            return $torrents["$id"];
+        }
+		return [];
+	}
+
+	function apiGetReleasesById($info, $torrent, $rid){
+        $releases = [];
+        $list = '';
+		if(!empty($rid)){
+			$list = array_unique(explode(',', $rid));
 		}
-		foreach($info as $key => $val){
-			if(!empty($list) && !in_array($val['rid'], $list)){
+        foreach($info as $key => $val){
+            if(!empty($list) && !in_array($val['id'], $list)){
 				continue;
 			}
-			$val['torrent'] = apiGetTorrent($torrent, $val['rid']);
+            $releases[] = $val;
+        }
+		return proceedReleases($releases, $torrent);
+	}
+    
+    function apiGetReleases($info, $torrent){
+        $releases = [];
+        $startIndex = 0;
+        $endIndex = 0;
+        $page = 0;
+        $perPage = 10;
+        if(!empty($_POST['page'])){
+            $page = intval($_POST['page']);
+            if($page <= 1){
+                $page = 0;
+            }else{
+                $page = $page - 1;
+            }
+        }
+        
+        if(!empty($_POST['perPage'])){
+            $perPage = intval($_POST['perPage']);
+            if($perPage <= 0){
+                $perPage = 1;
+            }
+        }
+        
+        $startIndex = $perPage * $page;
+        $endIndex = $startIndex + $perPage - 1;
+        
+        $releases = array_slice($info, $startIndex, $perPage);
+        
+        return proceedReleases($releases, $torrent);
+    }
+    
+    function proceedReleases($releases, $torrent){
+		$result = []; 
+		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
+        foreach($releases as $key => $val){
+			
+			$val['torrent'] = apiGetTorrentsList($torrent, $val['id']);
 			if(isset($_POST['filter'])){
 				$filterList = array_unique(explode(',', $_POST['filter']));
 				foreach($filter as $v){
@@ -2120,18 +2218,23 @@ function apiList(){
 			$result[] = $val;
 		}
 		return $result;
-	}
+    }
+    
 	switch($_POST['query']){
 		case 'torrent':
 			if(!empty($_POST['id'])){
-				apiEcho(apiGetTorrent($torrent, $_POST['id']));
+				apiEcho(apiGetTorrentsMap($torrent, $_POST['id']));
 			}else{
 				apiEcho($torrent);
 			}
 		break;
 		case 'info':
-			apiEcho(apiGetInfo($info, $torrent));
+			apiEcho(apiGetReleasesById($info, $torrent, $_POST['id']));
 		break;
+            
+        case 'list':
+            apiEcho(apiGetReleases($info, $torrent));
+        break;
 	}
 }
 
