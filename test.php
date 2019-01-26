@@ -96,6 +96,42 @@ testPrint(
 testPrint(
 	'https://test.anilibria.tv/public/api/index.php', 
 	[
+		'query' => 'release',
+		//'id' => '120211111',
+		//'filter' => 'name,torrent', // show only
+	]
+);
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+		'query' => 'release',
+		'id' => '120211111',
+		//'filter' => 'name,torrent', // show only
+	]
+);
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+		'query' => 'release',
+		'id' => '1202',
+		//'filter' => 'name,torrent', // show only
+	]
+);
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+		'query' => 'release',
+		'code' => 'sakurako-san-no-ashimoto-ni-wa-shitai-ga-umatteiru',
+		//'filter' => 'name,torrent', // show only
+	]
+);
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
 		'query' => 'info',
 		'id' => '1202, 473',
 		//'filter' => 'name,torrent', // show only

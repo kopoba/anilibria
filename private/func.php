@@ -2041,7 +2041,7 @@ function apiInfo(){
         if(!file_exists($poster)){
             $posterFull = '/upload/release/350x500/default.jpg';
         }else{
-            $posterFull = fileTime($poster);
+            $posterFull = fileTime($posterFull);
         }
         
         $genres = [];
@@ -2060,6 +2060,7 @@ function apiInfo(){
 			'id' => intval($row['id']),
 			'code' => $row['code'],
 			'names' => $names, 
+            'series' => NULL,
             'poster' => $poster,
             'posterFull' => $posterFull,
 			'favorite' => [
@@ -2074,12 +2075,13 @@ function apiInfo(){
 			'voices' => $voices,
 			'year' => $row['year'],
 			'day' => $row['day'],
-			'description' => base64_encode($row['description']),
+			'description' => $row['description'],
             //Для блокировки релизов
             'blockedInfo' => [
                 'blocked' => FALSE,
                 'reason' => NULL
-            ]
+            ],
+            'playlist' => getApiReleaseVideo($row['id'])
 		];
         
 		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
@@ -2087,6 +2089,12 @@ function apiInfo(){
 		$tmp->execute();
 		while($xrow=$tmp->fetch()){
 			$data = json_decode($xrow['info'], true);
+            $link = NULL;
+            if($user){
+				$link = "/public/torrent/download.php?id={$xrow['fid']}";
+			}else{
+				$link = "/upload/torrents/{$xrow['fid']}.torrent";
+			}
 			$torrent[$row['id']][] = [
 				'id' => intval($xrow['fid']),
 				'hash' => unpack('H*', $xrow['info_hash'])['1'],
@@ -2095,7 +2103,8 @@ function apiInfo(){
 				'completed' => intval($xrow['completed']),
 				'quality' => $data['0'],
 				'series' => $data['1'],
-				'size' => intval($data['2'])
+				'size' => intval($data['2']),
+                'url' => $link
 			];
 		}
 	}
@@ -2107,9 +2116,109 @@ function apiInfo(){
 	$cache->set('apiTorrent', json_encode($torrent), 300);
 }
 
+function getApiReleaseVideo($id){
+	global $conf;
+	$playlist = [];
+	$episodesSrc = getRemote($conf['nginx_domain'].'/?id='.$id, 'video'.$id);
+	if($episodesSrc){
+		$episodesArr = json_decode($episodesSrc, true);
+		if(!empty($episodesArr) && !empty($episodesArr['updated'])){
+			unset($episodesArr['updated']);
+			foreach($episodesArr as $key => $episodeSrc) {
+				$download = '';
+				if(!empty($episode['file'])){
+					$download = mp4_link($episodeSrc['file'].'.mp4');
+				}
+                $episode = [
+                    "id" => $key,
+                    "title" => "Серия $key",
+                    "sd" => "https:${episodeSrc['sd']}",
+                    "hd" => "https:${episodeSrc['hd']}"
+                ];
+                if(!empty($episode['file'])){
+					$episode['srcSd'] = mp4_link($episodeSrc['file'].'.mp4');
+				}
+                $playlist[] = $episode;
+			}
+		}
+	}
+	return $playlist;
+}
+
+class ApiResponse {
+    private $status = FALSE;
+    private $data = NULL;
+    private $error = NULL;
+    
+    public function proceed($func){
+        try {
+            $data = $func();
+            $this->success($data);
+        } catch(ApiException $e) {
+            $this->error(
+                $e->getMessage(),
+                $e->getCode(),
+                $e->getDescription()
+            );
+        } catch(Exception $e) {
+            $this->error(
+                $e->getMessage(),
+                $e->getCode()
+            );
+        } finally {   
+            return $this->build();
+        }
+    }
+    
+    public function success($data) {
+        $this->status = TRUE;
+        $this->error = NULL;
+        $this->data = $data;
+        return $this->build();
+    }
+    
+    public function error($message = "Default API error", $code = 400, $description = NULL) {
+        $this->status = FALSE;
+        $this->data = NULL;
+        $this->error = [
+            'code' => $code,
+            'message' => $message,
+            'description' => $description
+        ];
+        return $this->build();
+    }
+    
+    private function build(){
+        return [
+            'status' => $this->status,
+            'data' => $this->data,
+            'error' => $this->error
+        ];
+    }
+}
+
+class ApiException extends \Exception {
+    protected $description = NULL;
+    
+    public function __construct($message = "Default API error", $code = 400, $description = NULL){
+        parent::__construct($message, $code);
+        $this->description = $description;
+    }
+    
+    public function getDescription() { return $this->description; }
+}
+
+function safeApiList(){
+    $response = (new ApiResponse()) -> proceed(function() {
+        return apiList();
+    });
+    die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+}
+
 function apiList(){
     //only for testing
-    apiInfo();
+    //apiInfo();
+    
 	global $cache; $result = [];
 	$count = $cache->get('apiInfo');
 	$torrent = json_decode($cache->get('apiTorrent'), true);
@@ -2119,17 +2228,15 @@ function apiList(){
 			$info["$k"] = $v; 
 		}
 	}
+    
 	if($info === false || $torrent === false){
-		die('api not ready');
+        throw new ApiException('API is not ready', 400);
 	}
+    
 	if(!isset($_POST['query'])){
-		die('no query isset');
+        throw new ApiException('No query', 400);
 	}
-	function apiEcho($a){
-        //only for testing
-		die(json_encode($a, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-		//die(json_encode($a));
-	}
+    
 	function apiGetTorrentsMap($torrents, $idsString){
 		$result = [];
 		$ids = array_unique(explode(',', $idsString));
@@ -2148,6 +2255,24 @@ function apiList(){
             return $torrents["$id"];
         }
 		return [];
+	}
+    
+    function apiGetReleaseById($info, $torrent, $rid) {
+        if(array_key_exists($rid, $info)){
+            $releases = array($info[$rid]);
+            return proceedReleases($releases, $torrent)[0];
+        }
+		throw new ApiException("Release by id=$rid not found", 404);
+	}
+    
+    function apiGetReleaseByCode($info, $torrent, $rcode) {
+        foreach($info as $key => $val){
+            if($val['code'] == $rcode){
+                $releases = array($val);
+				return proceedReleases($releases, $torrent)[0];
+			}
+        }
+		throw new ApiException("Release by code=$rcode not found", 404);
 	}
 
 	function apiGetReleasesById($info, $torrent, $rid){
@@ -2191,8 +2316,18 @@ function apiList(){
         $endIndex = $startIndex + $perPage - 1;
         
         $releases = array_slice($info, $startIndex, $perPage);
+        $items = proceedReleases($releases, $torrent);
+        $pagination = [
+            'page' => $page,
+            'perPage' => $perPage,
+            'allPages' => intval(count($info) / $perPage),
+            'allItems' => count($info)
+        ];
         
-        return proceedReleases($releases, $torrent);
+        return [
+            'items' => $items,
+            'pagination' => $pagination
+        ];
     }
     
     function proceedReleases($releases, $torrent){
@@ -2200,7 +2335,7 @@ function apiList(){
 		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
         foreach($releases as $key => $val){
 			
-			$val['torrent'] = apiGetTorrentsList($torrent, $val['id']);
+			$val['torrents'] = apiGetTorrentsList($torrent, $val['id']);
 			if(isset($_POST['filter'])){
 				$filterList = array_unique(explode(',', $_POST['filter']));
 				foreach($filter as $v){
@@ -2223,19 +2358,31 @@ function apiList(){
 	switch($_POST['query']){
 		case 'torrent':
 			if(!empty($_POST['id'])){
-				apiEcho(apiGetTorrentsMap($torrent, $_POST['id']));
+				return apiGetTorrentsMap($torrent, $_POST['id']);
 			}else{
-				apiEcho($torrent);
+				return $torrent;
 			}
 		break;
 		case 'info':
-			apiEcho(apiGetReleasesById($info, $torrent, $_POST['id']));
+			return apiGetReleasesById($info, $torrent, $_POST['id']);
 		break;
             
+        case 'release':
+            if(!empty($_POST['id'])){
+                return apiGetReleaseById($info, $torrent, $_POST['id']);
+            } elseif(!empty($_POST['code'])) {
+                return apiGetReleaseByCode($info, $torrent, $_POST['code']);
+            } else {
+                throw new ApiException("No id or code for release", 400);
+            }
+        break;
+            
         case 'list':
-            apiEcho(apiGetReleases($info, $torrent));
+            return apiGetReleases($info, $torrent);
         break;
 	}
+    //Вместо default case
+    throw ApiException("Unknown query", 400);
 }
 
 function sendHH(){
