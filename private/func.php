@@ -2056,11 +2056,35 @@ function apiInfo(){
             $voices[] = trim($voice);
         }
         
+        $playlist = getApiReleaseVideo($row['id']);
+        
+        $series = NULL;
+        $minId = PHP_INT_MAX;
+        $maxId = PHP_INT_MIN;
+        foreach($playlist as $episode) {
+            $id = intval($episode['id']);
+            if($id > $maxId) {
+                $maxId = $id;
+            }
+            if($id < $minId) {
+                $minId = $id;
+            }
+        }
+        
+        if ($minId == PHP_INT_MAX && $maxId == PHP_INT_MIN){
+            $series = NULL;
+        } elseif ($minId == $maxId){
+            $minId = max($minId, 1);
+            $series = "$minId";
+        } else {
+            $series = "$minId-$maxId";
+        }
+        
 		$info[$row['id']] = [
 			'id' => intval($row['id']),
 			'code' => $row['code'],
 			'names' => $names, 
-            'series' => NULL,
+            'series' => $series,
             'poster' => $poster,
             'posterFull' => $posterFull,
 			'favorite' => [
@@ -2081,7 +2105,7 @@ function apiInfo(){
                 'blocked' => FALSE,
                 'reason' => NULL
             ],
-            'playlist' => getApiReleaseVideo($row['id'])
+            'playlist' => $playlist
 		];
         
 		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
@@ -2217,7 +2241,7 @@ function safeApiList(){
 
 function apiList(){
     //only for testing
-    //apiInfo();
+    apiInfo();
     
 	global $cache; $result = [];
 	$count = $cache->get('apiInfo');

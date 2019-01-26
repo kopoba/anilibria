@@ -61,7 +61,7 @@ function testPrint($url, $data){
     echo '<div class="code">'
         .'<b>'.$url.' : '.json_encode($data).'</b><br>'
         .'<pre>'
-        .simpleSend($url, $data)
+        .htmlentities(simpleSend($url, $data))
         .'</pre>'
         .'</div><br><br>'.PHP_EOL;
 }
