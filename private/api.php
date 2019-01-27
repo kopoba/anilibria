@@ -14,7 +14,7 @@ function unsafeApiList() {
 
 function apiList(){
     //only for testing
-    updateApiCache();
+    //updateApiCache();
     
 	global $cache; $result = [];
 	$count = $cache->get('apiInfo');
@@ -87,8 +87,30 @@ function apiList(){
 		return proceedReleases($releases, $torrent);
 	}
     
+    function apiSearchReleases($info, $torrent){
+        return apiGetReleases($info, $torrent);
+    }
+    
     function apiGetReleases($info, $torrent){
-        $releases = [];
+        $pagination = createPagination(count($info));
+        $startIndex = $pagination['startIndex'];
+        $perPage = $pagination['perPage'];
+        $releases = array_slice($info, $startIndex, $perPage);
+        $items = proceedReleases($releases, $torrent);
+        return [
+            'items' => $items,
+            'pagination' => proceedPagination($pagination)
+        ];
+    }
+    
+    function proceedPagination($pagination){
+        unset($pagination['startIndex'], $pagination['endIndex']);
+        $pagination['page'] = $pagination['page'] + 1;
+        $pagination['allPages'] = $pagination['allPages'] + 1;
+        return $pagination;
+    }
+    
+    function createPagination($allItemsCount) {
         $startIndex = 0;
         $endIndex = 0;
         $page = 0;
@@ -111,46 +133,169 @@ function apiList(){
         
         $startIndex = $perPage * $page;
         $endIndex = $startIndex + $perPage - 1;
-        
-        $releases = array_slice($info, $startIndex, $perPage);
-        $items = proceedReleases($releases, $torrent);
-        $pagination = [
+        return [
             'page' => $page,
             'perPage' => $perPage,
-            'allPages' => intval(count($info) / $perPage),
-            'allItems' => count($info)
-        ];
-        
-        return [
-            'items' => $items,
-            'pagination' => $pagination
+            'allPages' => intval($allItemsCount / $perPage),
+            'allItems' => $allItemsCount,
+            'startIndex' => $startIndex,
+            'endIndex' => $endIndex
         ];
     }
     
     function proceedReleases($releases, $torrent){
 		$result = []; 
-		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
+		$filter = ['code', 'names', 'series', 'poster', 'posterFull', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
+
         foreach($releases as $key => $val){
 			
-			$val['torrents'] = apiGetTorrentsList($torrent, $val['id']);
+            $unsettedFileds = [];
 			if(isset($_POST['filter'])){
 				$filterList = array_unique(explode(',', $_POST['filter']));
+                
 				foreach($filter as $v){
 					if(!isset($_POST['rm'])){
 						if(!in_array($v, $filterList)){
+                            $unsettedFileds[] = "$v";
 							unset($val["$v"]);
 						}
 					}else{
 						if(in_array($v, $filterList)){
+                            $unsettedFileds[] = "$v";
 							unset($val["$v"]);
 						}
 					}
 				}
 			}
+            
+            if(!in_array("torrents", $unsettedFileds)) {
+                $val['torrents'] = apiGetTorrentsList($torrent, $val['id']);   
+            }
+            if(!in_array("favorite", $unsettedFileds)) {
+                $val['favorite'] = apiGetFavoriteField($val);
+            }
+            unset($val['rating']);
 			$result[] = $val;
 		}
 		return $result;
     }
+    
+    function apiGetFavoriteField($release){
+        global $user;
+        return [
+            'rating' => intval($release['rating']),
+            'added' => isFavorite($user['id'], $release['id'])
+        ]; 
+    }
+    
+    
+    function apiFavorites($info, $torrent){
+        global $db, $user;
+        $favIds = [];
+        if($user){
+            $query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid');
+            $query->bindParam(':uid', $user['id']);
+            $query->execute();
+            while($row=$query->fetch()){
+                $favIds[] = $row['rid'];
+            }
+        } else {
+            throw new ApiException("No user", 401);
+        }
+        $favReleases = [];
+        foreach($favIds as $favId){
+            if(!array_key_exists("$favId", $info)){
+				continue;
+			}
+            $favReleases["$favId"] = $info["$favId"];
+        }
+        return apiGetReleases($favReleases, $torrent);
+    }
+    
+    function releaseFavoriteAction($info, $torrent){
+        global $db, $user;
+        if(!$user){
+            throw new ApiException("No user", 401);
+        }
+        if(empty($_POST['id'])){
+            throw new ApiException("No release id", 400);
+        }
+        if(empty($_POST['action'])){
+            throw new ApiException("No action", 400);
+        }
+        if(!array_key_exists($_POST['id'], $info)){
+            throw new ApiException("Release not found", 404);
+        }
+        
+        $isFavorite = isFavorite($user['id'], $_POST['id']);
+        
+        switch($_POST['action']){
+            case 'add':
+                if($isFavorite){
+                    throw new ApiException("Already added", 400);
+                }
+                $query = $db->prepare('INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)');
+                $query->bindParam(':uid', $user['id']);
+                $query->bindParam(':rid', $_POST['id']);
+                $query->execute();
+            break;
+                
+            case 'delete':
+                if(!$isFavorite){
+                    throw new ApiException("Already deleted", 400);
+                }
+                $query = $db->prepare('DELETE FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid');
+                $query->bindParam(':uid', $user['id']);
+                $query->bindParam(':rid', $_POST['id']);
+                $query->execute();
+            break;
+        }
+        
+        return apiGetReleaseById($info, $torrent, $_POST['id']);
+    }
+    
+    
+    function apiGetYoutube(){
+        global $db;
+        $countQuery = $db->query('SELECT COUNT(*) FROM `youtube`');
+        $count = intval($countQuery->fetch()[0]);
+        
+        $pagination = createPagination($count);
+        $startIndex = $pagination['startIndex'];
+        $perPage = $pagination['perPage'];
+        
+        $result = [];
+        $query = $db->query("SELECT * FROM `youtube` ORDER BY `time` DESC LIMIT {$startIndex}, {$perPage}");
+        while($row=$query->fetch()){
+            $result[] = [
+                'id' => intval($row['id']),
+                'title' => $row['title'],
+                'image' => '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg',
+                'vid' => $row['vid'],
+                'views' => intval($row['view']),
+                'comments' => intval($row['comment']),
+                'timestamp' => intval($row['time'])
+            ];
+        }
+        
+        
+        return [
+            'items' => $result,
+            'pagination' => proceedPagination($pagination)
+        ];
+    }
+    
+    function apiGetGenres(){
+        global $db; 
+        $result = []; 
+        $query = $db->query('SELECT `name` from `genre`');
+        while($row = $query->fetch()){
+            $result[] = $row['name'];
+        }
+        sort($result);
+        return $result;
+    }
+    
     
 	switch($_POST['query']){
 		case 'torrent':
@@ -160,6 +305,7 @@ function apiList(){
 				return $torrent;
 			}
 		break;
+            
 		case 'info':
 			return apiGetReleasesById($info, $torrent, $_POST['id']);
 		break;
@@ -177,9 +323,39 @@ function apiList(){
         case 'list':
             return apiGetReleases($info, $torrent);
         break;
+            
+        case 'search':
+            return apiSearchReleases($info, $torrent);
+        break;
+            
+        case 'genres':
+            return apiGetGenres();
+        break;
+            
+        case 'favorites':
+            if(!empty($_POST['id'])||!empty($_POST['action'])){
+                return releaseFavoriteAction($info, $torrent);
+            }else{
+                return apiFavorites($info, $torrent);
+            }
+        break;
+            
+        case 'youtube':
+            return apiGetYoutube();
+        break;
 	}
     //Вместо default case
-    throw ApiException("Unknown query", 400);
+    throw new ApiException("Unknown query", 400);
+}
+
+
+function apiUser(){
+	global $db, $user;
+	if($user){
+		$result = $user;
+		unset($result['passwd']);
+		die(json_encode($result));
+	}
 }
 
 function updateApiCache(){
@@ -254,10 +430,7 @@ function updateApiCache(){
             'series' => $series,
             'poster' => $poster,
             'posterFull' => $posterFull,
-			'favorite' => [
-                'rating' => intval($row['rating']),
-                'added' => isFavorite($user['id'], $row['id'])
-            ], 
+            'rating' => $row['rating'],
 			'last' => $row['last'],
 			'moon' => $row['moonplayer'],
 			'status' => $row['status'],

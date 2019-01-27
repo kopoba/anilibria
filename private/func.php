@@ -1705,6 +1705,7 @@ function xSearch(){
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
+    $json = [];
 	foreach($tmp as $k => $v){
 		$query = $db->prepare('SELECT `id`, `name`, `ename` FROM `xrelease` WHERE `id` = :id');
 		$query->bindParam(':id', $v['id']);
@@ -2134,43 +2135,6 @@ function catalogYear(){
 		$cache->set('catalogYear', $result, 300);
 	}
 	return $result;
-}
-
-function apiUser(){
-	global $db, $user;
-	if($user){
-		$result = $user;
-		unset($result['passwd']);
-		die(json_encode($result));
-	}
-}
-
-function apiFavorites(){
-	global $db, $user; $result = [];
-	if($user){
-		$query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid');
-		$query->bindParam(':uid', $user['id']);
-		$query->execute();
-		while($row=$query->fetch()){
-			$result[] = $row['rid'];
-		}
-		die(json_encode($result));
-	}
-}
-
-function apiYoutube(){
-	global $db; $result = [];
-	$query = $db->query('SELECT * FROM `youtube`');
-	while($row=$query->fetch()){
-		$result[] = [
-			'id' => $row['id'],
-			'title' => base64_encode($row['title']),
-			'vid' => $row['vid'],
-			'view' => $row['view'],
-			'comment' => $row['comment']
-		];
-	}
-	die(json_encode($result));
 }
 
 function pushAll($name, $code){

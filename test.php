@@ -66,11 +66,12 @@ function testPrint($url, $data){
         .'</div><br><br>'.PHP_EOL;
 }
 
-testPrint(
+/*testPrint(
 	'https://test.anilibria.tv/public/catalog.php', 
 	[
 		'page' => '1', // num page
 		'genre' => 'комендия,магия',
+		'year' => '2017',
 		'xpage' => 'catalog',
 		'sort' => '2', // 1 new, 2 popular
 		'json' => ''
@@ -81,6 +82,7 @@ testPrint(
 	'https://test.anilibria.tv/public/search.php', 
 	[
 		'search' => 'наруто',
+        'key' => 'genre',
 		'json' => ''
 	]
 );
@@ -146,24 +148,59 @@ testPrint(
 		'filter' => 'description,torrent',
 		'rm' => '' // remove filter
 	]
+);*/
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'favorites',
+        'filter' => 'torrents',
+        'rm' => ''
+    ]
+);
+
+/*testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'favorites',
+        'action' => 'add',
+        'id' => '7471'
+    ]
 );
 
 testPrint(
-	'https://test.anilibria.tv/public/api/favorite.php', 
-	[]
-);
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'favorites',
+        'action' => 'delete',
+        'id' => '7471'
+    ]
+);*/
 
 // add and remove favorite (first send add, second remove)
-testPrint(
+/*testPrint(
 	'https://test.anilibria.tv/public/favorites.php', 
 	[
 		'rid' => '1202' 
 	]
+);*/
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'youtube',
+        'page' => '1',
+        'perPage' => '3'
+    ]
 );
 
 testPrint(
-	'https://test.anilibria.tv/public/api/youtube.php', 
-	[]
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'youtube',
+        'page' => '2',
+        'perPage' => '3'
+    ]
 );
 
 testPrint(
