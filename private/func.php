@@ -51,7 +51,7 @@ function session_hash($login, $passwd, $rand = '', $time = ''){
 }
 
 function _exit(){
-	global $db;
+	global $db, $var;
 	if(session_status() != PHP_SESSION_NONE){
 		if(!empty($_SESSION['sess'])){
 			$query = $db->prepare('DELETE FROM `session` WHERE `hash` = :hash');
@@ -59,7 +59,7 @@ function _exit(){
 			$query->execute();
 		}
 		$params = session_get_cookie_params();
-		setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+		setcookie(session_name(), '', $var['time'] - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
 		session_unset();
 		session_destroy();
 		header("Location: https://".$_SERVER['SERVER_NAME']);	
@@ -538,7 +538,7 @@ function torrent(){
 		if(checkTD('ctime', $val['ctime'])){
 			$ctime = strtotime($val['ctime']);
 		}else{
-			$ctime = time();
+			$ctime = $var['time'];
 		}
 		$ctime = htmlspecialchars($ctime, ENT_QUOTES, 'UTF-8');
 		$val['quality'] = htmlspecialchars($val['quality'], ENT_QUOTES, 'UTF-8');
@@ -596,7 +596,7 @@ function torrent(){
 				$torrent->announce(false);
 				$torrent->announce($conf['torrent_announce']);
 				$torrent->save($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
-				die(json_encode(['err' => 'ok', 'mes' => $var['error']['success'], 'id' => $name, 'size' => formatBytes($size), 'date' => date('d.m.Y', time())]));
+				die(json_encode(['err' => 'ok', 'mes' => $var['error']['success'], 'id' => $name, 'size' => formatBytes($size), 'date' => date('d.m.Y', $var['time'])]));
 			break;
 		}
 	}
@@ -1319,7 +1319,7 @@ function wsInfoShow(){
 
 function mp4_link($value){
 	global $conf, $var;
-	$time = time()+60*60*48;
+	$time = $var['time']+60*60*48;
 	$key = str_replace("=", "", strtr(base64_encode(md5("{$time}/videos/{$value}".$var['ip']." {$conf['nginx_secret']}", true)), "+/", "-_"));
 	$url = htmlspecialchars("{$conf['nginx_domain']}/get/$key/$time/$value", ENT_QUOTES, 'UTF-8');
 	return $url;
@@ -2236,12 +2236,12 @@ function urlCode($id ,$ename){
 }
 
 function catalogYear(){
-	global $sphinx, $cache;
+	global $sphinx, $cache, $var;
 	$result = $cache->get('catalogYear');
 	if($result === false){
 		$result = '';
 		$tmpl = '<option value="{year}">{year}</option>';
-		$arr = array_reverse(range(1990, date('Y', time())));		
+		$arr = array_reverse(range(1990, date('Y', $var['time'])));		
 		foreach($arr as $search){
 			$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
 			$query->bindValue(':search', "@(year) ($search)");
