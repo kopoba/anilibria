@@ -79,13 +79,13 @@ function login(){
 	if(strlen($var['user_agent']) > 256){
 		_message('wrongUserAgent', 'error');
 	}
-	$xlogin = mb_strtolower($_POST['mail']);
+	$_POST['mail'] = mb_strtolower($_POST['mail']);
 	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `mail` = :mail');
-	$query->bindValue(':mail', $xlogin);
+	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0) {
 		$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
-		$query->bindValue(':login', $xlogin);
+		$query->bindValue(':login', $_POST['mail']);
 		$query->execute();
 		if($query->rowCount() == 0) {
 			_message('invalidUser', 'error');
