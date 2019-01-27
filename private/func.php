@@ -83,11 +83,11 @@ function login(){
 	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `mail` = :mail');
 	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
-	if($query->rowCount() == 0){
+	if($query->rowCount() == 0) {
         $query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
         $query->bindValue(':login', $_POST['mail']);
         $query->execute();
-        if($query->rowCount() == 0){
+        if($query->rowCount() == 0) {
             _message('invalidUser', 'error');
         }
 	}
