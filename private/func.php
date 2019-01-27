@@ -84,7 +84,12 @@ function login(){
 	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0){
-		_message('invalidUser', 'error');
+        $query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
+        $query->bindValue(':login', $_POST['mail']);
+        $query->execute();
+        if($query->rowCount() == 0){
+            _message('invalidUser', 'error');
+        }
 	}
 	$row = $query->fetch();
 	if(!empty($row['2fa'])){
