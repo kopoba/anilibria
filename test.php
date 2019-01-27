@@ -43,6 +43,7 @@ function auth(){
 				'passwd' => '~VBHHOPx',
 			]
 		);
+        echo "auth: ".json_encode($result);
 		preg_match("/PHPSESSID=(.*?);/s", $result['1']['5'], $phpsessid);
 		$result = $phpsessid['1'];
 		$cache->set('testAuth', $result, 300);
@@ -65,6 +66,13 @@ function testPrint($url, $data){
         .'</pre>'
         .'</div><br><br>'.PHP_EOL;
 }
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'user'
+    ]
+);
 
 /*testPrint(
 	'https://test.anilibria.tv/public/catalog.php', 

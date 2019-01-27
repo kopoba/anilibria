@@ -51,7 +51,7 @@ function session_hash($login, $passwd, $rand = '', $time = ''){
 }
 
 function _exit(){
-	global $db;
+	global $db, $var;
 	if(session_status() != PHP_SESSION_NONE){
 		if(!empty($_SESSION['sess'])){
 			$query = $db->prepare('DELETE FROM `session` WHERE `hash` = :hash');
@@ -62,7 +62,9 @@ function _exit(){
 		setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
 		session_unset();
 		session_destroy();
-		header("Location: https://".$_SERVER['SERVER_NAME']);	
+		if(strpos($var['user_agent'], 'mobileApp') === false){
+			header("Location: https://".$_SERVER['SERVER_NAME']);
+		}
 	}
 }
 
@@ -261,6 +263,7 @@ function auth(){
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
+			return;
 		}
 		$session = $query->fetch();
 		$query = $db->prepare('SELECT `id`, `login`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
@@ -268,10 +271,12 @@ function auth(){
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
+			return;
 		}
 		$row = $query->fetch();
 		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], substr($session['hash'], 0, 8), $session['time'])[0]){
 			_exit();
+			return;
 		}
 		if($var['time'] > $session['time']){			
 			$hash = session_hash($row['login'], $row['passwd']);

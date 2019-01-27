@@ -212,6 +212,19 @@ function apiList(){
         return apiGetReleases($favReleases, $torrent);
     }
     
+    function apiGetUser(){
+        global $db, $user;
+        if(!$user) {
+            throw new ApiException(401, "No user");
+        }
+        return [
+            "id" => intval($user['id']),
+            "login" => $user['login'],
+            "avatar" => '/upload/avatars/'.$user['dir'].'/'.$user['avatar'].'.jpg'
+        ];
+    }
+
+    
     function releaseFavoriteAction($info, $torrent){
         global $db, $user;
         if(!$user){
@@ -343,19 +356,13 @@ function apiList(){
         case 'youtube':
             return apiGetYoutube();
         break;
+            
+        case 'user':
+            return apiGetUser();
+        break;
 	}
     //Вместо default case
     throw new ApiException("Unknown query", 400);
-}
-
-
-function apiUser(){
-	global $db, $user;
-	if($user){
-		$result = $user;
-		unset($result['passwd']);
-		die(json_encode($result));
-	}
 }
 
 function updateApiCache(){
