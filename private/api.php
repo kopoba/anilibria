@@ -1,14 +1,18 @@
 <?php
 
 function safeApiList() {
-    $response = (new ApiResponse()) -> proceed(function() {
+    wrapApiResponse(function() {
         return apiList();
     });
-    die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 }
 
 function unsafeApiList() {
     $response = apiList();
+    die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+}
+
+function wrapApiResponse($func){
+	$response = (new ApiResponse()) -> proceed($func);
     die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 }
 
@@ -72,24 +76,38 @@ function apiList(){
 		throw new ApiException("Release by code=$rcode not found", 404);
 	}
 
-	function apiGetReleasesById($info, $torrent, $rid){
-        $releases = [];
+	function apiGetReleasesByIdsString($info, $torrent, $rid){
         $list = '';
 		if(!empty($rid)){
 			$list = array_unique(explode(',', $rid));
 		}
-        foreach($info as $key => $val){
-            if(!empty($list) && !in_array($val['id'], $list)){
+		return apiGetReleasesByIdsArray($info, $torrent, $list);
+	}
+	
+	function apiGetCatalog($info, $torrent, $items){
+		$ids = array_map(function($item){
+			return $item['id'];
+		}, $items);
+		return apiGetReleasesByIdsArray($info, $torrent, $ids);
+	}
+	
+    function apiSearchReleases($info, $torrent, $items){
+        $ids = array_map(function($item){
+			return $item['id'];
+		}, $items);
+		return apiGetReleasesByIdsArray($info, $torrent, $ids);
+    }
+	
+	function apiGetReleasesByIdsArray($info, $torrent, $ids) {
+		$releases = [];
+		foreach($ids as $id){
+            if(!array_key_exists($id, $info)){
 				continue;
 			}
-            $releases[] = $val;
+            $releases[] = $info["$id"];
         }
 		return proceedReleases($releases, $torrent);
 	}
-    
-    function apiSearchReleases($info, $torrent){
-        return apiGetReleases($info, $torrent);
-    }
     
     function apiGetReleases($info, $torrent){
         $pagination = createPagination(count($info));
@@ -308,7 +326,29 @@ function apiList(){
         sort($result);
         return $result;
     }
-    
+	
+	function proceedBridge($funcSrc, $funcDst){
+		register_shutdown_function(function() use ($funcSrc, $funcDst) {
+			// Получаем то, что было выведено во время работы $funcSrc
+			$message = ob_get_contents();
+			ob_end_clean();
+			// Оборачиваем результат в баозовый ответ
+			wrapApiResponse(function() use ($message, $funcDst) {
+				$messageJson = json_decode($message, true);
+				if(!empty($messageJson['err']) && $messageJson['err']!=='ok'){
+					throw new ApiException($messageJson['mes'], 400);
+				}
+				// Выполняем функцию, которая обрабатывает данные, которые вывела $funcSrc
+				return $funcDst($messageJson);
+			});
+		});
+		ob_start();
+		// Выполняем функцию, которая только выводит данные (функции из func.php)
+		//die("hui");
+		$_POST['json'] = '';
+		$funcSrc();
+		ob_end_clean();	
+	}
     
 	switch($_POST['query']){
 		case 'torrent':
@@ -320,7 +360,7 @@ function apiList(){
 		break;
             
 		case 'info':
-			return apiGetReleasesById($info, $torrent, $_POST['id']);
+			return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
 		break;
             
         case 'release':
@@ -335,10 +375,6 @@ function apiList(){
             
         case 'list':
             return apiGetReleases($info, $torrent);
-        break;
-            
-        case 'search':
-            return apiSearchReleases($info, $torrent);
         break;
             
         case 'genres':
@@ -359,6 +395,28 @@ function apiList(){
             
         case 'user':
             return apiGetUser();
+        break;
+			
+		case 'catalog':
+            return proceedBridge(
+				function() {
+					showCatalog();
+				},
+				function($bridgeData) use ($info, $torrent) {
+					return apiGetCatalog($info, $torrent, $bridgeData['table']);
+				}
+			);
+        break;
+			
+		case 'search':
+            return proceedBridge(
+				function() {
+					xSearch();
+				},
+				function($bridgeData) use ($info, $torrent) {
+					return apiSearchReleases($info, $torrent, $bridgeData['mes']);
+				}
+			);
         break;
 	}
     //Вместо default case

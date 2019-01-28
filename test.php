@@ -43,7 +43,6 @@ function auth(){
 				'passwd' => '~VBHHOPx',
 			]
 		);
-        echo "auth: ".json_encode($result);
 		preg_match("/PHPSESSID=(.*?);/s", $result['1']['5'], $phpsessid);
 		$result = $phpsessid['1'];
 		$cache->set('testAuth', $result, 300);
@@ -72,6 +71,27 @@ testPrint(
 	[
         'query' => 'user'
     ]
+);
+
+/*testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+		'query' => 'catalog',
+		'page' => '1', // num page
+		'genre' => 'комендия,магия',
+		'year' => '2017',
+		'xpage' => 'catalog',
+		'sort' => '2', // 1 new, 2 popular
+		'json' => ''
+	]
+);*/
+
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+		'query' => 'search',
+		'search' => 'наруто',
+	]
 );
 
 /*testPrint(
