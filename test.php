@@ -69,22 +69,29 @@ function testPrint($url, $data){
 testPrint(
 	'https://test.anilibria.tv/public/api/index.php', 
 	[
-        'query' => 'user'
+        'query' => 'vkcomments'
     ]
 );
 
-/*testPrint(
+testPrint(
+	'https://test.anilibria.tv/public/api/index.php', 
+	[
+        'query' => 'years'
+    ]
+);
+
+testPrint(
 	'https://test.anilibria.tv/public/api/index.php', 
 	[
 		'query' => 'catalog',
 		'page' => '1', // num page
-		'genre' => 'комендия,магия',
-		'year' => '2017',
+		'genre' => '',
+		'year' => '2019',
 		'xpage' => 'catalog',
 		'sort' => '2', // 1 new, 2 popular
 		'json' => ''
 	]
-);*/
+);
 
 testPrint(
 	'https://test.anilibria.tv/public/api/index.php', 

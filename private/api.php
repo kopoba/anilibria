@@ -88,7 +88,12 @@ function apiList(){
 		$ids = array_map(function($item){
 			return $item['id'];
 		}, $items);
-		return apiGetReleasesByIdsArray($info, $torrent, $ids);
+		$pagination = createPagination(count($info));
+        $items = apiGetReleasesByIdsArray($info, $torrent, $ids);
+        return [
+            'items' => $items,
+            'pagination' => proceedPagination($pagination)
+        ];
 	}
 	
     function apiSearchReleases($info, $torrent, $items){
@@ -163,7 +168,7 @@ function apiList(){
     
     function proceedReleases($releases, $torrent){
 		$result = []; 
-		$filter = ['code', 'names', 'series', 'poster', 'posterFull', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
+		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
 
         foreach($releases as $key => $val){
 			
@@ -327,6 +332,26 @@ function apiList(){
         return $result;
     }
 	
+	function apiGetYears(){
+		global $sphinx, $cache;
+		$result = $cache->get('apiYears');
+		if($result === false){
+			$result = [];
+			$tmpl = '<option value="{year}">{year}</option>';
+			$arr = array_reverse(range(1990, date('Y', time())));		
+			foreach($arr as $search){
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
+				$query->bindValue(':search', "@(year) ($search)");
+				$query->execute();
+				if($query->rowCount() > 0){
+					$result[] = strval($search);
+				}
+			}
+			$cache->set('apiYears', $result, 300);
+		}
+		return $result;
+	}
+	
 	function proceedBridge($funcSrc, $funcDst){
 		register_shutdown_function(function() use ($funcSrc, $funcDst) {
 			// Получаем то, что было выведено во время работы $funcSrc
@@ -344,7 +369,6 @@ function apiList(){
 		});
 		ob_start();
 		// Выполняем функцию, которая только выводит данные (функции из func.php)
-		//die("hui");
 		$_POST['json'] = '';
 		$funcSrc();
 		ob_end_clean();	
@@ -379,6 +403,10 @@ function apiList(){
             
         case 'genres':
             return apiGetGenres();
+        break;
+			
+		case 'years':
+            return apiGetYears();
         break;
             
         case 'favorites':
@@ -418,13 +446,20 @@ function apiList(){
 				}
 			);
         break;
+			
+		case 'vkcomments':
+            return [
+				'baseUrl' => 'https://dev.anilibria.tv/',
+				'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
+			];
+        break;
 	}
     //Вместо default case
     throw new ApiException("Unknown query", 400);
 }
 
 function updateApiCache(){
-	global $db, $cache, $user;
+	global $db, $cache, $user, $var;
 	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
 	while($row=$query->fetch()){
         
@@ -438,20 +473,13 @@ function updateApiCache(){
             $names[] = $secondName;
         }
         
-        $poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$row['id'].'.jpg';
+        $poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$row['id'].'.jpg';
         if(!file_exists($poster)){
-            $poster = '/upload/release/270x390/default.jpg';
+            $poster = '/upload/release/350x500/default.jpg';
         }else{
             $poster = fileTime($poster);
         }
-        
-        $posterFull = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$row['id'].'.jpg';
-        if(!file_exists($poster)){
-            $posterFull = '/upload/release/350x500/default.jpg';
-        }else{
-            $posterFull = fileTime($posterFull);
-        }
-        
+
         $genres = [];
         $genresTmp = array_unique(explode(',', $row['genre']));
         foreach($genresTmp as $genre){
@@ -487,18 +515,22 @@ function updateApiCache(){
         } else {
             $series = "$minId-$maxId";
         }
-        
+		
+		$moon = NULL;
+		if(!empty($row['moonplayer'])){
+			$moon = $row['moonplayer'];
+		}
+		
 		$info[$row['id']] = [
 			'id' => intval($row['id']),
 			'code' => $row['code'],
 			'names' => $names, 
             'series' => $series,
             'poster' => $poster,
-            'posterFull' => $posterFull,
             'rating' => $row['rating'],
 			'last' => $row['last'],
-			'moon' => $row['moonplayer'],
-			'status' => $row['status'],
+			'moon' => $moon,
+			'status' => $var['status'][$row['status']],
 			'type' => $row['type'],
 			'genres' => $genres,
 			'voices' => $voices,
