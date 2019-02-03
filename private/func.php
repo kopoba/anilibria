@@ -62,7 +62,9 @@ function _exit(){
 		setcookie(session_name(), '', $var['time'] - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
 		session_unset();
 		session_destroy();
-		header("Location: https://".$_SERVER['SERVER_NAME']);	
+		if(strpos($var['user_agent'], 'mobileApp') === false){
+			header("Location: https://".$_SERVER['SERVER_NAME']);
+		}
 	}
 }
 
@@ -81,8 +83,13 @@ function login(){
 	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `mail` = :mail');
 	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
-	if($query->rowCount() == 0){
-		_message('invalidUser', 'error');
+	if($query->rowCount() == 0) {
+		$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
+		$query->bindValue(':login', $_POST['mail']);
+		$query->execute();
+		if($query->rowCount() == 0) {
+			_message('invalidUser', 'error');
+		}
 	}
 	$row = $query->fetch();
 	if(!empty($row['2fa'])){
@@ -261,6 +268,7 @@ function auth(){
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
+			return;
 		}
 		$session = $query->fetch();
 		$query = $db->prepare('SELECT `id`, `login`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
@@ -268,10 +276,12 @@ function auth(){
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
+			return;
 		}
 		$row = $query->fetch();
 		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], substr($session['hash'], 0, 8), $session['time'])[0]){
 			_exit();
+			return;
 		}
 		if($var['time'] > $session['time']){			
 			$hash = session_hash($row['login'], $row['passwd']);
@@ -1705,6 +1715,7 @@ function xSearch(){
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
+    $json = [];
 	foreach($tmp as $k => $v){
 		$query = $db->prepare('SELECT `id`, `name`, `ename` FROM `xrelease` WHERE `id` = :id');
 		$query->bindParam(':id', $v['id']);
@@ -2015,125 +2026,6 @@ function countRating(){
 	}
 }
 
-function apiInfo(){
-	global $db, $cache;
-	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `type`, `status`, `code` FROM `xrelease` WHERE `status` != 3');
-	while($row=$query->fetch()){
-		$info[$row['id']] = [
-			'rid' => $row['id'],
-			'name' => [
-				base64_encode($row['name']),
-				$row['ename']
-			], 
-			'rating' => $row['rating'], 
-			'last' => $row['last'],
-			'moon' => $row['moonplayer'],
-			'status' => $row['status'],
-			'type' => base64_encode($row['type']),
-			'genre' => base64_encode($row['genre']),
-			'year' => $row['year'],
-			'day' => $row['day'],
-			'description' => base64_encode($row['description']),
-			'code' => $row['code']
-		];
-		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
-		$tmp->bindParam(':rid', $row['id']);
-		$tmp->execute();
-		while($xrow=$tmp->fetch()){
-			$data = json_decode($xrow['info'], true);
-			$torrent[$row['id']][] = [
-				'fid' => $xrow['fid'],
-				'hash' => unpack('H*', $xrow['info_hash'])['1'],
-				'leechers' => $xrow['leechers'],
-				'seeders' => $xrow['seeders'],
-				'completed' => $xrow['completed'],
-				'quality' => $data['0'],
-				'series' => $data['1'],
-				'size' => $data['2']
-			];
-		}
-	}
-	$chunk = array_chunk($info, 100, true);
-	foreach($chunk as $k => $v){
-		$cache->set("apiInfo$k", json_encode($v), 300);
-	}
-	$cache->set('apiInfo', count($chunk), 300);
-	$cache->set('apiTorrent', json_encode($torrent), 300);
-}
-
-function apiList(){
-	global $cache; $result = [];
-	$count = $cache->get('apiInfo');
-	$torrent = json_decode($cache->get('apiTorrent'), true);
-	for($i=0; $i < $count; $i++){
-		$tmp = json_decode($cache->get("apiInfo$i"), true);
-		foreach($tmp as $k => $v){
-			$info["$k"] = $v; 
-		}
-	}
-	if($info === false || $torrent === false){
-		die('api not ready');
-	}
-	if(!isset($_POST['query'])){
-		die('no query isset');
-	}
-	function apiEcho($a){
-		die(json_encode($a));
-	}
-	function apiGetTorrent($torrent, $id){
-		$result = [];
-		$list = array_unique(explode(',', $id));
-		if(!empty($list)){
-			foreach($list as $val){
-				if(array_key_exists($val, $torrent)){
-					$result["$val"] = $torrent["$val"];
-				}
-			}
-		}
-		return $result;
-	}
-	function apiGetInfo($info, $torrent){
-		$result = []; $list = ''; 
-		$filter = ['name', 'rating', 'last', 'moon', 'status', 'type', 'genre', 'year', 'day', 'description', 'torrent', 'code'];
-		if(!empty($_POST['id'])){
-			$list = array_unique(explode(',', $_POST['id']));
-		}
-		foreach($info as $key => $val){
-			if(!empty($list) && !in_array($val['rid'], $list)){
-				continue;
-			}
-			$val['torrent'] = apiGetTorrent($torrent, $val['rid']);
-			if(isset($_POST['filter'])){
-				$filterList = array_unique(explode(',', $_POST['filter']));
-				foreach($filter as $v){
-					if(!isset($_POST['rm'])){
-						if(!in_array($v, $filterList)){
-							unset($val["$v"]);
-						}
-					}else{
-						if(in_array($v, $filterList)){
-							unset($val["$v"]);
-						}
-					}
-				}
-			}
-			$result[] = $val;
-		}
-		return $result;
-	}
-	switch($_POST['query']){
-		case 'torrent':
-			if(!empty($_POST['id'])){
-				apiEcho(apiGetTorrent($torrent, $_POST['id']));
-			}else{
-				apiEcho($torrent);
-			}
-		break;
-		case 'info':
-			apiEcho(apiGetInfo($info, $torrent));
-		break;
-	}
-}
 
 function sendHH(){
 	global $cache, $var;
@@ -2253,43 +2145,6 @@ function catalogYear(){
 		$cache->set('catalogYear', $result, 300);
 	}
 	return $result;
-}
-
-function apiUser(){
-	global $db, $user;
-	if($user){
-		$result = $user;
-		unset($result['passwd']);
-		die(json_encode($result));
-	}
-}
-
-function apiFavorites(){
-	global $db, $user; $result = [];
-	if($user){
-		$query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid');
-		$query->bindParam(':uid', $user['id']);
-		$query->execute();
-		while($row=$query->fetch()){
-			$result[] = $row['rid'];
-		}
-		die(json_encode($result));
-	}
-}
-
-function apiYoutube(){
-	global $db; $result = [];
-	$query = $db->query('SELECT * FROM `youtube`');
-	while($row=$query->fetch()){
-		$result[] = [
-			'id' => $row['id'],
-			'title' => base64_encode($row['title']),
-			'vid' => $row['vid'],
-			'view' => $row['view'],
-			'comment' => $row['comment']
-		];
-	}
-	die(json_encode($result));
 }
 
 function pushAll($name, $code){
