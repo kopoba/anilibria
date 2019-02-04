@@ -1476,15 +1476,15 @@ function youtubeShow(){
 	$tmpl = '<td><a href="{url}"><img src="{img}" alt="{alt}" height="245" style="{style}"></a></td>';
 	
 	$result = '';
-	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'1\' ORDER BY `time` DESC  LIMIT 12');
+	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'1\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
 	while($row = $query->fetch()){
-		$arr1[] = $row['vid'];
+		$arr1[] = ['vid' => $row['vid'], 'title' => $row['title']];
 	}
-	$query = $db->query('SELECT `vid` FROM `youtube` WHERE `type` = \'2\' ORDER BY `time` DESC  LIMIT 12');
+	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'2\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
 	while($row = $query->fetch()){
-		$arr2[] = $row['vid'];
+		$arr2[] = ['vid' => $row['vid'], 'title' => $row['title']];
 	}
 	$arr1 = array_slice($arr1, 0, count($arr2));
 	foreach($arr1 as $k => $v){
@@ -1496,8 +1496,9 @@ function youtubeShow(){
 	}
 	$i = 0;
 	foreach($data as $v){
-		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v=$v", $tmpl);
-		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $v).'.jpg', $youtube);
+		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$v['vid']}", $tmpl);
+		$youtube = str_replace('{img}', '/upload/youtube/'.hash('crc32', $v['vid']).'.jpg', $youtube);
+		$youtube = str_replace('{alt}', $v['title'], $youtube);
 		$arr["$i"][] = $youtube;
 		if(count($arr[$i]) == 2){
 			$i++;
