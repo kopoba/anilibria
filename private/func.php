@@ -39,13 +39,18 @@ function half_string_hash($s){
 	return hash($conf['hash_algo'], substr($s, round(strlen($s)/2)));
 }
 
-function session_hash($login, $passwd, $rand = '', $time = ''){
+function session_hash($login, $passwd, $access, $rand = '', $time = ''){
 	global $conf, $var;
 	if(empty($rand)){
 		$rand = genRandStr(8);
 	}
 	if(empty($time)){
 		$time = $var['time']+86400;
+	}
+	if($access > 1){
+		$ip = $var['ip'];
+	}else{
+		$ip = '';
 	}
 	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
 }
@@ -111,7 +116,7 @@ function login(){
 		$query->execute();
 		$row['passwd'] = $passwd[1];
 	}
-	$hash = session_hash($row['login'], $row['passwd']);
+	$hash = session_hash($row['login'], $row['passwd'], $row['access']);
 	$query = $db->prepare('INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)');
 	$query->bindParam(':uid', $row['id']);
 	$query->bindParam(':hash', $hash[0]);
@@ -279,12 +284,12 @@ function auth(){
 			return;
 		}
 		$row = $query->fetch();
-		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], substr($session['hash'], 0, 8), $session['time'])[0]){
+		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], $row['access'], substr($session['hash'], 0, 8), $session['time'])[0]){
 			_exit();
 			return;
 		}
 		if($var['time'] > $session['time']){			
-			$hash = session_hash($row['login'], $row['passwd']);
+			$hash = session_hash($row['login'], $row['passwd'], $row['access']);
 			$query = $db->prepare('UPDATE `session` set `hash` = :hash, `time` = :time WHERE `id` = :id');
 			$query->bindParam(':hash', $hash[0]);
 			$query->bindParam(':time', $hash[1]);
