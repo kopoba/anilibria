@@ -69,5 +69,10 @@
 		<script src="<?php echo fileTime('/js/main.js');?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
+		<!-- 
+			Copyright (C) 2018-2019 The AniLibria developers.
+			Please contribute if you find AniLibria useful.
+			The source code is available from https://github.com/anilibria/
+		-->		
 	</body>
 </html>

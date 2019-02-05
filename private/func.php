@@ -1316,8 +1316,12 @@ function getRemote($url, $key, $update = false){
 		}
 		if(!isJson($data)){
 			return false;
-		}	
+		}
+		
+		//var_dump($data);
+		
 		$cache->set('anilibria'.$key, $data, 300);
+		//die;
 	}
 	return $data;
 }
@@ -1349,17 +1353,32 @@ function getReleaseVideo($id){
 	global $conf;
 	$playlist = '';
 	$data = getRemote($conf['nginx_domain'].'/?id='.$id, 'video'.$id);
+	function anilibria_getHost($hosts){
+		$host = [];
+		foreach($hosts as $key => $val){
+			$host = array_merge($host, array_fill(0, $val, $key));
+		}
+		shuffle($host);
+		if(count($host) == 1){
+			return $host[0].".anilibria.tv";
+		}
+		return $host[random_int(0, count($host) - 1)].".anilibria.tv";
+	}
 	if($data){
 		$arr = json_decode($data, true);
+		$host = anilibria_getHost($arr['online']);
 		if(!empty($arr) && !empty($arr['updated'])){
 			unset($arr['updated']);
 			$arr = array_reverse($arr, true);
 			foreach($arr as $key => $val) {
+				if($key == 'online'){
+					continue;
+				}
 				$download = '';
 				if(!empty($val['file'])){
 					$download = mp4_link($val['file'].'.mp4');
 				}
-				$playlist .= "{'title':'Серия $key', 'file':'{$val['new']}', download:\"$download\", 'id': 's$key'},";
+				$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new'])."', download:\"$download\", 'id': 's$key'},";
 			}
 		}
 	}
