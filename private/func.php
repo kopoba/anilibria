@@ -1303,7 +1303,7 @@ function getRemoteCache(){
 	global $db, $conf;
 	$query = $db->query('SELECT `id` FROM `xrelease`');
 	while($row=$query->fetch()){
-		getRemote($conf['nginx_domain'].'/?id='.$row['id'], 'video'.$row['id'], true);
+		getRemote($conf['nginx_domain'].'/?id='.$row['id'].'&v2=1', 'video'.$row['id'], true);
 	}
 }
 
@@ -1352,7 +1352,7 @@ function mp4_link($value){
 function getReleaseVideo($id){
 	global $conf;
 	$playlist = '';
-	$data = getRemote($conf['nginx_domain'].'/?id='.$id, 'video'.$id);
+	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
 	function anilibria_getHost($hosts){
 		$host = [];
 		foreach($hosts as $key => $val){
@@ -1371,7 +1371,7 @@ function getReleaseVideo($id){
 			unset($arr['updated']);
 			$arr = array_reverse($arr, true);
 			foreach($arr as $key => $val) {
-				if($key == 'online'){
+				if($key == 'online' || $key == 'new'){
 					continue;
 				}
 				$download = '';
