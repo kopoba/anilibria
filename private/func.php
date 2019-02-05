@@ -991,6 +991,10 @@ function showRelease(){
 	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
 	
 	$button = '';
+	
+	if(!$user){
+		$page = str_replace('{userAccess}', '0', $page);
+	}
 	if($user){
 		$button .= '<button data-release-favorites {favorites}>Избранное</button>';
 		if(isFavorite($user['id'], $release['id'])){
@@ -998,6 +1002,7 @@ function showRelease(){
 		}
 		if($user['access'] > 1){
 			$button .= '<button data-torrent-edit class="">Торрент</button>';
+			$page = str_replace('{userAccess}', '1', $page);
 		}
 		if($user['access'] > 2){
 			$button .= '<button data-xrelease-edit class="">Редактировать</button>';

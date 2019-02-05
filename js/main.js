@@ -310,7 +310,9 @@ $(document).on('click', '[data-online-table]', function(e){
 $(document).on('click', '[data-change-announce]', function(e){
 	$(this).blur();
 	e.preventDefault();
-	$('#changeAnnounce').modal('show');
+	if($(this).data("change-announce") == 1){
+		$('#changeAnnounce').modal('show');
+	}
 });
 
 $(document).on('click', '[data-send-announce]', function(e){
