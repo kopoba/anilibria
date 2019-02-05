@@ -3,24 +3,15 @@ $(document).ready(function() {
 	var recaptcha2;
 	var CaptchaCallback1 = function() { recaptcha1 = grecaptcha.render('RecaptchaField1', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
 	var CaptchaCallback2 = function() { recaptcha2 = grecaptcha.render('RecaptchaField2', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
-		
 	if(window.location.hash.substr(1) == 'rules'){
 		$('html, body').animate({
 			scrollTop: $("#rules").offset().top
 		}, 500);
 	}
-	
-	/* player release page start */
+	tabSwitch('anilibriaPlayer');
 	if ($('div#moonPlayer iframe').length > 0){
 		$('#buttonMoon').show();
-		$('#moonPlayer').show();
-		$("#buttonAni").removeClass("active");
-		$("#buttonMoon").addClass("active");
-	}else{
-		tabSwitch('anilibriaPlayer');
 	}
-	/* player release page end */
-	
 });
 
 $(document).on("click", "[data-submit-login]", function(e) {
