@@ -85,11 +85,11 @@ function login(){
 		_message('wrongUserAgent', 'error');
 	}
 	$_POST['mail'] = mb_strtolower($_POST['mail']);
-	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `mail` = :mail');
+	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa`, `access` FROM `users` WHERE `mail` = :mail');
 	$query->bindValue(':mail', $_POST['mail']);
 	$query->execute();
 	if($query->rowCount() == 0) {
-		$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa` FROM `users` WHERE `login` = :login');
+		$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa`, `access` FROM `users` WHERE `login` = :login');
 		$query->bindValue(':login', $_POST['mail']);
 		$query->execute();
 		if($query->rowCount() == 0) {
@@ -1150,7 +1150,7 @@ function xrelease(){
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){
-			if(empty($post["$key"])){
+			if(!isset($post["$key"])){
 				continue;
 			}
 			$data[$key] = htmlspecialchars($post["$key"], ENT_QUOTES, 'UTF-8');
@@ -2000,7 +2000,7 @@ function releaseUpdateLast(){
 	if(empty($_POST['id'])){
 		_message('empty', 'error');
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename` `code` FROM `xrelease` WHERE `id` = :id');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `code` FROM `xrelease` WHERE `id` = :id');
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -2192,6 +2192,7 @@ function catalogYear(){
 }
 
 function pushAll($name, $code){
+	return;
 	global $conf; 
 	$url = 'https://anilibria.tv/release/'.$code.'.html';
 	function sendPush($api, $data){
