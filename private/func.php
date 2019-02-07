@@ -1742,7 +1742,7 @@ function sphinxPrepare($x){
 function xSearch(){
 	global $sphinx, $db; $result = ''; $limit = '';
 	$data = []; $arr = ['search', 'key'];
-	$keys = ['name,ename', 'genre', 'year'];
+	$keys = ['name,ename,aname', 'genre', 'year'];
 	foreach($arr as $key){
 		if(!empty($_POST["$key"])){
 			$data["$key"] = trim($_POST["$key"]);
