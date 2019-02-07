@@ -168,7 +168,7 @@ function password_link(){
 		moveErrPage();
 	}
 	$row = $query->fetch();
-	$hash = hash($conf['hash_algo'], $var['ip'].$_GET['id'].$_GET['time'].sha1(half_string_hash($row['passwd'])));
+	$hash = hash($conf['hash_algo'], $_GET['id'].$_GET['time'].sha1(half_string_hash($row['passwd'])));
 	if($_GET['hash'] != $hash){
 		moveErrPage();
 	}
@@ -191,10 +191,10 @@ function testRecaptcha(){
 	}
 	$result = recaptcha($v);
 	if(!$result['success']){
-		_message('reCaptcha test failed', 'error');
+		_message('reCaptchaFail', 'error');
 	}
 	if($v == 3 && $result['score'] < 0.5){
-		_message('reCaptcha test failed: score too low', 'error');
+		_message('reCaptcha3', 'error');
 	}
 }
 
@@ -218,7 +218,7 @@ function password_recovery(){
 	}
 	$row = $query->fetch();
 	$time = $var['time']+43200;
-	$hash = hash($conf['hash_algo'], $var['ip'].$row['id'].$time.sha1(half_string_hash($row['passwd'])));
+	$hash = hash($conf['hash_algo'], $row['id'].$time.sha1(half_string_hash($row['passwd'])));
 	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/password.php?id={$row['id']}&time={$time}&hash={$hash}";
 	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
 	_message('checkEmail');
@@ -1231,7 +1231,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6850188, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 
