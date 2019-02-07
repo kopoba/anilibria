@@ -15,16 +15,27 @@
 	
 	<script> var chosenGenre = [{chosen-genre}];</script>
 	
-<div id="xreleaseEdit" class="detail_torrent_info" style="display: none; overflow: auto;">
+<div id="xreleaseEdit" class="detail_torrent_info" style="display: none; overflow: hidden;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" value="{name}" required="">
-			<input id="nEname" class="form-control" style="margin-top: 4px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
-			<input id="nYear" class="form-control" style="margin-top: 4px;" type="text" placeholder="Год выхода: 2018" value="{year}" required="">
-			<input id="nType" class="form-control" style="margin-top: 4px; margin-bottom: 4px;" type="text" placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
-			<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
-				{chosen}
-			</select>
-			<input id="nVoice" class="form-control" style="margin-top: 4px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" value="{voice}" required="">
-			<input id="nOther" class="form-control" style="margin-top: 4px;" type="text" placeholder="Работа над релизом: Darkknight" value="{other}" required="">
+			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
+			<input id="nAname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Альтернативное название: Вторжение титанов" required="">
+			<div style="margin-top: 6px;">
+				<input id="nYear" class="form-control" style="width: 35%; display: inline-block;" type="text" placeholder="Год выхода: 2018" value="{year}" required="">
+				<input id="nType" class="form-control" style="width: 64%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
+			</div>
+					
+			<div style="margin-top: 6px;">
+				<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
+					{chosen}
+				</select>
+			</div>
+			<input id="nVoice" class="form-control" style="margin-top: 6px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" value="{voice}" required="">
+			<div style="margin-top: 6px;">
+				<input id="nTranslator" title="Перевод" class="form-control" style="width: 25%; display: inline-block;" type="text" placeholder="Перевод" value="{translator}" required="">
+				<input id="nEditing" title="Редактура" class="form-control" style="width: 24%; display: inline-block;" type="text" placeholder="Редактура" value="{editing}" required="">
+				<input id="nDecor" title="Оформление" class="form-control" style="width: 24%; display: inline-block;" type="text" placeholder="Оформление" value="{decor}" required="">
+				<input id="nTiming" title="Тайминг" class="form-control" style="width: 24%; display: inline-block;" type="text" placeholder="Тайминг" value="{timing}" required="">
+			</div>
 			
 			<select id="nDay" class="form-control" style="margin-top: 6px;">
 				<option value="" disabled selected>Серия выходит</option>
@@ -37,14 +48,14 @@
 				<option value="7">Воскресенье</option>
 			</select>
 			
-			<select id="nStatus" class="form-control" style="margin-top: 4px;">
+			<select id="nStatus" class="form-control" style="margin-top: 6px;">
 				<option value="" disabled selected>Состояние релиза</option>
 				<option value="1">В работе</option>
 				<option value="2">Завершен</option>
 				<option value="2">Скрыт</option>
 			</select>
-			<input id="nMoon" class="form-control" style="margin-top: 4px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
-<pre style="margin-top: 10px; max-height: 100px; overflow-y: scroll;">[b]жирный шрифт[/b] => <b>жирный шрифт</b>
+			<input id="nMoon" class="form-control" style="margin-top: 6px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
+<pre style="margin-top: 6px; max-height: 98px; overflow-y: scroll;">[b]жирный шрифт[/b] => <b>жирный шрифт</b>
 [i]наклонный шрифт[/i] => <i>наклонный шрифт</i>
 [u]подчеркнутый текст[/u] => <u>подчеркнутый текст</u>
 [s]зачеркнутый шрифт[/s] => <s>зачеркнутый шрифт</s><br/>
@@ -64,7 +75,7 @@
 		<b>Тип:</b> {type}<br>
 		<b>Жанры:</b> {genre}<br>
 		<b>Озвучка:</b> {voice}<br>
-		<b>Работа над релизом:</b> {other}<br>
+		<b><a href="#" data-show-other style="color: #000;">Работа над релизом</a>:</b> {other}<br>
 		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
 		<p class="detail-description" style="font-size: 15.7px;">{description}</p>
 	</div>
@@ -101,4 +112,24 @@
 		</table>			
 	</div>
 	<div class="clear"></div>
+</div>
+
+<div class="modal fade" id="otherModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" style="width: 500px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="avatarInfo">Работа над релизом</h4>
+			</div>
+			<div  class="modal-body">
+				<b>Озвучка</b>: {voice}<br/>
+				<b>Перевод</b>: {translator}<br/>
+				<b>Редактура</b>: {editing}<br/>
+				<b>Оформление</b>: {decor}<br/>
+				<b>Тайминг</b>: {timing}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+			</div>
+		</div>
+	</div>
 </div>

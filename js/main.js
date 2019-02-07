@@ -430,11 +430,18 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 	var sendData = {
 		'name': $('input[id=nName]').val(),
 		'ename': $('input[id=nEname]').val(),
+		'aname': $('input[id=nAname]').val(),
 		'year': $('input[id=nYear]').val(),
 		'type': $('input[id=nType]').val(),
 		'genre': $.trim($('.chosen').val().toString().replace(/,/g, ", ")),
 		'voice': $('input[id=nVoice]').val(),
-		'other': $('input[id=nOther]').val(),
+		
+		'translator': $('input[id=nTranslator]').val(),
+		'editing': $('input[id=nEditing]').val(),
+		'decor': $('input[id=nDecor]').val(),
+		'timing': $('input[id=nTiming]').val(),
+		
+		
 		'announce': $('input[id=nAnnounce]').val(),
 		'status': $('select[id=nStatus]').val(),
 		'day': $('select[id=nDay]').val(),
@@ -471,7 +478,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 
 $(document).on('click', '[data-xrelease-edit]', function(e){
 	$(this).blur();
-	e.preventDefault();	
+	e.preventDefault();
 	if($('div#xreleaseEdit').is(':hidden')){
 		$('div#xreleaseInfo').hide();
 		$('div#emptyHeader').hide();
@@ -607,4 +614,8 @@ $(document).on('click', '[data-send-request]', function(e){
 	});
 });
 
-
+$(document).on('click', '[data-show-other]', function(e){
+	$(this).blur();
+	e.preventDefault();
+	$('#otherModal').modal('show');
+});

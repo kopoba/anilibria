@@ -33,16 +33,23 @@ $var['page'] = 'new';
 		<div class="detail_torrent_info" style="height: 511px;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" required="">
 			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
-			<input id="nYear" class="form-control" style="margin-top: 6px;" type="text" placeholder="Год выхода: 2018" required="">
-			<input id="nType" class="form-control" style="margin-top: 6px; margin-bottom: 6px;" type="text" placeholder="Тип: ТВ 24 эпизода" required="">
-			
-			<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
-				<?php echo getGenreList(); ?>
-			</select>			
-			
+			<input id="nAname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Альтернативное название: Вторжение титанов" required="">
+			<div style="margin-top: 6px;">
+				<input id="nYear" class="form-control" style="width: 35%; display: inline-block;" type="text" placeholder="Год выхода: 2018" required="">
+				<input id="nType" class="form-control" style="width: 64%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" required="">
+			</div>
+			<div style="margin-top: 6px;">
+				<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
+					<?php echo getGenreList(); ?>
+				</select>
+			</div>
 			<input id="nVoice" class="form-control" style="margin-top: 6px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" required="">
-			<input id="nOther" class="form-control" style="margin-top: 6px;" type="text" placeholder="Работа над релизом: Darkknight" required="">
-			
+			<div style="margin-top: 6px;">
+				<input id="nTranslator" title="Перевод" class="form-control" style="width: 25%; display: inline-block;" type="text" placeholder="Перевод" required="">
+				<input id="nEditing" title="Редактура" class="form-control" style="width: 24%; display: inline-block;" type="text" placeholder="Редактура" required="">
+				<input id="nDecor" title="Оформление" class="form-control" style="width: 24%; display: inline-block;" type="text" placeholder="Оформление" required="">
+				<input id="nTiming" title="Тайминг" class="form-control" style="width: 24%; display: inline-block;" type="text" placeholder="Тайминг" required="">
+			</div>
 			<select id="nDay" class="form-control" style="margin-top: 6px;">
 				<option value="" disabled selected>Серия выходит</option>
 				<option value="1">Понедельник</option>
@@ -70,6 +77,7 @@ $var['page'] = 'new';
 [url=http://google.ru]google[/url] => <a href="http://google.ru" target="_blank"> google</a>
 [url=https://google.ru]google[/url] => <a href="https://google.ru" target="_blank">google</a>
 </pre>
+
 		</div>
 		
 	<div class="detail_torrent_side">
@@ -79,11 +87,10 @@ $var['page'] = 'new';
 	</div>	
 		<div class="clear"></div>
  
-<div>	
+<div>
 	<textarea id="nDescription" class="form-control" style="margin-top: 7px; resize: vertical;" rows="10" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ..."></textarea>
 </div>
-
-		<div style="margin-top:10px;"></div>
+<div style="margin-top:10px;"></div>
 </div>
 
 

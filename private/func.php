@@ -941,7 +941,7 @@ function showRelease(){
 	if(empty($_GET['code'])){
 		return page404();
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `other`, `description`, `announce`, `status`, `day`, `code` FROM `xrelease` WHERE `code` = :code');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -980,6 +980,14 @@ function showRelease(){
 		$str .= "\"$val\",";
 	}
 	$str = rtrim($str, ',');
+	
+	$release['other'] = '';
+	$xother = explode(',', $release['translator'].$release['editing'].$release['decor'].$release['timing']);
+	foreach($xother as $k => $v){
+		$release['other'] .= trim($v).", ";
+	}
+	$release['other'] = rtrim($release['other'], ', ');
+	
 	$page = str_replace('{chosen-genre}', $str, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{chosen}', getGenreList(), $page);
@@ -987,6 +995,12 @@ function showRelease(){
 	$page = str_replace('{year}', "{$release['year']}", $page);
 	$page = str_replace('{type}', $release['type'], $page);
 	$page = str_replace('{other}', $release['other'], $page);
+	
+	$page = str_replace('{translator}', $release['translator'], $page);
+	$page = str_replace('{editing}', $release['editing'], $page);
+	$page = str_replace('{decor}', $release['decor'], $page);
+	$page = str_replace('{timing}', $release['timing'], $page);
+	
 	$page = str_replace('{description}', $release['description'], $page);
 	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
 	
@@ -1132,7 +1146,7 @@ function xrelease(){
 	if(empty($_POST['data'])){
 		_message('empty', 'error');
 	}
-	$arr = ['name', 'ename', 'year', 'type', 'genre', 'voice', 'other', 'announce', 'status', 'moonplayer', 'description', 'day'];
+	$arr = ['name', 'ename', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day'];
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){
