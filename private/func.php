@@ -308,6 +308,7 @@ function auth(){
 					'last_activity' => $row['last_activity'],
 					'dir' => substr(md5($row['id']), 0, 2),
 				];
+		$user['user_values'] = '';
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
@@ -981,12 +982,16 @@ function showRelease(){
 	}
 	$str = rtrim($str, ',');
 	
-	$release['other'] = '';
-	$xother = explode(',', $release['translator'].$release['editing'].$release['decor'].$release['timing']);
-	foreach($xother as $k => $v){
-		$release['other'] .= trim($v).", ";
+	$release['other'] = explode(',', "{$release['translator']},{$release['editing']},{$release['decor']},{$release['timing']}");
+	foreach($release['other'] as $v){
+		$other[] = trim($v);
 	}
-	$release['other'] = rtrim($release['other'], ', ');
+	if(!empty($other)){
+		$other = array_filter($other, 'strlen');
+		$release['other'] = implode(', ', $other);
+	}else{
+		$release['other'] = '';
+	}
 	
 	$page = str_replace('{chosen-genre}', $str, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
@@ -1157,7 +1162,7 @@ function xrelease(){
 			if($key == 'description'){
 				$data[$key] = parse_bb_code($data[$key]);
 			}
-			if(mb_strlen($data[$key]) > 1000){
+			if(mb_strlen($data[$key]) > 10000){
 				_message('long', 'error');
 			}
 			$sql['col'][] = "`$key`";
@@ -1369,13 +1374,16 @@ function getReleaseVideo($id){
 	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
 	function anilibria_getHost($hosts){
 		$host = [];
+		if(count($host) == 0){
+			return false;
+		}
 		foreach($hosts as $key => $val){
 			$host = array_merge($host, array_fill(0, $val, $key));
 		}
-		shuffle($host);
 		if(count($host) == 1){
 			return $host[0].".anilibria.tv";
 		}
+		shuffle($host);
 		return $host[random_int(0, count($host) - 1)].".anilibria.tv";
 	}
 	if($data){
@@ -1392,7 +1400,9 @@ function getReleaseVideo($id){
 				if(!empty($val['file'])){
 					$download = mp4_link($val['file'].'.mp4');
 				}
-				$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new'])."', download:\"$download\", 'id': 's$key'},";
+				if($host){
+					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new'])."', download:\"$download\", 'id': 's$key'},";
+				}
 			}
 		}
 	}

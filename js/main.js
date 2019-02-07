@@ -8,9 +8,18 @@ $(document).ready(function() {
 			scrollTop: $("#rules").offset().top
 		}, 500);
 	}
-	tabSwitch('anilibriaPlayer');
-	if ($('div#moonPlayer iframe').length > 0){
-		$('#buttonMoon').show();
+	if(typeof player === 'undefined' && $('div#moonPlayer iframe').length == 0){
+		$('#buttonAni').hide();
+		$('#buttonMoon').hide();
+	}else{
+		tabSwitch('anilibriaPlayer');
+		if($('div#moonPlayer iframe').length > 0){
+			$('#buttonMoon').show();
+			if(typeof player === 'undefined'){
+				tabSwitch('moonPlayer');
+				$('#buttonAni').hide();
+			}
+		}
 	}
 });
 
@@ -464,7 +473,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		data: form_data,
 		url: "//"+document.domain+"/public/release/index.php",
 		success: function(json) {
-			console.log(json);
+			//console.log(json);
 			data = JSON.parse(json);
 			if(_this.data('release-update') !== undefined){
 				window.location=data.url;
