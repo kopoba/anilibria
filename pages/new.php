@@ -65,7 +65,8 @@ $var['page'] = 'new';
 				<option value="" disabled selected>Состояние релиза</option>
 				<option value="1">В работе</option>
 				<option value="2">Завершен</option>
-				<option value="2">Скрыт</option>
+				<option value="3">Скрыт</option>
+				<option value="4">Неонгоинг</option>
 			</select>
 			<input id="nMoon" class="form-control" style="margin-top: 7px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." required="">
 <pre style="margin-top: 7px; max-height: 100px; overflow-y: scroll;">[b]жирный шрифт[/b] => <b>жирный шрифт</b>

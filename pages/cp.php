@@ -37,7 +37,9 @@ function profileMes($name){
 			case 'age': $x = date('Y', time()) - date('Y', $x); break;
 		}
 	}
-	if(!$x) $x = 'Не указано';
+	if(!$x){
+		$x = 'Не указано';
+	}
 	return $x;
 }
 
@@ -84,8 +86,8 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<p>Имя: <span id="name"><?php echo profileMes('name'); ?></span></p>
 				<p>Пол: <span id="sex"><?php echo profileMes('sex'); ?></span></p>
 				<p>Возраст: <span id="age"><?php echo profileMes('age'); ?></span></p>
-				<p>Был в сети: <span><?php echo date('d.m.Y', $user['register_date']); ?></span></p>
-				<p>Регистрация: <span><?php echo date('d.m.Y', $user['last_activity']); ?></span></p>
+				<p>Был в сети: <span><?php echo date('d.m.Y', $user['last_activity']); ?></span></p>
+				<p>Регистрация: <span><?php echo date('d.m.Y', $user['register_date']); ?></span></p>
 				<br/>
 				<?php if(!empty($user['downloaded'])){ ?>
 					<h3 class="profile-content-title">Статистика</h3>
@@ -226,6 +228,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>
 </div>
 
+<style>
+	#avatarPreview{
+		max-width:100%;
+	}
+</style>
+
 <div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -233,7 +241,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="avatarInfo">Загрузка аватара</h4>
 			</div>
-			<div class="modal-body" style="max-height: 500px; max-width:580px; overflow: hidden;">
+			<div class="modal-body" style="max-height: 500px; max-width:100%; overflow: hidden;">
 				<center><img id="avatarPreview" src="/upload/avatars/<?php echo $tmpAvatar; ?>" ></center>
 				<input type="hidden" id="x1" name="x1" />
 				<input type="hidden" id="y1" name="y1" />
@@ -255,14 +263,14 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="profileInfo">Редактировать профиль</h4>
 			</div>
-			<div class="modal-body" style="max-height: 500px; overflow: hidden;">
+			<div class="modal-body" style="max-height: 560px; overflow: hidden;">
 				<input class="form-control" id="name" type="text" placeholder="Имя">
 				<select class="form-control" id="sex" style="margin-top: 7px;">
-					<option value="">Выберите пол</option>
+					<option selected="true" value="" disabled="disabled">Выберите пол</option>
 					<option value="1">Мужской</option>
 					<option value="2">Женский</option>
 				</select>				
-				<input class="form-control" id="age" type="text" style="margin-top: 7px;" placeholder="Возраст (год)" >
+				<input class="form-control" id="age" type="text" style="margin-top: 7px;" placeholder="Возраст (например 18)" >
 				<input class="form-control" id="phone" type="text" style="margin-top: 7px;" placeholder="Телефон" >
 				<input class="form-control" id="steam" type="text" style="margin-top: 7px;" placeholder="Steam" >
 				<input class="form-control" id="skype" type="text" style="margin-top: 7px;" placeholder="Skype" >

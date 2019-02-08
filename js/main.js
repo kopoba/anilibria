@@ -251,7 +251,7 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 					$("#sex").text("Женский");
 				}	
 			}
-			if(vk != "") $("#vk").text(sex);
+			if(vk != "") $("#vk").text(vk);
 			if(telegram != "") $("#telegram").text(telegram);
 			if(steam != "") $("#steam").text(steam);
 			if(phone != "") $("#phone").text(phone);

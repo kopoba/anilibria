@@ -41,13 +41,17 @@ $(document).on("click", "[data-upload-avatar]", function(e) {
 	y1 = $('input[id=y1]').val();
 	w = $('input[id=w]').val();
 	h = $('input[id=h]').val();
+	width = $("div.jcrop-holder").width();
+	height = $("div.jcrop-holder").height();
 
 	file_data = $('#uploadAvatar').prop('files')[0];
 	form_data = new FormData();
 	form_data.append('x1', x1);
 	form_data.append('y1', y1);
-	form_data.append('w', w);  
-	form_data.append('h', h);  
+	form_data.append('w', w); 
+	form_data.append('h', h);
+    form_data.append('width', width);
+    form_data.append('height', height);
     form_data.append('avatar', file_data);
     
 	$.ajax({

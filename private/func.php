@@ -308,7 +308,7 @@ function auth(){
 					'last_activity' => $row['last_activity'],
 					'dir' => substr(md5($row['id']), 0, 2),
 				];
-		$user['user_values'] = '';
+		$user['user_values'] = [];
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
@@ -673,16 +673,17 @@ function upload_avatar() {
 	if(!in_array(exif_imagetype($_FILES['avatar']['tmp_name']), [IMAGETYPE_PNG, IMAGETYPE_JPEG])){
 		_message('wrongType', 'error');	
 	}
-	if($_FILES['avatar']['size'] > 150000){
+	if($_FILES['avatar']['size'] > 500000){
 		_message('maxSize', 'error');
 	}
 	
 	$img = new Imagick($_FILES['avatar']['tmp_name']);
 	$img->setImageFormat('jpg');
 	
+	
 	$crop = true;
 	foreach($_POST as $k => $v){
-		if(!in_array($k, ['w', 'h', 'x1', 'y1']))
+		if(!in_array($k, ['w', 'h', 'x1', 'y1', 'width', 'height']))
 			$crop = false;
 		
 		if(empty($v) && $v != 0)
@@ -694,7 +695,7 @@ function upload_avatar() {
 		if($crop == false)
 			break;
 	}
-	
+	$img->resizeImage($_POST['width'], $_POST['height'], Imagick::FILTER_LANCZOS, 1, false);
 	if($crop) $img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
 	$img->resizeImage(160,160,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
@@ -749,25 +750,25 @@ function saveUserValues(){
 		if(empty($val) || !array_key_exists($key, $var['user_values'])){
 			continue;
 		}
-		if(!preg_match('/^[А-Яа-яA-Za-z0-9_.-]+$/u', $val)){
-			_message('wrongData', 'error');
-		}
 		if(mb_strlen($val) > 30){
 			_message('long', 'error');
 		}
-		$arr[$key] = htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
+		$arr[$key] = htmlspecialchars(trim($val), ENT_QUOTES, 'UTF-8');
 	}
 	if(!empty($arr['sex']) && (!ctype_digit($arr['sex']) || ($arr['sex'] < 0 || $arr['sex'] > 2))){
 		_message('wrongData', 'error');
 	}
-    if(!empty($arr['age'])){
-		$time = strtotime($arr['age']);
-		if(!$time || $time > $var['time'] || date('Y', $time) < date('Y', $var['time'])-80){
+    if(!empty($arr['age']) && ctype_digit($arr['age'])){
+		$time = strtotime(date('Y', $var['time'])-$arr['age']);
+		if(!$time){
 			_message('wrongData', 'error');
 		}
 		$arr['age'] = $time;
 	}
-    foreach($user['user_values'] as $k => $v){
+    foreach(json_decode($var['default_user_values'], true) as $k => $v){
+		if(empty($arr[$k]) && empty($user['user_values']["$k"])){
+			$user['user_values']["$k"] = '';
+		}
 		if(!empty($arr[$k])){
 			$user['user_values'][$k] = $arr[$k];
 		}
@@ -942,7 +943,7 @@ function showRelease(){
 	if(empty($_GET['code'])){
 		return page404();
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code` FROM `xrelease` WHERE `code` = :code');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -971,6 +972,7 @@ function showRelease(){
 	}
 	$page = str_replace('{name}', $release['name'], getTemplate('release'));
 	$page = str_replace('{ename}', $release['ename'], $page);
+	$page = str_replace('{aname}', $release['aname'], $page);
 	$page = str_replace('{fullname}', $name, $page);
 	$page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
 	
@@ -1151,7 +1153,7 @@ function xrelease(){
 	if(empty($_POST['data'])){
 		_message('empty', 'error');
 	}
-	$arr = ['name', 'ename', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day'];
+	$arr = ['name', 'ename', 'aname', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day'];
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){
@@ -1336,11 +1338,7 @@ function getRemote($url, $key, $update = false){
 		if(!isJson($data)){
 			return false;
 		}
-		
-		//var_dump($data);
-		
 		$cache->set('anilibria'.$key, $data, 300);
-		//die;
 	}
 	return $data;
 }
@@ -1374,11 +1372,14 @@ function getReleaseVideo($id){
 	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
 	function anilibria_getHost($hosts){
 		$host = [];
-		if(count($host) == 0){
+		if(empty($hosts)){
 			return false;
 		}
 		foreach($hosts as $key => $val){
 			$host = array_merge($host, array_fill(0, $val, $key));
+		}
+		if(count($host) == 0){
+			return false;
 		}
 		if(count($host) == 1){
 			return $host[0].".anilibria.tv";
