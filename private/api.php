@@ -460,7 +460,7 @@ function apiList(){
 
 function updateApiCache(){
 	global $db, $cache, $user, $var;
-	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
+	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code`, `block` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
 	while($row=$query->fetch()){
         
         $names = [];
@@ -539,7 +539,7 @@ function updateApiCache(){
 			'description' => $row['description'],
             //Для блокировки релизов
             'blockedInfo' => [
-                'blocked' => FALSE,
+                'blocked' => isBlock($release['block']),
                 'reason' => NULL
             ],
             'playlist' => $playlist

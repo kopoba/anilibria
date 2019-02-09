@@ -937,6 +937,14 @@ function parse_code_bb($text){
     return preg_replace($find, $replace, $text);
 }
 
+function isBlock($str){
+	global $var;
+	if(strpos($str, geoip_country_code_by_name($var['ip'])) !== false){
+		return true;
+	}
+	return false;
+}
+
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
@@ -953,9 +961,7 @@ function showRelease(){
 	$release = $query->fetch();
 	$var['release']['block'] = false;
 	if(!$user || $user['access'] == 1){
-		if(strpos($release['block'], geoip_country_code_by_name($var['ip'])) !== false){
-			$var['release']['block'] = true; 
-		}
+		$var['release']['block'] = isBlock($release['block']); 
 	}
 	$var['title'] = "{$release['name']} / {$release['ename']} &raquo; смотреть онлайн или скачать бесплатно";
 	$var['release']['id'] = $release['id'];
