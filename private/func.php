@@ -673,7 +673,7 @@ function upload_avatar() {
 	if(!in_array(exif_imagetype($_FILES['avatar']['tmp_name']), [IMAGETYPE_PNG, IMAGETYPE_JPEG])){
 		_message('wrongType', 'error');	
 	}
-	if($_FILES['avatar']['size'] > 500000){
+	if($_FILES['avatar']['size'] > 1048576){ // limit 1MB
 		_message('maxSize', 'error');
 	}
 	
@@ -943,7 +943,7 @@ function showRelease(){
 	if(empty($_GET['code'])){
 		return page404();
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code` FROM `xrelease` WHERE `code` = :code');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code`, `block` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -951,7 +951,12 @@ function showRelease(){
 		return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
 	}
 	$release = $query->fetch();
-	
+	$var['release']['block'] = false;
+	if(!$user || $user['access'] == 1){
+		if(strpos($release['block'], geoip_country_code_by_name($var['ip'])) !== false){
+			$var['release']['block'] = true; 
+		}
+	}
 	$var['title'] = "{$release['name']} / {$release['ename']} &raquo; смотреть онлайн или скачать бесплатно";
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
@@ -970,11 +975,17 @@ function showRelease(){
 	if(!empty($release['moonplayer'])){
 		$moon = str_replace('{moon}', $release['moonplayer'], getTemplate('moon'));
 	}
-	$page = str_replace('{name}', $release['name'], getTemplate('release'));
+	
+	if(!$var['release']['block']){
+		$page = str_replace('{name}', $release['name'], getTemplate('release'));
+	}else{
+		$page = str_replace('{name}', $release['name'], getTemplate('block'));
+	}
 	$page = str_replace('{ename}', $release['ename'], $page);
 	$page = str_replace('{aname}', $release['aname'], $page);
 	$page = str_replace('{fullname}', $name, $page);
 	$page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
+	$page = str_replace('{block}', $release['block'], $page);
 	
 	$xtmp =  explode(',', $release['genre']);
 	$str = '';
@@ -1009,6 +1020,35 @@ function showRelease(){
 	$page = str_replace('{timing}', $release['timing'], $page);
 	
 	$page = str_replace('{description}', $release['description'], $page);
+	
+	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
+	if(!file_exists($poster)){
+		$tmpImg = '/upload/release/350x500/default.jpg';
+	}else{
+		$tmpImg = fileTime($poster);
+	}
+	$page = str_replace('{img}', $tmpImg, $page);
+	$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
+	
+	if($release['status'] == '2'){
+		$page = str_replace('{style}', 'style="display: none;"', $page);
+		$page = str_replace('{announce}', 'Релиз завершен', $page);
+	}elseif(!empty($release['announce'])){
+		$page = str_replace('{announce}', $release['announce'], $page);
+	}else{
+		$a = $var['announce']['1'];
+		if(array_key_exists($release['day'], $var['announce'])){
+			$a = $var['announce'][$release['day']];
+		}
+		$page = str_replace('{announce}', $a, $page);
+		unset($a);
+	}
+	$page = str_replace('{style}', '', $page);
+	
+	if($var['release']['block']){
+		return $page;
+	}
+	
 	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
 	
 	$button = '';
@@ -1030,32 +1070,10 @@ function showRelease(){
 			$button .= '<a href="/pages/new.php"><button class="">Создать</button></a>';	
 		}
 	}
-	$page = str_replace('{button}', $button, $page);
-	
-	if($release['status'] == '2'){
-		$page = str_replace('{announce}', 'Релиз завершен', $page);
-	}elseif(!empty($release['announce'])){
-		$page = str_replace('{announce}', $release['announce'], $page);
-	}else{
-		$a = $var['announce']['1'];
-		if(array_key_exists($release['day'], $var['announce'])){
-			$a = $var['announce'][$release['day']];
-		}
-		$page = str_replace('{announce}', $a, $page);
-		unset($a);
-	}
-	
+	$page = str_replace('{button}', $button, $page);	
 	$page = str_replace('{id}', $release['id'], $page);	
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
-	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
-	if(!file_exists($poster)){
-		$tmpImg = '/upload/release/350x500/default.jpg';
-	}else{
-		$tmpImg = fileTime($poster);
-	}
-	$page = str_replace('{img}', $tmpImg, $page);
-	$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
 	$page = str_replace('{favorites}', '', $page);
 	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');
 	$query->bindParam(':id', $release['id']);
@@ -1153,7 +1171,7 @@ function xrelease(){
 	if(empty($_POST['data'])){
 		_message('empty', 'error');
 	}
-	$arr = ['name', 'ename', 'aname', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day'];
+	$arr = ['name', 'ename', 'aname', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day', 'block'];
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){
@@ -1281,7 +1299,7 @@ function footerJS(){
 				$result .='<style>.chosen-container { min-width:100%; }</style>';
 			}
 			$tmp = getReleaseVideo($var['release']['id']);
-			if(!empty($tmp)){
+			if(!empty($tmp) && !$var['release']['block']){
 				$result .= str_replace('{playlist}', $tmp, getTemplate('playerjs'));
 			}
 			unset($tmp);

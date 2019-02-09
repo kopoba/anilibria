@@ -450,6 +450,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		'decor': $('input[id=nDecor]').val(),
 		'timing': $('input[id=nTiming]').val(),
 		
+		'block': $('input[id=nBlock]').val(),
 		
 		'announce': $('input[id=nAnnounce]').val(),
 		'status': $('select[id=nStatus]').val(),

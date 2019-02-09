@@ -260,12 +260,12 @@ switch($_POST['do']){
 		$query->execute();
 		$timeout = $time-30;
 		$sql = 'SELECT * FROM `chat_sessions` WHERE `status` = \'0\' AND `sess` != :sess AND `ping` > :time'; // default want 3
-		if($_SESSION["want"] != 3){
+		if($_SESSION['want'] != 3){
 			$sql .= ' AND `sex` = :want AND `search` = :sex';
 		}
 		$query = $db->prepare($sql);
 		$query->bindParam(':sess', $sid);
-		if($_SESSION["want"] != 3){
+		if($_SESSION['want'] != 3){
 			$query->bindParam(':want', $_SESSION['want']);
 			$query->bindParam(':sex', $_SESSION['sex']);
 		}

@@ -35,8 +35,9 @@ $var['page'] = 'new';
 			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
 			<input id="nAname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Альтернативное название: Вторжение титанов" required="">
 			<div style="margin-top: 6px;">
-				<input id="nYear" class="form-control" style="width: 35%; display: inline-block;" type="text" placeholder="Год выхода: 2018" required="">
-				<input id="nType" class="form-control" style="width: 64%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" required="">
+				<input id="nYear" class="form-control" style="width: 30%; display: inline-block;" type="text" placeholder="Год выхода: 2018" required="">
+				<input id="nType" class="form-control" style="width: 33%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" required="">
+				<input id="nBlock" title="Блокировка" class="form-control" style="width: 35%; display: inline-block;" type="text" placeholder="Блокировка: RU, DE" required="">
 			</div>
 			<div style="margin-top: 6px;">
 				<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">

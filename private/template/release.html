@@ -20,8 +20,9 @@
 			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
 			<input id="nAname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Альтернативное название: Вторжение титанов" value="{aname}" required="">
 			<div style="margin-top: 6px;">
-				<input id="nYear" class="form-control" style="width: 35%; display: inline-block;" type="text" placeholder="Год выхода: 2018" value="{year}" required="">
-				<input id="nType" class="form-control" style="width: 64%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
+				<input id="nYear" class="form-control" style="width: 30%; display: inline-block;" type="text" placeholder="Год выхода: 2018" value="{year}" required="">
+				<input id="nType" class="form-control" style="width: 33%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
+				<input id="nBlock" title="Блокировка" class="form-control" style="width: 35%; display: inline-block;" type="text" placeholder="Блокировка: RU, DE" value="{block}" required="">
 			</div>
 					
 			<div style="margin-top: 6px;">
@@ -62,7 +63,7 @@
 [s]зачеркнутый шрифт[/s] => <s>зачеркнутый шрифт</s><br/>
 [url]http://google.ru[/url] => <a href="http://google.ru" target="_blank">http://google.ru</a>
 [url]https://google.ru[/url] => <a href="https://google.ru" target="_blank">https://google.ru</a><br>
-[url=http://google.ru]google[/url] => <a href="http://google.ru" target="_blank"> google</a>
+[url=http://google.ru]google[/url] => <a href="http://google.ru" target="_blank">google</a>
 [url=https://google.ru]google[/url] => <a href="https://google.ru" target="_blank">google</a>
 </pre>
 		</div>
@@ -81,7 +82,7 @@
 		<p class="detail-description" style="font-size: 15.7px;">{description}</p>
 	</div>
 	<div class="detail_torrent_side">
-		<div id="nextserial" style="display: block;">
+		<div id="nextserial" {style}>
 			<a href="" id="releaseAnnounce" data-change-announce="{userAccess}" style="color: white; text-decoration: none;">{announce}</a>
 			<input type="hidden" id="releaseID" value="{id}">
 		</div>
