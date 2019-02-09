@@ -47,12 +47,7 @@ function session_hash($login, $passwd, $access, $rand = '', $time = ''){
 	if(empty($time)){
 		$time = $var['time']+86400;
 	}
-	if($access > 1){
-		$ip = $var['ip'];
-	}else{
-		$ip = '';
-	}
-	return [$rand.hash($conf['hash_algo'], $rand.$var['ip'].$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
+	return [$rand.hash($conf['hash_algo'], $rand.$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
 }
 
 function _exit(){
