@@ -1188,6 +1188,9 @@ function xrelease(){
 			if($key == 'description'){
 				$data[$key] = parse_bb_code($data[$key]);
 			}
+			if($key == 'block'){
+				$data[$key] = strtoupper($data[$key]);
+			}
 			if(mb_strlen($data[$key]) > 10000){
 				_message('long', 'error');
 			}
@@ -1390,27 +1393,28 @@ function mp4_link($value){
 	return $url;
 }
 
+function anilibria_getHost($hosts){
+	$host = [];
+	if(empty($hosts)){
+		return false;
+	}
+	foreach($hosts as $key => $val){
+		$host = array_merge($host, array_fill(0, $val, $key));
+	}
+	if(count($host) == 0){
+		return false;
+	}
+	if(count($host) == 1){
+		return $host[0].".anilibria.tv";
+	}
+	shuffle($host);
+	return $host[random_int(0, count($host) - 1)].".anilibria.tv";
+}
+
 function getReleaseVideo($id){
 	global $conf;
 	$playlist = '';
 	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
-	function anilibria_getHost($hosts){
-		$host = [];
-		if(empty($hosts)){
-			return false;
-		}
-		foreach($hosts as $key => $val){
-			$host = array_merge($host, array_fill(0, $val, $key));
-		}
-		if(count($host) == 0){
-			return false;
-		}
-		if(count($host) == 1){
-			return $host[0].".anilibria.tv";
-		}
-		shuffle($host);
-		return $host[random_int(0, count($host) - 1)].".anilibria.tv";
-	}
 	if($data){
 		$arr = json_decode($data, true);
 		$host = anilibria_getHost($arr['online']);

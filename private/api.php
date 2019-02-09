@@ -169,9 +169,7 @@ function apiList(){
     function proceedReleases($releases, $torrent){
 		$result = []; 
 		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
-
         foreach($releases as $key => $val){
-			
             $unsettedFileds = [];
 			if(isset($_POST['filter'])){
 				$filterList = array_unique(explode(',', $_POST['filter']));
@@ -190,14 +188,22 @@ function apiList(){
 					}
 				}
 			}
-            
-            if(!in_array("torrents", $unsettedFileds)) {
+			if(!empty($val['playlist']['online'])){
+				$host = anilibria_getHost($val['playlist']['online']);
+				foreach($val['playlist'] as $k => $v){
+					$val['playlist']["$k"]['sd'] = str_replace('{host}', $host, $val['playlist']["$k"]['sd']);
+					$val['playlist']["$k"]['hd'] = str_replace('{host}', $host, $val['playlist']["$k"]['hd']);
+				}
+			}
+            if(!in_array('torrents', $unsettedFileds)) {
                 $val['torrents'] = apiGetTorrentsList($torrent, $val['id']);   
             }
-            if(!in_array("favorite", $unsettedFileds)) {
+            if(!in_array('favorite', $unsettedFileds)) {
                 $val['favorite'] = apiGetFavoriteField($val);
             }
+            $val['blockedInfo']['blocked'] = isBlock($val['blockedInfo']['blocked']);            
             unset($val['rating']);
+            unset($val['playlist']['online']);
 			$result[] = $val;
 		}
 		return $result;
@@ -497,7 +503,10 @@ function updateApiCache(){
         $series = NULL;
         $minId = PHP_INT_MAX;
         $maxId = PHP_INT_MIN;
-        foreach($playlist as $episode) {
+        foreach($playlist as $key => $episode) {
+			if($key == 'online'){
+				continue;
+			}
             $id = intval($episode['id']);
             if($id > $maxId) {
                 $maxId = $id;
@@ -539,7 +548,7 @@ function updateApiCache(){
 			'description' => $row['description'],
             //Для блокировки релизов
             'blockedInfo' => [
-                'blocked' => isBlock($release['block']),
+                'blocked' => $row['block'],
                 'reason' => NULL
             ],
             'playlist' => $playlist
@@ -580,27 +589,39 @@ function updateApiCache(){
 function getApiPlaylist($id){
 	global $conf;
 	$playlist = [];
-	$episodesSrc = getRemote($conf['nginx_domain'].'/?id='.$id, 'video'.$id);
+	$episodesSrc = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
 	if($episodesSrc){
 		$episodesArr = json_decode($episodesSrc, true);
+		$host = anilibria_getHost($episodesArr['online']);
 		if(!empty($episodesArr) && !empty($episodesArr['updated'])){
 			unset($episodesArr['updated']);
 			foreach($episodesArr as $key => $episodeSrc) {
+				if($key == 'online' || $key == 'new'){
+					continue;
+				}
 				$download = '';
 				if(!empty($episode['file'])){
 					$download = mp4_link($episodeSrc['file'].'.mp4');
 				}
-                $episode = [
-                    "id" => $key,
-                    "title" => "Серия $key",
-                    "sd" => "https:${episodeSrc['sd']}",
-                    "hd" => "https:${episodeSrc['hd']}"
-                ];
+				if($host){
+					$episodeSrc['new2'] = str_replace('[720p]', 'https:', $episodeSrc['new2']);
+					$episodeSrc['new2'] = str_replace('[480p]', 'https:', $episodeSrc['new2']);
+					$q = explode(',', $episodeSrc['new2']);
+					$episode = [
+						"id" => $key,
+						"title" => "Серия $key",
+						"sd" => $q['0'],
+						"hd" => $q['1']
+					];
+				}
                 if(!empty($episode['file'])){
 					$episode['srcSd'] = mp4_link($episodeSrc['file'].'.mp4');
 				}
                 $playlist[] = $episode;
 			}
+		}
+		if($host){
+			$playlist['online'] = $episodesArr['online'];
 		}
 	}
 	return $playlist;
