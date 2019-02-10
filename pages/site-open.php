@@ -19,8 +19,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
         height: auto;
     }
     #h3-zagolovok {
-        font-size: 16pt;
+        font-size: 18pt;
         text-align: center;
+		font-weight: bold;
     }
     #news-text {
         font-size: 12pt;
