@@ -1922,7 +1922,8 @@ function showCatalog(){
 	
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$tmplTD = '<td><a href="/release/{id}.html"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
+		$animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">{series}</span><span class="anime_description">{desc}</span></div>';
+		$tmplTD = '<td><a href="/release/{id}.html">'.$animeDescription.'<img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
@@ -1931,7 +1932,7 @@ function showCatalog(){
 				$img = fileTime($poster);
 			}
 			$xname = releaseNameByID($val['id']);
-			$arr[$i][] =  str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));  
+            $arr[$i][] =  str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
