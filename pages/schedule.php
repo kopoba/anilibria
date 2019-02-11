@@ -39,10 +39,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     border: 3px solid #4a4a4a;
 }
 
-.goodcell a:hover > img {
-    border: 3px solid #e04e4e;
-}
-
 /* Schedule hover description */
 .goodcell {
 	position: relative;
@@ -53,19 +49,18 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	display: none;
 	top: 0;
 	left: 0;
-	height: calc(100% - 6px);
-	width: calc(100% - 6px);
-	margin: 3px;
+	height: 100%;
+	width: 100%;
 	background-color: #000;
 	opacity: 0.8;
 	color: #fff;
 	text-align: center;
-    padding: 10px;
-    overflow: hidden;
+	padding: 10px;
 }
 
 .goodcell > a:hover .schedule-anime-desc {
 	display: block;
+	border: 3px solid #e04e4e;
 }
 
 .schedule-anime-desc > span {
