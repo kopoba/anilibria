@@ -39,7 +39,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     border: 3px solid #4a4a4a;
 }
 
-.goodcell img:hover {
+.goodcell a:hover > img {
     border: 3px solid #e04e4e;
 }
 
@@ -53,8 +53,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	display: none;
 	top: 0;
 	left: 0;
-	height: 100%;
-	width: 100%;
+	height: calc(100% - 6px);
+	width: calc(100% - 6px);
+	margin: 3px;
 	background-color: #000;
 	opacity: 0.8;
 	color: #fff;

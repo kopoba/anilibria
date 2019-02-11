@@ -421,8 +421,9 @@ p.lasttortext {
 	display: none;
 	top: 0;
 	left: 0;
-	height: 100%;
-	width: 100%;
+	height: calc(100% - 20px);
+	width: calc(100% - 20px);
+	margin: 10px;
 	background-color: #000;
 	opacity: 0.8;
 	color: #fff;
@@ -448,7 +449,7 @@ p.lasttortext {
 
 .side-series {
 	font-size: 14pt;
-	margin-bottom: 120px;
+	margin-bottom: 80px;
 }
 
 .side-description {
