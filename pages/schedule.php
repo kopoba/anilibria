@@ -42,6 +42,50 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 .goodcell img:hover {
     border: 3px solid #e04e4e;
 }
+
+/* Schedule hover description */
+.goodcell {
+	position: relative;
+}
+
+.schedule-anime-desc {
+	position: absolute;
+	display: none;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-color: #000;
+	opacity: 0.8;
+	color: #fff;
+	text-align: center;
+    padding: 10px;
+    overflow: hidden;
+}
+
+.goodcell > a:hover .schedule-anime-desc {
+	display: block;
+}
+
+.schedule-anime-desc > span {
+	display: block;
+}
+
+.schedule-runame {
+	font-size: 13pt;
+	line-height: 13pt;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.schedule-series {
+	font-size: 12pt;
+	margin-bottom: 40px;
+}
+
+.schedule-description {
+	font-size: 11pt;
+}
 </style>
 
 <div class="news-block">
