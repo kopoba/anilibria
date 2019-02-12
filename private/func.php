@@ -1820,7 +1820,7 @@ function showPosters(){
 		default: $limit = 5; break;
 	}
 	
-	$query = $db->query('SELECT `id`, `name`, `ename`, `code` FROM `xrelease` ORDER BY `last` DESC LIMIT '.$limit);
+	$query = $db->query('SELECT `id`, `name`, `ename`, `code`, `description` FROM `xrelease` ORDER BY `last` DESC LIMIT '.$limit);
 	while($row=$query->fetch()){	
 		$img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
 		if(!$img){
@@ -1830,6 +1830,9 @@ function showPosters(){
 		$tmp = str_replace('{id}', $row['code'], $tmp);
 		$tmp = str_replace('{img}', $img, $tmp);
 		$tmp = str_replace('{alt}', "{$row['name']} / {$row['ename']}", $tmp);
+		$tmp = str_replace('{runame}', "{$row['name']}", $tmp);
+		$tmp = str_replace('{description}', releaseDescriptionByID($row['id'],179), $tmp);
+		$tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
 		$result .= $tmp;
 	}
 	return $result;
@@ -1864,6 +1867,26 @@ function releaseCodeByID($id){
 	$query->bindParam(':id', $id);
 	$query->execute();
 	return $query->fetch()['code'];
+}
+
+function releaseSeriesByID($id){
+	global $db;
+	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	$row = $query->fetch();
+	$result = json_decode($row['info'], true);
+	return $result['1'];
+}
+
+function releaseDescriptionByID($id,$SymCount){
+	global $db;
+	$query = $db->prepare('SELECT `description` FROM `xrelease` WHERE `id` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	$row = $query->fetch();
+	$shortdescription = mb_strimwidth({$row['description']},0,$SymCount,"...");
+	return $shortdescription;
 }
 
 function showCatalog(){
@@ -1922,7 +1945,8 @@ function showCatalog(){
 	
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$tmplTD = '<td><a href="/release/{id}.html"><img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
+		$animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">Серия: {series}</span><span class="anime_description">{desc}</span></div>';
+		$tmplTD = '<td><a href="/release/{id}.html">'.$animeDescription.'<img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$val['id'].'.jpg';
 			if(!file_exists($poster)){
@@ -1931,7 +1955,10 @@ function showCatalog(){
 				$img = fileTime($poster);
 			}
 			$xname = releaseNameByID($val['id']);
-			$arr[$i][] =  str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));  
+			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
+			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
+			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
+			$arr[$i] = str_replace('{description}', releaseDescriptionByID($val['id'],199), $arr[$i]);
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
@@ -2052,7 +2079,8 @@ function releaseUpdateLast(){
 function showSchedule(){
 	global $db, $var; $arr = []; $result = ''; $i = 0;
 	$tmpl1 = '<div class="day">{day}</div>';
-	$tmpl2 = '<td class="goodcell"><a href="/release/{id}.html"> <img width="200" height="280" src="{img}" alt="{alt}"}></a></td>';
+	$descTPL = '<div class="schedule-anime-desc"><span class="schedule-runame">{runame}</span><span class="schedule-series">Серия: {series}</span><span class="schedule-description">{description}</span></div>';
+	$tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">'.$descTPL.'<img width="200" height="280" src="{img}" alt="{alt}"}></a></td>';
 	foreach($var['day'] as $key => $val){
 		$query = $db->prepare('SELECT `id`, `name`, `ename` FROM `xrelease` WHERE `day` = :day AND `status` = 1');
 		$query->bindParam(':day', $key);
@@ -2065,7 +2093,7 @@ function showSchedule(){
 				$img = fileTime($poster);
 			}
 			$arr["$key"][$i][] = [ 
-				str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, $tmpl2)))
+				str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, str_replace('{runame}', "{$row['name']}", str_replace('{series}', releaseSeriesByID($row['id']), str_replace('{description}', releaseDescriptionByID($row['id'], 99),$tmpl2))))))
 			];
 			if(count($arr["$key"][$i]) == 4){
 				$i++;

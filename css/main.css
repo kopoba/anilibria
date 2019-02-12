@@ -390,6 +390,7 @@ span.other-info {
 }
 
 div.torrent_block {
+	position: relative;
 	width: 260px;
 	height: auto;
 	padding-bottom: 10px;
@@ -413,6 +414,46 @@ p.lasttortext {
 	color: #fff;
 	font-weight: 400;
 	font-size: 11pt;
+}
+
+.side-anime-desc {
+	position: absolute;
+	display: none;
+	top: 0;
+	left: 0;
+	height: calc(100% - 20px);
+	width: calc(100% - 20px);
+	margin: 10px;
+	background-color: #000;
+	opacity: 0.8;
+	color: #fff;
+	text-align: center;
+	padding: 10px;
+	overflow: hidden;
+}
+
+.torrent_block > a:hover .side-anime-desc {
+	display: block;
+}
+
+.side-anime-desc > span {
+	display: block;
+}
+
+.side-runame {
+	font-size: 14pt;
+	line-height: 14pt;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.side-series {
+	font-size: 14pt;
+	margin-bottom: 80px;
+}
+
+.side-description {
+	font-size: 12pt;
 }
 
 .profile-info-left-side {
