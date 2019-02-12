@@ -753,8 +753,9 @@ function saveUserValues(){
 	if(!empty($arr['sex']) && (!ctype_digit($arr['sex']) || ($arr['sex'] < 0 || $arr['sex'] > 2))){
 		_message('wrongData', 'error');
 	}
-    if(!empty($arr['age']) && ctype_digit($arr['age'])){
-		$time = strtotime(date('Y', $var['time'])-$arr['age']);
+    if(!empty($arr['age']) && ctype_digit($arr['age']) && $arr['age'] < date('Y', $var['time'])){	
+		$year = date('Y', $var['time'])-$arr['age'];
+		$time = strtotime("01-01-$year");
 		if(!$time){
 			_message('wrongData', 'error');
 		}
@@ -1663,24 +1664,30 @@ function removeRelease(){
 	if($query->rowCount() == 0){
 		_message('wrongRelease', 'error');
 	}
-	$query = $db->prepare('DELETE FROM `xrelease` WHERE `id` = :id');
-	$query->bindParam(':id', $_POST['id']);
-	$query->execute();
-	$query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id');
-	$query->bindParam(':id', $_POST['id']);
-	$query->execute();
-	if($query->rowCount() > 0){
-		while($row = $query->fetch()){
-			torrentDelete($row['fid']);
+	if($user['access'] == 4){
+		$query = $db->prepare('DELETE FROM `xrelease` WHERE `id` = :id');
+		$query->bindParam(':id', $_POST['id']);
+		$query->execute();
+		$query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id');
+		$query->bindParam(':id', $_POST['id']);
+		$query->execute();
+		if($query->rowCount() > 0){
+			while($row = $query->fetch()){
+				torrentDelete($row['fid']);
+			}
 		}
+		$query = $db->prepare('DELETE FROM `favorites` WHERE `rid` = :rid');
+		$query->bindParam(':rid', $_POST['id']);
+		$query->execute();
+		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/200x280/'.$_POST['id'].'.jpg');
+		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/240x350/'.$_POST['id'].'.jpg');
+		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$_POST['id'].'.jpg');
+		deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$_POST['id'].'.jpg');
+	}else{
+		$query = $db->prepare('UPDATE `xrelease` SET `status` = \'3\' WHERE `id` = :id');
+		$query->bindParam(':id', $_POST['id']);
+		$query->execute();
 	}
-	$query = $db->prepare('DELETE FROM `favorites` WHERE `rid` = :rid');
-	$query->bindParam(':rid', $_POST['id']);
-	$query->execute();
-	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/200x280/'.$_POST['id'].'.jpg');
-	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/240x350/'.$_POST['id'].'.jpg');
-	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$_POST['id'].'.jpg');
-	deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$_POST['id'].'.jpg');
 	_message('success');
 }
 
@@ -1740,27 +1747,21 @@ function releaseTable(){
 	return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];
 }
 
-function fileTime($f){
+function fileTime($file){
 	global $cache, $var;
-	if(!file_exists($f)){
-		$f = $_SERVER['DOCUMENT_ROOT'].$f;
-		if(!file_exists($f)){
+	if(!file_exists($file)){
+		$file = $_SERVER['DOCUMENT_ROOT'].$file;
+		if(!file_exists($file)){
 			return false;
 		}
 	}
-	$hash = md5($f);
+	$hash = crc32($file);
 	$time = $cache->get("file{$hash}");
 	if($time === false){
-		$time = filemtime($f);
-	}else{
-		$t = filemtime($f);
-		if($time != $t && $var['time'] > $t+600){ // delay for lsyncd
-			$time = $t;
-		}
+		$time = filemtime($file);
+		$cache->set("file{$hash}", $time, 600);
 	}
-	$cache->set("file{$hash}", $time, 600);
-	$f = str_replace($_SERVER['DOCUMENT_ROOT'], '', $f);
-	return $f.'?'.$time;
+	return str_replace($_SERVER['DOCUMENT_ROOT'], '', $file).'?'.$time;
 }
 
 function sphinxPrepare($x){
@@ -1804,7 +1805,7 @@ function xSearch(){
 		$row = $query->fetch();
 		$code = releaseCodeByID($row['id']);
 		$json[] =  ['id' => $row['id'], 'name' => base64_encode($row['name']), 'ename' => $row['ename'], 'code' => $code];
-		$result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; margin-top: 7px; margin-bottom: 7px;'>{$row['name']}</span></a>";
+		$result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px;'>{$row['name']}</span></a></td></tr>";
 	}
 	if(isset($_POST['json'])){
 		$result = $json;
@@ -1903,16 +1904,14 @@ function showCatalog(){
 	}
 	function bSearch($sphinx, $page, $sort){
 		if(!empty($_POST['search'])){
-			$search = '';
-			$data = json_decode($_POST['search'], true);
-			foreach($data as $k => $v){
-				if(!empty($v)){
-					$search .= $v.',';
-				}
+			$data = json_decode($_POST['search'], true);			
+			if(!isset($data['year']) || !isset($data['genre'])){
+				return false;
 			}
-			$search = rtrim($search, ',');
-			if(!empty($search)){
-				$search = sphinxPrepare($search);
+			$search[] = str_replace(',', '|', sphinxPrepare($data['year']));
+			$search[] = sphinxPrepare($data['genre']);			
+			$search = rtrim(implode(",", $search), ',');
+			if(!empty($search)){				
 				$query = $sphinx->prepare('SELECT count(*) as total FROM anilibria WHERE MATCH(:search)');
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();

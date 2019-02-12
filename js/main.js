@@ -247,7 +247,8 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 			if(sex != ""){
 				if(sex=="1"){
 					$("#sex").text("Мужской");
-				}else{
+				}
+				if(sex=="2"){
 					$("#sex").text("Женский");
 				}	
 			}
@@ -476,12 +477,12 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		success: function(json) {
 			//console.log(json);
 			data = JSON.parse(json);
-			if(_this.data('release-update') !== undefined){
+			//if(_this.data('release-update') !== undefined){
 				window.location=data.url;
-			}
-			if(_this.data('release-new') !== undefined){
-				$('#tableRelease').DataTable().ajax.reload(null, false);
-			}
+			//}
+			//if(_this.data('release-new') !== undefined){
+			//	$('#tableRelease').DataTable().ajax.reload(null, false);
+			//}
 		}
 	});
 });

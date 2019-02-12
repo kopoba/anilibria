@@ -30,11 +30,11 @@ if(!empty($user['avatar'])){
 
 function profileMes($name){
 	global $user, $var;
-	$x = empty($user['user_values'][$name]) ? false : $user['user_values'][$name];
+	$x = empty($user['user_values']["$name"]) ? false : $user['user_values']["$name"];	
 	if($x){
 		switch($name){
 			case 'sex': $x = $var['sex'][$x]; break;
-			case 'age': $x = date('Y', time()) - date('Y', $x); break;
+			case 'age': $x = date('Y', $var['time']) - date('Y', $x); break;
 		}
 	}
 	if(!$x){

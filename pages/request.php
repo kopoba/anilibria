@@ -134,7 +134,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<option value="" disabled="" selected="">Заявка</option>
 		<option value="1">Технарь</option>
 		<option value="2">Войсер</option>
-		<option value="3">Сабер</option>
+		<option value="3">Саббер</option>
 		<option value="4">Сидер</option>
 		<option value="5">Пиарщик</option>
     </select>

@@ -27,7 +27,7 @@ if(!$user){
 		<div>
 			<input class="form-control" id="newMail" placeholder="Email или логин" type="text" required>
 			<input class="form-control" id="newPasswd" style="margin-top: 10px;"  type="password" placeholder="Пароль" required>
-			<input class="form-control" id="fa2code" style="margin-top: 10px;" type="text" placeholder="2FA code">
+			<input class="form-control" id="fa2code" style="margin-top: 10px;" type="text" placeholder="Оставьте поле пустым, если вы не настроили двухфакторную аутентификацию">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" name="login" data-submit-login value="ВХОД">
 		</div>
 		<div class="clear"></div>

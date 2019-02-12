@@ -32,7 +32,7 @@ $var['page'] = 'new';
 		<div class="clear"></div>
 		<div class="detail_torrent_info" style="height: 511px;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" required="">
-			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Англиское название: Tensei shitara Slime Datta Ken" required="">
+			<input id="nEname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Английское название: Tensei shitara Slime Datta Ken" required="">
 			<input id="nAname" class="form-control" style="margin-top: 6px;" type="text" placeholder="Альтернативное название: Вторжение титанов" required="">
 			<div style="margin-top: 6px;">
 				<input id="nYear" class="form-control" style="width: 30%; display: inline-block;" type="text" placeholder="Год выхода: 2018" required="">

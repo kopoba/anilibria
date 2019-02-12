@@ -191,6 +191,9 @@ function apiList(){
 			if(!empty($val['playlist']['online'])){
 				$host = anilibria_getHost($val['playlist']['online']);
 				foreach($val['playlist'] as $k => $v){
+					if(empty($val['playlist']["$k"]['sd']) || empty($val['playlist']["$k"]['hd'])){
+						continue;
+					}
 					$val['playlist']["$k"]['sd'] = str_replace('{host}', $host, $val['playlist']["$k"]['sd']);
 					$val['playlist']["$k"]['hd'] = str_replace('{host}', $host, $val['playlist']["$k"]['hd']);
 				}
@@ -201,7 +204,9 @@ function apiList(){
             if(!in_array('favorite', $unsettedFileds)) {
                 $val['favorite'] = apiGetFavoriteField($val);
             }
-            $val['blockedInfo']['blocked'] = isBlock($val['blockedInfo']['blocked']);            
+            if(!empty($val['blockedInfo'])){
+				$val['blockedInfo']['blocked'] = isBlock($val['blockedInfo']['blocked']);        
+			}    
             unset($val['rating']);
             unset($val['playlist']['online']);
 			$result[] = $val;
