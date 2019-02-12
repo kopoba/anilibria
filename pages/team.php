@@ -54,7 +54,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #800000;"><a href="https://vk.com/id26183002" target="_blank">Aizawa</a></span> - руководитель подкоманды технарей (сидеры)</li>
 			<li><span style="color: #800000;">Alkhorus </span> - технарь / куратор академии таймеров / помощник рук. технарей</li>
 			<li><span style="color: #800000;">Hikariya</span>&nbsp;- технарь / помощник рук. сабберов (оформитель) / дизайнер</li>
-			<li><span style="color: #f2d20c;">Hant</span> - помощник рук. PR-команды</li>
 			<li><span style="color: #339966;">Aemi</span> - войсер</li>
 			<li><span style="color: #339966;">Amikiri</span> - войсер</li>
 			<li><span style="color: #339966;">Anzen</span> - руководитель команды дизайнеров, войсер</li>
@@ -91,6 +90,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">Psycho</span> -  переводчик</li>
 			<li><span style="color: #f7941d;">Aiso</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Flerion</span> - переводчик / оформитель</li>
+			<li><span style="color: #f2d20c;">Hant</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">SineD</span> - PR-команда</li>
 		</ul>
 		<p style="text-align: center;">
@@ -133,7 +133,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Nuts</span> - войсер (служит в армии)</li>
 			<li><span style="color: #339966;">Kari</span> - войсер (в отпуске)</li>
 			<li><span style="color: #339966;">Myuk</span> - войсер (в отпуске)</li>
-			<li><span style="color: #f2d20c;">LupusLisa</span> - PR-команда</li>
 			<li><span style="color: #f7941d;">LolWhat</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Constantum</span> - переводчик<br>
 			</li><li><span style="color: #f7941d;">Vurdalak121</span> - переводчик</li>
@@ -162,7 +161,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li>Fenix0904 - календарщик</li>
 			<li>RadiationX - автор приложения, администратор сайта</li>
 			<li>Lisitsa - администратор discord-сервера</li>
-			<li>Kirja - вёрстка сайта</li>
+			<li>Kirja - вёрстка сайта, администратор сайта</li>
 		</ul>
 	</div>
 	<div class="clear"></div>
