@@ -7,9 +7,9 @@ switch(@$_REQUEST['action']){
 	case 'app':
 	case 'app_v2':
 		if(@$_REQUEST['check'] == 'update' )
-				require_once('actions_v2/'.$_REQUEST['action'].'/update.php');
+				require_once('update.php');
 			else
-				require_once('actions_v2/'.$_REQUEST['action'].'/app.php');
+				require_once('app.php');
 	break;
 	case 'comments':
 	case 'articles':
