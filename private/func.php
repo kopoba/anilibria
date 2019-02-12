@@ -1885,7 +1885,7 @@ function releaseDescriptionByID($id,$SymCount){
 	$query->bindParam(':id', $id);
 	$query->execute();
 	$row = $query->fetch();
-	$shortdescription = mb_strimwidth({$row['description']},0,$SymCount,"...");
+	$shortdescription = mb_strimwidth($row['description'],0,$SymCount,"...");
 	return $shortdescription;
 }
 
@@ -1945,7 +1945,7 @@ function showCatalog(){
 	
 	function prepareSearchResult($data){
 		$arr = []; $i = 0;
-		$animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">Серия: {series}</span><span class="anime_description">{desc}</span></div>';
+		$animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">Серия: {series}</span><span class="anime_description">{description}</span></div>';
 		$tmplTD = '<td><a href="/release/{id}.html">'.$animeDescription.'<img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
 		foreach($data as $key => $val){
 			$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/270x390/'.$val['id'].'.jpg';
