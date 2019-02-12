@@ -85,6 +85,9 @@ function apiList(){
 	}
 	
 	function apiGetCatalog($info, $torrent, $items){
+		if(!isset($items)){
+			$items = [];
+		}
 		$ids = array_map(function($item){
 			return $item['id'];
 		}, $items);
