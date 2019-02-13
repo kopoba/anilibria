@@ -508,12 +508,11 @@ $(document).on('click', '[data-xrelease-edit]', function(e){
 });
 
 $("#smallSearchInput").focus(function() {
-	console.log("sdsf");
 	$('#smallSearch').show();
 });
 
 $("#smallSearchInput").focusout(function(){
-	setTimeout(function(){$('#smallSearch').hide();},100);
+	setTimeout(function(){$('#smallSearch').hide();},250);
 });
 
 $("#smallSearchInput").keyup(function(){	
