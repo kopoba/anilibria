@@ -1,6 +1,4 @@
-<?php
-
-echo '{
+{
   "update": {
     "version_code": "36",
     "version_name": "2.2.0",
@@ -35,4 +33,4 @@ echo '{
       "Цветной navigationbar для Android 8.0"
     ]
   }
-}';
+}
