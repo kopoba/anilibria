@@ -22,6 +22,7 @@ function apiList(){
     
 	global $cache; $result = [];
 	$count = $cache->get('apiInfo');
+	$info = [];
 	$torrent = json_decode($cache->get('apiTorrent'), true);
 	for($i=0; $i < $count; $i++){
 		$tmp = json_decode($cache->get("apiInfo$i"), true);
@@ -466,6 +467,16 @@ function apiList(){
 				'baseUrl' => 'https://dev.anilibria.tv/',
 				'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
 			];
+        break;
+			
+		case 'app_update':
+			$version = 36;
+			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
+			return json_decode($src, true);
+        break;
+			
+		case 'empty':
+			return [];
         break;
 	}
     //Вместо default case
