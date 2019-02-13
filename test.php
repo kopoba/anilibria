@@ -85,8 +85,10 @@ testPrint(
 	[
 		'query' => 'catalog',
 		'page' => '1', // num page
-		'genre' => '',
-		'year' => '2019',
+		'search' => [
+			'genre' => '',
+			'year' => '2019'
+		],
 		'xpage' => 'catalog',
 		'sort' => '2', // 1 new, 2 popular
 		'json' => ''
