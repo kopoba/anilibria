@@ -470,7 +470,7 @@ function apiList(){
         break;
 			
 		case 'app_update':
-			$version = 36;
+			$version = 40;
 			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
 			return json_decode($src, true);
         break;
