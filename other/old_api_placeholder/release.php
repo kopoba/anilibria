@@ -7,7 +7,7 @@ $data = [
 	"title" => "Приложение устраело, необходимо обновить, только маленьким шрифтом / Приложение устраело, необходимо обновить",
 	"torrent_link" => "",
 	"link" => "",
-	"image" => "/upload/iblock/062/ueno-san-wa-bukiyou-nedotyepa-ueno.png",
+	"image" => "/upload/app/old_api_r.jpg",
 	"episode" => "Это важно",
 	"description" => "Нажмите на уведомление об обновлении и установите новую версию приложения. Сайт обновлён, это приложение не совместимо с новой версией сайта. <a href='https://www.anilibria.tv/upload/app/AniLibria_v2.3.0.apk'>или нажми на эту ссылку, чтобы скачать файл</a>",
 	"season" => [
