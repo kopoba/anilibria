@@ -92,6 +92,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">Flerion</span> - переводчик / оформитель</li>
 			<li><span style="color: #f2d20c;">Hant</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">SineD</span> - PR-команда</li>
+			<li><span style="color: #f2d20c;">Maximka</span> - PR-команда</li>
 		</ul>
 		<p style="text-align: center;">
 			<u><b>4 Лига (ОСНОВА)</b></u>

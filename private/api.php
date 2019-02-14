@@ -200,6 +200,11 @@ function apiList(){
 					}
 					$val['playlist']["$k"]['sd'] = str_replace('{host}', $host, $val['playlist']["$k"]['sd']);
 					$val['playlist']["$k"]['hd'] = str_replace('{host}', $host, $val['playlist']["$k"]['hd']);
+					if(!empty($val['playlist']["$k"]['file'])){
+						$val['playlist']["$k"]['srcSd'] = mp4_link($val['playlist']["$k"]['file'].'-sd.mp4');
+						$val['playlist']["$k"]['srcHd'] = mp4_link($val['playlist']["$k"]['file'].'.mp4');
+            			unset($val['playlist']["$k"]['file']);
+					}
 				}
 			}
             if(!in_array('torrents', $unsettedFileds)) {
@@ -220,8 +225,9 @@ function apiList(){
     
     function apiGetFavoriteField($release){
         global $user;
+		$count = countRatingRelease($release['id']);
         return [
-            'rating' => intval($release['rating']),
+            'rating' => intval($count),
             'added' => isFavorite($user['id'], $release['id'])
         ]; 
     }
@@ -247,7 +253,10 @@ function apiList(){
 			}
             $favReleases["$favId"] = $info["$favId"];
         }
-        return apiGetReleases($favReleases, $torrent);
+		$_POST['perPage'] = '9999';
+		$result = apiGetReleases($favReleases, $torrent);
+		$result['items'] = array_reverse($result[items]);
+        return $result;
     }
     
     function apiGetUser(){
@@ -255,10 +264,15 @@ function apiList(){
         if(!$user) {
             throw new ApiException(401, "No user");
         }
+		if(!empty($user['avatar'])){
+			$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
+		}else{
+			$tmpAvatar = 'noavatar.jpg';
+		}
         return [
             "id" => intval($user['id']),
             "login" => $user['login'],
-            "avatar" => '/upload/avatars/'.$user['dir'].'/'.$user['avatar'].'.jpg'
+            "avatar" => "/upload/avatars/$tmpAvatar"
         ];
     }
 
@@ -464,13 +478,13 @@ function apiList(){
 			
 		case 'vkcomments':
             return [
-				'baseUrl' => 'https://dev.anilibria.tv/',
-				'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6822494, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
+				'baseUrl' => 'https://www.anilibria.tv/',
+				'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
 			];
         break;
 			
 		case 'app_update':
-			$version = 40;
+			$version = 41;
 			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
 			return json_decode($src, true);
         break;
@@ -520,20 +534,20 @@ function updateApiCache(){
         $playlist = getApiPlaylist($row['id']);
         
         $series = NULL;
+		$episodesIds = [];
         $minId = PHP_INT_MAX;
         $maxId = PHP_INT_MIN;
         foreach($playlist as $key => $episode) {
-			if($key == 'online'){
+			if($key === 'online'){
 				continue;
 			}
             $id = intval($episode['id']);
-            if($id > $maxId) {
-                $maxId = $id;
-            }
-            if($id < $minId) {
-                $minId = $id;
-            }
+			$episodesIds[] = $id;
         }
+		if(!empty($episodesIds)){	
+			$minId = min($episodesIds);
+			$maxId = max($episodesIds);
+		}
         
         if ($minId == PHP_INT_MAX && $maxId == PHP_INT_MIN){
             $series = NULL;
@@ -629,11 +643,12 @@ function getApiPlaylist($id){
 					$episode = [
 						"id" => $key,
 						"title" => "Серия $key",
-						"sd" => $q['0'],
-						"hd" => $q['1']
+						"sd" => $q['1'],
+						"hd" => $q['0'],
+						"file" => $episodeSrc['file']
 					];
 				}
-                if(!empty($episode['file'])){
+                if(!empty($episodeSrc['file'])){
 					$episode['srcSd'] = mp4_link($episodeSrc['file'].'.mp4');
 				}
                 $playlist[] = $episode;

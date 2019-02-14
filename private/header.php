@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
 	<head>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44944415-2"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		  gtag('config', 'UA-44944415-2');
+		</script>
+		
 		<?php echo $var['og']; ?>
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<meta name="description" content="<?php echo $var['description']; ?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/bootstrap.min.css');?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />
-	<!--	<link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic,cyrillic' rel='stylesheet' type='text/css'> -->
 	</head>
 	<body>
 		<div class="header">
@@ -29,4 +37,3 @@
 						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
-

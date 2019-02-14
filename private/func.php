@@ -2,13 +2,18 @@
 
 function createPasswd($passwd = ''){
 	if(empty($passwd)){
-		$passwd = genRandStr(8);
+		$passwd = genRandStr(8, 1);
 	}
 	return [$passwd, password_hash($passwd, PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2])];
 }
 
-function genRandStr($length = 10) {
-	$str = ''; $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()_+-=';
+function genRandStr($length = 10, $mode = 2) {
+	$str = ''; 
+	if($mode == 1){
+		$chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	}else{
+		$chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()_+-=';
+	}
 	for ($i = 0; $i < $length; $i++) {
 		$str .= $chars[random_int(0 ,strlen($chars)-1)];
 	}
@@ -215,7 +220,7 @@ function password_recovery(){
 	$time = $var['time']+43200;
 	$hash = hash($conf['hash_algo'], $row['id'].$time.sha1(half_string_hash($row['passwd'])));
 	$link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/password.php?id={$row['id']}&time={$time}&hash={$hash}";
-	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.");
+	_mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.<br/>Далее вам придет письмо с паролем на почту.");
 	_message('checkEmail');
 }
 
@@ -1261,7 +1266,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 6850188, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 2000);" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 
@@ -1368,15 +1373,15 @@ function getRemote($url, $key, $update = false){
 
 function wsInfoShow(){
 	$result = '';
-	$data = getRemote('https://www.anilibria.tv/api/api.php?action=top', 'top');
-	if($data){
-		$arr = json_decode($data, true);
-		$all = array_sum($arr);
-		$arr = array_slice($arr, 0, 20);
+	$arr = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/upload/stats.json'), true);
+	if($arr){
 		foreach($arr as $key => $val){
-			$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv/search/index.php?q=$key&where=iblock_Tracker\">$key</a></td><td class=\"tableCenter\">$val</a></td></tr>";
+			if($key == 'sum'){
+				continue;
+			}
+			$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv{$val['1']}\">{$val['0']}</a></td><td class=\"tableCenter\">{$val['2']}</a></td></tr>";
 		}
-		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
+		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">{$arr['sum']}</a></td></tr>";
 	}
 	return $result;
 }
@@ -2117,18 +2122,24 @@ function showSchedule(){
 function countRating(){
 	global $db;
 	$query = $db->query('SELECT `id` FROM `xrelease`');
-	while($row=$query->fetch()){
-		$tmp = $db->prepare('SELECT count(`id`) as total FROM `favorites` WHERE `rid` = :rid');
-		$tmp->bindParam(':rid', $row['id']);
-		$tmp->execute();
-		$count = $tmp->fetch()['total'];
-		if($count > 0){
-			$tmp = $db->prepare('UPDATE `xrelease` SET `rating` = :rating WHERE `id` = :id');
-			$tmp->bindParam(':rating', $count);
-			$tmp->bindParam(':id', $row['id']);
-			$tmp->execute();
-		}
+	while($row=$query->fetch()) {
+		countRatingRelease($row['id']);
 	}
+}
+
+function countRatingRelease($rid) {
+	global $db;
+	$tmp = $db->prepare('SELECT count(`id`) as total FROM `favorites` WHERE `rid` = :rid');
+	$tmp->bindParam(':rid', $rid);
+	$tmp->execute();
+	$count = $tmp->fetch()['total'];
+	if($count > 0){
+		$tmp = $db->prepare('UPDATE `xrelease` SET `rating` = :rating WHERE `id` = :id');
+		$tmp->bindParam(':rating', $count);
+		$tmp->bindParam(':id', $rid);
+		$tmp->execute();
+	}
+	return $count;
 }
 
 
@@ -2253,9 +2264,8 @@ function catalogYear(){
 }
 
 function pushAll($name, $code){
-	return;
 	global $conf; 
-	$url = 'https://anilibria.tv/release/'.$code.'.html';
+	$url = 'https://www.anilibria.tv/release/'.$code.'.html';
 	function sendPush($api, $data){
 		curl_setopt_array($ch = curl_init(), [
 			CURLOPT_URL => $api,
@@ -2298,7 +2308,7 @@ function helpSeed(){
 		$tmp->bindParam(':id', $row['rid']);
 		$tmp->execute();
 		if($tmp->rowCount() == 1){
-			$url = 'https://dev.anilibria.tv/release/'.$tmp->fetch()['code'].'.html';
+			$url = 'https://www.anilibria.tv/release/'.$tmp->fetch()['code'].'.html';
 			break;
 		}
 	}

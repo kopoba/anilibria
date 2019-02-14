@@ -85,10 +85,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 </style>
 
 <div class="news-block">
-<p style="text-align:center; font-size:20pt; font-weight: bold;">РАСПИСАНИЕ ВЫХОДА СЕРИЙ НА АНИЛИБРИИ*</p>
-<hr />
-<p style="text-align:center; font-size: 10pt; font-style: italic;">*новые серии выходят в этот день недели +-1 день. В начале сезона расписание может не соответствовать действительности. Если серии задерживаются &mdash; это будет указано в статусе релиза (над постером).</p>
-	<div>			
+	<p style="text-align:center; font-size:13pt;">РАСПИСАНИЕ ВЫХОДА СЕРИЙ НА АНИЛИБРИИ*<br/>
+	<span style="text-align:center; font-size: 11pt; font-style: italic;">*новые серии выходят в этот день недели +-1 день. В начале сезона расписание может не соответствовать действительности. Если серии задерживаются &mdash; это будет указано в статусе релиза (над постером).</span>
+	</p>
+	<div>
 		<?php echo showSchedule(); ?>
 	</div>
 	<div class="clear"></div>
