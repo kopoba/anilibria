@@ -1266,7 +1266,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 2000);" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 250);" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 
@@ -1374,14 +1374,13 @@ function getRemote($url, $key, $update = false){
 function wsInfoShow(){
 	$result = '';
 	$arr = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/upload/stats.json'), true);
+	$all = $arr['sum'];
+	unset($arr['sum']);
 	if($arr){
 		foreach($arr as $key => $val){
-			if($key == 'sum'){
-				continue;
-			}
 			$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv{$val['1']}\">{$val['0']}</a></td><td class=\"tableCenter\">{$val['2']}</a></td></tr>";
 		}
-		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">{$arr['sum']}</a></td></tr>";
+		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
 	}
 	return $result;
 }
@@ -1413,7 +1412,7 @@ function anilibria_getHost($hosts){
 }
 
 function getReleaseVideo($id){
-	global $conf;
+	global $conf, $var;
 	$playlist = '';
 	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
 	if($data){
@@ -1428,7 +1427,9 @@ function getReleaseVideo($id){
 				}
 				$download = '';
 				if(!empty($val['file'])){
-					$download = mp4_link($val['file'].'.mp4');
+					$epNumber = $key;
+					$epName = trim($var['release']['name']);
+					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber-sd.mp4";
 				}
 				if($host){
 					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new'])."', download:\"$download\", 'id': 's$key'},";
