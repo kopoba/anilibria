@@ -50,7 +50,7 @@ function session_hash($login, $passwd, $access, $rand = '', $time = ''){
 		$rand = genRandStr(8);
 	}
 	if(empty($time)){
-		$time = $var['time']+86400;
+		$time = $var['time']+60*60*24*10;
 	}
 	return [$rand.hash($conf['hash_algo'], $rand.$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
 }
