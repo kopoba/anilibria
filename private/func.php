@@ -968,9 +968,13 @@ function showRelease(){
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
 	
+	
+	$shortDesc = mb_substr($release['description'], 0, 250).'...';
+	
 	$var['og'] .= "<meta property='og:title' content='{$release['name']} / {$release['ename']}' />";
-	$var['og'] .= "<meta property='og:description' content='{$release['description']}' />";
+	$var['og'] .= "<meta property='og:description' content='$shortDesc' />";
 	$var['og'] .= "<meta property='og:url' content='/release/{$release['code']}.html' />";
+	$var['description'] = $shortDesc;
 			
 	if(mb_strlen($release['name'].$release['ename']) > 60){
 		$name = "{$release['name']}<br/>{$release['ename']}";
