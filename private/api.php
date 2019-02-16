@@ -265,7 +265,7 @@ function apiList(){
     function apiGetUser(){
         global $db, $user;
         if(!$user) {
-            throw new ApiException(401, "No user");
+            throw new ApiException("No user", 401);
         }
 		if(!empty($user['avatar'])){
 			$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
