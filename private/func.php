@@ -1020,6 +1020,7 @@ function showRelease(){
 	$page = str_replace('{chosen-genre}', $str, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{chosen}', getGenreList(), $page);
+	$page = str_replace('{releaseid}', $release['id'], $page);
 	$page = str_replace('{voice}', $release['voice'], $page);
 	$page = str_replace('{year}', "{$release['year']}", $page);
 	$page = str_replace('{type}', $release['type'], $page);
