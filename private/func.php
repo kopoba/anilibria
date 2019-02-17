@@ -1087,7 +1087,7 @@ function showRelease(){
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
 	$page = str_replace('{favorites}', '', $page);
-	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');
+	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id AND `flags` = \'0\'');
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -1134,7 +1134,7 @@ function uploadPoster($id){
 	$img->setImageFormat('jpg');
 	$img->resizeImage(350,500,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-	$img->setImageCompressionQuality(85);
+	$img->setImageCompressionQuality(90);
 	$img->stripImage();
 	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$id.'.jpg';
 	deleteFile($file);
@@ -1271,7 +1271,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 250);" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 100);" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'login': 
@@ -1968,7 +1968,7 @@ function showCatalog(){
 			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
 			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
 			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
-			$arr[$i] = str_replace('{description}', releaseDescriptionByID($val['id'],199), $arr[$i]);
+			$arr[$i] = str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $arr[$i]);
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
@@ -1983,7 +1983,7 @@ function showCatalog(){
 		$sort = $sort['1'];
 	}
 	if(!empty($_POST['page'])){
-		$page = intval($_POST['page']);
+		$page = abs(intval($_POST['page']));
 		if(empty($page) || $page == 1){
 			$page = 0;
 		}else{
@@ -2215,7 +2215,8 @@ function sendHH(){
 		$result .= "<b>{$info["$key"]}:</b><br/>";
 		$result .= htmlspecialchars($val, ENT_QUOTES, 'UTF-8')."<br/><br/>";		
 	}
-	_mail('poiuty@lepus.su', "[{$position[$arr['rPosition']]}] новая заявка", $result);
+	_mail('anilibriahh@protonmail.com', "[{$position[$arr['rPosition']]}] новая заявка", $result);
+	_mail('lupin@anilibria.tv', "[{$position[$arr['rPosition']]}] новая заявка", $result);
 	$cache->set($ip, 1, 86400);
 	_message('success');
 }
