@@ -1928,7 +1928,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -1988,6 +1988,9 @@ function showCatalog(){
 			$page = 0;
 		}else{
 			$page = ($page-1) * 12;
+		}
+		if($page > 2000){
+			$page = 2000;
 		}
 	}
 	
