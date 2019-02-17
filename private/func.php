@@ -1315,7 +1315,10 @@ function footerJS(){
 				$result .= str_replace('{playlist}', $tmp, getTemplate('playerjs'));
 			}
 			unset($tmp);
-			$result .= wsInfo($var['release']['name']);
+			
+			if(!empty($var['release']['name'])){
+				$result .= wsInfo($var['release']['name']);
+			}
 			$result .= str_replace('{page}', '', $vk);
 		break;
 		case 'app':

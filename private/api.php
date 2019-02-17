@@ -26,8 +26,10 @@ function apiList(){
 	$torrent = json_decode($cache->get('apiTorrent'), true);
 	for($i=0; $i < $count; $i++){
 		$tmp = json_decode($cache->get("apiInfo$i"), true);
-		foreach($tmp as $k => $v){
-			$info["$k"] = $v; 
+		if(is_array($tmp)){
+			foreach($tmp as $k => $v){
+				$info["$k"] = $v; 
+			}
 		}
 	}
     
