@@ -898,18 +898,15 @@ function pageStat(){
 function close_sess(){
 	global $db, $user, $conf;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
 	if(empty($_POST['id']) || !ctype_digit($_POST['id'])){
-		_message('Wrong sess id', 'error');
+		_message('wrong', 'error');
 	}
 	$query = $db->prepare('DELETE FROM `session` WHERE `id` = :id AND `uid` = :uid');
 	$query->bindParam(':id', $_POST['id']);
 	$query->bindParam(':uid', $user['id']);
 	$query->execute();
-	if($query->rowCount() != 1){
-		_message('Cant close session', 'error');
-	}
 	_message2('Success');
 }
 
