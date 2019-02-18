@@ -1892,6 +1892,7 @@ function showPosters(){
 		$tmp = str_replace('{runame}', "{$row['name']}", $tmp);
 		$tmp = str_replace('{description}', releaseDescriptionByID($row['id'],179), $tmp);
 		$tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
+		$tmp = str_replace('{torlink}', getTorrentDownloadLink($row['id']), $tmp);
 		$result .= $tmp;
 	}
 	return $result;
@@ -1930,7 +1931,7 @@ function releaseCodeByID($id){
 
 function releaseSeriesByID($id){
 	global $db;
-	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id');
+	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC');
 	$query->bindParam(':id', $id);
 	$query->execute();
 	$row = $query->fetch();
@@ -1947,6 +1948,20 @@ function releaseDescriptionByID($id,$SymCount){
 	$shortdescription = mb_strimwidth($row['description'],0,$SymCount,"...");
 	$cutdescription = explode("\r\n", $shortdescription);
 	return $cutdescription[0];
+}
+
+function getTorrentDownloadLink($id) {
+    global $db, $user;
+    $query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC LIMIT 1');
+    $query->bindParam(':id', $id);
+    $query->execute();
+    $row = $query->fetch();
+    if($user){
+        $link = "/public/torrent/download.php?id={$row['fid']}";
+    }else{
+        $link = "/upload/torrents/{$row['fid']}.torrent";
+    }
+    return $link;
 }
 
 function showCatalog(){
@@ -2013,10 +2028,7 @@ function showCatalog(){
 				$img = fileTime($poster);
 			}
 			$xname = releaseNameByID($val['id']);
-			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
-			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
-			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
-			$arr[$i] = str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $arr[$i]);
+			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, str_replace('{series}', releaseSeriesByID($val['id']), str_replace('{runame}', "{$xname['0']}", str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $tmplTD))))));
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
