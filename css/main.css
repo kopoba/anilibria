@@ -458,19 +458,20 @@ p.lasttortext {
 }
 
 .side-runame {
-	font-size: 14pt;
-	line-height: 14pt;
+	font-size: 13pt;
+	line-height: 13pt;
 	margin-bottom: 5px;
 	font-weight: bold;
 }
 
 .side-series {
-	font-size: 14pt;
-	margin-bottom: 80px;
+	font-size: 13pt;
+	margin-bottom: 50px;
 }
 
 .side-description {
 	font-size: 12pt;
+	margin-bottom: 10px;
 }
 
 .profile-info-left-side {
