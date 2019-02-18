@@ -59,7 +59,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	left: 0;
 	width: 270px;
 	height: 100%;
-    background-color: rgba(0,0,0,0.8);
+	background-color: rgba(0,0,0,0.8);
 	color: white;
 	text-align: center;
 }

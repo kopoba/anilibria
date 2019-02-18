@@ -120,6 +120,72 @@ function checkCSRF(){
 	}
 }
 
+function vkAuth(){
+	global $conf;
+	$result = false;
+	if(!empty($_GET ['code'])){
+		$data = [
+			'client_id' => $conf['vk_id'],
+			'client_secret' => $conf['vk_secert'],
+			'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
+			'code' => $_GET["code"]
+		];
+		$string = http_build_query($data);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, "https://oauth.vk.com/access_token?".urldecode($string));
+		$tmp = json_decode(curl_exec($ch), true);
+		curl_close($ch);		
+		if(!empty($tmp['user_id'])){
+			$result = $tmp['user_id'];
+		}
+	}
+	return $result;
+}
+
+function vkAuthLink(){
+	global $conf;
+	$vkParams = [ 
+		'client_id' => $conf['vk_id'],
+		'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
+	];
+	return 'https://oauth.vk.com/authorize?'.urldecode(http_build_query($vkParams));
+}
+
+function getUserVK($id){
+	global $db;
+	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa`, `access` FROM `users` WHERE `vk` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	if($query->rowCount() == 0){
+		return false;	
+	}
+	return $query->fetch();
+}
+
+function oAuthLogin(){
+	global $db, $var, $user, $conf;
+	if($user){
+		_message('authorized', 'error');
+	}
+	$id = vkAuth();
+	if(!$id){
+		_message2('vk auth error', 'error');
+	}
+	$row = getUserVK($id);
+	if(!$row){
+		$htime = $var['time']+60*60;
+		$hash = createSecret($id.$htime);
+		die(header("Location: https://".$_SERVER['SERVER_NAME']."/pages/vk.php?id=$id&time=$htime&hash=$hash"));
+	}
+	if(!empty($row['2fa'])){
+		_message2('please disable 2fa', 'error');
+	}
+	enableCSRF(true);
+	startSession($row);
+	header("Location: https://".$_SERVER['SERVER_NAME']);
+}
+
 function login(){
 	global $db, $var, $user;
 	if($user){
@@ -164,6 +230,12 @@ function login(){
 		$row['passwd'] = $passwd[1];
 	}
 	enableCSRF();
+	startSession($row);
+	_message('success');
+}
+
+function startSession($row){
+	global $db, $var;
 	$hash = session_hash($row['login'], $row['passwd'], $row['access']);
 	$query = $db->prepare('INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)');
 	$query->bindParam(':uid', $row['id']);
@@ -193,8 +265,7 @@ function login(){
 	$query->bindParam(':ip', $var['ip']);
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':info', $var['user_agent']);
-	$query->execute();	
-	_message('success');
+	$query->execute();		
 }
 
 function moveErrPage($page = 403){
@@ -273,9 +344,21 @@ function password_recovery(){
 }
 
 function registration(){
-	global $db, $user;
+	global $db, $user, $var;
 	if($user){
 		_message('registered', 'error');
+	}
+	if(!empty($_POST['vk'])){
+		$vk = json_decode($_POST['vk'], true);
+		if(!is_array($vk) || empty($vk['id']) || empty($vk['time']) || empty($vk['hash'])){
+			_message('wrong', 'error');
+		}
+		if($var['time'] > $vk['time'] || !checkSecret($vk['hash'], $vk['id'].$vk['time'])){
+			_message('wrong', 'error');
+		}
+		if(getUserVK($vk['id'])){
+			_message('wrong', 'error');
+		}
 	}
 	testRecaptcha();
 	if(empty($_POST['login']) || empty($_POST['mail'])){
@@ -309,6 +392,17 @@ function registration(){
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
+	if(!empty($_POST['vk'])){
+		$id = $db->lastInsertId();
+		$query = $db->prepare('UPDATE `users` SET `vk` = :vk WHERE `id` = :id');
+		$query->bindParam(':vk', $vk['id']);
+		$query->bindParam(':id', $id);
+		$query->execute();
+		$row = getUserVK($vk['id']);
+		if($row){
+			startSession($row);	
+		}
+	}
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('success');
 }
@@ -324,7 +418,7 @@ function auth(){
 			return;
 		}
 		$session = $query->fetch();
-		$query = $db->prepare('SELECT `id`, `login`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
+		$query = $db->prepare('SELECT `id`, `login`, `vk`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
 		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -347,6 +441,7 @@ function auth(){
 		}
 		$user = [	'id' => $row['id'], 
 					'login' => $row['login'], 
+					'vk' => $row['vk'],
 					'avatar' => $row['avatar'],
 					'passwd' => $row['passwd'], 
 					'mail' => $row['mail'], 
@@ -854,6 +949,26 @@ function cryptAES($text, $key, $do = 'encrypt'){
 	}
 }
 
+function change_vk(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('unauthorized', 'error');
+	}
+	checkCSRF();
+	if(!empty($_POST['vk']) && !ctype_digit($_POST['vk'])){
+		_message('wrong', 'error');
+	}
+	$query = $db->prepare('UPDATE `users` SET `vk` = :vk WHERE `id` = :id');
+	if(empty($_POST['vk'])){
+		$query->bindValue(':vk', null, PDO::PARAM_INT);
+	}else{
+		$query->bindParam(':vk', $_POST['vk']);
+	}
+	$query->bindParam(':id', $user['id']);
+	$query->execute();
+	_message('success');
+}
+
 function change_mail(){
 	global $db, $user, $var, $conf;
 	if(!$user){
@@ -1318,7 +1433,8 @@ function footerJS(){
 	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 100);" ></script>';
 	switch($var['page']){
 		default: break;
-		case 'login': 
+		case 'vk':
+		case 'login':
 			if(!$user){
 				$result = str_replace('{url}', 'https://www.google.com/recaptcha/api.js?render='.$conf['recaptcha_public'], $tmplJS); 
 			}
@@ -1377,11 +1493,6 @@ function footerJS(){
 		case '404':
 		case '403':
 			$result .= str_replace('{page}', "pageURL: '/pages/error/{$var['page']}.php',", $vk);
-		break;
-		case 'chat':
-			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
-				$result .= str_replace('{url}', fileTime('/js/chat.js'), $tmplJS);
-			}
 		break;
 	}
 	return $result;
@@ -1931,7 +2042,7 @@ function releaseCodeByID($id){
 
 function releaseSeriesByID($id){
 	global $db;
-	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC');
+	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id  ORDER BY `fid` DESC');
 	$query->bindParam(':id', $id);
 	$query->execute();
 	$row = $query->fetch();
@@ -2028,7 +2139,10 @@ function showCatalog(){
 				$img = fileTime($poster);
 			}
 			$xname = releaseNameByID($val['id']);
-			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, str_replace('{series}', releaseSeriesByID($val['id']), str_replace('{runame}', "{$xname['0']}", str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $tmplTD))))));
+			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
+			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
+			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
+			$arr[$i] = str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $arr[$i]);
 			if(count($arr[$i]) == 3){
 				$i++;
 			}

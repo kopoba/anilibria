@@ -66,6 +66,7 @@ body {
 
 .side {
 	width: 280px;
+	min-height: 1580px;
 	float: right;
 	background-color: #383838;
 }

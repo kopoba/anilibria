@@ -44,7 +44,7 @@
 			</div>
 			<div class="footer_center">
 				<div class="chat">
-				<a  href="/pages/chat.php"><span class="chat-link"></span></a>
+				<a href="#"><span class="chat-link"></span></a>
 				</div>
 			</div>
 			<div class="footer_right">

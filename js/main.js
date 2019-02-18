@@ -44,12 +44,13 @@ $(document).on("click", "[data-submit-register]", function(e) {
 	$(this).blur();
 	e.preventDefault();
 	var submit = $(this);
+	var vk = $('input[id=regVK]').val();
 	var mail = $('input[id=regEmail]').val();
 	var login = $('input[id=regLogin]').val();
 	submit.hide(); // recaptchav3 has some delay
 	if($("div#RecaptchaField1").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
-			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'g-recaptcha-response': token }, function(json){
+			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';
 				if(data.err != 'ok'){
@@ -59,6 +60,14 @@ $(document).on("click", "[data-submit-register]", function(e) {
 						$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback1&render=explicit");
 					}
 					submit.show();
+				}
+				if(data.err == 'ok'){
+					if(vk.length > 0){
+						setTimeout(function(){
+							document.location.href="/";
+						},250);
+						return;
+					}
 				}
 				$("#regMes").html("(<font color="+color+">"+data.mes+"</font>)");
 			});
@@ -631,4 +640,18 @@ $(document).on('click', '[data-show-other]', function(e){
 	$(this).blur();
 	e.preventDefault();
 	$('#otherModal').modal('show');
+});
+
+$(document).on("click", "[data-change-vk]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	vk = $('input[id=changeVKID]').val();
+	$.post("//"+document.domain+"/public/change/vk.php", {'vk': vk, 'csrf_token': csrf_token }, function(json){
+		data = JSON.parse(json);
+		color = 'red';
+		if(data.err == 'ok'){
+			color = 'green';
+		}
+		$("#changeVKMes").html("(<font color="+color+">"+data.mes+"</font>)");
+	});
 });
