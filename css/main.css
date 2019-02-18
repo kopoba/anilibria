@@ -424,15 +424,32 @@ p.lasttortext {
 	height: calc(100% - 20px);
 	width: calc(100% - 20px);
 	margin: 10px;
-	background-color: #000;
-	opacity: 0.8;
+	background-color: rgba(0,0,0,0.8);
 	color: #fff;
 	text-align: center;
 	padding: 10px;
 	overflow: hidden;
+	z-index: 51;
+	cursor: pointer;
 }
 
-.torrent_block > a:hover .side-anime-desc {
+.last_tor_button {
+	display: inline-block;
+	background: #d83541;
+	text-decoration: none;
+	outline: none;
+	padding: 5px 10px;
+	color: #fff;
+	font-size: 10pt;
+	z-index: 53;
+}
+.last_tor_button:hover {
+	color: #fff;
+	background: #b32121;
+	text-decoration: none;
+}
+
+.torrent_block:hover .side-anime-desc {
 	display: block;
 }
 

@@ -1892,6 +1892,7 @@ function showPosters(){
 		$tmp = str_replace('{runame}', "{$row['name']}", $tmp);
 		$tmp = str_replace('{description}', releaseDescriptionByID($row['id'],179), $tmp);
 		$tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
+		$tmp = str_replace('{torlink}', getTorrentDownloadLink($row['id']), $tmp);
 		$result .= $tmp;
 	}
 	return $result;
@@ -1947,6 +1948,20 @@ function releaseDescriptionByID($id,$SymCount){
 	$shortdescription = mb_strimwidth($row['description'],0,$SymCount,"...");
 	$cutdescription = explode("\r\n", $shortdescription);
 	return $cutdescription[0];
+}
+
+function getTorrentDownloadLink($id) {
+    global $db, $user;
+    $query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC');
+    $query->bindParam(':id', $id);
+    $query->execute();
+    $row = $query->fetch();
+    if($user){
+        $link = "/public/torrent/download.php?id={$row['fid']}";
+    }else{
+        $link = "/upload/torrents/{$row['fid']}.torrent";
+    }
+    return $link;
 }
 
 function showCatalog(){
