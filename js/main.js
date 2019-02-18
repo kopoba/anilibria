@@ -1,3 +1,4 @@
+var csrf_token = $('input[id=csrf_token]').val();
 $(document).ready(function() {
 	var recaptcha1;
 	var recaptcha2;
@@ -29,7 +30,7 @@ $(document).on("click", "[data-submit-login]", function(e) {
 	mail = $('input[id=newMail]').val();
 	passwd = $('input[id=newPasswd]').val();
 	fa2code = $('input[id=fa2code]').val();
-	$.post("//"+document.domain+"/public/login.php", { 'mail': mail, 'passwd': passwd, 'fa2code': fa2code }, function(json){
+	$.post("//"+document.domain+"/public/login.php", { 'mail': mail, 'passwd': passwd, 'fa2code': fa2code, 'csrf': '1' }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			document.location.href="/";
@@ -123,7 +124,7 @@ $(document).on("click", "[data-2fa-generate]", function(e) {
 	var _this = $(this);
 	_this.blur();
 	e.preventDefault();
-	$.post("//"+document.domain+"/public/2fa.php", {do: 'gen'}, function(json){
+	$.post("//"+document.domain+"/public/2fa.php", {do: 'gen', 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			_this.hide();
@@ -138,7 +139,7 @@ $(document).on("click", "[data-2fa-start]", function(e) {
 	secret = $('input[id=2fa]').val();
 	check = $('input[id=2facheck]').val();
 	passwd = $('input[id=2fapasswd]').val();
-	$.post("//"+document.domain+"/public/2fa.php", {do: 'save', '2fa': secret, code: check, passwd: passwd}, function(json){
+	$.post("//"+document.domain+"/public/2fa.php", {do: 'save', '2fa': secret, code: check, passwd: passwd, 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -164,7 +165,7 @@ $(document).on("click", "[data-change-email]", function(e) {
 	e.preventDefault();
 	mail = $('input[id=changeEmail]').val();
 	passwd = $('input[id=changeEmailPasswd]').val();
-	$.post("//"+document.domain+"/public/change/mail.php", {'mail': mail, 'passwd': passwd }, function(json){
+	$.post("//"+document.domain+"/public/change/mail.php", {'mail': mail, 'passwd': passwd, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -179,7 +180,7 @@ $(document).on("click", "[data-change-passwd]", function(e) {
 	$(this).blur();
 	e.preventDefault();
 	passwd = $('input[id=changePasswd]').val();
-	$.post("//"+document.domain+"/public/change/passwd.php", {'passwd': passwd }, function(json){
+	$.post("//"+document.domain+"/public/change/passwd.php", {'passwd': passwd, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -199,7 +200,7 @@ $(document).on("click", "[data-edit-profile]", function(e) {
 $(document).on("click", "[data-reset-user-values]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	$.post("//"+document.domain+"/public/save.php", {'reset': 1 }, function(json){
+	$.post("//"+document.domain+"/public/save.php", {'reset': 1, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			text = 'Не указано';
@@ -239,7 +240,7 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 	var youtube = $('input[id=youtube]').val();
 	var twitch = $('input[id=twitch]').val();
 	var twitter = $('input[id=twitter]').val();
-	$.post("//"+document.domain+"/public/save.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter }, function(json){
+	$.post("//"+document.domain+"/public/save.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			if(name != "") $("#name").text(name);
@@ -321,7 +322,7 @@ $(document).on('click', '[data-send-announce]', function(e){
 	e.preventDefault();
 	id = $('input[id=releaseID]').val();
 	var announce = $('input[id=announce]').val();
-	$.post("//"+document.domain+"/public/release/announce.php", {'id': id, 'announce': announce }, function(json){
+	$.post("//"+document.domain+"/public/release/announce.php", {'id': id, 'announce': announce, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		if(data.err != 'ok'){
 			$("#changeAnnounceMes").html('Изменить анонс (<font color=red>'+data.mes+'</font>)');
@@ -380,6 +381,7 @@ $(document).on('click', '[data-send-torrent]', function(e){
 		form_data.append('torrent', $('#uploadTorrent').prop('files')[0]);
 	}
 	form_data.append('data', JSON.stringify(sendData));
+	form_data.append('csrf_token', csrf_token);
 	$.ajax({
 		type: 'POST',
 		cache: false,
@@ -411,7 +413,7 @@ $(document).on('click', '[data-release-delete]', function(e){
 	$(this).blur();
 	e.preventDefault();
 	if(window.confirm('Действительно хотите удалить релиз?')){
-		$.post("//"+document.domain+"/public/release/delete.php", {'id': $('input[id=releaseID]').val()}, function(json){
+		$.post("//"+document.domain+"/public/release/delete.php", {'id': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			window.location.replace('/pages/new.php');
@@ -466,6 +468,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		form_data.append('poster', $('#uploadPosterAdmin').prop('files')[0]);
 	}
 	form_data.append('data', JSON.stringify(sendData));
+	form_data.append('csrf_token', csrf_token);
 	console.log(JSON.stringify(sendData));
 	$.ajax({
 		type: 'POST',
@@ -531,7 +534,7 @@ $("#smallSearchInput").keyup(function(){
 
 $(document).on('click', '[data-release-favorites]', function(e){
 	var _this = $(this);
-	$.post("//"+document.domain+"/public/favorites.php", {'rid': $('input[id=releaseID]').val()}, function(json){
+	$.post("//"+document.domain+"/public/favorites.php", {'rid': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
 		console.log(json);
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
@@ -546,7 +549,7 @@ $(document).on('click', '[data-release-favorites]', function(e){
 
 $(document).on('click', '[data-release-last]', function(e){
 	var _this = $(this);
-	$.post("//"+document.domain+"/public/release/last.php", {'id': $('input[id=releaseID]').val()}, function(json){
+	$.post("//"+document.domain+"/public/release/last.php", {'id': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			location.reload();

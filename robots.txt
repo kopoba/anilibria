@@ -11,10 +11,10 @@ Allow: /pages/chat.php$
 Allow: /pages/login.php$
 Allow: /release/*.html$
 
-Allow: .js
-Allow: .css
-Allow: .png
-Allow: .jpg
+Allow: *.js
+Allow: *.css
+Allow: *.png
+Allow: *.jpg
 
 Disallow: /
 

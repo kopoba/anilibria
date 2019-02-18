@@ -90,6 +90,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">Psycho</span> -  переводчик</li>
 			<li><span style="color: #f7941d;">Aiso</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Flerion</span> - переводчик / оформитель</li>
+			<li><span style="color: #f7941d;">Inari</span> - переводчик</li>
 			<li><span style="color: #f2d20c;">Hant</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">SineD</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">Maximka</span> - PR-команда</li>
@@ -116,6 +117,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">Nomi</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Gamilton</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Suisei</span> - переводчик / оформитель</li>
+			<li><span style="color: #f7941d;">Merky</span> - переводчик</li>
 			<li><span style="color: #f7941d;">DiaZone</span> - оформитель</li> 
 			<li><span style="color: #f7941d;">TiimeIrre</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Smallow</span> - переводчик</li>  
@@ -137,7 +139,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">LolWhat</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Constantum</span> - переводчик<br>
 			</li><li><span style="color: #f7941d;">Vurdalak121</span> - переводчик</li>
-			<li><span style="color: #f7941d;">Inari</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Skaifai</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Valar</span> - переводчик</li>
 			<li><span style="color: #800000;">Z3nC0rZ</span> - технарь (служит в армии) </li>
@@ -152,8 +153,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Kiyoko Koheiri</span>&nbsp;- войсер стажёр</li> 
 			<li><span style="color: #800000;">WaFee</span> - таймер стажёр</li>                                      
 			<li><span style="color: #f7941d;">Renko</span> - саббер стажёр</li>
-			<li><span style="color: #f7941d;">FooBoo</span> - саббер стажёр</li>
-			<li><span style="color: #f7941d;">Merky</span> - саббер стажёр</li>
 		</ul>
 		<p style="text-align: center;">
 			<u><b>ВНЕ ИЕРАРХИИ (не поддаётся классификации лиговой системы) </b></u>

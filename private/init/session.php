@@ -6,4 +6,7 @@ if(session_status() == PHP_SESSION_NONE){
 		session_id(uniqid());
 		session_start(); 
 	}
+	if(empty($_SESSION['secret'])){
+		$_SESSION['secret'] = bin2hex(random_bytes(32));
+	}
 }

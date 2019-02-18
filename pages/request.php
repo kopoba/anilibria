@@ -180,7 +180,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			</div>
 			<div  class="modal-body">
 				Если вам долго не отвечают на почту, то возможно заявка попала в спам.<br/>
-				Пожалуйста, напишите в telegram @test и узнайте статус.
+				Пожалуйста, напишите в telegram <a href="https://t.me/AniLibriaTP">@AniLibriaTP</a> и узнайте статус.
 				
 			</div>
 			<div class="modal-footer">
