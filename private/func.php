@@ -1952,7 +1952,7 @@ function releaseDescriptionByID($id,$SymCount){
 
 function getTorrentDownloadLink($id) {
     global $db, $user;
-    $query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC');
+    $query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC LIMIT 1');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
