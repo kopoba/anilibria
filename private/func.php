@@ -1883,7 +1883,7 @@ function releaseCodeByID($id){
 
 function releaseSeriesByID($id){
 	global $db;
-	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id');
+	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC');
 	$query->bindParam(':id', $id);
 	$query->execute();
 	$row = $query->fetch();
