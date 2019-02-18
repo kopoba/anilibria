@@ -1966,10 +1966,7 @@ function showCatalog(){
 				$img = fileTime($poster);
 			}
 			$xname = releaseNameByID($val['id']);
-			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
-			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
-			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
-			$arr[$i] = str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $arr[$i]);
+			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, str_replace('{series}', releaseSeriesByID($val['id']), str_replace('{runame}', "{$xname['0']}", str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $tmplTD))))));
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
