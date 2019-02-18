@@ -1898,7 +1898,8 @@ function releaseDescriptionByID($id,$SymCount){
 	$query->execute();
 	$row = $query->fetch();
 	$shortdescription = mb_strimwidth($row['description'],0,$SymCount,"...");
-	return $shortdescription;
+	$cutdescription = explode("\r\n", $shortdescription);
+	return $cutdescription[0];
 }
 
 function showCatalog(){
