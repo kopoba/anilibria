@@ -8,4 +8,5 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/torrent.php'); // https://github.com/adriengibrat/torrent-rw
 
+checkCSRF();
 torrent();

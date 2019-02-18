@@ -54,6 +54,8 @@ $(document).on("click", "[data-upload-avatar]", function(e) {
     form_data.append('height', height);
     form_data.append('avatar', file_data);
     
+    form_data.append('csrf_token', csrf_token);
+    
 	$.ajax({
 		type: 'POST',
 		cache: false,

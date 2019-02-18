@@ -21,7 +21,6 @@ $conf['recaptcha2_public'] = 'public';
 
 $conf['hash_len'] = 64;
 $conf['hash_algo'] = 'sha256';
-$conf['sign_secret'] = 'secret';
 
 $conf['torrent_secret'] = 'secret';
 $conf['torrent_announce'] = 'http://tt.anilibria.tv:2710/announce';

@@ -73,6 +73,53 @@ function _exit(){
 	}
 }
 
+function enableCSRF($force = false){
+	if(!empty($_POST['csrf']) || $force){
+		$_SESSION['csrf'] = 1;
+	}
+}
+
+function disableCSRF(){
+	if(!empty($_SESSION['csrf'])){
+		unset($_SESSION['csrf']);
+	}
+}
+
+function csrf_token(){
+	global $var;
+	$htime = $var['time']+60*60*24;
+	return ['hash' => createSecret($htime), 'time' => $htime];
+};
+
+function createSecret($params){
+	global $conf;
+	return hash($conf['hash_algo'], $_SESSION['secret'].$params);
+}
+
+function checkSecret($hash, $params){
+	global $conf;
+	if($hash != hash($conf['hash_algo'], $_SESSION['secret'].$params)){
+		return false; 
+	}
+	return true;	
+}
+
+function checkCSRF(){
+	global $var;
+	if(!empty($_SESSION['csrf'])){
+		if(empty($_POST['csrf_token'])){
+			_message('wrong', 'error');
+		}
+		$arr = json_decode($_POST['csrf_token'], true);
+		if(!is_array($arr) || empty($arr['time']) || empty($arr['hash'])){
+			_message('empty', 'error');
+		}
+		if($var['time'] > $arr['time'] || !checkSecret($arr['hash'], $arr['time'])){
+			_message('wrong', 'error');
+		}
+	}
+}
+
 function login(){
 	global $db, $var, $user;
 	if($user){
@@ -116,6 +163,7 @@ function login(){
 		$query->execute();
 		$row['passwd'] = $passwd[1];
 	}
+	enableCSRF();
 	$hash = session_hash($row['login'], $row['passwd'], $row['access']);
 	$query = $db->prepare('INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)');
 	$query->bindParam(':uid', $row['id']);
@@ -680,23 +728,22 @@ function upload_avatar() {
 	$img = new Imagick($_FILES['avatar']['tmp_name']);
 	$img->setImageFormat('jpg');
 	
-	
 	$crop = true;
-	foreach($_POST as $k => $v){
-		if(!in_array($k, ['w', 'h', 'x1', 'y1', 'width', 'height']))
-			$crop = false;
-		
-		if(empty($v) && $v != 0)
+	$arr = ['w', 'h', 'x1', 'y1', 'width', 'height'];
+	foreach($arr as $v){
+		if(empty($_POST["$v"]) && $_POST["$v"] != 0)
 			$crop = false;
 
-		if(!ctype_digit($v))
+		if(!ctype_digit($_POST["$v"]))
 			$crop = false;
 
 		if($crop == false)
 			break;
 	}
 	$img->resizeImage($_POST['width'], $_POST['height'], Imagick::FILTER_LANCZOS, 1, false);
-	if($crop) $img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
+	if($crop){
+		$img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
+	}
 	$img->resizeImage(160,160,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 	$img->setImageCompressionQuality(85);
