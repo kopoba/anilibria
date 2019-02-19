@@ -8,4 +8,4 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 checkCSRF();
-saveUserValues();
+change_vk();

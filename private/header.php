@@ -1,3 +1,11 @@
+<?php
+if(!empty($_SESSION['csrf'])){
+	$csrf_token = json_encode(csrf_token());
+}else{
+	$csrf_token = '';
+}
+?>
+
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
 	<head>
@@ -18,6 +26,7 @@
 		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />
 	</head>
 	<body>
+		<input type="hidden" id="csrf_token" value='<?php echo $csrf_token; ?>'>
 		<div class="header">
 			<img src="/img/28.png">
 			<div id="headercontent">

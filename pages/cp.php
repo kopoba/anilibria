@@ -123,6 +123,23 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <div class="news-block">
 		<div class="news-header">
 			<h2 class="news-name" style="float:left;">
+				Привязать VK аккаунт
+			</h2>
+			<h2 class="news-name" id="changeVKMes" style="float:left; padding-left: 10px;"></h2>
+			<div class="clear"></div>	
+		</div>
+		<div class="clear"></div>
+		<div>
+			<input class="form-control" id="changeVKID" type="text" placeholder="Ваш vk id, например: 123456" value="<?php if(!empty($user['vk'])) echo $user['vk']; ?>">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-vk type="submit" value="ОТПРАВИТЬ">
+		</div>
+		<div class="clear"></div>
+		<div style="margin-top:10px;"></div>
+</div>
+
+<div class="news-block">
+		<div class="news-header">
+			<h2 class="news-name" style="float:left;">
 				Изменить почту
 			</h2>
 			<h2 class="news-name" id="changeEmailMes" style="float:left; padding-left: 10px;"></h2>

@@ -22,6 +22,7 @@ function getCatalog(page, update = false){
 	}else{
 		var sort = 2;
 	}
+	localStorage.setItem('catalogSort', sort);
 	year = '';
 	genre = '';
 	xpage = 'favorites';
@@ -44,6 +45,11 @@ function getCatalog(page, update = false){
 }
 
 $(document).ready(function() {
+	if(localStorage.getItem('catalogSort') == '1'){
+		$('#switcher').bootstrapToggle('on');
+	}else{
+		$('#switcher').bootstrapToggle('off');
+	}
 	getCatalog(1);
 });
 

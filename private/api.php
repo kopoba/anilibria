@@ -26,8 +26,10 @@ function apiList(){
 	$torrent = json_decode($cache->get('apiTorrent'), true);
 	for($i=0; $i < $count; $i++){
 		$tmp = json_decode($cache->get("apiInfo$i"), true);
-		foreach($tmp as $k => $v){
-			$info["$k"] = $v; 
+		if(is_array($tmp)){
+			foreach($tmp as $k => $v){
+				$info["$k"] = $v; 
+			}
 		}
 	}
     
@@ -175,6 +177,7 @@ function apiList(){
 		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
         foreach($releases as $key => $val){
             $unsettedFileds = [];
+			$names = $val['names'];
 			if(isset($_POST['filter'])){
 				$filterList = array_unique(explode(',', $_POST['filter']));
                 
@@ -201,8 +204,10 @@ function apiList(){
 					$val['playlist']["$k"]['sd'] = str_replace('{host}', $host, $val['playlist']["$k"]['sd']);
 					$val['playlist']["$k"]['hd'] = str_replace('{host}', $host, $val['playlist']["$k"]['hd']);
 					if(!empty($val['playlist']["$k"]['file'])){
-						$val['playlist']["$k"]['srcSd'] = mp4_link($val['playlist']["$k"]['file'].'-sd.mp4');
-						$val['playlist']["$k"]['srcHd'] = mp4_link($val['playlist']["$k"]['file'].'.mp4');
+						$epNumber = $val['playlist']["$k"]['id'];
+						$epName = $names[1];
+						$val['playlist']["$k"]['srcSd'] = mp4_link($val['playlist']["$k"]['file'].'-sd.mp4')."?download=$epName-$epNumber-sd.mp4";
+						$val['playlist']["$k"]['srcHd'] = mp4_link($val['playlist']["$k"]['file'].'.mp4')."?download=$epName-$epNumber-hd.mp4";
             			unset($val['playlist']["$k"]['file']);
 					}
 				}
@@ -255,14 +260,14 @@ function apiList(){
         }
 		$_POST['perPage'] = '9999';
 		$result = apiGetReleases($favReleases, $torrent);
-		$result['items'] = array_reverse($result[items]);
+		$result['items'] = array_reverse($result["items"]);
         return $result;
     }
     
     function apiGetUser(){
         global $db, $user;
         if(!$user) {
-            throw new ApiException(401, "No user");
+            throw new ApiException("No user", 401);
         }
 		if(!empty($user['avatar'])){
 			$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";

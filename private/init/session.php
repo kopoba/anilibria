@@ -1,9 +1,12 @@
 <?php
 if(session_status() == PHP_SESSION_NONE){
-	session_set_cookie_params(0, '/', $_SERVER['SERVER_NAME'], true, true);
+	session_set_cookie_params(time()+60*60*24*30, '/', $_SERVER['SERVER_NAME'], true, true);
 	$ok = @session_start();
 	if(!$ok){
 		session_id(uniqid());
 		session_start(); 
+	}
+	if(empty($_SESSION['secret'])){
+		$_SESSION['secret'] = bin2hex(random_bytes(32));
 	}
 }

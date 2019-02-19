@@ -50,7 +50,7 @@ function session_hash($login, $passwd, $access, $rand = '', $time = ''){
 		$rand = genRandStr(8);
 	}
 	if(empty($time)){
-		$time = $var['time']+86400;
+		$time = $var['time']+60*60*24*10;
 	}
 	return [$rand.hash($conf['hash_algo'], $rand.$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
 }
@@ -71,6 +71,119 @@ function _exit(){
 			header("Location: https://".$_SERVER['SERVER_NAME']);
 		}
 	}
+}
+
+function enableCSRF($force = false){
+	if(!empty($_POST['csrf']) || $force){
+		$_SESSION['csrf'] = 1;
+	}
+}
+
+function disableCSRF(){
+	if(!empty($_SESSION['csrf'])){
+		unset($_SESSION['csrf']);
+	}
+}
+
+function csrf_token(){
+	global $var;
+	$htime = $var['time']+60*60*24;
+	return ['hash' => createSecret($htime), 'time' => $htime];
+};
+
+function createSecret($params){
+	global $conf;
+	return hash($conf['hash_algo'], $_SESSION['secret'].$params);
+}
+
+function checkSecret($hash, $params){
+	global $conf;
+	if($hash != hash($conf['hash_algo'], $_SESSION['secret'].$params)){
+		return false; 
+	}
+	return true;	
+}
+
+function checkCSRF(){
+	global $var;
+	if(!empty($_SESSION['csrf'])){
+		if(empty($_POST['csrf_token'])){
+			_message('wrong', 'error');
+		}
+		$arr = json_decode($_POST['csrf_token'], true);
+		if(!is_array($arr) || empty($arr['time']) || empty($arr['hash'])){
+			_message('empty', 'error');
+		}
+		if($var['time'] > $arr['time'] || !checkSecret($arr['hash'], $arr['time'])){
+			_message('wrong', 'error');
+		}
+	}
+}
+
+function vkAuth(){
+	global $conf;
+	$result = false;
+	if(!empty($_GET ['code'])){
+		$data = [
+			'client_id' => $conf['vk_id'],
+			'client_secret' => $conf['vk_secert'],
+			'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
+			'code' => $_GET["code"]
+		];
+		$string = http_build_query($data);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_URL, "https://oauth.vk.com/access_token?".urldecode($string));
+		$tmp = json_decode(curl_exec($ch), true);
+		curl_close($ch);		
+		if(!empty($tmp['user_id'])){
+			$result = $tmp['user_id'];
+		}
+	}
+	return $result;
+}
+
+function vkAuthLink(){
+	global $conf;
+	$vkParams = [ 
+		'client_id' => $conf['vk_id'],
+		'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
+	];
+	return 'https://oauth.vk.com/authorize?'.urldecode(http_build_query($vkParams));
+}
+
+function getUserVK($id){
+	global $db;
+	$query = $db->prepare('SELECT `id`, `login`, `passwd`, `2fa`, `access` FROM `users` WHERE `vk` = :id');
+	$query->bindParam(':id', $id);
+	$query->execute();
+	if($query->rowCount() == 0){
+		return false;	
+	}
+	return $query->fetch();
+}
+
+function oAuthLogin(){
+	global $db, $var, $user, $conf;
+	if($user){
+		_message('authorized', 'error');
+	}
+	$id = vkAuth();
+	if(!$id){
+		_message2('vk auth error', 'error');
+	}
+	$row = getUserVK($id);
+	if(!$row){
+		$htime = $var['time']+60*60;
+		$hash = createSecret($id.$htime);
+		die(header("Location: https://".$_SERVER['SERVER_NAME']."/pages/vk.php?id=$id&time=$htime&hash=$hash"));
+	}
+	if(!empty($row['2fa'])){
+		_message2('please disable 2fa', 'error');
+	}
+	enableCSRF(true);
+	startSession($row);
+	header("Location: https://".$_SERVER['SERVER_NAME']);
 }
 
 function login(){
@@ -116,6 +229,13 @@ function login(){
 		$query->execute();
 		$row['passwd'] = $passwd[1];
 	}
+	enableCSRF();
+	startSession($row);
+	_message('success');
+}
+
+function startSession($row){
+	global $db, $var;
 	$hash = session_hash($row['login'], $row['passwd'], $row['access']);
 	$query = $db->prepare('INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)');
 	$query->bindParam(':uid', $row['id']);
@@ -145,8 +265,7 @@ function login(){
 	$query->bindParam(':ip', $var['ip']);
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':info', $var['user_agent']);
-	$query->execute();	
-	_message('success');
+	$query->execute();		
 }
 
 function moveErrPage($page = 403){
@@ -225,9 +344,21 @@ function password_recovery(){
 }
 
 function registration(){
-	global $db, $user;
+	global $db, $user, $var;
 	if($user){
 		_message('registered', 'error');
+	}
+	if(!empty($_POST['vk'])){
+		$vk = json_decode($_POST['vk'], true);
+		if(!is_array($vk) || empty($vk['id']) || empty($vk['time']) || empty($vk['hash'])){
+			_message('wrong', 'error');
+		}
+		if($var['time'] > $vk['time'] || !checkSecret($vk['hash'], $vk['id'].$vk['time'])){
+			_message('wrong', 'error');
+		}
+		if(getUserVK($vk['id'])){
+			_message('wrong', 'error');
+		}
 	}
 	testRecaptcha();
 	if(empty($_POST['login']) || empty($_POST['mail'])){
@@ -261,6 +392,17 @@ function registration(){
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->bindParam(':passwd', $passwd[1]);
 	$query->execute();
+	if(!empty($_POST['vk'])){
+		$id = $db->lastInsertId();
+		$query = $db->prepare('UPDATE `users` SET `vk` = :vk WHERE `id` = :id');
+		$query->bindParam(':vk', $vk['id']);
+		$query->bindParam(':id', $id);
+		$query->execute();
+		$row = getUserVK($vk['id']);
+		if($row){
+			startSession($row);	
+		}
+	}
 	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
 	_message('success');
 }
@@ -276,7 +418,7 @@ function auth(){
 			return;
 		}
 		$session = $query->fetch();
-		$query = $db->prepare('SELECT `id`, `login`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
+		$query = $db->prepare('SELECT `id`, `login`, `vk`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
 		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -299,6 +441,7 @@ function auth(){
 		}
 		$user = [	'id' => $row['id'], 
 					'login' => $row['login'], 
+					'vk' => $row['vk'],
 					'avatar' => $row['avatar'],
 					'passwd' => $row['passwd'], 
 					'mail' => $row['mail'], 
@@ -680,23 +823,22 @@ function upload_avatar() {
 	$img = new Imagick($_FILES['avatar']['tmp_name']);
 	$img->setImageFormat('jpg');
 	
-	
 	$crop = true;
-	foreach($_POST as $k => $v){
-		if(!in_array($k, ['w', 'h', 'x1', 'y1', 'width', 'height']))
-			$crop = false;
-		
-		if(empty($v) && $v != 0)
+	$arr = ['w', 'h', 'x1', 'y1', 'width', 'height'];
+	foreach($arr as $v){
+		if(empty($_POST["$v"]) && $_POST["$v"] != 0)
 			$crop = false;
 
-		if(!ctype_digit($v))
+		if(!ctype_digit($_POST["$v"]))
 			$crop = false;
 
 		if($crop == false)
 			break;
 	}
 	$img->resizeImage($_POST['width'], $_POST['height'], Imagick::FILTER_LANCZOS, 1, false);
-	if($crop) $img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
+	if($crop){
+		$img->cropImage($_POST['w'], $_POST['h'], $_POST['x1'], $_POST['y1']);
+	}
 	$img->resizeImage(160,160,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
 	$img->setImageCompressionQuality(85);
@@ -807,6 +949,26 @@ function cryptAES($text, $key, $do = 'encrypt'){
 	}
 }
 
+function change_vk(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('unauthorized', 'error');
+	}
+	checkCSRF();
+	if(!empty($_POST['vk']) && !ctype_digit($_POST['vk'])){
+		_message('wrong', 'error');
+	}
+	$query = $db->prepare('UPDATE `users` SET `vk` = :vk WHERE `id` = :id');
+	if(empty($_POST['vk'])){
+		$query->bindValue(':vk', null, PDO::PARAM_INT);
+	}else{
+		$query->bindParam(':vk', $_POST['vk']);
+	}
+	$query->bindParam(':id', $user['id']);
+	$query->execute();
+	_message('success');
+}
+
 function change_mail(){
 	global $db, $user, $var, $conf;
 	if(!$user){
@@ -898,18 +1060,15 @@ function pageStat(){
 function close_sess(){
 	global $db, $user, $conf;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
 	if(empty($_POST['id']) || !ctype_digit($_POST['id'])){
-		_message('Wrong sess id', 'error');
+		_message('wrong', 'error');
 	}
 	$query = $db->prepare('DELETE FROM `session` WHERE `id` = :id AND `uid` = :uid');
 	$query->bindParam(':id', $_POST['id']);
 	$query->bindParam(':uid', $user['id']);
 	$query->execute();
-	if($query->rowCount() != 1){
-		_message('Cant close session', 'error');
-	}
 	_message2('Success');
 }
 
@@ -968,9 +1127,13 @@ function showRelease(){
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
 	
+	
+	$shortDesc = mb_substr($release['description'], 0, 250).'...';
+	
 	$var['og'] .= "<meta property='og:title' content='{$release['name']} / {$release['ename']}' />";
-	$var['og'] .= "<meta property='og:description' content='{$release['description']}' />";
+	$var['og'] .= "<meta property='og:description' content='$shortDesc' />";
 	$var['og'] .= "<meta property='og:url' content='/release/{$release['code']}.html' />";
+	$var['description'] = $shortDesc;
 			
 	if(mb_strlen($release['name'].$release['ename']) > 60){
 		$name = "{$release['name']}<br/>{$release['ename']}";
@@ -1016,6 +1179,7 @@ function showRelease(){
 	$page = str_replace('{chosen-genre}', $str, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{chosen}', getGenreList(), $page);
+	$page = str_replace('{releaseid}', $release['id'], $page);
 	$page = str_replace('{voice}', $release['voice'], $page);
 	$page = str_replace('{year}', "{$release['year']}", $page);
 	$page = str_replace('{type}', $release['type'], $page);
@@ -1082,7 +1246,7 @@ function showRelease(){
 	$page = str_replace('{moon}', $moon, $page);
 	$page = str_replace('{xmoon}', $release['moonplayer'], $page);
 	$page = str_replace('{favorites}', '', $page);
-	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id');
+	$query = $db->prepare('SELECT `fid`, `info`, `ctime`, `seeders`, `leechers`, `completed` FROM `xbt_files` WHERE `rid` = :id AND `flags` = \'0\'');
 	$query->bindParam(':id', $release['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
@@ -1129,7 +1293,7 @@ function uploadPoster($id){
 	$img->setImageFormat('jpg');
 	$img->resizeImage(350,500,Imagick::FILTER_LANCZOS, 1, false);
 	$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-	$img->setImageCompressionQuality(85);
+	$img->setImageCompressionQuality(90);
 	$img->stripImage();
 	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$id.'.jpg';
 	deleteFile($file);
@@ -1266,10 +1430,11 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 2000);" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 100);" ></script>';
 	switch($var['page']){
 		default: break;
-		case 'login': 
+		case 'vk':
+		case 'login':
 			if(!$user){
 				$result = str_replace('{url}', 'https://www.google.com/recaptcha/api.js?render='.$conf['recaptcha_public'], $tmplJS); 
 			}
@@ -1313,7 +1478,10 @@ function footerJS(){
 				$result .= str_replace('{playlist}', $tmp, getTemplate('playerjs'));
 			}
 			unset($tmp);
-			$result .= wsInfo($var['release']['name']);
+			
+			if(!empty($var['release']['name'])){
+				$result .= wsInfo($var['release']['name']);
+			}
 			$result .= str_replace('{page}', '', $vk);
 		break;
 		case 'app':
@@ -1325,11 +1493,6 @@ function footerJS(){
 		case '404':
 		case '403':
 			$result .= str_replace('{page}', "pageURL: '/pages/error/{$var['page']}.php',", $vk);
-		break;
-		case 'chat':
-			if(!empty($_SESSION['sex']) || !empty($_SESSION['want'])){
-				$result .= str_replace('{url}', fileTime('/js/chat.js'), $tmplJS);
-			}
 		break;
 	}
 	return $result;
@@ -1374,14 +1537,13 @@ function getRemote($url, $key, $update = false){
 function wsInfoShow(){
 	$result = '';
 	$arr = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/upload/stats.json'), true);
+	$all = $arr['sum'];
+	unset($arr['sum']);
 	if($arr){
 		foreach($arr as $key => $val){
-			if($key == 'sum'){
-				continue;
-			}
 			$result .= "<tr><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\"><a href=\"https://www.anilibria.tv{$val['1']}\">{$val['0']}</a></td><td class=\"tableCenter\">{$val['2']}</a></td></tr>";
 		}
-		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">{$arr['sum']}</a></td></tr>";
+		$result .= "<tr style=\"border-top: 3px solid #ddd; border-bottom: 3px solid #ddd;\"><td style=\"display:inline-block; width:390px;overflow:hidden;white-space:nowrap; text-overflow: ellipsis;\">Всего зрителей</td><td class=\"tableCenter\">$all</a></td></tr>";
 	}
 	return $result;
 }
@@ -1413,7 +1575,7 @@ function anilibria_getHost($hosts){
 }
 
 function getReleaseVideo($id){
-	global $conf;
+	global $conf, $var;
 	$playlist = '';
 	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
 	if($data){
@@ -1428,7 +1590,9 @@ function getReleaseVideo($id){
 				}
 				$download = '';
 				if(!empty($val['file'])){
-					$download = mp4_link($val['file'].'.mp4');
+					$epNumber = $key;
+					$epName = trim($var['release']['name']);
+					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber-sd.mp4";
 				}
 				if($host){
 					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new'])."', download:\"$download\", 'id': 's$key'},";
@@ -1839,6 +2003,7 @@ function showPosters(){
 		$tmp = str_replace('{runame}', "{$row['name']}", $tmp);
 		$tmp = str_replace('{description}', releaseDescriptionByID($row['id'],179), $tmp);
 		$tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
+		$tmp = str_replace('{torlink}', getTorrentDownloadLink($row['id']), $tmp);
 		$result .= $tmp;
 	}
 	return $result;
@@ -1877,7 +2042,7 @@ function releaseCodeByID($id){
 
 function releaseSeriesByID($id){
 	global $db;
-	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id');
+	$query = $db->prepare('SELECT `info` FROM `xbt_files` WHERE `rid` = :id  ORDER BY `fid` DESC');
 	$query->bindParam(':id', $id);
 	$query->execute();
 	$row = $query->fetch();
@@ -1892,7 +2057,22 @@ function releaseDescriptionByID($id,$SymCount){
 	$query->execute();
 	$row = $query->fetch();
 	$shortdescription = mb_strimwidth($row['description'],0,$SymCount,"...");
-	return $shortdescription;
+	$cutdescription = explode("\r\n", $shortdescription);
+	return $cutdescription[0];
+}
+
+function getTorrentDownloadLink($id) {
+    global $db, $user;
+    $query = $db->prepare('SELECT `fid` FROM `xbt_files` WHERE `rid` = :id ORDER BY `fid` DESC LIMIT 1');
+    $query->bindParam(':id', $id);
+    $query->execute();
+    $row = $query->fetch();
+    if($user){
+        $link = "/public/torrent/download.php?id={$row['fid']}";
+    }else{
+        $link = "/upload/torrents/{$row['fid']}.torrent";
+    }
+    return $link;
 }
 
 function showCatalog(){
@@ -1922,7 +2102,7 @@ function showCatalog(){
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -1962,7 +2142,7 @@ function showCatalog(){
 			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
 			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
 			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
-			$arr[$i] = str_replace('{description}', releaseDescriptionByID($val['id'],199), $arr[$i]);
+			$arr[$i] = str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $arr[$i]);
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
@@ -1977,11 +2157,14 @@ function showCatalog(){
 		$sort = $sort['1'];
 	}
 	if(!empty($_POST['page'])){
-		$page = intval($_POST['page']);
+		$page = abs(intval($_POST['page']));
 		if(empty($page) || $page == 1){
 			$page = 0;
 		}else{
 			$page = ($page-1) * 12;
+		}
+		if($page > 2000){
+			$page = 2000;
 		}
 	}
 	
@@ -2209,7 +2392,8 @@ function sendHH(){
 		$result .= "<b>{$info["$key"]}:</b><br/>";
 		$result .= htmlspecialchars($val, ENT_QUOTES, 'UTF-8')."<br/><br/>";		
 	}
-	_mail('poiuty@lepus.su', "[{$position[$arr['rPosition']]}] новая заявка", $result);
+	_mail('anilibriahh@protonmail.com', "[{$position[$arr['rPosition']]}] новая заявка", $result);
+	_mail('lupin@anilibria.tv', "[{$position[$arr['rPosition']]}] новая заявка", $result);
 	$cache->set($ip, 1, 86400);
 	_message('success');
 }
