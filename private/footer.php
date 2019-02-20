@@ -4,9 +4,9 @@
 					<div style="width: 260px; padding-top: 11px; margin: 0 auto;">
 						
 						<div class="inner-addon right-addon">
-    <i class="glyphicon glyphicon-search"></i>
-    <input id="smallSearchInput" class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
-</div>
+                            <i class="glyphicon glyphicon-search"></i>
+                            <input id="smallSearchInput" class="form-control" type="search" style="width: 100%; height: 30px;" placeholder="Найти аниме по названию" autocomplete="off">
+                        </div>
 
 				</div>
 			</div>		
@@ -66,6 +66,12 @@
 		</div>
 		<script src="<?php echo fileTime('/js/jquery.min.js');?>"></script>	
 		<script src="<?php echo fileTime('/js/bootstrap.min.js');?>"></script>
+        <script src="<?php echo fileTime('/js/jquery.lazy.min.js');?>"></script>
+        <script>
+            $(function() {
+                $('.lazy').Lazy();
+            });
+        </script>
 		<script src="<?php echo fileTime('/js/main.js');?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>

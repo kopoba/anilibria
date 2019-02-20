@@ -390,6 +390,7 @@ span.other-info {
 	color: #e74c3c;
 }
 
+
 div.torrent_block {
 	position: relative;
 	width: 260px;
@@ -403,6 +404,104 @@ div.torrent_block {
 div.torrent_block:hover {
 	background-color: #d83541;
 }
+
+/* Alphabet page */
+.alphabet_block {
+	position: relative;
+	float: left;
+	width: 190px;
+	height: auto;
+	background-color: #282829;
+	text-align: center;
+	padding: 5px;
+	margin: 10px 10px 10px 10px;
+	font-family: 'PT Sans', sans-serif;
+}
+
+.alphabet-name {
+	position: absolute;
+	bottom: 5px;
+	left: 5px;
+	right: 5px;
+	width: calc(100% - 10px);
+	height: auto;
+	display: block;
+	padding: 10px 5px;
+	color: #fff;
+	font-size: 9pt;
+	line-height: 9pt;
+	background: rgba(0,0,0,0.8);
+}
+
+.alphabet-voicers {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	right: 5px;
+	width: calc(100% - 10px);
+	height: auto;
+	display: none;
+	padding: 10px 5px;
+	color: #fff;
+	font-size: 9.5pt;
+	line-height: 9.5pt;
+	background: rgba(0,0,0,0.8);
+}
+
+.alphabet_block:hover {
+	background-color: #d83541;
+}
+
+.alphabet_block:hover .alphabet-voicers {
+	display: block;
+}
+
+.alphabet-pic {
+	width: 180px;
+	height: 260px;
+}
+
+.spacer {
+	width: 100%;
+	height: 30px;
+	margin-top: 10px;
+	padding: 5px;
+	background: #282829;
+}
+
+.spacer > span {
+	display: inline-block;
+	font-size: 20px;
+	line-height: 20px;
+	font-weight: bold;
+	color: #fff;
+}
+
+#alphabet-characters {
+	text-align: center;
+}
+
+#alphabet-characters a,
+#alphabet-characters a:visited {
+	text-decoration: none;
+	margin: 0 5px;
+	font-size: 14pt;
+	line-height: 14pt;
+	font-weight: bold;
+	color: #b32a2c;
+}
+
+.alphabet-up,
+.alphabet-up:visited {
+	text-decoration: none;
+	float: right;
+	width: 20px;
+	height: 20px;
+	background: url("/img/other/arrow_up.png") no-repeat;
+	background-size:cover;
+}
+
+/* end */
 
 img.lasttorpic {
 	margin: 10px 10px 0px 10px;
