@@ -457,6 +457,7 @@ div.torrent_block:hover {
 }
 
 .alphabet-pic {
+	display: block;
 	width: 180px;
 	height: 260px;
 }
