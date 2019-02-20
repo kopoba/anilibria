@@ -2500,3 +2500,43 @@ function helpSeed(){
 		telegram_send('@anilibriahelpseed', $url);
 	}
 }
+
+function showAscReleases() {
+    global $db, $cache;
+    $rGroup = $cache->get('showAscReleases');
+    if($rGroup === false) {
+        $rGroup = [];
+        $query = $db->query('SELECT `id`, `name`, `ename`, `voice`, `code` FROM `xrelease` ORDER BY `name` ASC');
+        while($row=$query->fetch()) {
+            $firstChar = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
+            !isset($rGroup[$firstChar]) ? $rGroup[$firstChar] = '<div style="height: 0;clear:both;"></div><div class="spacer"><span id="'.$firstChar.'">'.$firstChar.'</span><a class="alphabet-up" href="#headercontent">В Начало</a></div>' : false;
+            $img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
+            if(!$img){
+                $img = '/upload/release/240x350/default.jpg';
+            }
+            $tmp = getTemplate('alphabet-block');
+            $tmp = str_replace('{id}', $row['code'], $tmp);
+            $tmp = str_replace('{img}', $img, $tmp);
+            $tmp = str_replace('{alt}', "{$row['name']} / {$row['ename']}", $tmp);
+            $tmp = str_replace('{voicers}', $row['voice'], $tmp);
+            $tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
+            $rGroup[$firstChar] .= $tmp;
+        }
+        $rGroup = implode("", $rGroup);
+        $cache->set('showAscReleases', $rGroup, 86400);
+    }
+    return $rGroup;
+}
+
+function showAscAlphabet(){
+    global $db;
+    $prevLabel = null;
+    $query = $db->query('SELECT `name` FROM `xrelease` ORDER BY `name` ASC');
+    while($row=$query->fetch()) {
+        $currLabel = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
+        if ($currLabel != $prevLabel) {
+            echo '<a rel="nofollow" href="#'.$currLabel.'">'.$currLabel.'</a>';
+            $prevLabel = $currLabel;
+        }
+    }
+}
