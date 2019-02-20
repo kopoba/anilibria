@@ -2,35 +2,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
-CREATE TABLE `chat_messages` (
-  `id` int(11) NOT NULL,
-  `idt` int(11) DEFAULT NULL,
-  `session` varchar(32) DEFAULT NULL,
-  `message` varchar(2048) DEFAULT NULL,
-  `time` varchar(32) DEFAULT NULL,
-  `send` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `chat_sessions` (
-  `id` int(11) NOT NULL,
-  `sess` varchar(128) DEFAULT NULL,
-  `ip` varchar(128) DEFAULT NULL,
-  `sex` int(11) DEFAULT NULL,
-  `search` int(11) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 0,
-  `ping` int(11) NOT NULL DEFAULT 0,
-  `enter` varchar(128) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `chat_talks` (
-  `idt` int(11) NOT NULL,
-  `one` varchar(32) DEFAULT NULL,
-  `two` varchar(32) DEFAULT NULL,
-  `start` varchar(128) DEFAULT NULL,
-  `end` varchar(128) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `favorites` (
   `id` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
@@ -64,6 +35,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `login` varchar(50) NOT NULL,
   `mail` varchar(254) DEFAULT NULL,
+  `vk` bigint(20) DEFAULT NULL,
   `passwd` varchar(255) NOT NULL,
   `avatar` varchar(32) DEFAULT NULL,
   `2fa` varchar(16) DEFAULT NULL,
@@ -114,11 +86,15 @@ CREATE TABLE `xrelease` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `ename` varchar(255) NOT NULL,
+  `aname` varchar(255) NOT NULL,
   `year` int(11) NOT NULL DEFAULT 2018,
   `type` varchar(255) NOT NULL,
   `genre` varchar(255) NOT NULL,
   `voice` varchar(255) NOT NULL,
-  `other` varchar(1024) NOT NULL,
+  `translator` varchar(255) NOT NULL,
+  `editing` varchar(255) NOT NULL,
+  `decor` varchar(255) NOT NULL,
+  `timing` varchar(255) NOT NULL,
   `announce` varchar(128) NOT NULL,
   `status` int(1) NOT NULL DEFAULT 3,
   `search_status` varchar(16) NOT NULL,
@@ -127,7 +103,8 @@ CREATE TABLE `xrelease` (
   `last` bigint(20) NOT NULL DEFAULT 0,
   `day` int(1) NOT NULL DEFAULT 1,
   `rating` int(11) NOT NULL DEFAULT 0,
-  `code` varchar(1024) DEFAULT NULL
+  `code` varchar(1024) DEFAULT NULL,
+  `block` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `youtube` (
@@ -141,23 +118,6 @@ CREATE TABLE `youtube` (
   `type` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-ALTER TABLE `chat_messages`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idt` (`idt`),
-  ADD KEY `session` (`session`),
-  ADD KEY `send` (`send`);
-
-ALTER TABLE `chat_sessions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `sess` (`sess`),
-  ADD KEY `ip` (`ip`),
-  ADD KEY `sex` (`sex`),
-  ADD KEY `search` (`search`);
-
-ALTER TABLE `chat_talks`
-  ADD PRIMARY KEY (`idt`),
-  ADD KEY `status` (`status`);
 
 ALTER TABLE `favorites`
   ADD PRIMARY KEY (`id`),
@@ -179,12 +139,14 @@ ALTER TABLE `session`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `login` (`login`),
-  ADD UNIQUE KEY `mail` (`mail`);
+  ADD UNIQUE KEY `mail` (`mail`),
+  ADD UNIQUE KEY `vk` (`vk`);
 
 ALTER TABLE `xbt_files`
   ADD PRIMARY KEY (`fid`),
   ADD UNIQUE KEY `info_hash` (`info_hash`),
-  ADD KEY `rid` (`rid`);
+  ADD KEY `rid` (`rid`),
+  ADD KEY `flags` (`flags`);
 
 ALTER TABLE `xbt_files_users`
   ADD UNIQUE KEY `fid` (`fid`,`uid`),
@@ -198,7 +160,8 @@ ALTER TABLE `xrelease`
   ADD UNIQUE KEY `code` (`code`),
   ADD KEY `last` (`last`),
   ADD KEY `day` (`day`),
-  ADD KEY `status` (`status`);
+  ADD KEY `status` (`status`),
+  ADD KEY `aname` (`aname`);
 ALTER TABLE `xrelease` ADD FULLTEXT KEY `name` (`name`,`ename`,`search_status`);
 
 ALTER TABLE `youtube`
@@ -207,15 +170,6 @@ ALTER TABLE `youtube`
   ADD KEY `type` (`type`),
   ADD KEY `time` (`time`);
 
-
-ALTER TABLE `chat_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `chat_sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `chat_talks`
-  MODIFY `idt` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `favorites`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

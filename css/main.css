@@ -533,12 +533,19 @@ p.lasttortext {
 	cursor: pointer;
 }
 
+.last_tor_wrapper {
+	position: absolute;
+	bottom: 10px;
+	width: 100%;
+	left: 0;
+}
+
 .last_tor_button {
 	display: inline-block;
 	background: #d83541;
 	text-decoration: none;
 	outline: none;
-	padding: 5px 10px;
+	padding: 5px 15px;
 	color: #fff;
 	font-size: 10pt;
 	z-index: 53;
@@ -566,12 +573,11 @@ p.lasttortext {
 
 .side-series {
 	font-size: 13pt;
-	margin-bottom: 50px;
+	margin-bottom: 30px;
 }
 
 .side-description {
 	font-size: 12pt;
-	margin-bottom: 10px;
 }
 
 .profile-info-left-side {

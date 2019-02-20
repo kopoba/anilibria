@@ -386,6 +386,19 @@ function apiList(){
 		return $result;
 	}
 	
+	function apiGetSocialAuth() {
+		$result = [];
+		
+		$result[] = [
+			'key' => 'vk',
+			'title' => 'ВКонтакте',
+			'socialUrl' => 'https://oauth.vk.com/authorize?client_id=5315207&redirect_uri=https://www.anilibria.tv/public/vk.php',
+			'resultPattern' => 'https?:\/\/(?:(?:www|api)?\.)?anilibria\.tv\/public\/vk\.php([?&]code)',
+			'errorUrlPattern' => 'https?:\/\/(?:(?:www|api)?\.)?anilibria\.tv\/pages\/vk\.php'
+		];
+		return $result;
+	}
+	
 	function proceedBridge($funcSrc, $funcDst){
 		register_shutdown_function(function() use ($funcSrc, $funcDst) {
 			// Получаем то, что было выведено во время работы $funcSrc
@@ -496,6 +509,10 @@ function apiList(){
 			
 		case 'empty':
 			return [];
+        break;
+			
+		case 'social_auth':
+			return apiGetSocialAuth();
         break;
 	}
     //Вместо default case
