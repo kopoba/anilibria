@@ -197,4 +197,3 @@ ALTER TABLE `xrelease`
 
 ALTER TABLE `youtube`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
