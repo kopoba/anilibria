@@ -2506,7 +2506,7 @@ function showAscReleases() {
     $rGroup = $cache->get('showAscReleases');
     if($rGroup === false) {
         $rGroup = [];
-        $query = $db->query('SELECT `id`, `name`, `ename`, `voice`, `code` FROM `xrelease` ORDER BY `name` ASC');
+        $query = $db->query('SELECT `id`, `name`, `ename`, `voice`, `code` FROM `xrelease` WHERE `status` != 3 ORDER BY `name` ASC');
         while($row=$query->fetch()) {
             $firstChar = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
             !isset($rGroup[$firstChar]) ? $rGroup[$firstChar] = '<div style="height: 0;clear:both;"></div><div class="spacer"><span id="'.$firstChar.'">'.$firstChar.'</span><a class="alphabet-up" href="#headercontent"></a></div>' : false;
@@ -2531,7 +2531,7 @@ function showAscReleases() {
 function showAscAlphabet(){
     global $db;
     $prevLabel = null;
-    $query = $db->query('SELECT `name` FROM `xrelease` ORDER BY `name` ASC');
+    $query = $db->query('SELECT `name` FROM `xrelease` WHERE `status` != 3 ORDER BY `name` ASC');
     while($row=$query->fetch()) {
         $currLabel = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
         if ($currLabel != $prevLabel) {
