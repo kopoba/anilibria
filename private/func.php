@@ -2509,7 +2509,7 @@ function showAscReleases() {
         $query = $db->query('SELECT `id`, `name`, `ename`, `voice`, `code` FROM `xrelease` ORDER BY `name` ASC');
         while($row=$query->fetch()) {
             $firstChar = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
-            !isset($rGroup[$firstChar]) ? $rGroup[$firstChar] = '<div style="height: 0;clear:both;"></div><div class="spacer"><span id="'.$firstChar.'">'.$firstChar.'</span><a class="alphabet-up" href="#headercontent">В Начало</a></div>' : false;
+            !isset($rGroup[$firstChar]) ? $rGroup[$firstChar] = '<div style="height: 0;clear:both;"></div><div class="spacer"><span id="'.$firstChar.'">'.$firstChar.'</span><a class="alphabet-up" href="#headercontent"></a></div>' : false;
             $img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
             if(!$img){
                 $img = '/upload/release/240x350/default.jpg';
