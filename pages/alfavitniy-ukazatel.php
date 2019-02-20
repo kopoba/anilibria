@@ -11,8 +11,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 $var['title'] = 'Алфавитный указатель';
 $var['page'] = 'alphabet';
 
-//if(!$user || $user < 3) { die(); }
-
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 <div class="news-block">
