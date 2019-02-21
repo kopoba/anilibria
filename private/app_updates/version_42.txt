@@ -1,0 +1,27 @@
+{
+  "update": {
+    "version_code": "42",
+    "version_name": "2.3.2",
+    "version_build": "0",
+    "build_date": "21 февраля 2019 г.",
+    "links": [
+      {
+        "name": "AniLibria",
+        "url": "https://www.anilibria.tv/upload/app/AniLibria_v2.3.2.apk",
+        "type": "file"
+      }
+    ],
+    "important": [],
+    "added": [
+      "Авторизация через ВКонтакте",
+      "Двухфакторная авторизация"
+    ],
+    "fixed": [
+      "Переход по ссылкам из описания релизов",
+      "Исправлены стили комментариев в тёмной теме"
+    ],
+    "changed": [
+      "Добавлен поиск по названию на вкладке поиска"
+    ]
+  }
+}

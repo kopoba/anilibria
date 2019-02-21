@@ -20,7 +20,7 @@ function apiList(){
     //only for testing
     //updateApiCache();
     
-	global $cache; $result = [];
+	global $cache, $var; $result = [];
 	$count = $cache->get('apiInfo');
 	$info = [];
 	$torrent = json_decode($cache->get('apiTorrent'), true);
@@ -502,7 +502,7 @@ function apiList(){
         break;
 			
 		case 'app_update':
-			$version = 41;
+			$version = $var['app_version'];
 			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
 			return json_decode($src, true);
         break;
