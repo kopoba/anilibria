@@ -10,6 +10,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 $var['title'] = 'Мобильное приложение';
 $var['page'] = 'app';
 
+$version = $var['app_version'];
+$updateSrc = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
+$updateJson = json_decode($updateSrc, true);
+$versionName = $updateJson['update']['version_name'];
+$appLink = $updateJson['update']['links'][0]['url'];
+
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
@@ -42,7 +48,7 @@ a#join-team-link, a#join-team-link:visited {
 	<div class="news-body">	
 		<img src="/img/apppic1.jpg" width="840" height="103">
 		<img src="/img/logo.png" width="200" height="200" align="left">
-		<div class="day">AniLibria.TV (версия 2.3.1)</div>
+		<div class="day">AniLibria.TV (версия <?php echo $versionName; ?>)</div>
 		<p style="text-align: right;">
 			<i>
 				На данный момент (версия 2.0) функционал приложения: просмотр онлайн с возможностью выбрать SD и HD качество (для большинства экранов телефонов будет достаточно качества SD), скачивание торрент.файлов, поиск по жанрам, избранное, просмотр новостей и блогов, просмотр комментариев<br>
@@ -51,7 +57,7 @@ a#join-team-link, a#join-team-link:visited {
 			<br>
 			<br>
 			<br>
-			Новая версия: <a id="join-team-link" href="/upload/app/AniLibria_v2.3.1.apk">Скачать .apk файл</a>
+			Новая версия: <a id="join-team-link" href="<?php echo $appLink; ?>">Скачать .apk файл</a>
 			<br>
 		</p>
 		<div class="day">Инструкция по установке</div>
