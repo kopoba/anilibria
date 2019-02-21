@@ -29,12 +29,13 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</center>
 		<hr/>
 		<p style="text-align: center;">
-			<i><span style="color: #339966;"><span style="font-size: 16pt;">Войсеры / </span></span> <span style="color: #800000;"><span style="font-size: 16pt;">Технари / </span></span><span style="color: #ff6600;"><span style="font-size: 16pt;">Сабберы / </span></span> <span style="color: #800080;"><span style="font-size: 16pt;">Резерв / </span></span> <span style="color: #33cccc;"><span style="font-size: 16pt;">Дизайнеры/ </span></span> <span style="color: #f2d20c;"><span style="font-size: 16pt;">PR-команда</span></span></i>
+			<i><span style="color: #339966;"><span style="font-size: 16pt;">Войсеры / </span></span> <span style="color: #800000;"><span style="font-size: 16pt;">Технари / </span></span><span style="color: #ff6600;"><span style="font-size: 16pt;">Сабберы / </span></span> <span style="color: #000080;"><span style="font-size: 16pt;">Сидеры / </span></span> <span style="color: #33cccc;"><span style="font-size: 16pt;">Дизайнеры / </span></span> <span style="color: #f2d20c;"><span style="font-size: 16pt;">PR-команда</span></span></i>
 		</p>
 		<br/>
 
 		<ul>
-			<li><span style="color: #ff0000;"><a href="https://vk.com/lupintv" target="_blank"><span style="color: #00a650;">Lupin</span></a></span> - глава проекта, босс, войсер</li>
+			<li><span style="color: #ff0000;"><a href="https://vk.com/lupintv" target="_blank"><span style="color: #00a650;">Lupin</span></a></span> - босс, войсер, бесспорно принадлежит 80%</li>
+			<li>poiuty - босс, бесспорно принадлежит 20%</li>
 		</ul>
 		<p style="text-align: center;">
 			<u> <b>1 Лига (СОВЕТ)</b></u>
@@ -51,7 +52,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<u><b>2 Лига (ВЫСШАЯ)</b></u>
 		</p>
 		<ul>
-			<li><span style="color: #800000;"><a href="https://vk.com/id26183002" target="_blank">Aizawa</a></span> - руководитель подкоманды технарей (сидеры)</li>
+			<li><span style="color: #000080;">Sekai</span> - руководитель подкоманды технарей (сидеры)</li>
 			<li><span style="color: #800000;">Alkhorus </span> - технарь / куратор академии таймеров / помощник рук. технарей</li>
 			<li><span style="color: #800000;">Hikariya</span>&nbsp;- технарь / помощник рук. сабберов (оформитель) / дизайнер</li>
 			<li><span style="color: #339966;">Aemi</span> - войсер</li>
@@ -112,7 +113,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #800000;">EliteNoob </span> - технарь</li>
 			<li><span style="color: #800000;">Karfosobos</span> - технарь</li>
 			<li><span style="color: #800000;">Dr.One</span> - технарь</li>
-			<li><span style="color: #800000;">Sekai</span> - технарь (заливщик)</li>
 			<li><span style="color: #f7941d;">BONN</span> -  оформитель </li>
 			<li><span style="color: #f7941d;">Nomi</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Gamilton</span> - переводчик</li>
@@ -121,7 +121,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">DiaZone</span> - оформитель</li> 
 			<li><span style="color: #f7941d;">TiimeIrre</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Smallow</span> - переводчик</li>  
-			<li><span style="color: #f7941d;">RinRin</span> - переводчик</li>  
 			<li><span style="color: #f7941d;">Nutsy</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Narvion</span> - оформитель</li>
 			<li><span style="color: #f7941d;">The Magus</span> - переводчик / оформитель</li>
@@ -158,10 +157,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<u><b>ВНЕ ИЕРАРХИИ (не поддаётся классификации лиговой системы) </b></u>
 		</p>
 		<ul>
-			<li>Fenix0904 - календарщик</li>
 			<li>RadiationX - автор приложения, администратор сайта</li>
 			<li>Lisitsa - администратор discord-сервера</li>
 			<li>Kirja - вёрстка сайта, администратор сайта</li>
+			<li>Fenix0904 - вёрстка сайта</li>
 		</ul>
 	</div>
 	<div class="clear"></div>

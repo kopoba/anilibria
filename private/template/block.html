@@ -1,46 +1,9 @@
 <div class="news-block">
-	<div id="emptyHeader" class="news-header"></div>
-	<div id="xreleaseInfo" class="detail_torrent_info">
-		<h1 class="release-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 0px;">
-			{fullname}
-		</h1>
-		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
-		<b>Год:</b> {year}<br>
-		<b>Тип:</b> {type}<br>
-		<b>Жанры:</b> {genre}<br>
-		<b>Озвучка:</b> {voice}<br>
-		<b><a href="#" data-show-other style="color: #000;">Работа над релизом</a>:</b> {other}<br>
-		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
-		<p class="detail-description" style="font-size: 15.7px;">{description}</p>
-	</div>
-	<div class="detail_torrent_side">
-		<div id="nextserial" {style}>
-			<a href="" id="releaseAnnounce" data-change-announce="{userAccess}" style="color: white; text-decoration: none;">{announce}</a>
-			<input type="hidden" id="releaseID" value="{id}">
-		</div>
-		<div class="detail_pic_corner">
-			<img id="adminPoster" class="detail_torrent_pic" border="0" src="{img}" width="350" height="500" alt="{alt}">
-		</div>
+	<div class="news-body">	
+		<center>
+			<img src="/img/block.jpg">
+		</center>
 	</div>
 	<div class="clear"></div>
-</div>
-
-<div class="modal fade" id="otherModal" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog" style="width: 500px;">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title" id="avatarInfo">Работа над релизом</h4>
-			</div>
-			<div  class="modal-body">
-				<b>Озвучка</b>: {voice}<br/>
-				<b>Перевод</b>: {translator}<br/>
-				<b>Редактура</b>: {editing}<br/>
-				<b>Оформление</b>: {decor}<br/>
-				<b>Тайминг</b>: {timing}
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-			</div>
-		</div>
-	</div>
+	<div style="margin-top:10px;"></div>
 </div>

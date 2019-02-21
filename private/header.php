@@ -37,12 +37,12 @@ if(!empty($_SESSION['csrf'])){
 			<div class="content">
 				<div class="contentmenu">
 					<ul class="main-navigation">
-                        <li><a id="activelink0" href="/">ГЛАВНАЯ</a></li>
-                        <li><a id="activelink1" href="/pages/catalog.php">РЕЛИЗЫ</a></li>
-                        <li><a id="activelink2" href="/pages/schedule.php">РАСПИСАНИЕ</a></li>
-                        <li><a id="activelink3" href="/pages/alphabet.php">АЛФАВИТ</a></li>
-                        <li><a id="activelink4" href="/pages/app.php">ПРИЛОЖЕНИЕ</a></li>
-                        <li><a id="activelink5" href="/pages/team.php">КОМАНДА</a></li>
-                        <li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
+						<li><a id="activelink0" href="/">ГЛАВНАЯ</a></li>
+						<li><a id="activelink1" href="/pages/catalog.php">РЕЛИЗЫ</a></li>
+						<li><a id="activelink2" href="/pages/schedule.php">РАСПИСАНИЕ</a></li>
+						<li><a id="activelink3" href="/pages/alphabet.php">АЛФАВИТ</a></li>
+						<li><a id="activelink4" href="/pages/app.php">ПРИЛОЖЕНИЕ</a></li>
+						<li><a id="activelink5" href="/pages/team.php">КОМАНДА</a></li>
+						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>

@@ -266,7 +266,7 @@ a#activelink2 {
 
 a#activelink3 {
 	background-color: #731515;
-	width: 110px;
+	width: 100px;
 }
 
 a#activelink4 {
@@ -276,12 +276,12 @@ a#activelink4 {
 
 a#activelink5 {
 	background-color: #560f0f;
-	width: 100px;
+	width: 102px;
 }
 
 a#activelink6 {
 	background-color: #460c0c;
-	width: 200px;
+	width: 208px;
 }
 
 a#activelink0:hover,
@@ -389,7 +389,6 @@ span.other-info {
 	line-height: 30px;
 	color: #e74c3c;
 }
-
 
 div.torrent_block {
 	position: relative;
@@ -579,6 +578,7 @@ p.lasttortext {
 
 .side-description {
 	font-size: 12pt;
+	margin-bottom: 10px;
 }
 
 .profile-info-left-side {

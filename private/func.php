@@ -1127,7 +1127,6 @@ function showRelease(){
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
 	
-	
 	$shortDesc = mb_substr($release['description'], 0, 250).'...';
 	
 	$var['og'] .= "<meta property='og:title' content='{$release['name']} / {$release['ename']}' />";
@@ -1149,7 +1148,7 @@ function showRelease(){
 	if(!$var['release']['block']){
 		$page = str_replace('{name}', $release['name'], getTemplate('release'));
 	}else{
-		$page = str_replace('{name}', $release['name'], getTemplate('block'));
+		return getTemplate('block');
 	}
 	$page = str_replace('{ename}', $release['ename'], $page);
 	$page = str_replace('{aname}', $release['aname'], $page);
@@ -1216,10 +1215,6 @@ function showRelease(){
 	}
 	$page = str_replace('{style}', '', $page);
 	
-	if($var['release']['block']){
-		return $page;
-	}
-	
 	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
 	
 	$button = '';
@@ -1256,7 +1251,7 @@ function showRelease(){
 		while($row = $query->fetch()){
 			$torrent .= getTemplate('torrent');
 			$tmp = json_decode($row['info'], true);
-			$torrent = str_replace('{ctime}', date('d.m.Y', $row['ctime']), $torrent);
+			$torrent = str_replace('{ctime}', date('d.m.Y H:m', $row['ctime']), $torrent);
 			$torrent = str_replace('{seeders}', $row['seeders'], $torrent);
 			$torrent = str_replace('{leechers}', $row['leechers'], $torrent);
 			$torrent = str_replace('{completed}', $row['completed'], $torrent);
@@ -1595,7 +1590,7 @@ function getReleaseVideo($id){
 					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber-sd.mp4";
 				}
 				if($host){
-					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new'])."', download:\"$download\", 'id': 's$key'},";
+					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new2'])."', download:\"$download\", 'id': 's$key'},";
 				}
 			}
 		}

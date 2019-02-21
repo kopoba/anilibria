@@ -7,7 +7,7 @@ Allow: /pages/team.php$
 Allow: /pages/request.php$
 Allow: /pages/links.php$
 Allow: /pages/donate.php$
-Allow: /pages/chat.php$
+Allow: /pages/alphabet.php$
 Allow: /pages/login.php$
 Allow: /release/*.html$
 
