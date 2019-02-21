@@ -1,9 +1,10 @@
 var csrf_token = $('input[id=csrf_token]').val();
+var recaptcha1;
+var recaptcha2;
+var CaptchaCallback1 = function() { recaptcha1 = grecaptcha.render('RecaptchaField1', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
+var CaptchaCallback2 = function() { recaptcha2 = grecaptcha.render('RecaptchaField2', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
+
 $(document).ready(function() {
-	var recaptcha1;
-	var recaptcha2;
-	var CaptchaCallback1 = function() { recaptcha1 = grecaptcha.render('RecaptchaField1', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
-	var CaptchaCallback2 = function() { recaptcha2 = grecaptcha.render('RecaptchaField2', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
 	if(window.location.hash.substr(1) == 'rules'){
 		$('html, body').animate({
 			scrollTop: $("#rules").offset().top
