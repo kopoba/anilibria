@@ -656,3 +656,24 @@ $(document).on("click", "[data-change-vk]", function(e) {
 		$("#changeVKMes").html("(<font color="+color+">"+data.mes+"</font>)");
 	});
 });
+
+$(document).on("click", "[data-change-ads]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	var change = $(this).data("change-ads");
+	$.post("//"+document.domain+"/public/change/a.php", { 'csrf_token': csrf_token }, function(json){
+		data = JSON.parse(json);
+		color = 'red';
+		if(data.err == 'ok'){
+			color = 'green';
+		}
+		if(change == '0'){
+			$("[data-change-ads]").val("ВКЛЮЧИТЬ");
+			$("[data-change-ads]").data('change-ads', 1);
+		}else{
+			$("[data-change-ads]").val("ОТКЛЮЧИТЬ");
+			$("[data-change-ads]").data('change-ads', 0);
+		}
+		$("#changeAMes").html("(<font color="+color+">"+data.mes+"</font>)");
+	});
+});

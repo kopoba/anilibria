@@ -22,16 +22,12 @@ body {
 	font-size: 16px;
 }
 
+/*.main {
+	margin-top: 15px;
+}*/
+
 @-moz-document url-prefix() {
     body {font-size: 15px;}
-}
-
-.header img {
-	width: 1180px;
-}
-
-.main {
-	margin-top: 15px;
 }
 
 .content {
@@ -674,7 +670,7 @@ p.lasttortext {
 
 .download-torrent {
 	margin-top: 10px;
-	background-color: #e0e0e0;
+	background-color: #f3f3f3;
 	height: 100%;
 	width: 100%;
 	float: left;
@@ -708,7 +704,7 @@ p.lasttortext {
 }
 
 .download-torrent td {
-	border-right: solid 2px #d3d3d3;
+	border-right: solid 2px #eaeaea;
 }
 
 .download-torrent td:last-child {
@@ -833,14 +829,14 @@ button.xdark {
 
 div#headercontent {
 	position: absolute;
-	width: 1175px;
-	height: 120px;
-	margin: 0px auto;
+	//width: 1175px;
+	//height: 120px;
+	//margin: 0px auto;
 	z-index: 1000;
 	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	//left: 0;
+	//right: 0;
+	//bottom: 0;
 }
 
 button.favorites {

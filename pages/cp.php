@@ -22,6 +22,12 @@ if(!empty($user['2fa'])){
 	$tmpMes = 'ВКЛЮЧИТЬ 2FA';
 }
 
+if(!$user['ads']){
+	$tmpAds = 'ОТКЛЮЧИТЬ';
+}else{
+	$tmpAds = 'ВКЛЮЧИТЬ';
+}
+
 if(!empty($user['avatar'])){
 	$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
 }else{
@@ -190,6 +196,22 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<input class="form-control" id="2fapasswd" style="margin-top: 10px;" type="password" placeholder="Пароль" required="">
 			<input class="form-control" id="2facheck" style="margin-top: 10px;" type="text" placeholder="Код" required="">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" id="send2fa" data-2fa-start value="<?php echo $tmpMes; ?>">
+		</div>
+		<div class="clear"></div>
+		<div style="margin-top:10px;"></div>
+</div>
+
+<div class="news-block">
+		<div class="news-header">
+			<h2 class="news-name" style="float:left;">
+				Реклама на сайте
+			</h2>
+			<h2 class="news-name" id="changeAMes" style="float:left; padding-left: 10px;"></h2>
+			<div class="clear"></div>	
+		</div>
+		<div class="clear"></div>
+		<div>
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-ads='<?php echo $user['ads']; ?>' type="submit" value="<?php echo $tmpAds; ?>">
 		</div>
 		<div class="clear"></div>
 		<div style="margin-top:10px;"></div>

@@ -418,7 +418,7 @@ function auth(){
 			return;
 		}
 		$session = $query->fetch();
-		$query = $db->prepare('SELECT `id`, `login`, `vk`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values` FROM `users` WHERE `id` = :id');
+		$query = $db->prepare('SELECT `id`, `login`, `vk`, `avatar`, `passwd`, `mail`, `2fa`, `access`, `register_date`, `last_activity`, `user_values`, `ads` FROM `users` WHERE `id` = :id');
 		$query->bindParam(':id', $session['uid']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -450,6 +450,7 @@ function auth(){
 					'register_date' => $row['register_date'],
 					'last_activity' => $row['last_activity'],
 					'dir' => substr(md5($row['id']), 0, 2),
+					'ads' => $row['ads'],
 				];
 		$user['user_values'] = [];
 		if(!empty($row['user_values'])){			
@@ -954,7 +955,6 @@ function change_vk(){
 	if(!$user){
 		_message('unauthorized', 'error');
 	}
-	checkCSRF();
 	if(!empty($_POST['vk']) && !ctype_digit($_POST['vk'])){
 		_message('wrong', 'error');
 	}
@@ -1460,6 +1460,10 @@ function footerJS(){
 			$result .='<script>$(".chosen").chosen();</script>';
 			$result .= str_replace('{url}', fileTime('/js/catalog.js'), $tmplJS);
 		break;
+		case 'alphabet':
+			$result .= str_replace('{url}', fileTime('/js/jquery.lazy.min.js'), $tmplJS);
+			$result .='<script>$(function(){$(".lazy").lazy();});</script>';			
+		break;
 		case 'release':
 			if($user && $user['access'] >= 2){
 				$result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
@@ -1470,7 +1474,12 @@ function footerJS(){
 			}
 			$tmp = getReleaseVideo($var['release']['id']);
 			if(!empty($tmp) && !$var['release']['block']){
-				$result .= str_replace('{playlist}', $tmp, getTemplate('playerjs'));
+				if(checkADS()){	
+					$tmpPlayer = str_replace('{playerjs}', fileTime('/js/playerjs.js'), getTemplate('playerjs'));
+				}else{
+					$tmpPlayer = str_replace('{playerjs}', fileTime('/js/playerjs2.js'), getTemplate('playerjs'));
+				}
+				$result .= str_replace('{playlist}', $tmp, $tmpPlayer);
 			}
 			unset($tmp);
 			
@@ -1635,6 +1644,7 @@ function youtubeStat($id){
 		$json = file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=$id&key={$conf['youtube_secret']}");
 		if(!empty($json)){
 			$arr = json_decode($json, true);
+			$comment = 0;
 			if(!empty($arr['items']['0']['statistics']['viewCount'])) $view = $arr['items']['0']['statistics']['viewCount'];
 			if(!empty($arr['items']['0']['statistics']['commentCount'])) $comment = $arr['items']['0']['statistics']['commentCount'];
 		}
@@ -1646,6 +1656,10 @@ function youtubeStat($id){
 function youtubeGetImage($id){
 	global $db;
 	$remote = "https://img.youtube.com/vi/$id/maxresdefault.jpg";
+	$x = get_headers($remote)[0];
+	if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized'){
+		return;
+	}
 	$hash = md5(file_get_contents($remote));
 	$file = $_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg';
 	$query = $db->prepare('SELECT `hash` FROM `youtube` WHERE `vid` = :vid');
@@ -1715,7 +1729,7 @@ function updateYoutube(){
 function youtubeShow(){
 	global $db; $i = 0; $arr = []; $result = '';
 	
-	$tmpl = '<td><a href="{url}"><img src="{img}" alt="{alt}" height="245" style="{style}"></a></td>';
+	$tmpl = '<td><a href="{url}" target="_blank"><img src="{img}" alt="{alt}" height="245" style="{style}"></a></td>';
 	
 	$result = '';
 	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'1\' ORDER BY `time` DESC  LIMIT 12');
@@ -2052,8 +2066,8 @@ function releaseDescriptionByID($id,$SymCount){
 	$query->execute();
 	$row = $query->fetch();
 	$shortdescription = mb_strimwidth($row['description'],0,$SymCount,"...");
-	$cutdescription = explode("\r\n", $shortdescription);
-	return $cutdescription[0];
+	$cutdescription = explode("\n", $shortdescription);
+	return strip_tags($cutdescription[0]);
 }
 
 function getTorrentDownloadLink($id) {
@@ -2137,7 +2151,7 @@ function showCatalog(){
 			$arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
 			$arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
 			$arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
-			$arr[$i] = str_replace('{description}', strip_tags(releaseDescriptionByID($val['id'],199)), $arr[$i]);
+			$arr[$i] = str_replace('{description}', releaseDescriptionByID($val['id'],199), $arr[$i]);
 			if(count($arr[$i]) == 3){
 				$i++;
 			}
@@ -2534,4 +2548,51 @@ function showAscAlphabet(){
             $prevLabel = $currLabel;
         }
     }
+}
+
+function importFavorite(){
+	global $db, $user;
+	if($user && !empty($user['vk'])){
+		$query = $db->prepare('SELECT * FROM `f_tmp` WHERE `vid` = :vid');
+		$query->bindParam(':vid', $user['vk']);
+		$query->execute();
+		while($row=$query->fetch()){
+			if(!isFavorite($user['id'], $row['rid'])){
+				$insert = $db->prepare('INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)');
+				$insert->bindParam(':uid', $user['id']);
+				$insert->bindParam(':rid', $row['rid']);
+				$insert->execute();
+			}
+			$delete = $db->prepare('DELETE FROM `f_tmp` WHERE `vid` = :vid AND `rid` = :rid');
+			$delete->bindParam(':vid', $user['vk']);
+			$delete->bindParam(':rid', $row['rid']);
+			$delete->execute();
+		}
+	}
+}
+
+function changeADS(){
+	global $db, $user, $var, $conf;
+	if(!$user){
+		_message('unauthorized', 'error');
+	}
+	if(!$user['ads']){
+		$ads = 1;
+	}else{
+		$ads = 0;
+	}
+	$query = $db->prepare('UPDATE `users` SET `ads` = :ads WHERE `id` = :id');
+	$query->bindParam(':ads', $ads);
+	$query->bindParam(':id', $user['id']);
+	$query->execute();
+	_message('success');
+}
+
+function checkADS(){
+	global $user;
+	if(!$user || !$user['ads']){
+		return true;
+	}else{
+		return false;
+	}
 }

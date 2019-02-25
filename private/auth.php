@@ -2,3 +2,4 @@
 
 $user = false;
 auth();
+importFavorite();
