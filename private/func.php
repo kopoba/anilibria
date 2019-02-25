@@ -1032,7 +1032,7 @@ function mail_link(){
 	die(header('Location: /'));
 }
 
-function change_passwd(){
+/*function change_passwd(){
 	global $db, $user, $var, $conf;
 	if(!$user){
 		_message('unauthorized', 'error');
@@ -1050,6 +1050,29 @@ function change_passwd(){
 	$query->execute();
 	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
 	_message('checkEmail');
+}*/
+
+function change_passwd() {
+	global $db, $user, $var, $conf;
+	if(!$user) {
+		_message('unauthorized', 'error');
+	}
+	if(empty($_POST['oldPasswd']) || empty($_POST['newPasswd']) || empty($_POST['repPasswd'])) {
+		_message('empty', 'error');
+	}
+	if($_POST['newPasswd'] !== $_POST['repPasswd']) {
+		_message('wrongNewPasswd', 'error');
+	}
+	if(!password_verify($_POST['oldPasswd'], $user['passwd'])){
+		_message('wrongPasswd', 'error');
+	}
+	$passwd = password_hash($_POST['newPasswd'], PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2]);
+	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
+	$query->bindParam(':passwd', $passwd);
+	$query->bindParam(':id', $user['id']);
+	$query->execute();
+	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}");
+	_message('success');
 }
 
 function pageStat(){

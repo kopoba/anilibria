@@ -189,8 +189,10 @@ $(document).on("click", "[data-change-email]", function(e) {
 $(document).on("click", "[data-change-passwd]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	passwd = $('input[id=changePasswd]').val();
-	$.post("//"+document.domain+"/public/change/passwd.php", {'passwd': passwd, 'csrf_token': csrf_token }, function(json){
+	oldPasswd = $('input[id=oldPasswd]').val();
+	newPasswd = $('input[id=newPasswd]').val();
+	repPasswd = $('input[id=repeatPasswd]').val();
+	$.post("//"+document.domain+"/public/change/passwd.php", {'oldPasswd': oldPasswd, 'newPasswd': newPasswd, 'repPasswd': repPasswd, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
