@@ -1,3 +1,7 @@
+-- phpMyAdmin SQL Dump
+-- version 4.8.5
+-- https://www.phpmyadmin.net/
+--
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -5,6 +9,12 @@ SET time_zone = "+00:00";
 CREATE TABLE `favorites` (
   `id` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
+  `rid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `f_tmp` (
+  `id` int(11) NOT NULL,
+  `vid` int(11) NOT NULL,
   `rid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -42,7 +52,8 @@ CREATE TABLE `users` (
   `access` int(1) NOT NULL DEFAULT 1,
   `user_values` varchar(1024) DEFAULT NULL,
   `register_date` bigint(20) DEFAULT NULL,
-  `last_activity` bigint(20) DEFAULT NULL
+  `last_activity` bigint(20) DEFAULT NULL,
+  `ads` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `xbt_config` (
@@ -124,6 +135,11 @@ ALTER TABLE `favorites`
   ADD KEY `uid` (`uid`),
   ADD KEY `rid` (`rid`);
 
+ALTER TABLE `f_tmp`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `vid` (`vid`),
+  ADD KEY `rid` (`rid`);
+
 ALTER TABLE `genre`
   ADD PRIMARY KEY (`id`);
 
@@ -172,6 +188,9 @@ ALTER TABLE `youtube`
 
 
 ALTER TABLE `favorites`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `f_tmp`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `genre`
