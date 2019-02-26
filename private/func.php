@@ -1071,7 +1071,7 @@ function change_passwd() {
 	$query->bindParam(':passwd', $passwd);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
-	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}");
+	_mail($user['mail'], "Изменение пароля", "Здравствуйте, {$user['login']}!<br/><br/>Пароль от вашего аккаунта на сайте https://www.anilibria.tv был изменен.<br/><br/>Запрос отправили с IP {$var['ip']}");
 	_message('success');
 }
 
