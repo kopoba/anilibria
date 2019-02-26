@@ -37,7 +37,14 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <div class="light-off"></div>
 
 <?php echo $tmpPage; ?>
-<div id="vk_comments" style="margin-top: 15px;"></div>
+
+<div style="margin-top: 15px;">
+	<a href="https://vk.com/anilibria"><img src="/img/other/a1.png" width="285"></a>
+	<a href="https://tele.click/anilibria_tv"><img src="/img/other/a2.png" width="285" style="margin-left: 8px;"></a>
+	<a href="https://discordapp.com/invite/anilibria"><img src="/img/other/a3.png" width="285" style="float: right;"></a>
+</div>
+
+<div id="vk_comments" style="margin-top: 14px;"></div>
 
 <div class="modal fade" id="statModal" tabindex="-1" role="dialog" aria-hidden="true" >
 	<div class="modal-dialog" style="width: 480px;">

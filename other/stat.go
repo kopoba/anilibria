@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/igm/sockjs-go/sockjs"
+	"github.com/gorilla/websocket"
 )
 
 type Release struct {
@@ -21,7 +21,7 @@ type Release struct {
 }
 
 var data = map[string]*Release{}
-var mutex sync.RWMutex
+var mutex sync.Mutex
 
 func testHash(hash, name, url string) bool {
 	h := sha256.New()
@@ -33,9 +33,9 @@ func testHash(hash, name, url string) bool {
 }
 
 func testMap(hash string) bool {
-	mutex.RLock()
+	mutex.Lock()
 	_, ok := data[hash]
-	mutex.RUnlock()
+	mutex.Unlock()
 	return ok
 }
 
@@ -57,9 +57,9 @@ func statClean(hash string) {
 }
 
 func getCount(hash string) int {
-	mutex.RLock()
+	mutex.Lock()
 	x := data[hash].Count
-	mutex.RUnlock()
+	mutex.Unlock()
 	return x
 }
 
@@ -84,8 +84,7 @@ func statUpdate(hash string, x []string) {
 }
 
 func main() {
-	handler := sockjs.NewHandler("/ws", sockjs.DefaultOptions, wsHandler)
-	http.Handle("/ws/", handler)
+	http.HandleFunc("/ws/", wsHandler)
 	http.HandleFunc("/stat/", webHandler)
 	const SOCK = "/tmp/stat.sock"
 	os.Remove(SOCK)
@@ -107,17 +106,23 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(stat))
 }
 
-func wsHandler(session sockjs.Session) {
+func wsHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
+	if err != nil {
+		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
+		return
+	}
 	flag := true
 	hash := ""
+	defer conn.Close()
 	for {
-		message, err := session.Recv()
+		mt, message, err := conn.ReadMessage()
 		if err != nil {
 			statClean(hash)
 			break
 		}
 		if flag {
-			ok, x := validParams(message)
+			ok, x := validParams(string(message))
 			if !ok {
 				break
 			}
@@ -126,7 +131,7 @@ func wsHandler(session sockjs.Session) {
 			flag = false
 		}
 		if testMap(hash) {
-			err = session.Send(strconv.Itoa(getCount(hash)))
+			err = conn.WriteMessage(mt, []byte(strconv.Itoa(getCount(hash))))
 			if err != nil {
 				statClean(hash)
 				break

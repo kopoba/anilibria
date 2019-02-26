@@ -1,11 +1,10 @@
-<script src="/js/sockjs.min.js" type="text/javascript"></script>
 <script>
 	function bStat(){
 		function getRandomInt(min, max) {
 			return Math.floor(Math.random() * (max - min)) + min;
 		}
 		var wsLast = 0;
-		var sock = new SockJS('{ws}');
+		var sock = new WebSocket('{ws}');
 		sock.onopen = function() {
 			console.log('open');
 			hash = '{hash}';
@@ -32,5 +31,5 @@
 			setTimeout(wsStat, getRandomInt(5000, 10000));
 		}
 	}
-	bStat();
+	setTimeout(bStat, 100);
 </script>

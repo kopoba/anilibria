@@ -1,5 +1,5 @@
 			</div>
-			<div class="side">
+			<div class="<?php echo $xcss['side']; ?>">
 				<div class="asidehead" >
 					<div style="width: 260px; padding-top: 11px; margin: 0 auto;">
 						
@@ -31,7 +31,7 @@
 		</div>
 		
 		<div class="clear"></div>
-		<div class="footer">
+		<div class="<?php echo $xcss['footer']; ?>">
 			<div class="footer_left">
 				<div class="footer_left2">
 					<a href="http://www.animespirit.ru/"><img src="/img/button/1.jpg" alt=""></a>
@@ -43,9 +43,6 @@
 				</div>
 			</div>
 			<div class="footer_center">
-				<div class="chat">
-				<a href="#"><span class="chat-link"></span></a>
-				</div>
 			</div>
 			<div class="footer_right">
 				<ul>
@@ -66,14 +63,8 @@
 		</div>
 		<script src="<?php echo fileTime('/js/jquery.min.js');?>"></script>	
 		<script src="<?php echo fileTime('/js/bootstrap.min.js');?>"></script>
-		<script src="<?php echo fileTime('/js/jquery.lazy.min.js');?>"></script>
 		<script src="<?php echo fileTime('/js/main.js');?>"></script>
 		<?php echo footerJS(); ?>
-		<script>
-            $(function() {
-                $('.lazy').lazy();
-            });
-        </script>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
 		<!-- Yandex.Metrika counter -->
 		<script type="text/javascript" >
