@@ -386,11 +386,11 @@ function registration(){
 	if($query->rowCount() > 0){
 		_message('registered', 'error');
 	}
-	$passwd = createPasswd();
+	$passwd = password_hash($_POST['passwd'], PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2]);
 	$query = $db->prepare('INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))');
 	$query->bindValue(':login', $_POST['login']);
 	$query->bindParam(':mail', $_POST['mail']);
-	$query->bindParam(':passwd', $passwd[1]);
+	$query->bindParam(':passwd', $passwd);
 	$query->execute();
 	if(!empty($_POST['vk'])){
 		$id = $db->lastInsertId();
@@ -403,7 +403,7 @@ function registration(){
 			startSession($row);	
 		}
 	}
-	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте!<br/>Ваш пароль: $passwd[0]");
+	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте https://www.anilibria.tv!");
 	_message('success');
 }
 
@@ -1032,28 +1032,8 @@ function mail_link(){
 	die(header('Location: /'));
 }
 
-/*function change_passwd(){
-	global $db, $user, $var, $conf;
-	if(!$user){
-		_message('unauthorized', 'error');
-	}
-	if(empty($_POST['passwd'])){
-		_message('empty', 'error');
-	}
-	if(!password_verify($_POST['passwd'], $user['passwd'])){
-		_message('wrongPasswd', 'error');
-	}
-	$passwd = createPasswd();
-	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
-	$query->bindParam(':passwd', $passwd[1]);
-	$query->bindParam(':id', $user['id']);
-	$query->execute();
-	_mail($user['mail'], "Изменение пароля", "Запрос отправили с IP {$var['ip']}<br/>Ваш новый пароль: {$passwd[0]}");
-	_message('checkEmail');
-}*/
-
 function change_passwd() {
-	global $db, $user, $var, $conf;
+	global $db, $user, $var;
 	if(!$user) {
 		_message('unauthorized', 'error');
 	}
@@ -1066,6 +1046,9 @@ function change_passwd() {
 	if(!password_verify($_POST['oldPasswd'], $user['passwd'])){
 		_message('wrongPasswd', 'error');
 	}
+	if(password_verify($_POST['newPasswd'], $user['passwd'])) {
+	    _message('samePasswd', 'error');
+    }
 	$passwd = password_hash($_POST['newPasswd'], PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2]);
 	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
 	$query->bindParam(':passwd', $passwd);
