@@ -1734,15 +1734,24 @@ function youtubeShow(){
 	$result = '';
 	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'1\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
+
+	$arr1 = [];
+
 	while($row = $query->fetch()){
 		$arr1[] = ['vid' => $row['vid'], 'title' => $row['title']];
 	}
 	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'2\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
+
+	$arr2 = [];
+
 	while($row = $query->fetch()){
 		$arr2[] = ['vid' => $row['vid'], 'title' => $row['title']];
 	}
 	$arr1 = array_slice($arr1, 0, count($arr2));
+
+	$data = [];
+
 	foreach($arr1 as $k => $v){
 		$data[] = $arr2["$k"];
 		$data[] = $v;
