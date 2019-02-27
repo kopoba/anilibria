@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -63,22 +62,25 @@ func getCount(hash string) int {
 	return x
 }
 
-func validParams(message string) (bool, []string) {
-	x := strings.Split(message, ",")
-	if len(x[0]) != 64 || len(x[1]) < 1 || len(x[2]) < 1 || !testHash(x[0], x[1], x[2]) {
+func validParams(message []byte) (bool, map[string]string) {
+	var x map[string]string	
+	if err := json.Unmarshal(message, &x); err != nil {
+       return false, x
+    }
+	if len(x["Hash"]) != 64 || len(x["Name"]) < 1 || len(x["Url"]) < 1 || !testHash(x["Hash"], x["Name"], x["Url"]) {
 		return false, x
 	}
 	return true, x
 }
 
-func statUpdate(hash string, x []string) {
-	if testMap(hash) {
+func statUpdate(x map[string]string) {
+	if testMap(x["Hash"]) {
 		mutex.Lock()
-		data[hash].Count++
+		data[x["Hash"]].Count++
 		mutex.Unlock()
 	} else {
 		mutex.Lock()
-		data[hash] = &Release{x[1], x[2], 1}
+		data[x["Hash"]] = &Release{x["Name"], x["Url"], 1}
 		mutex.Unlock()
 	}
 }
@@ -109,7 +111,6 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
 	if err != nil {
-		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
 		return
 	}
 	flag := true
@@ -122,12 +123,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if flag {
-			ok, x := validParams(string(message))
+			ok, x := validParams(message)
 			if !ok {
 				break
 			}
-			hash = x[0]
-			statUpdate(hash, x)
+			hash = x["Hash"]
+			statUpdate(x)
 			flag = false
 		}
 		if testMap(hash) {
