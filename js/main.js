@@ -64,7 +64,7 @@ $(document).on("click", "[data-submit-register]", function(e) {
 					submit.show();
 				}
 				if(data.err == 'ok'){
-					if(vk.length > 0){
+					if(vk !== undefined && vk.length > 0){
 						setTimeout(function(){
 							document.location.href="/";
 						},250);
@@ -202,7 +202,6 @@ $(document).on("click", "[data-change-passwd]", function(e) {
 		$("#changePasswdMes").html("(<font color="+color+">"+data.mes+"</font>)");
 	});
 });
-
 
 $(document).on("click", "[data-edit-profile]", function(e) {
 	$(this).blur();

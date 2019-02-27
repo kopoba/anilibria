@@ -48,7 +48,7 @@ if(!$user){
 		<div>
 			<input class="form-control" id="regLogin" placeholder="Логин" type="email" required>
 			<input class="form-control" id="regEmail" style="margin-top: 10px;" placeholder="E-mail" type="email" required>
-            <input class="form-control" id="regPasswd" style="margin-top: 10px;" placeholder="Пароль" type="password" required>
+			<input class="form-control" id="regPasswd" style="margin-top: 10px;" placeholder="Пароль" type="password" required>
 			<div id="RecaptchaField1" style="margin-top: 10px; display: none;"></div>
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" data-submit-register value="ОТПРАВИТЬ" />
 		</div>

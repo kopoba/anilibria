@@ -272,37 +272,6 @@ function moveErrPage($page = 403){
 	die(header("Location: /pages/error/$page.php"));
 }
 
-function password_link(){
-	global $conf, $db, $var;
-	if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
-		moveErrPage();
-	}
-	if(!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])){
-		moveErrPage();
-	}
-	$query = $db->prepare('SELECT `id`, `mail`, `passwd` FROM `users` WHERE `id` = :id');
-	$query->bindParam(':id', $_GET['id']);
-	$query->execute();
-	if($query->rowCount() == 0){
-		moveErrPage();
-	}
-	$row = $query->fetch();
-	$hash = hash($conf['hash_algo'], $_GET['id'].$_GET['time'].sha1(half_string_hash($row['passwd'])));
-	if($_GET['hash'] != $hash){
-		moveErrPage();
-	}
-	if($var['time'] > $_GET['time']){
-		moveErrPage();
-	}
-	$passwd = createPasswd();
-	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
-	$query->bindValue(':id', $row['id']);
-	$query->bindParam(':passwd', $passwd[1]);
-	$query->execute();
-	_mail($row['mail'], "Новый пароль", "Ваш пароль: $passwd[0]");
-	die(header('Location: /'));
-}
-
 function testRecaptcha(){
 	$v = 3;
 	if(!empty($_POST['recaptcha']) && $_POST['recaptcha'] == 2){
@@ -361,7 +330,7 @@ function registration(){
 		}
 	}
 	testRecaptcha();
-	if(empty($_POST['login']) || empty($_POST['mail'])){
+	if(empty($_POST['login']) || empty($_POST['mail']) || empty($_POST['passwd'])){
 		_message('empty', 'error');
 	}
 	if(strlen($_POST['login']) > 20 || strlen($_POST['mail']) > 254){
@@ -386,11 +355,11 @@ function registration(){
 	if($query->rowCount() > 0){
 		_message('registered', 'error');
 	}
-	$passwd = password_hash($_POST['passwd'], PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2]);
+	$passwd = createPasswd($_POST['passwd']);
 	$query = $db->prepare('INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))');
 	$query->bindValue(':login', $_POST['login']);
 	$query->bindParam(':mail', $_POST['mail']);
-	$query->bindParam(':passwd', $passwd);
+	$query->bindParam(':passwd', $passwd['1']);
 	$query->execute();
 	if(!empty($_POST['vk'])){
 		$id = $db->lastInsertId();
@@ -403,7 +372,7 @@ function registration(){
 			startSession($row);	
 		}
 	}
-	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте https://www.anilibria.tv!");
+	_mail($_POST['mail'], "Регистрация", "Вы успешно зарегистрировались на сайте https://www.anilibria.tv");
 	_message('success');
 }
 
@@ -1040,18 +1009,18 @@ function change_passwd() {
 	if(empty($_POST['oldPasswd']) || empty($_POST['newPasswd']) || empty($_POST['repPasswd'])) {
 		_message('empty', 'error');
 	}
-	if($_POST['newPasswd'] !== $_POST['repPasswd']) {
+	if($_POST['oldPasswd'] == $_POST['newPasswd']){
+	    _message('samePasswd', 'error');
+    }
+	if($_POST['newPasswd'] != $_POST['repPasswd']) {
 		_message('wrongNewPasswd', 'error');
 	}
 	if(!password_verify($_POST['oldPasswd'], $user['passwd'])){
 		_message('wrongPasswd', 'error');
 	}
-	if(password_verify($_POST['newPasswd'], $user['passwd'])) {
-	    _message('samePasswd', 'error');
-    }
-	$passwd = password_hash($_POST['newPasswd'], PASSWORD_ARGON2ID, ['memory_cost' => 1<<14, 'time_cost' => 3, 'threads' => 2]);
+	$passwd = createPasswd($_POST['newPasswd']);
 	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
-	$query->bindParam(':passwd', $passwd);
+	$query->bindParam(':passwd', $passwd['1']);
 	$query->bindParam(':id', $user['id']);
 	$query->execute();
 	_mail($user['mail'], "Изменение пароля", "Здравствуйте, {$user['login']}!<br/><br/>Пароль от вашего аккаунта на сайте https://www.anilibria.tv был изменен.<br/><br/>Запрос отправили с IP {$var['ip']}");
@@ -1132,6 +1101,7 @@ function showRelease(){
 	$var['title'] = "{$release['name']} / {$release['ename']} &raquo; смотреть онлайн или скачать бесплатно";
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
+	$var['release']['runame'] = $release['name'];
 	
 	$shortDesc = mb_substr($release['description'], 0, 250).'...';
 	
@@ -1488,9 +1458,14 @@ function footerJS(){
 				$result .= str_replace('{playlist}', $tmp, $tmpPlayer);
 			}
 			unset($tmp);
-			
-			if(!empty($var['release']['name'])){
-				$result .= wsInfo($var['release']['name']);
+			$xname = '';
+			if(!empty($var['release']['runame'])){	
+				$xname = $var['release']['runame'];
+			}elseif(!empty($var['release']['name'])){
+				$xname = $var['release']['name'];
+			}
+			if(!empty($xname)){
+				$result .= wsInfo($xname);
 			}
 			$result .= str_replace('{page}', '', $vk);
 		break;
@@ -1513,10 +1488,9 @@ function wsInfo($name){
 	if(!empty($name)){
 		$url = base64_encode(mb_strtolower(htmlspecialchars(explode('?', $_SERVER['REQUEST_URI'], 2)[0], ENT_QUOTES, 'UTF-8')));
 		$hash = hash('sha256', $name.$url.$conf['stat_secret']);
+		$json = json_encode(['Hash' => $hash, 'Name' => $name, 'Url' => $url]);
 		$result = str_replace('{ws}', $conf['stat_url'], getTemplate('stat'));
-		$result = str_replace('{hash}', $hash, $result);
-		$result = str_replace('{name}', $name, $result);
-		$result = str_replace('{url}', $url, $result);
+		$result = str_replace('{json}', $json, $result);
 		return $result;
 	}
 }
@@ -1733,31 +1707,19 @@ function updateYoutube(){
 }
 
 function youtubeShow(){
-	global $db; $i = 0; $arr = []; $result = '';
-	
+	global $db; $i = 0; $arr = []; $arr1 = []; $arr2 = []; $data = []; $result = '';
 	$tmpl = '<td><a href="{url}" target="_blank"><img src="{img}" alt="{alt}" height="245" style="{style}"></a></td>';
-	
-	$result = '';
 	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'1\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
-
-	$arr1 = [];
-
 	while($row = $query->fetch()){
 		$arr1[] = ['vid' => $row['vid'], 'title' => $row['title']];
 	}
 	$query = $db->query('SELECT `vid`, `title` FROM `youtube` WHERE `type` = \'2\' ORDER BY `time` DESC  LIMIT 12');
 	$query->execute();
-
-	$arr2 = [];
-
 	while($row = $query->fetch()){
 		$arr2[] = ['vid' => $row['vid'], 'title' => $row['title']];
 	}
 	$arr1 = array_slice($arr1, 0, count($arr2));
-
-	$data = [];
-
 	foreach($arr1 as $k => $v){
 		$data[] = $arr2["$k"];
 		$data[] = $v;
