@@ -63,10 +63,10 @@ func getCount(hash string) int {
 }
 
 func validParams(message []byte) (bool, map[string]string) {
-	var x map[string]string	
+	var x map[string]string
 	if err := json.Unmarshal(message, &x); err != nil {
-       return false, x
-    }
+		return false, x
+	}
 	if len(x["Hash"]) != 64 || len(x["Name"]) < 1 || len(x["Url"]) < 1 || !testHash(x["Hash"], x["Name"], x["Url"]) {
 		return false, x
 	}
@@ -100,8 +100,10 @@ func main() {
 }
 
 func webHandler(w http.ResponseWriter, r *http.Request) {
+	mutex.Lock()
 	stat, err := json.Marshal(data)
-	if err != nil {
+	mutex.Unlock()
+	if err != nil || len(stat) == 0 {
 		w.Write([]byte("json error"))
 		return
 	}
