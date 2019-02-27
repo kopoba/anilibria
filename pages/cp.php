@@ -171,7 +171,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</div>
 		<div class="clear"></div>
 		<div>			
-			<input class="form-control" id="changePasswd" type="password" placeholder="Старый пароль">
+			<input class="form-control" id="oldPasswd" type="password" placeholder="Старый пароль">
+			<input class="form-control" id="newPasswd" style="margin-top: 10px;" type="password" placeholder="Новый пароль">
+			<input class="form-control" id="repeatPasswd" style="margin-top: 10px;" type="password" placeholder="Повторите пароль">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-passwd type="submit" value="ОТПРАВИТЬ">
 		</div>
 		<div class="clear"></div>

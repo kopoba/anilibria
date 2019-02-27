@@ -48,10 +48,11 @@ $(document).on("click", "[data-submit-register]", function(e) {
 	var vk = $('input[id=regVK]').val();
 	var mail = $('input[id=regEmail]').val();
 	var login = $('input[id=regLogin]').val();
+	var passwd = $('input[id=regPasswd]').val();
 	submit.hide(); // recaptchav3 has some delay
 	if($("div#RecaptchaField1").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
-			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'g-recaptcha-response': token }, function(json){
+			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'passwd' : passwd, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';
 				if(data.err != 'ok'){
@@ -189,8 +190,10 @@ $(document).on("click", "[data-change-email]", function(e) {
 $(document).on("click", "[data-change-passwd]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	passwd = $('input[id=changePasswd]').val();
-	$.post("//"+document.domain+"/public/change/passwd.php", {'passwd': passwd, 'csrf_token': csrf_token }, function(json){
+	oldPasswd = $('input[id=oldPasswd]').val();
+	newPasswd = $('input[id=newPasswd]').val();
+	repPasswd = $('input[id=repeatPasswd]').val();
+	$.post("//"+document.domain+"/public/change/passwd.php", {'oldPasswd': oldPasswd, 'newPasswd': newPasswd, 'repPasswd': repPasswd, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
