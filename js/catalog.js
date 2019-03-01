@@ -7,7 +7,7 @@ function xPagination(a){
 		cssStyle: 'light-theme',
 		onPageClick: function(page){
 			getCatalog(page);
-			$('html, body').animate({scrollTop: $(".content").offset().top }, 0);
+			$('html, body').animate({scrollTop: $(".contentmenu").offset().top }, 0);
 		}
 	});
 }

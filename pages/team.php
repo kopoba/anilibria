@@ -52,7 +52,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<u><b>2 Лига (ВЫСШАЯ)</b></u>
 		</p>
 		<ul>
-			<li><span style="color: #000080;">Sekai</span> - руководитель подкоманды технарей (сидеры)</li>
+			<li><span style="color: #000080;">Sekai</span> - руководитель подкоманды сидеров / оформитель</li>
 			<li><span style="color: #800000;">Alkhorus </span> - технарь / куратор академии таймеров / помощник рук. технарей</li>
 			<li><span style="color: #800000;">Hikariya</span>&nbsp;- технарь / помощник рук. сабберов (оформитель) / дизайнер</li>
 			<li><span style="color: #339966;">Aemi</span> - войсер</li>
@@ -77,13 +77,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #800000;">Пиратехник</span> - технарь</li>
 			<li><span style="color: #800000;">Hidan</span> - технарь</li>
 			<li><span style="color: #800000;">DarkKnight</span> - технарь </li>
-			<li><span style="color: #800000;">Pomidorchik</span>&nbsp;- технарь</li>
+			<li><span style="color: #800000;">Pomidorchik</span> - технарь</li>
 			<li><span style="color: #800000;">WhiteCat</span> - технарь </li>
 			<li><span style="color: #800000;">Kosaka</span> - технарь </li>
 			<li><span style="color: #800000;">Malinero</span> - технарь</li>   
 			<li><span style="color: #800000;">Akkakken</span> - технарь / оформитель</li>
 			<li><span style="color: #800000;">Luchano</span> - технарь</li>
-			<li><span style="color: #800000;">Basegame</span> - технарь (заливщик)</li>
 			<li><span style="color: #f7941d;">N.O.</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Keitaro</span> - переводчик / оформитель </li>
 			<li><span style="color: #f7941d;">ElViS</span> - оформитель</li>
@@ -95,6 +94,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f2d20c;">Hant</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">SineD</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">Maximka</span> - PR-команда</li>
+			<li><span style="color: #000080;">basegame</span> - сидер</li>
 		</ul>
 		<p style="text-align: center;">
 			<u><b>4 Лига (ОСНОВА)</b></u>
@@ -122,11 +122,16 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">TiimeIrre</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Smallow</span> - переводчик</li>  
 			<li><span style="color: #f7941d;">Nutsy</span> - переводчик</li>
-			<li><span style="color: #f7941d;">Narvion</span> - оформитель</li>
+			<li><span style="color: #f7941d;">NaRVioN</span> - оформитель / сидер</li>
 			<li><span style="color: #f7941d;">The Magus</span> - переводчик / оформитель</li>
 			<li><span style="color: #33cccc;">Kell</span> - дизайнер</li>
 			<li><span style="color: #33cccc;">Muvik</span> - дизайнер</li>
 			<li><span style="color: #33cccc;">Toppi</span> - дизайнер</li>
+			<li><span style="color: #000080;">Furry Lynx</span> - сидер</li>
+			<li><span style="color: #000080;">New On</span> - сидер</li>
+			<li><span style="color: #000080;">FLASHIx</span> - сидер</li>
+			<li><span style="color: #000080;">Wan</span> - сидер</li>
+			<li><span style="color: #000080;">Rossik666</span> - сидер</li>
 		</ul>
 		<p style="text-align: center;">
 			<u><b>5 Лига (ЛИГА ЗАПАСА)</b></u>

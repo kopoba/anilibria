@@ -600,7 +600,7 @@ function auth2FA(){
 function recaptcha($v = 3){
 	global $conf, $var;
 	if(empty($_POST['g-recaptcha-response'])){
-		_message('Empty post recaptcha', 'error');
+		_message('reCaptchaFail', 'error');
 	}
 	$secret = 'recaptcha_secret';
 	if($v != 3){
@@ -901,13 +901,15 @@ function saveUserValues(){
 	if(!empty($arr['sex']) && (!ctype_digit($arr['sex']) || ($arr['sex'] < 0 || $arr['sex'] > 2))){
 		_message('wrongData', 'error');
 	}
-    if(!empty($arr['age']) && ctype_digit($arr['age']) && $arr['age'] < date('Y', $var['time'])){	
+    if(!empty($arr['age']) && ctype_digit($arr['age']) && $arr['age'] < date('Y', $var['time'])){
 		$year = date('Y', $var['time'])-$arr['age'];
 		$time = strtotime("01-01-$year");
 		if(!$time){
 			_message('wrongData', 'error');
 		}
 		$arr['age'] = $time;
+	}else{
+		unset($arr['age']);
 	}
     foreach(json_decode($var['default_user_values'], true) as $k => $v){
 		if(empty($arr[$k]) && empty($user['user_values']["$k"])){
@@ -1120,22 +1122,25 @@ function isBlock($str){
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
+	function release404(){
+		header('HTTP/1.0 404 Not Found');
+		return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
+	}
 	if(empty($_GET['code'])){
-		return page404();
+		return release404();
 	}
 	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code`, `block` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
-		header('HTTP/1.0 404 Not Found');
-		return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
+		return release404();
 	}
 	$release = $query->fetch();
 	$var['release']['block'] = false;
 	if(!$user || $user['access'] == 1){
 		$var['release']['block'] = isBlock($release['block']); 
 	}
-	$var['title'] = "{$release['name']} / {$release['ename']} &raquo; смотреть онлайн или скачать бесплатно";
+	$var['title'] = "{$release['name']} / {$release['ename']}";
 	$var['release']['id'] = $release['id'];
 	$var['release']['name'] = $release['ename'];
 	$var['release']['runame'] = $release['name'];
@@ -1957,7 +1962,7 @@ function fileTime($file){
 }
 
 function sphinxPrepare($x){
-	return preg_replace('/[^\w ]+/u', '', $x);
+	return preg_replace('/[^\w, ]+/u', '', $x);
 }
 
 function xSearch(){
@@ -1978,7 +1983,7 @@ function xSearch(){
 	if(!$data['search'] = sphinxPrepare($data['search'])){
 		die;
 	}
-	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `rating` DESC LIMIT 12");
+	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND `status` != 3 ORDER BY `rating` DESC LIMIT 12");
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
 	$tmp = $query->fetchAll();
@@ -2100,9 +2105,9 @@ function showCatalog(){
 		$_POST['search'] = '';
 	}
 	function aSearch($db, $page, $sort){
-		$query = $db->query('SELECT count(*) as total FROM `xrelease`');
+		$query = $db->query('SELECT count(*) as total FROM `xrelease` WHERE `status` != 3');
 		$total =  $query->fetch()['total'];
-		$query = $db->query("SELECT `id` FROM `xrelease` ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
+		$query = $db->query("SELECT `id` FROM `xrelease` WHERE `status` != 3 ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
 		$data = $query->fetchAll(PDO::FETCH_ASSOC);
 		return ['data' => $data, 'total' => $total];
 	}
@@ -2114,14 +2119,14 @@ function showCatalog(){
 			}
 			$search[] = str_replace(',', '|', sphinxPrepare($data['year']));
 			$search[] = sphinxPrepare($data['genre']);			
-			$search = rtrim(implode(",", $search), ',');
+			$search = trim(implode(",", $search), ',');
 			if(!empty($search)){				
-				$query = $sphinx->prepare('SELECT count(*) as total FROM anilibria WHERE MATCH(:search)');
+				$query = $sphinx->prepare('SELECT count(*) as total FROM anilibria WHERE MATCH(:search) AND `status` != 3');
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND `status` != 3 ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll(PDO::FETCH_ASSOC);
