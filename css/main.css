@@ -262,12 +262,14 @@ a#activelink2 {
 
 a#activelink3 {
 	background-color: #731515;
-	width: 100px;
+	/*width: 100px;*/
+	width: 120px;
 }
 
 a#activelink4 {
 	background-color: #641212;
-	width: 145px;
+	/*width: 145px;*/
+	width: 140px;
 }
 
 a#activelink5 {
@@ -277,7 +279,8 @@ a#activelink5 {
 
 a#activelink6 {
 	background-color: #460c0c;
-	width: 208px;
+	/*width: 208px*/
+	width: 193px;
 }
 
 a#activelink0:hover,

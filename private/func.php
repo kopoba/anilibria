@@ -272,6 +272,37 @@ function moveErrPage($page = 403){
 	die(header("Location: /pages/error/$page.php"));
 }
 
+function password_link(){
+	global $conf, $db, $var;
+	if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
+		moveErrPage();
+	}
+	if(!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])){
+		moveErrPage();
+	}
+	$query = $db->prepare('SELECT `id`, `mail`, `passwd` FROM `users` WHERE `id` = :id');
+	$query->bindParam(':id', $_GET['id']);
+	$query->execute();
+	if($query->rowCount() == 0){
+		moveErrPage();
+	}
+	$row = $query->fetch();
+	$hash = hash($conf['hash_algo'], $_GET['id'].$_GET['time'].sha1(half_string_hash($row['passwd'])));
+	if($_GET['hash'] != $hash){
+		moveErrPage();
+	}
+	if($var['time'] > $_GET['time']){
+		moveErrPage();
+	}
+	$passwd = createPasswd();
+	$query = $db->prepare('UPDATE `users` SET `passwd` = :passwd WHERE `id` = :id');
+	$query->bindValue(':id', $row['id']);
+	$query->bindParam(':passwd', $passwd['1']);
+	$query->execute();
+	_mail($row['mail'], "Новый пароль", "Ваш пароль: {$passwd['0']}");
+	die(header('Location: /'));
+}
+
 function testRecaptcha(){
 	$v = 3;
 	if(!empty($_POST['recaptcha']) && $_POST['recaptcha'] == 2){
@@ -451,7 +482,7 @@ function base32_map($i, $do = 'encode'){
 
 function base32_bits($v){
 	$value = ord($v);
-	return vsprintf(str_repeat('%08b', count($value)), $value);
+	return vsprintf(str_repeat('%08b', 1), $value);
 }
 
 function base32_encode($data){
@@ -735,19 +766,19 @@ function torrent(){
 function downloadTorrent(){
 	global $db, $user, $conf;
 	if(!$user){
-		_message('Unauthorized user', 'error');
+		_message('unauthorized', 'error');
 	}
 	if(empty($_GET['id'])){
-		_message('Empty $_GET', 'error');
+		_message('empty', 'error');
 	}
 	if(!ctype_digit($_GET['id'])){
-		_message('Wrong id', 'error');
+		_message('wrong', 'error');
 	}
 	$query = $db->prepare('SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id');
 	$query->bindParam(':id', $_GET['id']);
 	$query->execute();
 	if($query->rowCount() == 0){
-		_message('Wrong id', 'error');
+		_message('wrong', 'error');
 	}
 	$info_hash = $query->fetch()['info_hash'];
 
@@ -926,6 +957,12 @@ function change_vk(){
 	}
 	if(!empty($_POST['vk']) && !ctype_digit($_POST['vk'])){
 		_message('wrong', 'error');
+	}
+	if($_POST['vk'] == $user['vk']){
+		_message('same', 'error');
+	}
+	if(getUserVK($_POST['vk'])){
+		_message('used', 'error');
 	}
 	$query = $db->prepare('UPDATE `users` SET `vk` = :vk WHERE `id` = :id');
 	if(empty($_POST['vk'])){
@@ -1920,13 +1957,7 @@ function fileTime($file){
 }
 
 function sphinxPrepare($x){
-	// https://github.com/yiisoft/yii2/issues/3668
-	// https://github.com/yiisoft/yii2/commit/603127712bb5ec90ddc4c461257dab4a92c7178f
-	return str_replace(
-		['\\', '/', '"', '(', ')', '|', '-', '!', '@', '~', '&', '^', '$', '=', '>', '<', "\x00", "\n", "\r", "\x1a"],
-		['\\\\', '\\/', '\\"', '\\(', '\\)', '\\|', '\\-', '\\!', '\\@', '\\~', '\\&', '\\^', '\\$', '\\=', '\\>', '\\<', "\\x00", "\\n", "\\r", "\\x1a"],
-		$x
-	);	
+	return preg_replace('/[^\w ]+/u', '', $x);
 }
 
 function xSearch(){
@@ -1944,7 +1975,9 @@ function xSearch(){
 	if(empty($data['key']) || !in_array($data['key'], $keys)){
 		$data['key'] = $keys['0'];
 	}
-	$data['search'] = sphinxPrepare($data['search']);
+	if(!$data['search'] = sphinxPrepare($data['search'])){
+		die;
+	}
 	$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) ORDER BY `rating` DESC LIMIT 12");
 	$query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
 	$query->execute();
@@ -2063,7 +2096,7 @@ function getTorrentDownloadLink($id) {
 
 function showCatalog(){
 	global $sphinx, $db, $user; $i=0; $arr = []; $result = ''; $page = 0;
-	if(!isset($_POST['search'])){
+	if(!isset($_POST['search']) || !is_string($_POST['search'])){
 		$_POST['search'] = '';
 	}
 	function aSearch($db, $page, $sort){
@@ -2572,4 +2605,20 @@ function checkADS(){
 	}else{
 		return false;
 	}
+}
+
+function randomRelease(){
+	global $db, $cache; $arr = [];
+	$result = $cache->get('randomRelease');
+	if($result !== false){
+		$arr = json_decode($result, true);
+	}else{
+		$query = $db->query('SELECT `code` FROM `xrelease` WHERE `status` != 3');
+		while($row=$query->fetch()){
+			$arr[] = $row['code'];
+		}
+		$cache->set('randomRelease', json_encode($arr), 300);
+	}
+	$key = random_int(0, count($arr)-1);
+	return $arr[$key];
 }
