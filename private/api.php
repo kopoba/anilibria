@@ -33,7 +33,7 @@ function apiList(){
 		}
 	}
     
-	if($info === false || $torrent === false){
+	if($info === null || $torrent === null || $info === false || $torrent === false){
         throw new ApiException('API is not ready', 400);
 	}
     
@@ -80,7 +80,7 @@ function apiList(){
 	}
 
 	function apiGetReleasesByIdsString($info, $torrent, $rid){
-        $list = '';
+        $list = [];
 		if(!empty($rid)){
 			$list = array_unique(explode(',', $rid));
 		}
@@ -103,6 +103,9 @@ function apiList(){
 	}
 	
     function apiSearchReleases($info, $torrent, $items){
+		if(!isset($items)){
+			$items = [];
+		}
         $ids = array_map(function($item){
 			return $item['id'];
 		}, $items);
@@ -420,10 +423,24 @@ function apiList(){
 		$funcSrc();
 		ob_end_clean();	
 	}
+	
+	function checkIsStringOrInteger($value, $key){
+		$type = gettype($value);
+		if($type != "string" && $type != "integer"){
+			throw new ApiException("Invalid type for $key", 400);
+		}
+	}
+	function checkIsString($value, $key){
+		$type = gettype($value);
+		if($type != "string"){
+			throw new ApiException("Invalid type for $key", 400);
+		}
+	}
     
 	switch($_POST['query']){
 		case 'torrent':
 			if(!empty($_POST['id'])){
+				checkIsStringOrInteger($_POST['id'], 'id');
 				return apiGetTorrentsMap($torrent, $_POST['id']);
 			}else{
 				return $torrent;
@@ -431,13 +448,16 @@ function apiList(){
 		break;
             
 		case 'info':
+			checkIsStringOrInteger($_POST['id'], 'id');
 			return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
 		break;
             
         case 'release':
             if(!empty($_POST['id'])){
+				checkIsStringOrInteger($_POST['id'], 'id');
                 return apiGetReleaseById($info, $torrent, $_POST['id']);
             } elseif(!empty($_POST['code'])) {
+				checkIsString($_POST['code'], 'code');
                 return apiGetReleaseByCode($info, $torrent, $_POST['code']);
             } else {
                 throw new ApiException("No id or code for release", 400);
@@ -458,6 +478,8 @@ function apiList(){
             
         case 'favorites':
             if(!empty($_POST['id'])||!empty($_POST['action'])){
+				checkIsStringOrInteger($_POST['id'], 'id');
+				checkIsString($_POST['action'], 'action');
                 return releaseFavoriteAction($info, $torrent);
             }else{
                 return apiFavorites($info, $torrent);
