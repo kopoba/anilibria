@@ -407,11 +407,11 @@ div.torrent_block:hover {
 .alphabet_block {
 	position: relative;
 	float: left;
-	width: 190px;
+	width: 200px;
 	height: auto;
 	background-color: #282829;
 	text-align: center;
-	padding: 5px;
+	//padding: 5px;
 	margin: 10px 10px 10px 10px;
 	font-family: 'PT Sans', sans-serif;
 }
@@ -456,8 +456,9 @@ div.torrent_block:hover {
 
 .alphabet-pic {
 	display: block;
-	width: 180px;
-	height: 260px;
+	border: 3px solid #4a4a4a;
+	width: 200px;
+	height: 280px;
 }
 
 .spacer {
@@ -465,7 +466,8 @@ div.torrent_block:hover {
 	height: 30px;
 	margin-top: 10px;
 	padding: 5px;
-	background: #282829;
+	background: #4a4a4a;
+	border-radius: 7px;
 }
 
 .spacer > span {
@@ -486,8 +488,8 @@ div.torrent_block:hover {
 	margin: 0 5px;
 	font-size: 14pt;
 	line-height: 14pt;
-	font-weight: bold;
-	color: #b32a2c;
+	//font-weight: bold;
+	color: #494949;
 }
 
 .alphabet-up,

@@ -112,8 +112,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<input id="switcher" type="checkbox" data-toggle="toggle" data-on="Новое" data-off="Популярное" data-onstyle="default" data-offstyle="default">
 	</div>
 	
-
-  <input data-catalog-update class="btn btn btn-default btn-block" style="float: left; margin-top: 0px; margin-left: 10px; width: 100px;" type="submit" value="Показать">
+	<div style="float: right; margin-top: 7px;" >
+		<a href="/pages/alphabet.php" style="color: #FFF;">АЛФАВИТНЫЙ УКАЗАТЕЛЬ</a>
+	</div>
+	
+	<input data-catalog-update class="btn btn btn-default btn-block" style="float: left; margin-top: 0px; margin-left: 10px; width: 100px;" type="submit" value="Показать">
 </div>
 
 

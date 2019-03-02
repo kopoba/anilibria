@@ -2525,44 +2525,68 @@ function helpSeed(){
 	}
 }
 
-function showAscReleases() {
-    global $db, $cache;
-    $rGroup = $cache->get('showAscReleases');
-    if($rGroup === false) {
-        $rGroup = [];
-        $query = $db->query('SELECT `id`, `name`, `ename`, `voice`, `code` FROM `xrelease` WHERE `status` != 3 ORDER BY `name` ASC');
-        while($row=$query->fetch()) {
-            $firstChar = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
-            !isset($rGroup[$firstChar]) ? $rGroup[$firstChar] = '<div style="height: 0;clear:both;"></div><div class="spacer"><span id="'.$firstChar.'">'.$firstChar.'</span><a class="alphabet-up" href="#headercontent"></a></div>' : false;
-            $img = fileTime('/upload/release/240x350/'.$row['id'].'.jpg');
-            if(!$img){
-                $img = '/upload/release/240x350/default.jpg';
-            }
-            $tmp = getTemplate('alphabet-block');
-            $tmp = str_replace('{id}', $row['code'], $tmp);
-            $tmp = str_replace('{img}', $img, $tmp);
-            $tmp = str_replace('{alt}', "{$row['name']} / {$row['ename']}", $tmp);
-            $tmp = str_replace('{voicers}', $row['voice'], $tmp);
-            $tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
-            $rGroup[$firstChar] .= $tmp;
-        }
-        $rGroup = implode("", $rGroup);
-        $cache->set('showAscReleases', $rGroup, 86400);
-    }
-    return $rGroup;
-}
-
-function showAscAlphabet(){
-    global $db;
-    $prevLabel = null;
-    $query = $db->query('SELECT `name` FROM `xrelease` WHERE `status` != 3 ORDER BY `name` ASC');
-    while($row=$query->fetch()) {
-        $currLabel = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
-        if ($currLabel != $prevLabel) {
-            echo '<a rel="nofollow" href="#'.$currLabel.'">'.$currLabel.'</a>';
-            $prevLabel = $currLabel;
-        }
-    }
+function showAscReleases(){
+	global $db, $var, $cache; $arr = []; $result = ''; $links = ''; $i = 0; $chars = [];
+	function isRussian($text) {
+		return preg_match('/[\p{Cyrillic}]/u', $text);
+	}
+	function sortA($a, $b){
+		if(isRussian($a)){
+			if(isRussian($b)){
+				 return ($a < $b) ? -1 : 1;
+			}else{
+				return -1;
+			}	
+		}
+		return ($a < $b) ? -1 : 1;
+	}
+	$descTPL = '<div class="schedule-anime-desc"><span class="schedule-runame">{runame}</span><span class="schedule-series">Серия: {series}</span><span class="schedule-description">{description}</span></div>';
+	$tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">'.$descTPL.'<img width="200" height="280" data-src="{img}" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="{alt}" class="lazy"></a></td>';
+	$result = $cache->get('showAscReleases');
+    if($result === false){
+		$query = $db->query('SELECT `id`, `name`, `ename`, `voice`, `code` FROM `xrelease` WHERE `status` != 3 ORDER BY `name` ASC');
+		$query->bindParam(':day', $key);
+		$query->execute();
+		while($row=$query->fetch()){
+			$poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
+			if(!file_exists($poster)){
+				$img = '/upload/release/200x280/default.jpg';
+			}else{
+				$img = fileTime($poster);
+			}
+			$key = mb_strtoupper(mb_substr($row['name'], 0, 1,"utf-8"));
+			
+			if(!in_array($key, $chars)){
+				$chars[$key] = $key;	
+			}	
+			$arr["$key"][$i][] = [
+				str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, str_replace('{runame}', "{$row['name']}", str_replace('{series}', releaseSeriesByID($row['id']), str_replace('{description}', releaseDescriptionByID($row['id'], 99),$tmpl2))))))
+			];
+			if(count($arr["$key"][$i]) == 4){
+				$i++;
+			}
+		}
+		uksort($chars, "sortA");
+		uksort($arr, "sortA");
+		foreach($chars as $val){
+			$links .= "<a href=\"#$val\">$val</a>"; 
+		}
+		$result .= "<div id=\"alphabet-characters\" style=\"margin-top: 5px\">$links</div>";
+		foreach($arr as $key => $val){
+			$result .= "<div class=\"day\"><span id=\"$key\">$key</span> <a class=\"alphabet-up\" href=\"#headercontent\" style=\"margin-top: 5px; margin-right: 5px;\"></a></div>";
+			foreach($val as $v){
+				$result .= '<table class="test"><tbody>';
+				$result .= '<tr>';
+				foreach($v as $item){
+					$result .= $item['0'];
+				}
+				$result .= '</tr>';
+				$result .='</tbody></table>';
+			}
+		}
+		$cache->set('showAscReleases', $result, 86400);
+	}
+	return $result;
 }
 
 function importFavorite(){
