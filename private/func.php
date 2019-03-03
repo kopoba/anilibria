@@ -1519,7 +1519,7 @@ function footerJS(){
 		break;
 		case '404':
 		case '403':
-			$result .= str_replace('{page}', "pageURL: '/pages/error/{$var['page']}.php',", $vk);
+			$result .= str_replace('{page}', "pageUrl: '/pages/error/{$var['page']}.php',", $vk);
 		break;
 	}
 	return $result;
@@ -2312,7 +2312,7 @@ function showSchedule(){
 		}
 	}
 	foreach($arr as $key => $val){
-		$result .= str_replace('{day}', $var['day']["$key"], $tmpl1);
+		$result .= str_replace('{day}', mb_strtoupper($var['day']["$key"]), $tmpl1);
 		$result .= '<table class="test"><tbody>';
 		foreach($val as $v){
 			$result .= '<tr>';

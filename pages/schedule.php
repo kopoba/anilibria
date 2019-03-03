@@ -20,9 +20,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     text-align: center;
     margin: 10px 0 10px 0;
     height: 30px;
-    font-size: 20px;
+    font-size: 13pt;
     line-height: 30px;
-    border-radius: 7px;
+    border-radius: 3px;
     color: white;
 }
 
@@ -37,6 +37,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 .goodcell img {
     border: 3px solid #4a4a4a;
+    border-radius: 3px;
 }
 
 /* Schedule hover description */
@@ -55,6 +56,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	color: #fff;
 	text-align: center;
 	padding: 10px;
+	border-radius: 3px;
 }
 
 .goodcell > a:hover .schedule-anime-desc {

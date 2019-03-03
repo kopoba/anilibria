@@ -19,11 +19,11 @@ function randomClassName(){
 	$left = 0;
 	$img = '/img/29.png';
 	
-	$data[] = ['img' => 'ragnarok', 'left' => '0', 'url' => 'https://r.advg.agency/t/6mzzq/'];
-	$data[] = ['img' => 'bs', 'left' => '-195px', 'url' => 'https://r.advg.agency/t/5uk9q/'];
+	$data[] = ['img' => 'ragnarok', 'left' => '0', 'url' => '/ro'];
+	$data[] = ['img' => 'bs', 'left' => '-195px', 'url' => '/bs'];
 	
 	$css = getTemplate('header');
-	$arr = ['header', 'main', 'content', 'side', 'footer', 'clear', 'link', ''];
+	$arr = ['header', 'main', 'content', 'side', 'footer', 'clear', 'link', 'headercontent'];
 	$result = [];
 	$result['ads'] = false;
 	foreach($arr as $val){
@@ -84,16 +84,16 @@ $xcss = randomClassName();
 	</head>
 	<body>
 		<input type="hidden" id="csrf_token" value='<?php echo $csrf_token; ?>'>
+		<div id="headercontent"></div>
 		<div class="<?php echo $xcss['link']; ?>">
 		<?php
 			if($xcss['ads']){
-				echo '<a href="'.$xcss['url'].'" style=""></a>';
+				echo '<a href="'.$xcss['url'].'"></a>';
 			}
 		?>
 		</div>
 		<div class="<?php echo $xcss['header']; ?>">
-			<div id="headercontent">
-				<img id="logopic" src="/img/logo_new.png" alt="AniLibria логотип" style="width: 213px;">
+			<div class="<?php echo $xcss['headercontent']; ?>">
 			</div>
 		</div>
 		<div class="<?php echo $xcss['main']; ?>">
@@ -103,7 +103,6 @@ $xcss = randomClassName();
 						<li><a id="activelink0" href="/">ГЛАВНАЯ</a></li>
 						<li><a id="activelink1" href="/pages/catalog.php">РЕЛИЗЫ</a></li>
 						<li><a id="activelink2" href="/pages/schedule.php">РАСПИСАНИЕ</a></li>
-						<!--<li><a id="activelink3" href="/pages/alphabet.php">АЛФАВИТ</a></li>-->
 						<li><a id="activelink3" href="/public/random.php">СЛУЧАЙНОЕ</a></li>
 						<li><a id="activelink4" href="/pages/app.php">ПРИЛОЖЕНИЕ</a></li>
 						<li><a id="activelink5" href="/pages/team.php">КОМАНДА</a></li>

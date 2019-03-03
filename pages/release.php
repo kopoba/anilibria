@@ -39,9 +39,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <?php echo $tmpPage; ?>
 
 <div style="margin-top: 15px;">
-	<a href="https://vk.com/anilibria" target="_blank"><img src="/img/other/a1.png" width="285"></a>
-	<a href="https://tele.click/anilibria_tv" target="_blank"><img src="/img/other/a2.png" width="285" style="margin-left: 8px;"></a>
-	<a href="https://discordapp.com/invite/anilibria" target="_blank"><img src="/img/other/a3.png" width="285" style="float: right;"></a>
+	<a href="https://vk.com/anilibria" target="_blank"><img src="/img/other/a1.png" width="285" style="border-radius: 4px;"></a>
+	<a href="https://tele.click/anilibria_tv" target="_blank"><img src="/img/other/a2.png" width="285" style="margin-left: 8px; border-radius: 4px;"></a>
+	<a href="https://discordapp.com/invite/anilibria" target="_blank"><img src="/img/other/a3.png" width="285" style="float: right; border-radius: 4px;"></a>
 </div>
 
 <div id="vk_comments" style="margin-top: 14px;"></div>

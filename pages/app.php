@@ -28,7 +28,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     margin: 10px 0 10px 0;
     height: 30px;
     line-height	: 30px;
-    border-radius: 2px;
+    border-radius: 4px;
     color: white;
 }
 
@@ -41,12 +41,13 @@ a#join-team-link, a#join-team-link:visited {
 	padding:10px;
 	color:#FFF;
 	text-decoration:none;
+	border-radius: 4px;
 }
 </style>
 
 <div class="news-block">
 	<div class="news-body">	
-		<img src="/img/apppic1.jpg" width="840" height="103">
+		<img src="/img/apppic1.jpg" width="840" style="border-radius:4px;">
 		<img src="/img/logo.png" width="200" height="200" align="left">
 		<div class="day">AniLibria.TV (версия <?php echo $versionName; ?>)</div>
 		<p style="text-align: right;">

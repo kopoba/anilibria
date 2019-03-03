@@ -27,7 +27,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		.youtubeTable tr:not(:first-child) td {
 			padding-top: 10px;
 		}
-		.youtubeTable img { opacity:0.8; }
+		.youtubeTable img { opacity:0.8; border-radius: 4px; }
 		.youtubeTable img:hover { opacity:1; }
 	</style>
 	<table class="youtubeTable">

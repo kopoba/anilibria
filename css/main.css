@@ -48,7 +48,8 @@ body {
 	word-wrap: break-word;
 	margin-top: 15px;
 	background-color: #fff;
-	padding: 10px 20px;	
+	padding: 10px 20px;
+	border-radius: 4px;
 }
 
 .supertest {
@@ -92,6 +93,7 @@ body {
 
 .footer_left2 img {
 	margin: 2px;
+	border-radius: 2px;
 }
 
 .footer_center {
@@ -248,6 +250,8 @@ ul.main-navigation a {
 a#activelink0 {
 	background-color: #b32121;
 	width: 100px;
+	border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
 a#activelink1 {
@@ -262,13 +266,11 @@ a#activelink2 {
 
 a#activelink3 {
 	background-color: #731515;
-	/*width: 100px;*/
 	width: 120px;
 }
 
 a#activelink4 {
 	background-color: #641212;
-	/*width: 145px;*/
 	width: 140px;
 }
 
@@ -279,8 +281,9 @@ a#activelink5 {
 
 a#activelink6 {
 	background-color: #460c0c;
-	/*width: 208px*/
 	width: 193px;
+	border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 a#activelink0:hover,
@@ -397,6 +400,7 @@ div.torrent_block {
 	background-color: #282829;
 	margin: 10px 10px 10px 10px;
 	font-family: 'PT Sans', sans-serif;
+	border-radius: 4px;
 }
 
 div.torrent_block:hover {
@@ -486,8 +490,8 @@ div.torrent_block:hover {
 #alphabet-characters a:visited {
 	text-decoration: none;
 	margin: 0 5px;
-	font-size: 14pt;
-	line-height: 14pt;
+	font-size: 13pt;
+	line-height: 13pt;
 	//font-weight: bold;
 	color: #494949;
 }
@@ -550,6 +554,7 @@ p.lasttortext {
 	color: #fff;
 	font-size: 10pt;
 	z-index: 53;
+	border-radius: 4px;
 }
 .last_tor_button:hover {
 	color: #fff;
@@ -652,6 +657,7 @@ p.lasttortext {
 .detail_pic_corner {
 	background-color: #d3d3d3;
 	padding: 4px;
+	border-radius: 4px;
 }
 
 .detail_torrent_info {
@@ -671,6 +677,8 @@ p.lasttortext {
 	width: 358px;
 	padding-top: 5px;
 	padding-bottom: 5px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
 }
 
 .download-torrent {
@@ -681,6 +689,7 @@ p.lasttortext {
 	float: left;
 	text-align: center;
 	font-size: 15px;
+	border-radius: 4px;
 }
 
 .torrentcol1 {
@@ -719,6 +728,8 @@ p.lasttortext {
 .xplayer {
 	height: 530px;
 	display: none;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 
 .release-title {
@@ -738,6 +749,8 @@ p.lasttortext {
 	position: relative;
 	width: 100%;
 	height: 48px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
 }
 
 .tab-switcher button.active {
@@ -752,7 +765,7 @@ p.lasttortext {
 	padding: 5px 10px;
 	text-transform: uppercase;
 	float: left;
-	border-radius: 3px;
+	border-radius: 4px;
 }
 
 .tab-switcher button:focus {
@@ -833,15 +846,8 @@ button.xdark {
 }
 
 div#headercontent {
-	position: absolute;
 	top: 0;
-	//width: 1175px;
-	//height: 120px;
-	//margin: 0px auto;
-	//z-index: 1000;
-	//left: 0;
-	//right: 0;
-	//bottom: 0;
+	position: absolute;
 }
 
 button.favorites {

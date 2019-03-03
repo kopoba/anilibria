@@ -14,9 +14,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
 <div class="news-block">
-	<div class="news-body">			
-		<img src="/img/donate.jpg" width="840" height="216">
-		<hr/>
+	<div class="news-body">
 		<center><i>Мы тратим деньги на премии команде.
 		Благодаря этому наша озвучка выходит быстрее.</i></center>
 
