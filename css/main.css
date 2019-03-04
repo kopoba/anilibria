@@ -94,6 +94,11 @@ body {
 .footer_left2 img {
 	margin: 2px;
 	border-radius: 2px;
+	opacity: 0.8;
+}
+
+.footer_left2 img:hover {
+    opacity: 1;
 }
 
 .footer_center {

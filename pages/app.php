@@ -43,31 +43,43 @@ a#join-team-link, a#join-team-link:visited {
 	text-decoration:none;
 	border-radius: 4px;
 }
+
+.andriodLogo {
+	width: 200px;
+	height: 200px;
+	position: absolute;
+	background: url(/img/logo.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+}
 </style>
+
+
+
 
 <div class="news-block">
 	<div class="news-body">	
-		<img src="/img/apppic1.jpg" width="840" style="border-radius:4px;">
-		<img src="/img/logo.png" width="200" height="200" align="left">
-		<div class="day">AniLibria.TV (версия <?php echo $versionName; ?>)</div>
-		<p style="text-align: right;">
-			<i>
+		<div class="andriodLogo"></div>
+		<div class="day">Приложение (версия <?php echo $versionName; ?>)</div>
+		<div style="float:right; width: 640px;">
+			<p style=" text-align: right; ">
 				На данный момент (версия 2.0) функционал приложения: просмотр онлайн с возможностью выбрать SD и HD качество (для большинства экранов телефонов будет достаточно качества SD), скачивание торрент.файлов, поиск по жанрам, избранное, просмотр новостей и блогов, просмотр комментариев<br>
 				-2.0.1: Исправлен баг с проблемами авторизации через ВК
-			</i>
-			<br>
-			<br>
-			<br>
-			Новая версия: <a id="join-team-link" href="<?php echo $appLink; ?>">Скачать .apk файл</a>
-			<br>
+		</p>
+		</div>
+	
+		<div class="clear"></div>
+			 
+		<p style="text-align: right;">
+			<a id="join-team-link" href="<?php echo $appLink; ?>">Скачать .apk файл</a>
 		</p>
 		<div class="day">Инструкция по установке</div>
-		<p style="text-align: center;">
-			 1) Скачайте .apk файл, найдите его в папке "downloads" и запустите<br>
-			 2) Вы увидите окно с надписью "Установка заблокирована", не пугайтесь, нажмите кнопку "настройки"<br>
-			 3) Найдите пункт "Неизвестные источники" и выставьте параметр "разрешить"<br>
-			 4) Выберите галочку "Разрешить только эту установку" и нажмите "ок"<br>
-			 5) Нажмите установить, когда появится надпись "приложение установлено", нажмите "открыть".
+		<p style="text-align: left;">
+			 - Скачайте .apk файл, найдите его в папке "downloads" и запустите.<br>
+			 - Вы увидите окно с надписью "Установка заблокирована", не пугайтесь, нажмите кнопку "настройки".<br>
+			 - Найдите пункт "Неизвестные источники" и выставьте параметр "разрешить".<br>
+			 - Выберите галочку "Разрешить только эту установку" и нажмите "ок".<br>
+			 - Нажмите установить, когда появится надпись "приложение установлено", нажмите "открыть".
 		</p>
 		<div class="day">Скриншоты</div>
 		<p style="text-align: center;">
@@ -76,7 +88,7 @@ a#join-team-link, a#join-team-link:visited {
 			<img src="/img/003app.jpg" width="230" height="410">
 		</p>
 		<hr/>
-		Внимание! Приложение работает на Android от версии 4.4. На более старых версиях приложение работать не будет! Свои отзывы о приложении оставляйте в комментариях. Спасибо, что выбираете нас!
+		<center>Внимание! Приложение работает на Android от версии 4.4. На более старых версиях приложение работать не будет!</center>
 	</div>
 	<div class="clear"></div>
 	<div style="margin-top:10px;"></div>

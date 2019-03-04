@@ -13,33 +13,51 @@ $var['page'] = 'app';
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
+<style>
+.day {
+    background: #4a4a4a;
+    text-align: center;
+    margin: 10px 0 10px 0;
+    height: 30px;
+    font-size: 13pt;
+    line-height: 30px;
+    border-radius: 3px;
+    color: white;
+}
+
+.teamleft{
+	float:left; margin-left: 6px;
+}
+
+.teamright{
+	float:right; margin-right: 6px;
+}
+
+</style>
+
 <div class="news-block">
 	<div class="news-body">
-		<center>
-			<img src="/img/team.png">
-		</center>
-		<center>
-		<p style="margin-top: 8px;">
-			AniLibria — некоммерческий проект по озвучиванию и адаптации зарубежных сериалов, мультфильмов и аниме, аниме-обзорам, видеоблогам, рецензиям.
-			Нашей особенностью является стабильная и качественная работа над тем контентом, который мы предоставляем пользователям.
-			Нашей целью является достижение большой популярности ресурса anilibria.tv, чтобы впоследствии начать озвучивать аниме в дубляже по лицензии от японцев и/или выпускать на постоянной основе собственные мультфильмы в стиле, максимально приближенном к аниме.<br>
+
+		<p style="text-align: center;">
+			<span style="color: #339966;"><span style="font-size: 16pt;">Войсеры / </span></span> <span style="color: #800000;"><span style="font-size: 16pt;">Технари / </span></span><span style="color: #ff6600;"><span style="font-size: 16pt;">Сабберы / </span></span> <span style="color: #000080;"><span style="font-size: 16pt;">Сидеры / </span></span> <span style="color: #33cccc;"><span style="font-size: 16pt;">Дизайнеры / </span></span> <span style="color: #f2d20c;"><span style="font-size: 16pt;">PR-команда</span></span>
+		</p>
+		<p style="text-align: center; font-size: 13pt; margin-top: 15px; margin-bottom: 15px;">	
+		 
 		</p>
 		
-		Мы ищем таланты. <a href="/pages/request.php">Подать заявку</a> в команду.
-		</center>
-		<hr/>
-		<p style="text-align: center;">
-			<i><span style="color: #339966;"><span style="font-size: 16pt;">Войсеры / </span></span> <span style="color: #800000;"><span style="font-size: 16pt;">Технари / </span></span><span style="color: #ff6600;"><span style="font-size: 16pt;">Сабберы / </span></span> <span style="color: #000080;"><span style="font-size: 16pt;">Сидеры / </span></span> <span style="color: #33cccc;"><span style="font-size: 16pt;">Дизайнеры / </span></span> <span style="color: #f2d20c;"><span style="font-size: 16pt;">PR-команда</span></span></i>
-		</p>
-		<br/>
+		<div class="day">
+				<div class="teamleft">Мы ищем таланты</div> 
+				<div class="teamright"><a style="color: #FFF;" href="/pages/request.php">ПОДАТЬ ЗАЯВКУ</a></div>
+		</div>
 
 		<ul>
 			<li><span style="color: #ff0000;"><a href="https://vk.com/lupintv" target="_blank"><span style="color: #00a650;">Lupin</span></a></span> - босс, войсер, бесспорно принадлежит 80%</li>
 			<li>poiuty - босс, бесспорно принадлежит 20%</li>
 		</ul>
-		<p style="text-align: center;">
-			<u> <b>1 Лига (СОВЕТ)</b></u>
-		</p>
+			<div class="day">
+				<div class="teamleft">&#8544; лига</div> 
+				<div class="teamright">СОВЕТ</div>
+			</div>
 		<ul>
 			<li><span style="color: #ff0000;"><a href="https://vk.com/silvanka" target="_blank"><span style="color: #00a650;">Silv</span></a></span> - войсер</li>
 			<li><span style="color: #ff0000;"><a href="https://vk.com/flegontova1993" target="_blank"><span style="color: #00a650;">Itashi</span></a></span> - руководитель PR-команды, войсер</li>
@@ -48,28 +66,29 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Sharon</span> - руководитель команды войсеров</li>
 			<li><span style="color: #f7941d;">Timo</span> - руководитель команды сабберов</li>
 		</ul>
-		<p style="text-align: center;">
-			<u><b>2 Лига (ВЫСШАЯ)</b></u>
-		</p>
+			<div class="day">
+				<div class="teamleft">&#8545; лига</div> 
+				<div class="teamright">ВЫСШАЯ</div>
+			</div>
 		<ul>
 			<li><span style="color: #000080;">Sekai</span> - руководитель подкоманды сидеров / оформитель</li>
 			<li><span style="color: #800000;">Alkhorus </span> - технарь / куратор академии таймеров / помощник рук. технарей</li>
 			<li><span style="color: #800000;">Hikariya</span>&nbsp;- технарь / помощник рук. сабберов (оформитель) / дизайнер</li>
-			<li><span style="color: #339966;">Aemi</span> - войсер</li>
 			<li><span style="color: #339966;">Amikiri</span> - войсер</li>
 			<li><span style="color: #339966;">Anzen</span> - руководитель команды дизайнеров, войсер</li>
+			<li><span style="color: #339966;">Cleo-chan</span> - войсер</li>
+			<li><span style="color: #339966;">MyAska</span> - войсер</li>
 			<li><span style="color: #f7941d;">Falk</span> - переводчик, руководитель академии сабберов</li>
 		</ul>
-		<p style="text-align: center;">
-			<u><b>3 Лига (МАСТЕРА)</b></u>
-		</p>
+		<div class="day">
+				<div class="teamleft">&#8546; лига</div> 
+				<div class="teamright">МАСТЕРА</div>
+		</div>
 		<ul>
+			<li><span style="color: #339966;">Aemi</span> - войсер</li>
 			<li><span style="color: #339966;">Ados</span> - войсер</li>
-			<li><span style="color: #339966;">Cleo-chan</span> - войсер</li>
 			<li><span style="color: #339966;">December</span> - войсер</li>
 			<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
-			<li><span style="color: #339966;">HectoR</span> - войсер</li>
-			<li><span style="color: #339966;">MyAska</span> - войсер</li>
 			<li><span style="color: #339966;">Malevich</span>&nbsp;- войсер</li>
 			<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
 			<li><span style="color: #800000;">Quin</span> - технарь</li>
@@ -96,10 +115,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f2d20c;">Maximka</span> - PR-команда</li>
 			<li><span style="color: #000080;">basegame</span> - сидер</li>
 		</ul>
-		<p style="text-align: center;">
-			<u><b>4 Лига (ОСНОВА)</b></u>
-		</p>
+		<div class="day">
+				<div class="teamleft">&#8547; лига</div> 
+				<div class="teamright">ОСНОВА</div>
+		</div>
 		<ul>
+			<li><span style="color: #339966;">HectoR</span> - войсер</li>
 			<li><span style="color: #339966;">Kanade Eu</span> - войсер</li>
 			<li><span style="color: #339966;">Gomer</span> - войсер</li>
 			<li><span style="color: #339966;">Arato</span> - войсер</li>
@@ -135,9 +156,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #000080;">Wan</span> - сидер</li>
 			<li><span style="color: #000080;">Rossik666</span> - сидер</li>
 		</ul>
-		<p style="text-align: center;">
-			<u><b>5 Лига (ЛИГА ЗАПАСА)</b></u>
-		</p>
+		<div class="day">
+				<div class="teamleft">&#8548; лига</div> 
+				<div class="teamright">ЗАПАС</div>
+		</div>
 		<ul>
 			<li><span style="color: #339966;">Nuts</span> - войсер (служит в армии)</li>
 			<li><span style="color: #339966;">Kari</span> - войсер (в отпуске)</li>
@@ -148,11 +170,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">Skaifai</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Valar</span> - переводчик</li>
 			<li><span style="color: #800000;">Z3nC0rZ</span> - технарь (служит в армии) </li>
-			<br>
 		</ul>
-		<p style="text-align: center;">
-			<u><b>6 Лига (АКАДЕМИЯ)</b></u>
-		</p>
+		<div class="day">
+				<div class="teamleft">&#8549; лига</div> 
+				<div class="teamright">АКАДЕМИЯ</div>
+		</div>
 		<ul>
 			<li><span style="color: #339966;">Ashvoice</span>&nbsp;- войсер стажёр</li>
 			<li><span style="color: #339966;">SlivciS</span>&nbsp;- войсер стажёр</li>
@@ -160,9 +182,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #800000;">WaFee</span> - таймер стажёр</li>                                      
 			<li><span style="color: #f7941d;">Renko</span> - саббер стажёр</li>
 		</ul>
-		<p style="text-align: center;">
-			<u><b>ВНЕ ИЕРАРХИИ (не поддаётся классификации лиговой системы) </b></u>
-		</p>
+		<div class="day">
+			<div class="teamleft">
+				Не поддаётся классификации лиговой системы
+			</div>
+		</div>
 		<ul>
 			<li>RadiationX - автор приложения, администратор сайта</li>
 			<li>Lisitsa - администратор discord-сервера</li>

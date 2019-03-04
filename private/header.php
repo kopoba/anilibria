@@ -36,7 +36,12 @@ function randomClassName(){
 		$key = $cache->get('adsCurrent');
 		$day = $cache->get('adsCurrentDay');
 		if($key === false || $day === false || $day != $cday){
-			$key = random_int(0, count($data)-1);
+			//$key = random_int(0, count($data)-1);
+			if($cday % 2 === 0){
+				$key = '0';
+			}else{
+				$key = '1';
+			}			
 			$cache->set('adsCurrent', $key, 172800);
 			$cache->set('adsCurrentDay', $cday, 172800);
 		}

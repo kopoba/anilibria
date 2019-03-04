@@ -2036,11 +2036,11 @@ function showPosters(){
 function getGenreList(){
 	global $db; $arr = []; $result = ''; $total = 0;
 	$tmpl = '<option value="{name}">{name}</option>';
-	$query = $db->query('SELECT `name` from `genre`');
+	$query = $db->query('SELECT `name` from `genre` ORDER BY `rating` DESC');
 	while($row = $query->fetch()){
 		$arr[] = $row['name'];
 	}
-	sort($arr);
+	//sort($arr);
 	foreach($arr as $k => $v){
 		$result .= str_replace('{name}', $v, $tmpl);
 	}
@@ -2650,4 +2650,24 @@ function randomRelease(){
 	}
 	$key = random_int(0, count($arr)-1);
 	return $arr[$key];
+}
+
+function updateGenreRating(){
+	global $db, $sphinx; $data = [];
+	$query = $db->query('SELECT * FROM `genre`');
+	while($row = $query->fetch()){
+		$select = $sphinx->prepare('SELECT `id` FROM anilibria WHERE MATCH(:search) AND `status` != 3 LIMIT 1000');
+		$select->bindValue(':search', "@(genre) ({$row['name']})");
+		$select->execute();
+		while($tmp = $select->fetch()){
+			$release = $db->prepare('SELECT `rating` FROM `xrelease` WHERE `id` = :id');
+			$release->bindParam(':id', $tmp['id']);
+			$release->execute();
+			$data["{$row['id']}"] += $release->fetch()['rating'];
+		}
+		$update = $db->prepare('UPDATE `genre` SET `rating` = :rating WHERE `id` = :id');
+		$update->bindParam(':rating', $data["{$row['id']}"]);
+		$update->bindParam(':id', $row['id']);
+		$update->execute();
+	}
 }

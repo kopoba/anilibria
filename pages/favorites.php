@@ -25,6 +25,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	padding-top: 30px;
 }
 
+.torrent_pic {
+    border-radius: 4px;
+}
+
 .simpleCatalog tr:not(:first-child) td .anime_info_wrapper {
 	margin-top: 30px;
 	height: calc(100% - 30px);
@@ -62,6 +66,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	opacity: 0.8;
 	color: white;
 	text-align: center;
+	border-radius: 4px;
 }
 
 .simpleCatalog td:hover .anime_info_wrapper {
