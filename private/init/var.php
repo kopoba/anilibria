@@ -81,6 +81,7 @@ $var['error'] = [
 	'authorized' => 'Уже авторизован',
 	'registered' => 'Уже зарегистрирован',
 	'long' => 'Слишком длинное значение',
+	'short' => 'Слишком короткое значение',
 	'wrongLogin' => 'Неправильный логин',
 	'wrongEmail' => 'Неправильный email',
 	'wrongUserAgent' => 'Неправильный user agent',

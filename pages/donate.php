@@ -19,9 +19,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <p style="text-align:center; font-size:13pt;">БЛАГОДАРЯ ВАМ НАША ОЗВУЧКА ВЫХОДИТ БЫСТРЕЕ</p>
 	
-	<div style="float:left;">
-	<iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&amp;targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&amp;targets-hint=&amp;default-sum=100&amp;button-text=14&amp;payment-type-choice=on&amp;mobile-payment-type-choice=on&amp;hint=&amp;successURL=&amp;quickpay=shop&amp;account=41001990134497" width="360" height="220" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
-	</div>
+	<div id="yandexMoney" style="float:left;"></div>
 	<table class="table table-bordered" style="width: 450px; float:right; margin-top:0px; margin-left:30px; margin-bottom: 10px;">
 			<tbody>
 				<tr>

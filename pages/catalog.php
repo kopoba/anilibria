@@ -19,7 +19,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	background-color: #3e3e3e;
 	padding: 25px 25px;
 	margin-top: 15px;
-	height: 217px;
+	min-height: 150px;
 	border-radius: 4px;
 }
 
@@ -97,34 +97,44 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	font-size: 12pt;
 }
 
+.btn:focus {
+  outline: none !important;
+}
+
 </style>
 
-
-
 <div class="simpleFilter">
-	<div style="margin-bottom: 25px;">
-	  <select id="catalogGenre" class="form-control chosen" data-placeholder="Выбрать жанры ..." name="tags[]" multiple style="">
-		<?php echo getGenreList(); ?>
-	  </select>
-	</div>
+	<div>
+		<div style="margin-bottom: 25px; width: 515px; float: left;">
+			<select id="catalogGenre" class="form-control chosen" data-placeholder="Выбрать жанры ..." name="tags[]" multiple style="">
+				<?php echo getGenreList(); ?>
+			</select>
+		</div>
 
-<div style="margin-bottom: 25px;">
-	<select id="catalogYear" class="form-control chosen" data-placeholder="Выбрать год ..." name="tags[]" multiple style="">
-		<?php echo catalogYear(); ?>
-	  </select>
+		<div style="margin-bottom: 25px; margin-left: 10px; width: 305px; float: left;">
+			<select id="catalogYear" class="form-control chosen" data-placeholder="Выбрать год ..." name="tags[]" multiple style="">
+				<?php echo catalogYear(); ?>
+			</select>
+		</div>
 	</div>
-	
-	<div style="float: left; margin-top: 0px;" >
-		<input id="switcher" type="checkbox" data-toggle="toggle" data-on="Новое" data-off="Популярное" data-onstyle="default" data-offstyle="default">
+	<div class="clear"></div>
+	<div>
+		<div style="float: left; margin-top: 0px;" >
+			<input id="switcher" type="checkbox" data-toggle="toggle" data-on="Новое" data-off="Популярное" data-onstyle="default" data-offstyle="default">
+		</div>
+		
+		<div style="float: right; margin-top: 7px;" >
+			<a href="/pages/alphabet.php" style="color: #FFF;">АЛФАВИТНЫЙ УКАЗАТЕЛЬ</a>
+		</div>
+		
+		<input data-catalog-update class="btn btn btn-default btn-block" style="float: left; margin-top: 0px; margin-left: 10px; width: 100px;" type="submit" value="Показать">
+		<span class="button-checkbox" style="float: left; margin-top: 0px; margin-left: 10px; width: 150px;">
+			<button id="catalogFinish" type="button" class="btn btn-default" data-color="default"><i class="state-icon glyphicon glyphicon-unchecked"></i>&nbsp;Релиз завершен</button>
+			<input type="checkbox" class="hidden">
+		</span>
 	</div>
-	
-	<div style="float: right; margin-top: 7px;" >
-		<a href="/pages/alphabet.php" style="color: #FFF;">АЛФАВИТНЫЙ УКАЗАТЕЛЬ</a>
-	</div>
-	
-	<input data-catalog-update class="btn btn btn-default btn-block" style="float: left; margin-top: 0px; margin-left: 10px; width: 100px;" type="submit" value="Показать">
+	<div class="clear"></div>
 </div>
-
 
 <div style="margin-top: 15px;">
 	<table class="simpleCatalog" style="width: 100%;">

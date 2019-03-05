@@ -1,8 +1,6 @@
 var csrf_token = $('input[id=csrf_token]').val();
 var recaptcha1;
-var recaptcha2;
-var CaptchaCallback1 = function() { recaptcha1 = grecaptcha.render('RecaptchaField1', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
-var CaptchaCallback2 = function() { recaptcha2 = grecaptcha.render('RecaptchaField2', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
+var CaptchaCallback = function() { recaptcha1 = grecaptcha.render('RecaptchaField', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
 
 $(document).ready(function() {
 	if(window.location.hash.substr(1) == 'rules'){
@@ -36,7 +34,7 @@ $(document).on("click", "[data-submit-login]", function(e) {
 		if(data.err == 'ok'){
 			document.location.href="/";
 		}else{
-			$("#loginMes").html("(<font color=red>"+data.mes+"</font>)");
+			$("#loginMes").html("<font color=red>"+data.mes+"</font>");
 		}
 	});
 });
@@ -44,13 +42,13 @@ $(document).on("click", "[data-submit-login]", function(e) {
 $(document).on("click", "[data-submit-register]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	var submit = $(this);
 	var vk = $('input[id=regVK]').val();
 	var mail = $('input[id=regEmail]').val();
 	var login = $('input[id=regLogin]').val();
 	var passwd = $('input[id=regPasswd]').val();
-	submit.hide(); // recaptchav3 has some delay
-	if($("div#RecaptchaField1").css('display') == 'none'){
+	$('[data-submit-register]').hide(); // recaptchav3 has some delay
+	$('[data-submit-passwdrecovery]').hide();
+	if($("div#RecaptchaField").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
 			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'passwd' : passwd, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
@@ -58,10 +56,11 @@ $(document).on("click", "[data-submit-register]", function(e) {
 				if(data.err != 'ok'){
 					color = 'red';
 					if(data.mes == 'reCaptcha test failed: score too low'){
-						$("div#RecaptchaField1").show();
-						$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback1&render=explicit");
+						$("div#RecaptchaField").show();
+						$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit");
 					}
-					submit.show();
+					$('[data-submit-register]').show();
+					$('[data-submit-passwdrecovery]').show();
 				}
 				if(data.err == 'ok'){
 					if(vk !== undefined && vk.length > 0){
@@ -71,7 +70,7 @@ $(document).on("click", "[data-submit-register]", function(e) {
 						return;
 					}
 				}
-				$("#regMes").html("(<font color="+color+">"+data.mes+"</font>)");
+				$("#regMes").html("<font color="+color+">"+data.mes+"</font>");
 			});
 		});
 	}else{
@@ -80,14 +79,15 @@ $(document).on("click", "[data-submit-register]", function(e) {
 			data = JSON.parse(json);
 			color = 'green';
 			if(data.err == 'ok'){
-				$("div#RecaptchaField1").hide();
+				$("div#RecaptchaField").hide();
 			}
 			if(data.err != 'ok'){
 				color = 'red';
 				grecaptcha.reset(recaptcha1);
-				submit.show();
+				$('[data-submit-register]').show();
+				$('[data-submit-passwdrecovery]').show();
 			}
-			$("#lostMes").html("(<font color="+color+">"+data.mes+"</font>)");
+			$("#regMes").html("<font color="+color+">"+data.mes+"</font>");
 		});
 	}
 });
@@ -95,10 +95,10 @@ $(document).on("click", "[data-submit-register]", function(e) {
 $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	var submit = $(this);
-	var mail = $('input[id=lostEmail]').val();
-	submit.hide(); // recaptchav3 has some delay
-	if($("div#RecaptchaField2").css('display') == 'none'){
+	var mail = $('input[id=regEmail]').val();
+	$('[data-submit-register]').hide(); // recaptchav3 has some delay
+	$('[data-submit-passwdrecovery]').hide();
+	if($("div#RecaptchaField").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
 			$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
@@ -106,27 +106,29 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 				if(data.err != 'ok'){
 					color = 'red';
 					if(data.mes == 'reCaptcha test failed: score too low'){
-						$("div#RecaptchaField2").show();
-						$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback2&render=explicit");
+						$("div#RecaptchaField").show();
+						$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit");
 					}
-					submit.show();
+					$('[data-submit-register]').show();
+					$('[data-submit-passwdrecovery]').show();
 				}
-				$("#lostMes").html("(<font color="+color+">"+data.mes+"</font>)");
+				$("#regMes").html("<font color="+color+">"+data.mes+"</font>");
 			});
 		});
 	}else{
-		$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha2), 'recaptcha': 2 }, function(json){
+		$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
 			data = JSON.parse(json);
 			color = 'green';
 			if(data.err == 'ok'){
-				$("div#RecaptchaField2").hide();
+				$("div#RecaptchaField").hide();
 			}
 			if(data.err != 'ok'){
 				color = 'red';
 				grecaptcha.reset(recaptcha1);
-				submit.show();
+				$('[data-submit-register]').show();
+				$('[data-submit-passwdrecovery]').show();
 			}
-			$("#lostMes").html("(<font color="+color+">"+data.mes+"</font>)");
+			$("#regMes").html("<font color="+color+">"+data.mes+"</font>");
 		});
 	}
 });

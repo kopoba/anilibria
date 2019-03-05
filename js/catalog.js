@@ -22,6 +22,11 @@ function getCatalog(page, update = false){
 	}else{
 		var sort = 2;
 	}
+	if($('#catalogFinish').data('state') == 'on'){
+		var finish = 2;
+	}else{
+		var finish = 1;
+	}
 	localStorage.setItem('catalogSort', sort);
 	year = '';
 	genre = '';
@@ -32,7 +37,7 @@ function getCatalog(page, update = false){
 		xpage = 'catalog';
 	}
 	search = {year, genre};
-	$.post("//"+document.domain+"/public/catalog.php", { 'page': page, 'search': JSON.stringify(search), 'xpage': xpage, 'sort': sort }, function(json){
+	$.post("//"+document.domain+"/public/catalog.php", { 'page': page, 'search': JSON.stringify(search), 'xpage': xpage, 'sort': sort, 'finish': finish }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			$('.simpleCatalog tbody').html(data.table);
@@ -51,6 +56,75 @@ $(document).ready(function() {
 		$('#switcher').bootstrapToggle('off');
 	}
 	getCatalog(1);
+	
+	// https://bootsnipp.com/snippets/VgkV
+	// $(e.target).removeClass("active");
+	$(function(){
+		$('.button-checkbox').each(function () {
+			// Settings
+			//e.preventDefault();
+			var $widget = $(this),
+				$button = $widget.find('button'),
+				$checkbox = $widget.find('input:checkbox'),
+				color = $button.data('color'),
+				settings = {
+					on: {
+						icon: 'glyphicon glyphicon-check'
+					},
+					off: {
+						icon: 'glyphicon glyphicon-unchecked'
+					}
+				};
+			
+			// Event Handlers
+			$button.on('click', function () {
+				$checkbox.prop('checked', !$checkbox.is(':checked'));
+				$checkbox.triggerHandler('change');
+				updateDisplay();
+				
+			});
+			$checkbox.on('change', function () {
+				updateDisplay();
+				getCatalog(1, true);
+			});
+
+			// Actions
+			function updateDisplay() {
+				var isChecked = $checkbox.is(':checked');
+
+				// Set the button's state
+				$button.data('state', (isChecked) ? "on" : "off");
+
+				// Set the button's icon
+				$button.find('.state-icon')
+					.removeClass()
+					.addClass('state-icon ' + settings[$button.data('state')].icon);
+
+				// Update the button's color
+				if (isChecked) {
+					$button
+						.removeClass('btn-default')
+						.addClass('btn-' + color + ' active');
+				}
+				else {
+					$button
+						.removeClass('btn-' + color + ' active')
+						.addClass('btn-default');
+				}
+			}
+			// Initialization
+			function init() {
+
+				updateDisplay();
+
+				// Inject the icon if applicable
+				if ($button.find('.state-icon').length === 0) {
+					$button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+				}
+			}
+			init();
+		});
+	});	
 });
 
 $(document).on('click', '[data-catalog-update]', function(e){

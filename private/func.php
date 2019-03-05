@@ -455,7 +455,7 @@ function auth(){
 		if(!empty($row['user_values'])){			
 			$user['user_values'] = json_decode($row['user_values'], true);
 		}
-		$query = $db->prepare('SELECT `downloaded`, `uploaded` FROM `xbt_users` WHERE `uid` = :id');
+		$query = $db->prepare('SELECT `downloaded`, `uploaded` FROM `xbt_users` WHERE `torrent_pass_version` = :id');
 		$query->bindParam(':id', $user['id']);
 		$query->execute();
 		if($query->rowCount() == 1){
@@ -1047,6 +1047,9 @@ function change_passwd() {
 	if(empty($_POST['oldPasswd']) || empty($_POST['newPasswd']) || empty($_POST['repPasswd'])) {
 		_message('empty', 'error');
 	}
+    if(strlen($_POST['newPasswd']) < 7){
+		_message('short', 'error');
+	}
 	if($_POST['oldPasswd'] == $_POST['newPasswd']){
 	    _message('samePasswd', 'error');
     }
@@ -1442,7 +1445,7 @@ function footerJS(){
 	global $var, $user, $conf; $result = '';
 	$tmplJS = '<script src="{url}"></script>';
 	$tmplCSS = '<link rel="stylesheet" type="text/css" href="{url}" />';
-	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 100);" ></script>';
+	$vk = '<script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); setTimeout(function(){ VK.Widgets.Comments(\'vk_comments\', {limit: 8, {page} attach: false});}, 75);" ></script>';
 	switch($var['page']){
 		default: break;
 		case 'vk':
@@ -1450,6 +1453,7 @@ function footerJS(){
 			if(!$user){
 				$result = str_replace('{url}', 'https://www.google.com/recaptcha/api.js?render='.$conf['recaptcha_public'], $tmplJS); 
 			}
+			$result .= str_replace('{page}', '', $vk);
 		break;
 		case 'cp':
 			$result .= str_replace('{url}', fileTime('/js/jquery.Jcrop.min.js'), $tmplJS);
@@ -1513,8 +1517,23 @@ function footerJS(){
 		case 'app':
 		case 'request':
 		case 'links':
+			$result .= str_replace('{page}', '', $vk);
+		break;
 		case 'donate':
 			$result .= str_replace('{page}', '', $vk);
+			$result .= '
+				<script type="text/javascript">
+					
+					setTimeout(function(){
+					f = document.createElement("iframe");
+					f.frameBorder = 0;
+					f.src = "https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&targets-hint=&default-sum=100&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&hint=&successURL=&quickpay=shop&account=41001990134497"; 
+					f.width = 360; 
+					f.height = 220;
+					$("#yandexMoney").append(f);
+				  }, 75);
+				</script>
+			';
 		break;
 		case '404':
 		case '403':
@@ -2103,10 +2122,17 @@ function showCatalog(){
 	if(!isset($_POST['search']) || !is_string($_POST['search'])){
 		$_POST['search'] = '';
 	}
+	function checkFinish(){
+		$result = '`status` != 3';
+		if(isset($_POST['finish']) && $_POST['finish'] == 2){
+			$result .= ' AND`status` = 2';
+		}
+		return $result;
+	}
 	function aSearch($sphinx, $page, $sort){
-		$query = $sphinx->query('SELECT count(*) as total FROM anilibria WHERE `status` != 3');
+		$query = $sphinx->query('SELECT count(*) as total FROM anilibria WHERE '.checkFinish());
 		$total =  $query->fetch()['total'];
-		$query = $sphinx->query("SELECT `id` FROM anilibria WHERE `status` != 3 ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
+		$query = $sphinx->query("SELECT `id` FROM anilibria WHERE ".checkFinish()." ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
 		$data = $query->fetchAll(PDO::FETCH_ASSOC);
 		return ['data' => $data, 'total' => $total];
 	}
@@ -2120,12 +2146,12 @@ function showCatalog(){
 			$search[] = sphinxPrepare($data['genre']);			
 			$search = trim(implode(",", $search), ',');
 			if(!empty($search)){				
-				$query = $sphinx->prepare('SELECT count(*) as total FROM anilibria WHERE MATCH(:search) AND `status` != 3');
+				$query = $sphinx->prepare('SELECT count(*) as total FROM anilibria WHERE MATCH(:search) AND '.checkFinish());
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$total =  $query->fetch()['total'];
 				
-				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND `status` != 3 ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
+				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND ".checkFinish()." ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
 				$query->bindValue(':search', "@(genre,year) ($search)");
 				$query->execute();
 				$data = $query->fetchAll(PDO::FETCH_ASSOC);
