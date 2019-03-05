@@ -9,10 +9,9 @@ function createPasswd($passwd = ''){
 
 function genRandStr($length = 10, $mode = 2) {
 	$str = ''; 
-	if($mode == 1){
-		$chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	}else{
-		$chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()_+-=';
+	$chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	if($mode == 2){
+		$chars .= '~!@#$%^&*()_+-=';
 	}
 	for ($i = 0; $i < $length; $i++) {
 		$str .= $chars[random_int(0 ,strlen($chars)-1)];
@@ -2104,10 +2103,10 @@ function showCatalog(){
 	if(!isset($_POST['search']) || !is_string($_POST['search'])){
 		$_POST['search'] = '';
 	}
-	function aSearch($db, $page, $sort){
-		$query = $db->query('SELECT count(*) as total FROM `xrelease` WHERE `status` != 3');
+	function aSearch($sphinx, $page, $sort){
+		$query = $sphinx->query('SELECT count(*) as total FROM anilibria WHERE `status` != 3');
 		$total =  $query->fetch()['total'];
-		$query = $db->query("SELECT `id` FROM `xrelease` WHERE `status` != 3 ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
+		$query = $sphinx->query("SELECT `id` FROM anilibria WHERE `status` != 3 ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
 		$data = $query->fetchAll(PDO::FETCH_ASSOC);
 		return ['data' => $data, 'total' => $total];
 	}
@@ -2205,7 +2204,7 @@ function showCatalog(){
 	
 		$arr = bSearch($sphinx, $page, $sort);
 		if(!$arr){
-			$arr = aSearch($db, $page, $sort);
+			$arr = aSearch($sphinx, $page, $sort);
 		}
 	}
 	if(!isset($_POST['json'])){
