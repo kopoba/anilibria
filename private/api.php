@@ -188,7 +188,7 @@ function apiList(){
     
     function proceedReleases($releases, $torrent){
 		$result = []; 
-		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
+		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'announce', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
         foreach($releases as $key => $val){
             $unsettedFileds = [];
 			$names = $val['names'];
@@ -634,7 +634,7 @@ function apiList(){
 
 function updateApiCache(){
 	global $db, $cache, $user, $var;
-	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code`, `block` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
+	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `announce`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code`, `block` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
 	while($row=$query->fetch()){
         
         $names = [];
@@ -698,6 +698,14 @@ function updateApiCache(){
 			$moon = $row['moonplayer'];
 		}
 		
+		$announce = $row['announce'];
+		if(!empty($announce)) {
+			$announce = trim($announce);
+		}
+		if(empty($announce)) {
+			$announce = NULL;
+		}
+		
 		$info[$row['id']] = [
 			'id' => intval($row['id']),
 			'code' => $row['code'],
@@ -707,6 +715,7 @@ function updateApiCache(){
             'rating' => $row['rating'],
 			'last' => $row['last'],
 			'moon' => $moon,
+			'announce' => $announce,
 			'status' => $var['status'][$row['status']],
 			'type' => $row['type'],
 			'genres' => $genres,
