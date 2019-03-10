@@ -1122,27 +1122,27 @@ function isBlock($str){
 }
 
 function adsUrl(){
-	global $cache; $host = []; $min = '10';
-	$default = [
+	global $var, $cache; $host = []; $min = '10';
+	if(!checkADS() || geoip_country_code_by_name($var['ip']) != 'RU'){
+		return 'player.js';
+	}
+	$arr = [
 		'player.mix.js' => $min,
 		'player.zet.js' => $min,
 		'player.reyden.js' => $min,
 	];
 	$tmp = $cache->get('playerStatAds');
-	if($tmp === false){
-		$arr = $default;
-	}else{
-		$arr = json_decode($tmp, true);
-		foreach($arr as $key => $val){
+	if($tmp !== false){
+		$arr = [];
+		$tmp = json_decode($tmp, true);
+		foreach($tmp as $key => $val){
 			if($val < $min){
 				$arr["$key"] = $min;
+			}else{
+				$arr["$key"] = $val['percent'];
 			}
 		}
 	}
-	if(!checkADS()){
-		return 'player.js';
-	}
-
 	foreach($arr as $key => $val){
 		$host = array_merge($host, array_fill(0, $val, $key));
 	}

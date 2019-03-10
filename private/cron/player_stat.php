@@ -4,19 +4,6 @@
 require('/var/www/anilibria/root/private/config.php');
 require('/var/www/anilibria/root/private/init/memcache.php');
 
-function sendApi($url, $data, $cookie = ''){
-	$options = [
-		'http' => [
-			'header'  => "Content-type: application/x-www-form-urlencoded\r\n".
-			"Cookie: awuegfusvfkjasdf=$cookie\r\n",
-			'method'  => 'POST',
-			'content' => http_build_query($data)
-		]
-	];
-	$context  = stream_context_create($options);
-	return [file_get_contents($url, false, $context), $http_response_header];
-}
-
 function authPlayerJS(){
 	global $cache, $conf;
 	$result = $cache->get('playerAuth');
@@ -43,32 +30,35 @@ function simpleSend($url, $data){
 function getStatAds(){
 	global $cache;
 	$ads = [ 
-		'player.mix.js' => 1288,
-		'player.zet.js' => 1279,
-		'player.reyden.js' => 1446
+		'player.mix.js' => ['id' => 1288, 'price' => 100 ],
+		'player.zet.js' => ['id' => 1279, 'price' => 130 ],
+		'player.reyden.js' => ['id' => 1446, 'price' => 70 ]
 	];
-		
-	$data = [];
+	$result = []; $result['all'] = 0;
 	foreach($ads as $key => $val){
 		$stat = simpleSend(
 			'https://playerjs.com/php/apps/playerjs/vast_impressions.php', 
-			[
-				'x' => $val,
-				'y' => 0,
-				'h' => '',
-				'p' => 0
-			]
+			[ 'x' => $val['id'], 'y' => 0, 'h' => '', 'p' => 0 ]
 		);
-		$tmp =  explode('::', explode('/', $stat)['0']);
-		$data["$key"] = round($tmp['0']*100/($tmp['1']+$tmp['0']));
+		list($numbers, $date) = explode('/', $stat);
+		list($hit, $mis) = explode('::', $numbers);
+		$total = $hit+$mis;
+		$result["$key"] = [
+			'weight' => round($hit/$total*$val['price']),
+			'hit' => $hit,
+			'mis' => $mis,
+			'total' => $total
+		];
+		$result['all'] += $result["$key"]['weight'];
 	}
-	$result = []; $all = array_sum($data);
-	foreach($data as $key => $val){
-		$result["$key"] = round($val*100/$all);
+	foreach($result as $key => $val){
+		if($key == 'all'){
+			continue;
+		}
+		$result["$key"]['percent'] = round($val['weight']*100/$result['all']);
+		unset($result["$key"]['weight']);
 	}
+	unset($result['all']);
 	$cache->set('playerStatAds', json_encode($result), 1800);
 	//var_dump($result);
 }
-
-$cookie = authPlayerJS();
-getStatAds();
