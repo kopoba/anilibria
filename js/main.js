@@ -689,3 +689,24 @@ $(document).on("click", "[data-random-release]", function(e) {
 		document.location.href="/release/"+data+".html";
 	});
 });
+
+$(document).on("click", "[data-upcoming-vote]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	rid = $(this).attr("id");
+	$.post("//"+document.domain+"/public/upcoming-vote.php", {'rid': rid, 'csrf_token': csrf_token }, function(json){
+		data = JSON.parse(json);
+		console.log(data.mes);
+		console.log(data.err);
+		if(data.err == 'ok') {
+			var url = "https://"+document.domain+"/public/vote-update.php?id="+rid;
+            $('span[id='+rid+']').load(url);
+		}
+        if(data.err == 'ok' && data.mes == 'add') {
+            $('img[id='+rid+']').attr("src","/img/other/heart-solid.svg");
+        }
+        if(data.err == 'ok' && data.mes == 'del') {
+            $('img[id='+rid+']').attr("src","/img/other/heart-regular.svg");
+        }
+	});
+});

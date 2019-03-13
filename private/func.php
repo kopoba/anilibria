@@ -2748,3 +2748,77 @@ function showSitemap(){
 	$result = str_replace('{release}', rtrim($release), getTemplate('sitemap'));
 	file_put_contents('/var/www/anilibria/root/sitemap.xml', $result);
 }
+
+function showNewSeason() {
+    global $db, $user;
+    $result = '';
+    $query = $db->query('SELECT * FROM `upcoming_season`');
+    while($row=$query->fetch()) {
+        $img = fileTime('/upload/upcoming/270x390/'.$row['id'].'.jpg');
+        if(!$img){
+            $img = '/upload/upcoming/270x390/default.jpg';
+        }
+        $tmp = getTemplate('season-vote');
+        $tmp = str_replace('{id}', $row['id'], $tmp);
+        $tmp = str_replace('{name}', $row['name'], $tmp);
+        $tmp = str_replace('{ename}', $row['ename'], $tmp);
+        $tmp = str_replace('{genres}', $row['genres'], $tmp);
+        $tmp = str_replace('{season}', $row['season'], $tmp);
+        $tmp = str_replace('{description}', $row['description'], $tmp);
+        $tmp = str_replace('{votes}', updateVoteInfo($row['id']), $tmp);
+        $tmp = str_replace('{img}', $img, $tmp);
+        $tmp = str_replace('{heart-icon}', checkIfVoted($user['id'],$row['id']), $tmp);
+        $result .= $tmp;
+    }
+    return $result;
+}
+
+function updateVoteInfo($rid) {
+    global $db;
+    $count = $db->prepare('SELECT COUNT(*) FROM `upcoming_votes` WHERE `urid` = :rid');
+    $count->bindParam(':rid', $rid);
+    $count->execute();
+    $result = $count->fetch();
+    return $result[0];
+}
+
+function checkIfVoted($uid, $rid) {
+    global $db;
+    $query = $db->prepare('SELECT * FROM `upcoming_votes` WHERE `user_id` = :usid AND `urid` = :rid');
+    $query->bindParam(':usid', $uid);
+    $query->bindParam(':rid', $rid);
+    $query->execute();
+    if($query->rowCount() > 0) {
+        $result = '<img id="'.$rid.'" src="/img/other/heart-solid.svg" width="20px" height="20px" />';
+    } else {
+        $result = '<img id="'.$rid.'" src="/img/other/heart-regular.svg" width="20px" height="20px" />';
+    }
+    return $result;
+}
+
+function changeVoteCount() {
+	global $db, $user;
+	if(!empty($_POST['rid']) && $user) {
+		$query = $db->prepare('SELECT * FROM `upcoming_votes` WHERE `user_id` = :usid AND `urid` = :rid');
+		$query->bindParam(':usid', $user['id']);
+		$query->bindParam(':rid', $_POST['rid']);
+		$query->execute();
+		if($query->rowCount() > 0) {
+			while($row=$query->fetch()) {
+				$delete = $db->prepare('DELETE FROM `upcoming_votes` WHERE `user_id` = :uid AND `urid` = :rid');
+				$delete->bindParam(':uid', $user['id']);
+				$delete->bindParam(':rid', $_POST['rid']);
+				$delete->execute();
+				_message2('del');
+			}
+		} else {
+			$insert = $db->prepare('INSERT INTO `upcoming_votes` (`user_id`, `urid`) VALUES (:uid, :rid)');
+			$insert->bindParam(':uid', $user['id']);
+			$insert->bindParam(':rid', $_POST['rid']);
+			$insert->execute();
+            _message2('add');
+		}
+	} else {
+		_message('unauthorized', 'error');
+	}
+}
