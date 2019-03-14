@@ -1,10 +1,5 @@
--- phpMyAdmin SQL Dump
--- version 4.8.5
--- https://www.phpmyadmin.net/
---
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
 
 CREATE TABLE `favorites` (
   `id` int(11) NOT NULL,
@@ -20,7 +15,8 @@ CREATE TABLE `f_tmp` (
 
 CREATE TABLE `genre` (
   `id` int(11) NOT NULL,
-  `name` varchar(32) NOT NULL
+  `name` varchar(32) NOT NULL,
+  `rating` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `log_ip` (

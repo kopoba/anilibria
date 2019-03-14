@@ -16,6 +16,8 @@ Allow: *.css
 Allow: *.png
 Allow: *.jpg
 
+Allow: /sitemap.xml$
+
 Disallow: /
 
 Host: https://www.anilibria.tv

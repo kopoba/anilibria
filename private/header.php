@@ -106,8 +106,11 @@ $xcss = randomClassName();
 		?>
 		</div>
 		<div class="<?php echo $xcss['header']; ?>">
-			<div class="<?php echo $xcss['headercontent']; ?>">
-			</div>
+			<?php
+				if($xcss['ads']){
+					echo "<div class=\"${xcss['headercontent']}\"></div>";
+				}
+			?>
 		</div>
 		<div class="<?php echo $xcss['main']; ?>">
 			<div class="<?php echo $xcss['content']; ?>">
