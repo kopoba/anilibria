@@ -515,6 +515,24 @@ div.torrent_block:hover {
 
 /* Upcoming Season Style */
 
+#upcoming_page_heading {
+	text-align: center;
+}
+
+#upcoming_page_heading h2 {
+	margin: 0;
+	padding: 0;
+	font-size: 18pt;
+	line-height: 18pt;
+}
+
+#upcoming_page_heading p {
+	margin: 10px;
+	padding: 0;
+	font-size: 10pt;
+	line-height: 10pt;
+}
+
 .upcoming_season_block {
 	background-color: #fafafa;
 	display: block;
