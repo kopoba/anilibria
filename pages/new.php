@@ -68,7 +68,7 @@ $var['page'] = 'new';
 				<option value="3">Скрыт</option>
 				<option value="4">Неонгоинг</option>
 			</select>
-            <input id="nSeason" title="Аниме-сезон" class="form-control" style="margin-top: 7px;" type="text" placeholder="Аниме-сезон: весна-2019" required="">
+            <input id="nSeason" title="Аниме-сезон" class="form-control" style="margin-top: 7px;" type="text" placeholder="Аниме-сезон: весна" required="">
 			<input id="nMoon" class="form-control" style="margin-top: 7px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." required="">
 <pre style="margin-top: 7px; max-height: 100px; overflow-y: scroll;">[b]жирный шрифт[/b] => <b>жирный шрифт</b>
 [i]наклонный шрифт[/i] => <i>наклонный шрифт</i>
