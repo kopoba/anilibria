@@ -1122,38 +1122,48 @@ function isBlock($str){
 }
 
 function adsUrl(){
-	global $var, $cache; $host = []; $min = '10';
-	if(!checkADS() || geoip_country_code_by_name($var['ip']) != 'RU'){
-		return 'player.js';
+	global $cache; $arr = []; $min = '10';
+	$arr['mix'] = ['id' => 'vast2427', 'percent' => $min];
+	$arr['rey'] = ['id' => 'vast2585', 'percent' => $min];
+	function prepareAdsUrl($arr, $win = ''){
+		foreach($arr as $key => $val){
+			if($win == $key){
+				continue;
+			}
+			$result[] = $val['id'];
+		}
+		return implode(",", $result);
 	}
-	$arr = [
-		'player.mix.js' => $min,
-		'player.zet.js' => $min,
-		'player.reyden.js' => $min,
-	];
-	$tmp = $cache->get('playerStatAds');
-	if($tmp !== false){
-		$arr = [];
-		$tmp = json_decode($tmp, true);
-		foreach($tmp as $key => $val){
-			if($val < $min){
-				$arr["$key"] = $min;
-			}else{
-				$arr["$key"] = $val['percent'];
+	function adsRandom($cache, $arr, $min){
+		$host = [];
+		$tmp = $cache->get('playerStatAds');
+		if($tmp !== false){
+			$arr = json_decode($tmp, true);
+			if($arr['mix']['rate'] >= 60){
+				return 'mix';
 			}
 		}
+		foreach($arr as $key => $val){
+			if($val['percent'] < $min){
+				$val['percent'] = $min;
+			}
+			$host = array_merge($host, array_fill(0, $val['percent'], $key));
+		}
+		shuffle($host);
+		return $host[random_int(0, count($host) - 1)];
 	}
-	foreach($arr as $key => $val){
-		$host = array_merge($host, array_fill(0, $val, $key));
+	if(!checkADS()){
+		return prepareAdsUrl($arr);
 	}
-	shuffle($host);
-	return $host[random_int(0, count($host) - 1)];
+	return prepareAdsUrl($arr, adsRandom($cache, $arr, $min));
 }
 
 function showRelease(){
 	global $db, $user, $var;
 	$status = ['0' => 'В работе', '1' => 'Завершен'];
 	function release404(){
+		global $var;
+		$var['title'] = '404';
 		header('HTTP/1.0 404 Not Found');
 		return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
 	}
@@ -1533,7 +1543,8 @@ function footerJS(){
 			}
 			$tmp = getReleaseVideo($var['release']['id']);
 			if(!empty($tmp) && !$var['release']['block']){
-				$tmpPlayer = str_replace('{playerjs}', fileTime('/js/'.adsUrl()), getTemplate('playerjs'));
+				$tmpPlayer = str_replace('{playerjs}', fileTime('/js/player.js'), getTemplate('playerjs'));	
+				$tmpPlayer = str_replace('{deny}', adsUrl(), $tmpPlayer);
 				$result .= str_replace('{playlist}', $tmp, $tmpPlayer);
 			}
 			unset($tmp);
@@ -1545,8 +1556,13 @@ function footerJS(){
 			}
 			if(!empty($xname)){
 				$result .= wsInfo($xname);
+				
 			}
-			$result .= str_replace('{page}', '', $vk);
+			if(!empty($var['release']['id'])){
+				$result .= str_replace('{page}', '', $vk);
+			}else{
+				$result .= str_replace('{page}', 'pageUrl: \'/pages/error/404.php\',', $vk);
+			}
 		break;
 		case 'app':
 		case 'request':
