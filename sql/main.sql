@@ -111,6 +111,7 @@ CREATE TABLE `xrelease` (
   `search_status` varchar(16) NOT NULL,
   `moonplayer` varchar(128) NOT NULL,
   `description` text NOT NULL,
+  `season` varchar(255) DEFAULT NULL,
   `last` bigint(20) NOT NULL DEFAULT 0,
   `day` int(1) NOT NULL DEFAULT 1,
   `rating` int(11) NOT NULL DEFAULT 0,
@@ -129,25 +130,14 @@ CREATE TABLE `youtube` (
   `type` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `upcoming_season` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `name` varchar(50) NOT NULL,
- `ename` varchar(50) NOT NULL,
- `genres` varchar(255) NOT NULL,
- `description` text NOT NULL,
- `votes` int(11) NOT NULL DEFAULT 0,
- `season` varchar(50) NOT NULL,
- `timestamp` date NOT NULL DEFAULT current_timestamp(),
- PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `upcoming_votes` (
- `urid` int(11) DEFAULT NULL,
- `user_id` int(11) DEFAULT NULL,
- KEY `urid` (`urid`),
- CONSTRAINT `upcoming_votes_ibfk_1` FOREIGN KEY (`urid`) REFERENCES `upcoming_season` (`id`)
+  `urid` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+ALTER TABLE `upcoming_votes`
+  ADD KEY `urid` (`urid`);
 
 ALTER TABLE `favorites`
   ADD PRIMARY KEY (`id`),

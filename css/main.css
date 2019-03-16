@@ -586,7 +586,7 @@ div.torrent_block:hover {
 
 .upcoming_season_like,
 .upcoming_season_like:visited {
-	display: block;
+	display: inline-block;
 	font-size: 10pt;
 	line-height: 10px;
 	padding: 10px 10px 5px 10px;
@@ -599,9 +599,30 @@ div.torrent_block:hover {
 	color: #fff;
 	text-decoration: none;
 }
+.upcoming_wait {
+	background: #323232!important;
+}
+
+.fav-added,
+.fav-clear {
+	display: inline-block;
+	font-size: 10pt;
+	line-height: 10px;
+	padding: 13px 10px 12px 10px;
+	text-decoration: none;
+	color: #fff;
+	background: #323232;
+	margin-bottom: 5px;
+	margin-left: 5px;
+	border: none;
+}
+
+.fav-clear {
+	background: #e22052;
+}
 
 .upcoming_season_votes,
-.upcoming_season_voted{
+.upcoming_season_voted {
 	display: inline-block;
 }
 

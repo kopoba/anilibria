@@ -1167,7 +1167,7 @@ function showRelease(){
 	if(empty($_GET['code'])){
 		return release404();
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code`, `block` FROM `xrelease` WHERE `code` = :code');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `season`, `announce`, `status`, `day`, `code`, `block` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -1247,6 +1247,7 @@ function showRelease(){
 	$page = str_replace('{timing}', $release['timing'], $page);
 	
 	$page = str_replace('{description}', $release['description'], $page);
+    $page = str_replace('{season}', $release['season'], $page);
 	
 	$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
 	if(!file_exists($poster)){
@@ -1394,7 +1395,7 @@ function xrelease(){
 	if(empty($_POST['data'])){
 		_message('empty', 'error');
 	}
-	$arr = ['name', 'ename', 'aname', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day', 'block'];
+	$arr = ['name', 'ename', 'aname', 'year', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day', 'block', 'season'];
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){
@@ -2752,22 +2753,43 @@ function showSitemap(){
 function showNewSeason() {
     global $db, $user;
     $result = '';
-    $query = $db->query('SELECT * FROM `upcoming_season`');
+    $findSeason = 'весна';
+    $findYear = '2019';
+    $query = $db->prepare('SELECT `id`, `name`, `ename`, `genre`, `season`, `description` FROM `xrelease` WHERE `season` = :season AND `year` = :year');
+    $query->bindParam(':season', $findSeason);
+    $query->bindParam(':year', $findYear);
+    $query->execute();
     while($row=$query->fetch()) {
-        $img = fileTime('/upload/upcoming/270x390/'.$row['id'].'.jpg');
+        $img = fileTime('/upload/release/270x390/'.$row['id'].'.jpg');
         if(!$img){
-            $img = '/upload/upcoming/270x390/default.jpg';
+            $img = '/upload/release/270x390/default.jpg';
         }
+
         $tmp = getTemplate('season-vote');
         $tmp = str_replace('{id}', $row['id'], $tmp);
         $tmp = str_replace('{name}', $row['name'], $tmp);
         $tmp = str_replace('{ename}', $row['ename'], $tmp);
-        $tmp = str_replace('{genres}', $row['genres'], $tmp);
+        $tmp = str_replace('{genres}', $row['genre'], $tmp);
         $tmp = str_replace('{season}', $row['season'], $tmp);
         $tmp = str_replace('{description}', $row['description'], $tmp);
         $tmp = str_replace('{votes}', updateVoteInfo($row['id']), $tmp);
         $tmp = str_replace('{img}', $img, $tmp);
-        $tmp = str_replace('{heart-icon}', checkIfVoted($user['id'],$row['id']), $tmp);
+        $tmp = str_replace('{voteBtn}', checkIfVoted($user['id'],$row['id']), $tmp);
+        if($user) {
+            $favBtn = '<button data-upcoming-favorites class="{fav-state}" id="{rel-id}">{fav-text}</button>';
+            $favBtn = str_replace('{rel-id}', $row['id'], $favBtn);
+            if (isFavorite($user['id'], $row['id'])) {
+                $favBtn = str_replace('{fav-state}', 'fav-added', $favBtn);
+                $favBtn = str_replace('{fav-text}', 'УДАЛИТЬ ИЗ ИЗБРАННОГО', $favBtn);
+            } else {
+                $favBtn = str_replace('{fav-state}', 'fav-clear', $favBtn);
+                $favBtn = str_replace('{fav-text}', 'ДОБАВИТЬ В ИЗБРАННОЕ', $favBtn);
+            }
+
+            $tmp = str_replace('{favBtn}', $favBtn, $tmp);
+        } else {
+            $tmp = str_replace('{favBtn}', "", $tmp);
+        }
         $result .= $tmp;
     }
     return $result;
@@ -2789,9 +2811,11 @@ function checkIfVoted($uid, $rid) {
     $query->bindParam(':rid', $rid);
     $query->execute();
     if($query->rowCount() > 0) {
-        $result = '<img id="'.$rid.'" src="/img/other/heart-solid.svg" width="20px" height="20px" />';
+        $heartIco = '<img src="/img/other/heart-solid.svg" width="20px" height="20px" />';
+        $result = "<a data-upcoming-vote class=\"upcoming_season_like upcoming_wait\" id=\"$rid\" href=\"\">ЖДУ ЭТО АНИМЕ $heartIco</a>";
     } else {
-        $result = '<img id="'.$rid.'" src="/img/other/heart-regular.svg" width="20px" height="20px" />';
+        $heartIco = '<img src="/img/other/heart-regular.svg" width="20px" height="20px" />';
+        $result = "<a data-upcoming-vote class=\"upcoming_season_like\" id=\"$rid\" href=\"\">ЖДАТЬ ЭТО АНИМЕ $heartIco</a>";
     }
     return $result;
 }
