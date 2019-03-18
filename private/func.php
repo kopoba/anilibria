@@ -43,15 +43,12 @@ function half_string_hash($s){
 	return hash($conf['hash_algo'], substr($s, round(strlen($s)/2)));
 }
 
-function session_hash($login, $passwd, $access, $rand = '', $time = ''){
+function session_hash($login, $passwd, $access, $rand = ''){
 	global $conf, $var;
 	if(empty($rand)){
 		$rand = genRandStr(8);
 	}
-	if(empty($time)){
-		$time = $var['time']+60*60*24*10;
-	}
-	return [$rand.hash($conf['hash_algo'], $rand.$var['user_agent'].$time.$login.sha1(half_string_hash($passwd))), $time];
+	return [$rand.hash($conf['hash_algo'], $rand.$var['user_agent'].$login.sha1(half_string_hash($passwd))), $var['time']+60*60*24*30];
 }
 
 function _exit(){
@@ -244,15 +241,6 @@ function startSession($row){
 	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();
 	$sid = $db->lastInsertId();
-	$query = $db->prepare('SELECT `id` FROM `session` WHERE `uid` = :uid ORDER BY `time`');
-	$query->bindParam(':uid', $row['id']);
-	$query->execute();
-	if($query->rowCount() > 50){
-		$close = $query->fetch();
-		$query = $db->prepare('DELETE FROM `session` WHERE `id` = :id');
-		$query->bindParam(':id', $close['id']);
-		$query->execute();
-	}
 	$_SESSION['sess'] = $hash[0];
 	$query = $db->prepare('UPDATE `users` SET `last_activity` = :time WHERE `id` = :id');
 	$query->bindParam(':time', $var['time']);
@@ -408,8 +396,14 @@ function registration(){
 
 function auth(){
 	global $conf, $db, $var, $user;
+	if(random_int(1, 1000) == 1){
+		$tmp = time();
+		$query = $db->prepare('DELETE FROM `session` WHERE `time` < :time');
+		$query->bindParam(':time', $tmp);
+		$query->execute();
+	}	
 	if(!empty($_SESSION['sess'])){
-		$query = $db->prepare('SELECT `id`, `uid`, `hash`, `time` FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())');
+		$query = $db->prepare('SELECT `id`, `uid`, `hash` FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())');
 		$query->bindParam(':hash', $_SESSION['sess']);
 		$query->execute();
 		if($query->rowCount() != 1){
@@ -425,18 +419,16 @@ function auth(){
 			return;
 		}
 		$row = $query->fetch();
-		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], $row['access'], substr($session['hash'], 0, 8), $session['time'])[0]){
+		if($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], $row['access'], substr($session['hash'], 0, 8))['0']){	
 			_exit();
 			return;
 		}
-		if($var['time'] > $session['time']){			
-			$hash = session_hash($row['login'], $row['passwd'], $row['access']);
-			$query = $db->prepare('UPDATE `session` set `hash` = :hash, `time` = :time WHERE `id` = :id');
-			$query->bindParam(':hash', $hash[0]);
-			$query->bindParam(':time', $hash[1]);
+		if(random_int(1, 10) == 1){
+			$tmp = $var['time']+60*60*24*30;
+			$query = $db->prepare('UPDATE `session` set `time` = :time WHERE `id` = :id');
+			$query->bindParam(':time', $tmp);
 			$query->bindParam(':id', $session['id']);
 			$query->execute();
-			$_SESSION['sess'] = $hash[0];
 		}
 		$user = [	'id' => $row['id'], 
 					'login' => $row['login'], 
@@ -640,7 +632,7 @@ function torrentExist($id){
 
 function torrentAdd($hash, $rid, $json, $completed = 0){
 	global $db;
-	$query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 0, :completed, :rid, :info)');
+	$query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , unix_timestamp(now()), unix_timestamp(now()), 0, :completed, :rid, :info)');
 	$query->bindParam(':hash', $hash);
 	$query->bindParam(':rid', $rid);
 	$query->bindParam(':completed', $completed);
@@ -1477,7 +1469,7 @@ function auth_history(){
 	$query->execute();
 	while($row = $query->fetch()){
 		$status = false;
-		$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > UNIX_TIMESTAMP()');
+		$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > unix_timestamp(now())');
 		$tmp->bindParam(':id', $row['sid']);
 		$tmp->execute();
 		if($tmp->rowCount() == 1){
@@ -2747,14 +2739,6 @@ function updateGenreRating(){
 		$update->bindParam(':id', $row['id']);
 		$update->execute();
 	}
-}
-
-function randCheck($x){
-	$rand = random_int(1, 100);
-	if($rand > $x){
-		return false;
-	}
-	return true;
 }
 
 function showSitemap(){
