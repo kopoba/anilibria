@@ -1583,6 +1583,8 @@ function footerJS(){
 				  }, 75);
 				</script>
 			';
+			$result .= '<script src="'.fileTime('/js/player.js').'" type="text/javascript"></script>';
+			$result .= '<script>var player = new Playerjs({ id:"anilibriaPlayer", "title":"&nbsp;", "file":"'.fileTime('/upload/donate/1.mp4').'", poster:"'.fileTime('/upload/donate/1.jpg').'", preroll_deny:"vast2427,vast2585"});</script>';
 		break;
 		case '404':
 		case '403':
