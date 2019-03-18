@@ -89,12 +89,15 @@ function csrf_token(){
 
 function createSecret($params){
 	global $conf;
+	if(empty($_SESSION['secret'])){
+		return false;
+	}
 	return hash($conf['hash_algo'], $_SESSION['secret'].$params);
 }
 
 function checkSecret($hash, $params){
 	global $conf;
-	if($hash != hash($conf['hash_algo'], $_SESSION['secret'].$params)){
+	if(empty($_SESSION['secret']) || $hash != hash($conf['hash_algo'], $_SESSION['secret'].$params)){
 		return false; 
 	}
 	return true;	
@@ -172,6 +175,9 @@ function oAuthLogin(){
 	if(!$row){
 		$htime = $var['time']+60*60;
 		$hash = createSecret($id.$htime);
+		if(!$hash){
+			_message2('wrong', 'error');
+		}
 		die(header("Location: https://".$_SERVER['SERVER_NAME']."/pages/vk.php?id=$id&time=$htime&hash=$hash"));
 	}
 	if(!empty($row['2fa'])){
