@@ -342,7 +342,7 @@ function apiList(){
         global $db;
 		$result = [];
 		
-		$pagination = preparePagination($count);
+		$pagination = preparePagination();
         $startIndex = $pagination['startIndex'];
         $perPage = $pagination['perPage'];
 		
