@@ -2784,7 +2784,6 @@ function showSitemap(){
 function checkIfVoted($rid) {
     global $db, $user;
     $svg = 'heart-regular.svg';
-	
 	$img = "<img id='$rid' src='/img/other/{svg}' width='20px' height='20px'>";
     if($user){
 		$query = $db->prepare('SELECT * FROM `favorites` WHERE `rid` = :rid AND `uid` = :uid');
@@ -2800,26 +2799,26 @@ function checkIfVoted($rid) {
 }
 
 function showNewSeason() {
-    global $db, $user, $var;  $result = '';
-    $season = ['winter' => 'зима', 'spring' => 'весна', 'summer' => 'лето', 'autumn' => 'осень'];
-    if(empty($_GET['year']) || !ctype_digit($_GET['year']) || empty($_GET['season']) || !array_key_exists($_GET['season'], $season)){
+	global $db, $user, $var;  $result = '';
+	$season = ['winter' => 'зима', 'spring' => 'весна', 'summer' => 'лето', 'autumn' => 'осень'];
+	if(empty($_GET['year']) || !ctype_digit($_GET['year']) || empty($_GET['season']) || !array_key_exists($_GET['season'], $season)){
 		return release404();
 	}
-    $findSeason = $season[$_GET['season']];
-    $findYear = $_GET['year'];
-    $query = $db->prepare('SELECT `id`, `name`, `ename`, `genre`, `season`, `description`, `rating`, `code` FROM `xrelease` WHERE `season` = :season AND `year` = :year ORDER BY `rating` DESC');
-    $query->bindParam(':season', $findSeason);
-    $query->bindParam(':year', $findYear);
-    $query->execute();
-    if($query->rowCount() == 0){
+	$findSeason = $season[$_GET['season']];
+	$findYear = $_GET['year'];
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `genre`, `season`, `description`, `rating`, `code` FROM `xrelease` WHERE `season` = :season AND `year` = :year ORDER BY `rating` DESC');
+	$query->bindParam(':season', $findSeason);
+	$query->bindParam(':year', $findYear);
+	$query->execute();
+	if($query->rowCount() == 0){
 		return release404();
 	}
 	lowerMove();
-    while($row=$query->fetch()) {
-        $img = fileTime('/upload/release/270x390/'.$row['id'].'.jpg');
-        if(!$img){
-            $img = '/upload/release/270x390/default.jpg';
-        }
+	while($row=$query->fetch()) {
+		$img = fileTime('/upload/release/270x390/'.$row['id'].'.jpg');
+		if(!$img){
+			$img = '/upload/release/270x390/default.jpg';
+		}
 		$tmp = getTemplate('season-vote');
 		$tmp = str_replace('{id}', $row['id'], $tmp);
 		$tmp = str_replace('{name}', $row['name'], $tmp);
@@ -2832,13 +2831,7 @@ function showNewSeason() {
 		$tmp = str_replace('{code}', $row['code'], $tmp);
 		$tmp = str_replace('{voteBtn}', checkIfVoted($row['id']), $tmp);
 		$result .= $tmp;
-    }
-    $var['title'] = "Новый сезон $findYear $findSeason";
-	return "<div class='news-block'>
-	<div id='upcoming_page_heading'>
-        <h2>Анонс аниме-$findSeason $findYear года</h2>
-        <p>Внимание! Голосовать могут только авторизованные пользователи.</p>
-    </div>
-	
-	<div>$result</div><div class='clear'></div><div style='margin-top:10px;'></div></div>";
+	}
+	$var['title'] = "Новый сезон $findYear $findSeason";
+	return "<div class='news-block'><div id='upcoming_page_heading'><h2>Анонс аниме-$findSeason $findYear года</h2><p>Внимание! Голосовать могут только авторизованные пользователи.</p></div><div>$result</div><div class='clear'></div><div style='margin-top:10px;'></div></div>";
 }

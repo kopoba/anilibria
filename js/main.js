@@ -563,16 +563,14 @@ $(document).on('click', '[data-release-favorites]', function(e){
 			$('#authPlsModal').modal('show');
 			return;
 		}
-		if(page == 'release'){
-			if(data.err == 'ok'){
+		if(data.err == 'ok'){
+			if(page == 'release'){
 				if(_this.hasClass("favorites")){
 					_this.removeClass("favorites");
 				}else{
 					_this.addClass("favorites");
 				}
-			}
-		}else{
-			if(data.err == 'ok'){
+			}else{
 				if($('img[id='+rid+']').attr("src") == '/img/other/heart-solid.svg'){
 					$('img[id='+rid+']').attr("src","/img/other/heart-regular.svg");
 				}else{
