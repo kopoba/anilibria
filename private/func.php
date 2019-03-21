@@ -1241,17 +1241,20 @@ function showRelease(){
 	}else{
 		$release['other'] = '';
 	}
-	
 	if(!empty($release['year']) && !empty($release['season'])){
-		$release['year'] = implode(' ', [$release['year'], $release['season']]).'.';
+		$xtmp = implode(' ', [$release['year'], $release['season']]);
+		if(in_array($release['season'], $var['season'])){
+			$tmpLink = $release['year'].array_search($release['season'], $var['season']);		
+			$xtmp = "<a href='/season/$tmpLink.html' style='color: #333;'>$xtmp</a>";
+		}
+		$release['year'] = $xtmp;
 	}
-	
 	$page = str_replace('{chosen-genre}', $str, $page);
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{chosen}', getGenreList(), $page);
 	$page = str_replace('{releaseid}', $release['id'], $page);
 	$page = str_replace('{voice}', $release['voice'], $page);
-	$page = str_replace('{year}', "{$release['year']}", $page);
+	$page = str_replace('{year}', $release['year'], $page);
 	$page = str_replace('{type}', $release['type'], $page);
 	$page = str_replace('{other}', $release['other'], $page);
 	
@@ -2795,20 +2798,19 @@ function checkIfVoted($rid) {
 		}
 	}
 	$img = str_replace('{svg}', $svg, $img);
-	return "<a href='' data-release-favorites='$rid' class='upcoming_season_like'>ЖДАТЬ ЭТО АНИМЕ $img</a>";
+	return "<a href='' data-release-favorites='$rid' class='upcoming_season_like'>БУДУ СМОТРЕТЬ $img</a>";
 }
 
 function showNewSeason() {
-	global $db, $user, $var;  $result = '';
-	$season = ['winter' => 'зима', 'spring' => 'весна', 'summer' => 'лето', 'autumn' => 'осень'];
-	if(empty($_GET['year']) || !ctype_digit($_GET['year']) || empty($_GET['season']) || !array_key_exists($_GET['season'], $season)){
+	global $db, $user, $var;  $result = ''; $order = ''; $video = '';
+	if(empty($_GET['year']) || !ctype_digit($_GET['year']) || empty($_GET['season']) || !array_key_exists($_GET['season'], $var['season'])){
 		return release404();
 	}
-	$findSeason = $season[$_GET['season']];
-	$findYear = $_GET['year'];
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `genre`, `season`, `description`, `rating`, `code` FROM `xrelease` WHERE `season` = :season AND `year` = :year ORDER BY `rating` DESC');
-	$query->bindParam(':season', $findSeason);
-	$query->bindParam(':year', $findYear);
+	$season = $var['season'][$_GET['season']];
+	$year = $_GET['year'];
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `genre`, `season`, `description`, `rating`, `code` FROM `xrelease` WHERE `year` = :year AND `season` = :season ORDER BY `rating` DESC');
+	$query->bindParam(':year', $year);
+	$query->bindParam(':season', $season);
 	$query->execute();
 	if($query->rowCount() == 0){
 		return release404();
@@ -2832,6 +2834,11 @@ function showNewSeason() {
 		$tmp = str_replace('{voteBtn}', checkIfVoted($row['id']), $tmp);
 		$result .= $tmp;
 	}
-	$var['title'] = "Новый сезон $findYear $findSeason";
-	return "<div class='news-block'><div id='upcoming_page_heading'><h2>Анонс аниме-$findSeason $findYear года</h2><p>Внимание! Голосовать могут только авторизованные пользователи.</p></div><div>$result</div><div class='clear'></div><div style='margin-top:10px;'></div></div>";
+	$tmpl = '<div style="border-radius: 4px; overflow: hidden; z-index: 1; width: 832px; height: 468px; margin-top: 10px; margin-left: 4px;"><iframe width="832" height="468" src="https://www.youtube.com/embed/{vid}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><hr/>';
+	$key = $year.$_GET['season'];
+	if(array_key_exists($key, $var['youtube'])){
+		$video = str_replace('{vid}', $var['youtube']["$key"], $tmpl);
+	}
+	$var['title'] = "Аниме сезон $year $season";
+	return "<div class='news-block'>$video<div>$result</div><div class='clear'></div><div style='margin-top:10px;'></div></div>";
 }

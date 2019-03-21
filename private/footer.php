@@ -1,5 +1,5 @@
 			</div>
-			<div class="<?php echo $xcss['side']; ?>">
+			<div class="side">
 				<div class="asidehead" >
 					<div style="width: 260px; padding-top: 11px; margin: 0 auto;">
 						
@@ -31,7 +31,7 @@
 		</div>
 		
 		<div class="clear"></div>
-		<div class="<?php echo $xcss['footer']; ?>">
+		<div class="footer">
 			<div class="footer_left">
 				<div class="footer_left2">
 					<a href="http://www.animespirit.ru/" target="_blank" rel="nofollow"><img src="/img/button/1.jpg" alt=""></a>

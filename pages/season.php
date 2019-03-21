@@ -8,7 +8,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/init/var.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
-
 $tmpPage = showNewSeason();
 
 $var['page'] = 'new-season';
@@ -108,7 +107,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	}
 </style>
 
-<?php  echo showNewSeason(); ?>
+<?php  echo $tmpPage; ?>
 
 
 
