@@ -728,6 +728,7 @@ function updateApiCache(){
 			'moon' => $moon,
 			'announce' => $announce,
 			'status' => $var['status'][$row['status']],
+			'statusCode' => $row['status'],
 			'type' => $row['type'],
 			'genres' => $genres,
 			'voices' => $voices,
