@@ -380,10 +380,11 @@ function registration(){
 		_message('registered', 'error');
 	}
 	$passwd = createPasswd($_POST['passwd']);
-	$query = $db->prepare('INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, unix_timestamp(now()))');
+	$query = $db->prepare('INSERT INTO `users` (`login`, `mail`, `passwd`, `register_date`) VALUES (:login, :mail, :passwd, :time)');
 	$query->bindValue(':login', $_POST['login']);
 	$query->bindParam(':mail', $_POST['mail']);
 	$query->bindParam(':passwd', $passwd['1']);
+	$query->bindParam(':time', $var['time']);
 	$query->execute();
 	if(!empty($_POST['vk'])){
 		$id = $db->lastInsertId();
@@ -409,8 +410,9 @@ function auth(){
 		$query->execute();
 	}	
 	if(!empty($_SESSION['sess'])){
-		$query = $db->prepare('SELECT `id`, `uid`, `hash` FROM `session` WHERE `hash` = :hash AND `time` > unix_timestamp(now())');
+		$query = $db->prepare('SELECT `id`, `uid`, `hash` FROM `session` WHERE `hash` = :hash AND `time` > :time');
 		$query->bindParam(':hash', $_SESSION['sess']);
+		$query->bindParam(':time', $var['time']);
 		$query->execute();
 		if($query->rowCount() != 1){
 			_exit();
@@ -637,9 +639,10 @@ function torrentExist($id){
 }
 
 function torrentAdd($hash, $rid, $json, $completed = 0){
-	global $db;
-	$query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , unix_timestamp(now()), unix_timestamp(now()), 0, :completed, :rid, :info)');
+	global $db, $var;
+	$query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , :time, :time, 0, :completed, :rid, :info)');
 	$query->bindParam(':hash', $hash);
+	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':rid', $rid);
 	$query->bindParam(':completed', $completed);
 	$query->bindParam(':info', $json);
@@ -1325,7 +1328,7 @@ function showRelease(){
 		while($row = $query->fetch()){
 			$torrent .= getTemplate('torrent');
 			$tmp = json_decode($row['info'], true);
-			$torrent = str_replace('{ctime}', date('d.m.Y H:m', $row['ctime']), $torrent);
+			$torrent = str_replace('{ctime}', date('d.m.Y H:i', $row['ctime']), $torrent);
 			$torrent = str_replace('{seeders}', $row['seeders'], $torrent);
 			$torrent = str_replace('{leechers}', $row['leechers'], $torrent);
 			$torrent = str_replace('{completed}', $row['completed'], $torrent);
@@ -1484,8 +1487,9 @@ function auth_history(){
 	$query->execute();
 	while($row = $query->fetch()){
 		$status = false;
-		$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > unix_timestamp(now())');
+		$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > :time');
 		$tmp->bindParam(':id', $row['sid']);
+		$tmp->bindParam(':time', $var['time']);
 		$tmp->execute();
 		if($tmp->rowCount() == 1){
 			$status = true;
@@ -1904,7 +1908,7 @@ function showEditTorrentTable(){
 	$query->bindParam(':rid', $var['release']['id']);
 	$query->execute();
 	while($row = $query->fetch()){
-		$date = date('d.m.Y', $row['ctime']);
+		$date = date('d.m.Y H:i', $row['ctime']);
 		$info = json_decode($row['info'], true);
 		$tmp = getTemplate('edit_torrent');
 		$tmp = str_replace('{id}', $row['fid'], $tmp);
