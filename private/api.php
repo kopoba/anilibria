@@ -217,6 +217,9 @@ function apiList(){
 					}
 					$val['playlist']["$k"]['sd'] = str_replace('{host}', $host, $val['playlist']["$k"]['sd']);
 					$val['playlist']["$k"]['hd'] = str_replace('{host}', $host, $val['playlist']["$k"]['hd']);
+					if(isset($val['playlist']["$k"]['fullhd'])){
+						$val['playlist']["$k"]['fullhd'] = str_replace('{host}', $host, $val['playlist']["$k"]['fullhd']);
+					}
 					if(!empty($val['playlist']["$k"]['file'])){
 						$epNumber = $val['playlist']["$k"]['id'];
 						$epName = $names[1];
@@ -793,16 +796,28 @@ function getApiPlaylist($id){
 					$download = mp4_link($episodeSrc['file'].'.mp4');
 				}
 				if($host){
-					$episodeSrc['new2'] = str_replace('[720p]', 'https:', $episodeSrc['new2']);
-					$episodeSrc['new2'] = str_replace('[480p]', 'https:', $episodeSrc['new2']);
-					$q = explode(',', $episodeSrc['new2']);
+					$playlistArr = explode(",", $episodeSrc['new2']);
+					$playlistMap = [];
+					foreach($playlistArr as $playlistItem) {
+						$qPattern = '/\[(\d+p)\]/m';
+						preg_match_all($qPattern, $playlistItem, $matches, PREG_SET_ORDER, 0);
+						$quality = $matches[0][1];
+						$playlistMap[$quality] = preg_replace($qPattern, 'https:', $playlistItem);
+					}
 					$episode = [
 						"id" => $key,
 						"title" => "Серия $key",
-						"sd" => $q['1'],
-						"hd" => $q['0'],
 						"file" => $episodeSrc['file']
 					];
+					if(isset($playlistMap["480p"])){
+						$episode["sd"] = $playlistMap["480p"];
+					}
+					if(isset($playlistMap["720p"])){
+						$episode["hd"] = $playlistMap["720p"];
+					}
+					if(isset($playlistMap["1080p"])){
+						$episode["fullhd"] = $playlistMap["1080p"];
+					}
 				}
                 if(!empty($episodeSrc['file'])){
 					$episode['srcSd'] = mp4_link($episodeSrc['file'].'.mp4');
