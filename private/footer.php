@@ -47,7 +47,7 @@
 			<div class="footer_right">
 				<ul>
 					<li><a href="/pages/login.php#rules">Правила</a></li>
-					<li><a href="https://tele.click/AniLibriaTP" target="_blank">Вопрос</a></li>
+					<li><a href="tg://resolve?domain=AniLibriaTP">Вопрос</a></li>
 					<li><a href="/pages/cp.php">Личный кабинет</a></li>
 					<?php 
 						$tmpURL = "<li><a href=\"/pages/login.php\">Регистрация</a></li><li><a href=\"/pages/login.php\">Вход</a></li>";
@@ -72,9 +72,9 @@
 			</div>
 		</div>
 		
-		<script src="<?php echo fileTime('/js/jquery.min.js');?>"></script>	
-		<script src="<?php echo fileTime('/js/bootstrap.min.js');?>"></script>
-		<script src="<?php echo fileTime('/js/main.js');?>"></script>
+		<script src="<?php echo urlCDN(fileTime('/js/jquery.min.js'));?>"></script>	
+		<script src="<?php echo urlCDN(fileTime('/js/bootstrap.min.js'));?>"></script>
+		<script src="<?php echo urlCDN(fileTime('/js/main.js'));?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
 		<!-- Yandex.Metrika counter -->
@@ -109,6 +109,6 @@
 			Copyright (C) 2018-2019 The AniLibria developers.
 			Please contribute if you find AniLibria useful.
 			The source code is available from https://github.com/anilibria/
-		-->		
+		-->	
 	</body>
 </html>

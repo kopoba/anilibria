@@ -1,4 +1,7 @@
 <?php
+require('/var/www/anilibria/root/private/MaxMind-GeoIP2/geoip2.phar');
+$maxmind = new GeoIp2\Database\Reader('/var/www/anilibria/root/private/MaxMind-GeoIP2/maxmind-db/GeoLite2-Country.mmdb');
+
 $var['title'] = 'AniLibria - так звучит аниме!';
 $var['description'] = '';
 $var['og'] = '';
@@ -6,6 +9,10 @@ $var['page'] = '';
 $var['release'] = [];
 $var['time'] = time();
 $var['ip'] = $_SERVER['REMOTE_ADDR'];
+
+$maxmindInfo = $maxmind->country($var['ip']);
+$var['country'] = $maxmindInfo->country->isoCode;
+
 $var['user_agent'] = '';
 if(!empty($_SERVER['HTTP_USER_AGENT'])){
 	$var['user_agent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, 'UTF-8');

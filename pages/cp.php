@@ -95,14 +95,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<p>Был в сети: <span><?php echo date('d.m.Y', $user['last_activity']); ?></span></p>
 				<p>Регистрация: <span><?php echo date('d.m.Y', $user['register_date']); ?></span></p>
 				<br/>
-				<?php if(!empty($user['downloaded'])){ ?>
-					<h3 class="profile-content-title">Статистика</h3>
-					<p>Раздал: <span><?php echo formatBytes($user['uploaded']); ?></span></p>
-					<?php if($user['downloaded'] > 1){ ?>
-						<p>Скачал: <span><?php echo formatBytes($user['downloaded']); ?></span></p>
-					<?php } ?>
-					<p>Рейтинг: <span><?php echo $user['rating']; ?></span></p>
-				<?php } ?>
+				<h3 class="profile-content-title">Статистика</h3>
+				<p>Раздал: <span><?php echo $user['uploaded']; ?></span></p>
+				<p>Скачал: <span><?php echo $user['downloaded']; ?></span></p>
+				<p><a href="/pages/seeders.php">Рейтинг сидеров</a></p>
 		</div>
 	</div>
 		

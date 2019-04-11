@@ -7,7 +7,7 @@ if(!empty($_SESSION['csrf'])){
 
 function headerAds(){
 	global $cache, $var; $result = []; $left = 0;
-	$img = '/img/29.png';
+	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
 	$data[] = ['img' => 'ragnarok', 'left' => '0px', 'url' => '/ro'];
@@ -34,19 +34,16 @@ function headerAds(){
 		//	$cache->set('adsCurrentDay', $cday, 172800);
 		//}
 
-		$key = 0;
+		$key = 2;
 		$ads = $data["$key"];
 		
-		$img = '/img/other/a/'.$ads['img'].'.jpg';
+		$img = urlCDN('/img/other/a/'.$ads['img'].'.jpg');
 		$left = $ads['left'];
 		$result['url'] = $ads['url'];
 		$result['ads'] = true;
 		
 	}
 	
-	$left = '350px;'; 
-	$img = '/img/31.jpg';
-	$result['url'] = '/season/2019spring.html';
 	$css = getTemplate('header');
 	$css = str_replace('{img}', $img, $css);
 	$css = str_replace('{left}', $left, $css);
@@ -61,20 +58,19 @@ $xcss = headerAds();
 <html prefix="og: http://ogp.me/ns#">
 	<head>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44944415-2"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-137180052-1"></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
-		  gtag('config', 'UA-44944415-2');
-		</script>
-			
+		  gtag('config', 'UA-137180052-1');
+		</script>		
 		<?php echo $var['og']; ?>
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<meta name="description" content="<?php echo strip_tags($var['description']); ?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/bootstrap.min.css');?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo fileTime('/css/main.css');?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/main.css'));?>" />
 		<style><?php echo $xcss['css']; ?></style>
 	</head>
 	<body>
@@ -86,16 +82,16 @@ $xcss = headerAds();
 		<div id="headercontent"></div>
 		<div class="link">
 		<?php
-			//if($xcss['ads']){
-				echo '<a href="'.$xcss['url'].'"></a>';
-			//}
+			if($xcss['ads']){
+				echo '<a href="'.$xcss['url'].'" data-toggle="tooltip" data-placement="right" title="Вы можете отключить рекламу в личном кабинете"></a>';
+			}
 		?>
 		</div>
 		<div class="header">
 			<?php
-				//if($xcss['ads']){
+				if($xcss['ads']){
 					echo "<div class='headercontent'></div>";
-				//}
+				}
 			?>
 		</div>
 		<div class="main">

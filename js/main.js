@@ -21,6 +21,7 @@ $(document).ready(function() {
 			}
 		}
 	}
+	$('[data-toggle="tooltip"]').tooltip();
 });
 
 $(document).on("click", "[data-submit-login]", function(e) {

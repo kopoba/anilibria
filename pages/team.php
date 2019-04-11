@@ -64,7 +64,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Dejz</span> - руководитель академии войсеров, войсер</li>
 			<li><span style="color: #800000;">Blaze</span> - руководитель технарей, технарь</li>
 			<li><span style="color: #339966;">Sharon</span> - руководитель команды войсеров</li>
-			<li><span style="color: #f7941d;">Timo</span> - руководитель команды сабберов</li>
 		</ul>
 			<div class="day">
 				<div class="teamleft">&#8545; лига</div> 
@@ -78,7 +77,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Anzen</span> - руководитель команды дизайнеров, войсер</li>
 			<li><span style="color: #339966;">Cleo-chan</span> - войсер</li>
 			<li><span style="color: #339966;">MyAska</span> - войсер</li>
-			<li><span style="color: #f7941d;">Falk</span> - переводчик, руководитель академии сабберов</li>
+			<li><span style="color: #f7941d;">Falk</span> - руководитель команды сабберов</li>
 		</ul>
 		<div class="day">
 				<div class="teamleft">&#8546; лига</div> 
@@ -86,33 +85,30 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</div>
 		<ul>
 			<li><span style="color: #339966;">Ados</span> - войсер</li>
-			<li><span style="color: #339966;">December</span> - войсер</li>
 			<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
 			<li><span style="color: #339966;">Malevich</span>&nbsp;- войсер</li>
 			<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
 			<li><span style="color: #800000;">Quin</span> - технарь</li>
 			<li><span style="color: #800000;">Ghost</span> - технарь</li>
 			<li><span style="color: #800000;">Пиратехник</span> - технарь</li>
-			<li><span style="color: #800000;">Hidan</span> - технарь</li>
-			<li><span style="color: #800000;">DarkKnight</span> - технарь </li>
 			<li><span style="color: #800000;">Pomidorchik</span> - технарь</li>
 			<li><span style="color: #800000;">WhiteCat</span> - технарь </li>
 			<li><span style="color: #800000;">Kosaka</span> - технарь </li>
-			<li><span style="color: #800000;">Malinero</span> - технарь</li>   
 			<li><span style="color: #800000;">Akkakken</span> - технарь / оформитель</li>
 			<li><span style="color: #800000;">Luchano</span> - технарь</li>
 			<li><span style="color: #f7941d;">N.O.</span> - переводчик</li>
-			<li><span style="color: #f7941d;">Keitaro</span> - переводчик / оформитель </li>
+			
 			<li><span style="color: #f7941d;">ElViS</span> - оформитель</li>
 			<li><span style="color: #f7941d;">Sсarlett</span> - оформитель</li>
 			<li><span style="color: #f7941d;">Psycho</span> -  переводчик</li>
 			<li><span style="color: #f7941d;">Aiso</span> - переводчик</li>
 			<li><span style="color: #f7941d;">Flerion</span> - переводчик / оформитель</li>
 			<li><span style="color: #f7941d;">Inari</span> - переводчик</li>
+			<li><span style="color: #000080;">New ON</span> - сидер</li>
+            <li><span style="color: #000080;">Rossik666</span> - сидер</li>
 			<li><span style="color: #f2d20c;">Hant</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">SineD</span> - PR-команда</li>
 			<li><span style="color: #f2d20c;">Maximka</span> - PR-команда</li>
-			<li><span style="color: #000080;">basegame</span> - сидер</li>
 		</ul>
 		<div class="day">
 				<div class="teamleft">&#8547; лига</div> 
@@ -127,6 +123,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Narea</span>&nbsp;- войсер</li>
 			<li><span style="color: #339966;">OkanaTsoy</span>&nbsp;- войсер</li>
 			<li><span style="color: #339966;">Hekomi</span> - войсер</li>
+			<li><span style="color: #800000;">Hidan</span> - технарь</li>
+			<li><span style="color: #800000;">DarkKnight</span> - технарь </li>
+			<li><span style="color: #800000;">Malinero</span> - технарь</li>  
 			<li><span style="color: #800000;">Psychosocial76</span> - технарь</li>
 			<li><span style="color: #800000;">EncoR</span> - технарь</li>
 			<li><span style="color: #800000;">EliteNoob </span> - технарь</li>
@@ -140,6 +139,8 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #f7941d;">Smallow</span> - переводчик</li>  
 			<li><span style="color: #f7941d;">Nutsy</span> - переводчик</li>
             <li><span style="color: #f7941d;">The Magus</span> - переводчик / оформитель</li>
+			<li><span style="color: #f7941d;">Skaifai</span> - переводчик</li>
+			<li><span style="color: #f7941d;">Renko</span> - переводчик</li>
             <li><span style="color: #f7941d;">BONN</span> -  оформитель </li>
 			<li><span style="color: #f7941d;">NaRVioN</span> - оформитель / сидер</li>
 			<li><span style="color: #f7941d;">DiaZone</span> - оформитель</li> 
@@ -148,8 +149,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #33cccc;">Kell</span> - дизайнер</li>
 			<li><span style="color: #33cccc;">Muvik</span> - дизайнер</li>
 			<li><span style="color: #33cccc;">Toppi</span> - дизайнер</li>
+			<li><span style="color: #33cccc;">Residensi</span> - дизайнер</li>
+			<li><span style="color: #000080;">Basegame</span> - сидер</li>
 			<li><span style="color: #000080;">Furry Lynx</span> - сидер</li>
-			<li><span style="color: #000080;">New ON</span> - сидер</li>
 			<li><span style="color: #000080;">FLASHIx</span> - сидер</li>
 			<li><span style="color: #000080;">Wan</span> - сидер</li>
 			<li><span style="color: #000080;">LightKay</span> - сидер</li>
@@ -163,11 +165,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Nuts</span> - войсер (служит в армии)</li>
 			<li><span style="color: #339966;">Kari</span> - войсер (в отпуске)</li>
 			<li><span style="color: #339966;">Myuk</span> - войсер (в отпуске)</li>
-			<li><span style="color: #f7941d;">LolWhat</span> - переводчик</li>
-			<li><span style="color: #f7941d;">Constantum</span> - переводчик<br>
-			</li><li><span style="color: #f7941d;">Vurdalak121</span> - переводчик</li>
-			<li><span style="color: #f7941d;">Skaifai</span> - переводчик</li>
-			<li><span style="color: #f7941d;">Valar</span> - переводчик</li>
+			<li><span style="color: #f7941d;">Timo</span> - переводчик (в отпуске)</li>
+			<li><span style="color: #f7941d;">Constantum</span> - переводчик (в отпуске)<br>
+			<li><span style="color: #f7941d;">Keitaro</span> - переводчик / оформитель (в отпуске) </li>
+			<li><span style="color: #f7941d;">Valar</span> - переводчик (в отпуске)</li>
 			<li><span style="color: #800000;">Z3nC0rZ</span> - технарь (служит в армии) </li>
 		</ul>
 		<div class="day">
@@ -180,9 +181,14 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Kiyoko Koheiri</span> - войсер стажёр</li> 
             <li><span style="color: #339966;">Andryoushka</span> - войсер стажёр</li> 
 			<li><span style="color: #339966;">D2kun</span> - войсер стажёр</li> 
-			<li><span style="color: #800000;">WaFee</span> - таймер стажёр</li>                                      
-			<li><span style="color: #f7941d;">Renko</span> - саббер стажёр</li>
+			<li><span style="color: #800000;">Black-eyed</span> - таймер стажёр</li>
+			<li><span style="color: #f7941d;">LazyFox</span> - саббер стажёр</li>	
+			<li><span style="color: #f7941d;">drowzzzy</span> - саббер стажёр</li>
+			<li><span style="color: #f7941d;">Unknowndeath</span> - саббер стажёр</li>
+			<li><span style="color: #f7941d;">YourSenpai</span> - саббер стажёр</li>			
+			<li><span style="color: #f7941d;">Iron_me</span> - саббер стажёр</li>		
 		</ul>
+	
 		<div class="day">
 			<div class="teamleft">
 				Не поддаётся классификации лиговой системы
@@ -191,6 +197,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<ul>
 			<li>RadiationX - автор приложения, администратор сайта</li>
 			<li>Lisitsa - администратор discord-сервера</li>
+			<li>Инквизитор - администратор discord-сервера</li>
 			<li>Kirja - вёрстка сайта, администратор сайта</li>
 			<li>Fenix0904 - вёрстка сайта</li>
 		</ul>
