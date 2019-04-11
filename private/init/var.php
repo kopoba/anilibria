@@ -10,8 +10,12 @@ $var['release'] = [];
 $var['time'] = time();
 $var['ip'] = $_SERVER['REMOTE_ADDR'];
 
-$maxmindInfo = $maxmind->country($var['ip']);
-$var['country'] = $maxmindInfo->country->isoCode;
+try{
+	$maxmindInfo = $maxmind->country($var['ip']);
+	$var['country'] = $maxmindInfo->country->isoCode;
+}catch(GeoIp2\Exception\AddressNotFoundException $e){
+	$var['country'] = false;
+}
 
 $var['user_agent'] = '';
 if(!empty($_SERVER['HTTP_USER_AGENT'])){
