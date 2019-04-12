@@ -351,7 +351,7 @@ function apiList(){
 		
 		$releaseQueryStr = "SELECT 'release' as type, `id` as id, `last` as timestamp FROM `xrelease`";
 		$youtubeQueryStr = "SELECT 'youtube' as type, `id` as id, `time` as timestamp FROM `youtube`";
-		$feedQueryStr = "SELECT type, id, timestamp FROM ($releaseQueryStr WHERE 1 UNION $youtubeQueryStr WHERE 1) AS feed";
+		$feedQueryStr = "SELECT type, id, timestamp FROM ($releaseQueryStr WHERE 1 AND `status` != 3 UNION $youtubeQueryStr WHERE 1) AS feed";
 		$queryStr = "$feedQueryStr ORDER BY timestamp DESC LIMIT {$startIndex}, {$perPage}";
 		
 		$query = $db->query($queryStr);
