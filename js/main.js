@@ -711,9 +711,37 @@ $(document).on("click", "[data-random-release]", function(e) {
 	});
 });
 
-
 $(document).on("click", "[data-release-tags]", function(e) {
 	$(this).blur();
 	e.preventDefault();
 	$('#tagsModal').modal('show');
+});
+
+$(document).on("click", "[data-release-error]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	$('#sendErrorReport').modal('show');
+	if(typeof recaptcha1 === "undefined"){
+		$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit");
+	}else{
+		grecaptcha.reset(recaptcha1);
+	}
+});
+
+$(document).on("click", "[data-send-release-error]", function(e) {
+	$(this).blur();
+	e.preventDefault();
+	mes = $('textarea[id=reportMes]').val();
+	$("[data-send-release-error]").hide();
+	$.post("//"+document.domain+"/public/error.php", { 'mes': mes, 'url': window.location.pathname, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
+		console.log(json);
+		data = JSON.parse(json);
+		if(data.err == 'ok'){
+			$("#changeErrorReportMes").html('Сообщить об ошибке (<font color=green>спасибо</font>)');
+		}else{
+			$("#changeErrorReportMes").html('Сообщить об ошибке (<font color=red>'+data.mes+'</font>)');
+		}
+		grecaptcha.reset(recaptcha1);
+		$("[data-send-release-error]").show();
+	});
 });

@@ -719,6 +719,9 @@ function updateApiCache(){
 		if(empty($announce)) {
 			$announce = NULL;
 		}
+        if($row['status'] == "2") {
+            $announce = NULL;
+        }
 		
 		$info[$row['id']] = [
 			'id' => intval($row['id']),

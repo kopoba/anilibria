@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 $_SERVER['DOCUMENT_ROOT'] = '/var/www/anilibria/root';
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+$_SERVER['REMOTE_ADDR'] = '37.1.217.18';
 require('/var/www/anilibria/root/private/config.php');
 require('/var/www/anilibria/root/private/init/mysql.php');
 require('/var/www/anilibria/root/private/init/memcache.php');

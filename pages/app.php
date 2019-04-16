@@ -58,38 +58,34 @@ a#join-team-link, a#join-team-link:visited {
 
 
 <div class="news-block">
-	<div class="news-body">	
-		<div class="andriodLogo"></div>
-		<div class="day">Приложение (версия <?php echo $versionName; ?>)</div>
-		<div style="float:right; width: 640px;">
-			<p style=" text-align: right; ">
-				На данный момент (версия 2.0) функционал приложения: просмотр онлайн с возможностью выбрать SD и HD качество (для большинства экранов телефонов будет достаточно качества SD), скачивание торрент.файлов, поиск по жанрам, избранное, просмотр новостей и блогов, просмотр комментариев<br>
-				-2.0.1: Исправлен баг с проблемами авторизации через ВК
-		</p>
-		</div>
-	
-		<div class="clear"></div>
-			 
-		<p style="text-align: right;">
-			<a id="join-team-link" href="<?php echo $appLink; ?>">Скачать .apk файл</a>
-		</p>
-		<div class="day">Инструкция по установке</div>
+	<div class="news-body">
+
+<div class="day">Приложение на Windows</div>
 		<p style="text-align: left;">
-			 - Скачайте .apk файл, найдите его в папке "downloads" и запустите.<br>
-			 - Вы увидите окно с надписью "Установка заблокирована", не пугайтесь, нажмите кнопку "настройки".<br>
-			 - Найдите пункт "Неизвестные источники" и выставьте параметр "разрешить".<br>
-			 - Выберите галочку "Разрешить только эту установку" и нажмите "ок".<br>
-			 - Нажмите установить, когда появится надпись "приложение установлено", нажмите "открыть".
+			 - Наиболее простой и предпочтительный способ установки <a target="_blank" href="//www.microsoft.com/store/apps/9n1zg939ctg5?cid=storebadge&ocid=badge">через Windows Store</a>.<br/>
+             - Но также существуют и <a href="https://anilibria.github.io/anilibria-win/">альтернативные способы</a>.<br/>
+             - Исходный код доступен на <a href="https://github.com/anilibria/anilibria-win" target="_blank">github</a>.
 		</p>
-		<div class="day">Скриншоты</div>
+	
+	<img src="/img/004app.jpg" width="840" height="515" style="border-radius: 4px;">
+		<div class="day">Приложение на Android</div>
+		<p style="text-align: left;">
+			 - <a href="<?php echo $appLink; ?>">Скачайте .apk файл</a>, найдите его в папке <u>downloads</u> и запустите.<br>
+			 - Вы увидите окно с надписью <u>Установка заблокирована</u>, не пугайтесь, нажмите кнопку <u>настройки</u>.<br>
+			 - Найдите пункт <u>Неизвестные источники</u> и выставьте параметр <u>разрешить</u>.<br>
+			 - Выберите галочку <u>Разрешить только эту установку</u> и нажмите <u>ок</u>.<br>
+			 - Нажмите установить, когда появится надпись <u>приложение установлено</u>, нажмите <u>открыть</u>.<br/>
+			 - Исходный код доступен на <a href="https://github.com/anilibria/anilibria-app" target="_blank">github</a>.
+		</p>
 		<p style="text-align: center;">
-			<img src="/img/001app.jpg" width="230" height="410">&nbsp; 
-			<img src="/img/002app.jpg" width="230" height="410">&nbsp; 
-			<img src="/img/003app.jpg" width="230" height="410">
+			<img src="/img/001app.jpg" width="230" height="410" style="float:left;padding:1px;border:1px solid #d3d3d3;background-color:##fff;border-radius: 4px;">
+			<img src="/img/002app.jpg" width="230" height="410" style="padding:1px;border:1px solid #d3d3d3;background-color:##fff;border-radius: 4px;">
+			<img src="/img/003app.jpg" width="230" height="410" style="float:right;padding:1px;border:1px solid #d3d3d3;background-color:##fff;border-radius: 4px;">
 		</p>
-		<hr/>
-		<center>Внимание! Приложение работает на Android от версии 4.4. На более старых версиях приложение работать не будет!</center>
 	</div>
+	
+	
+	
 	<div class="clear"></div>
 	<div style="margin-top:10px;"></div>
 </div>

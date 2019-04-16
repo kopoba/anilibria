@@ -15,6 +15,7 @@ function headerAds(){
 	//$data[] = ['img' => 'storm', 'left' => '0px', 'url' => '/storm'];
 	//$data[] = ['img' => 'cro', 'left' => '0px', 'url' => '/cro'];
 	$data[] = ['img' => 'rise', 'left' => '0px', 'url' => '/rise'];
+	$data[] = ['img' => 'ironsight1', 'left' => '0px', 'url' => '/ironsight'];
 
 	if(checkADS()){
 		//$cday = date('j', $var['time']);
@@ -34,7 +35,7 @@ function headerAds(){
 		//	$cache->set('adsCurrentDay', $cday, 172800);
 		//}
 
-		$key = 2;
+		$key = 3;
 		$ads = $data["$key"];
 		
 		$img = urlCDN('/img/other/a/'.$ads['img'].'.jpg');

@@ -1346,6 +1346,9 @@ function showRelease(){
 			$button .= '<a href="/pages/new.php"><button class="">Создать</button></a>';	
 		}
 	}
+	if(!$user || $user['access'] == 1){
+		$button .= '<button data-release-error>Сообщить об ошибке</button>';
+	}
 	$page = str_replace('{button}', $button, $page);	
 	$page = str_replace('{id}', $release['id'], $page);	
 	$page = str_replace('{moon}', $moon, $page);
@@ -1586,7 +1589,7 @@ function footerJS(){
 			}
 			$tmp = getReleaseVideo($var['release']['id']);
 			if(!empty($tmp) && !$var['release']['block']){
-				$tmpPlayer = str_replace('{playerjs}', fileTime('/js/player.js'), getTemplate('playerjs'));	
+				$tmpPlayer = str_replace('{playerjs}', urlCDN(fileTime('/js/player.js')), getTemplate('playerjs'));	
 				$tmpPlayer = str_replace('{deny}', adsUrl(), $tmpPlayer);
 				$result .= str_replace('{playlist}', $tmp, $tmpPlayer);
 			}
@@ -1887,7 +1890,7 @@ function youtubeShow(){
 	$i = 0;
 	foreach($data as $v){
 		$youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$v['vid']}", $tmpl);
-		$youtube = str_replace('{img}', urlCDN('/upload/youtube/'.hash('crc32', $v['vid']).'.jpg'), $youtube);
+		$youtube = str_replace('{img}', urlCDN(fileTime('/upload/youtube/'.hash('crc32', $v['vid']).'.jpg')), $youtube);
 		$youtube = str_replace('{alt}', $v['title'], $youtube);
 		$arr["$i"][] = $youtube;
 		if(count($arr[$i]) == 2){
@@ -2728,27 +2731,6 @@ function showAscReleases(){
 	return $result;
 }
 
-function importFavorite(){
-	global $db, $user;
-	if($user && !empty($user['vk'])){
-		$query = $db->prepare('SELECT * FROM `f_tmp` WHERE `vid` = :vid');
-		$query->bindParam(':vid', $user['vk']);
-		$query->execute();
-		while($row=$query->fetch()){
-			if(!isFavorite($user['id'], $row['rid'])){
-				$insert = $db->prepare('INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)');
-				$insert->bindParam(':uid', $user['id']);
-				$insert->bindParam(':rid', $row['rid']);
-				$insert->execute();
-			}
-			$delete = $db->prepare('DELETE FROM `f_tmp` WHERE `vid` = :vid AND `rid` = :rid');
-			$delete->bindParam(':vid', $user['vk']);
-			$delete->bindParam(':rid', $row['rid']);
-			$delete->execute();
-		}
-	}
-}
-
 function changeADS(){
 	global $db, $user, $var, $conf;
 	if(!$user){
@@ -2887,4 +2869,17 @@ function urlCDN($url){
 		return 'https://static.anilibria.tv'.$url;
 	}
 	return $url;
+}
+
+function sendReleaseReport(){
+	global $var;
+	if(empty($_POST['mes']) || empty($_POST['url']) || mb_strlen($_POST['mes']) > 250){
+		_message('empty', 'error');
+	}
+	testRecaptcha();
+	$title = genRandStr(8, 1);
+	$url = 'https://www.anilibria.tv'.htmlspecialchars($_POST['url'], ENT_QUOTES, 'UTF-8');
+	$report = htmlspecialchars($_POST['mes'], ENT_QUOTES, 'UTF-8');
+	_mail('anilibria@protonmail.com', "Сообщение об ошибке [$title]", "Запрос отправили с IP {$var['ip']}<br/><br/>$url<br/><br/>{$var['user_agent']}<br/><br/>$report");
+	_message('success');
 }

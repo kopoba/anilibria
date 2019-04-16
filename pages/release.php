@@ -118,4 +118,25 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>
 </div>
 
+<div class="modal fade" id="sendErrorReport" tabindex="-1" role="dialog" aria-hidden="true" >
+	<div class="modal-dialog" style="width: 480px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="changeErrorReportMes">Сообщить об ошибке</h4>
+			</div>
+			<div class="modal-body">
+				<textarea id="reportMes" class="form-control" style="resize: vertical;" rows="5" maxlength="250" ></textarea>
+				<div style="margin-top: 5px;">
+					<div id="RecaptchaField" style="float: left;"></div>
+					<div style="float: right;">
+						<button type="button" data-send-release-error class="btn btn-default" style="padding: 27px 35px; border-radius: 7px;">Отправить</button>
+					</div>
+				</div>
+			</div>
+			<div class="clear"></div>
+			<div style="margin-bottom: 15px;"></div>
+		</div>
+	</div>
+</div>
+
 <?php require($_SERVER['DOCUMENT_ROOT'].'/private/footer.php');?>
