@@ -2883,3 +2883,17 @@ function sendReleaseReport(){
 	_mail('anilibria@protonmail.com', "Сообщение об ошибке [$title]", "Запрос отправили с IP {$var['ip']}<br/><br/>$url<br/><br/>{$var['user_agent']}<br/><br/>$report");
 	_message('success');
 }
+
+function iframePlayer(){	
+	if(empty($_GET['id']) || !ctype_digit($_GET['id'])){
+		_message('empty', 'error');
+	}
+	$playList = getReleaseVideo($_GET['id']);
+	if($playList){
+		$result = str_replace('{playerjs}', urlCDN(fileTime('/js/player.js')), getTemplate('playerjs'));	
+		$result = str_replace('{deny}', adsUrl(), $result);
+		$result = str_replace('{playlist}', $playList, $result);
+		return $result;
+	}
+	return '';
+}
