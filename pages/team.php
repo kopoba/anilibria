@@ -87,6 +87,8 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Ados</span> - войсер</li>
 			<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
 			<li><span style="color: #339966;">Malevich</span>&nbsp;- войсер</li>
+			<li><span style="color: #339966;">HectoR</span> - войсер</li>
+			<li><span style="color: #339966;">Hekomi</span> - войсер</li>
 			<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
 			<li><span style="color: #800000;">Quin</span> - технарь</li>
 			<li><span style="color: #800000;">Ghost</span> - технарь</li>
@@ -97,7 +99,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #800000;">Akkakken</span> - технарь / оформитель</li>
 			<li><span style="color: #800000;">Luchano</span> - технарь</li>
 			<li><span style="color: #f7941d;">N.O.</span> - переводчик</li>
-			
 			<li><span style="color: #f7941d;">ElViS</span> - оформитель</li>
 			<li><span style="color: #f7941d;">Sсarlett</span> - оформитель</li>
 			<li><span style="color: #f7941d;">Psycho</span> -  переводчик</li>
@@ -115,14 +116,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<div class="teamright">ОСНОВА</div>
 		</div>
 		<ul>
-			<li><span style="color: #339966;">HectoR</span> - войсер</li>
 			<li><span style="color: #339966;">Gomer</span> - войсер</li>
 			<li><span style="color: #339966;">Arato</span> - войсер</li>
 			<li><span style="color: #339966;">Rexus</span> - войсер</li>
 			<li><span style="color: #339966;">Derenn</span>&nbsp;- войсер </li>
 			<li><span style="color: #339966;">Narea</span>&nbsp;- войсер</li>
 			<li><span style="color: #339966;">OkanaTsoy</span>&nbsp;- войсер</li>
-			<li><span style="color: #339966;">Hekomi</span> - войсер</li>
 			<li><span style="color: #800000;">Hidan</span> - технарь</li>
 			<li><span style="color: #800000;">DarkKnight</span> - технарь </li>
 			<li><span style="color: #800000;">Malinero</span> - технарь</li>  

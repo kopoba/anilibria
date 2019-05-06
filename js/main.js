@@ -737,11 +737,21 @@ $(document).on("click", "[data-send-release-error]", function(e) {
 		console.log(json);
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
-			$("#changeErrorReportMes").html('Сообщить об ошибке (<font color=green>спасибо</font>)');
+			$('#sendErrorReport').modal('hide');
+			$('#sendReportSuccess').modal('show');
+			setTimeout(function(){
+				$('#sendReportSuccess').modal('hide');
+			},1250);
 		}else{
 			$("#changeErrorReportMes").html('Сообщить об ошибке (<font color=red>'+data.mes+'</font>)');
+			grecaptcha.reset(recaptcha1);
+			setTimeout(function(){
+				$("[data-send-release-error]").show();
+			},500);
 		}
-		grecaptcha.reset(recaptcha1);
-		$("[data-send-release-error]").show();
 	});
 });
+
+function anilibriaIframe(){
+	$('#iframeModal').modal('show');
+}

@@ -125,7 +125,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<h4 class="modal-title" id="changeErrorReportMes">Сообщить об ошибке</h4>
 			</div>
 			<div class="modal-body">
-				<textarea id="reportMes" class="form-control" style="resize: vertical;" rows="5" maxlength="250" ></textarea>
+				<textarea id="reportMes" class="form-control" style="resize: vertical;" rows="5" maxlength="250" placeholder="Если проблема связана с видеорекламой - пожалуйста сообщайте название/ ссылку."></textarea>
 				<div style="margin-top: 5px;">
 					<div id="RecaptchaField" style="float: left;"></div>
 					<div style="float: right;">
@@ -135,6 +135,35 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			</div>
 			<div class="clear"></div>
 			<div style="margin-bottom: 15px;"></div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="sendReportSuccess" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" style="width: 480px;">
+		<div class="modal-content">
+			<div class="modal-body">
+				<center><font size="6">Спасибо!</font></center>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="iframeModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Код плеера</h4>
+			</div>
+		<div class="modal-body">
+			<pre>https://www.anilibria.tv/public/iframe.php?id=<?php echo $var['release']['id']; ?></pre>
+			<pre>&lt;iframe src="https://www.anilibria.tv/public/iframe.php?id=<?php echo $var['release']['id']; ?>" type="text/html" width=840 height=515 frameborder="0" allowfullscreen>&lt;/iframe&gt;</pre>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+			</div>
 		</div>
 	</div>
 </div>

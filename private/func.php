@@ -2558,8 +2558,9 @@ function sendHH(){
 		$result .= "<b>{$info["$key"]}:</b><br/>";
 		$result .= htmlspecialchars($val, ENT_QUOTES, 'UTF-8')."<br/><br/>";		
 	}
-	_mail('anilibriahh@protonmail.com', "[{$position[$arr['rPosition']]}] новая заявка", $result);
-	_mail('lupin@anilibria.tv', "[{$position[$arr['rPosition']]}] новая заявка", $result);
+	$title = genRandStr(8, 1);
+	_mail('anilibriahh@protonmail.com', "{$position[$arr['rPosition']]} новая заявка [$title]", $result);
+	_mail('lupin@anilibria.tv', "{$position[$arr['rPosition']]} новая заявка [$title]", $result);
 	$cache->set($ip, 1, 86400);
 	_message('success');
 }
@@ -2881,6 +2882,7 @@ function sendReleaseReport(){
 	$url = 'https://www.anilibria.tv'.htmlspecialchars($_POST['url'], ENT_QUOTES, 'UTF-8');
 	$report = htmlspecialchars($_POST['mes'], ENT_QUOTES, 'UTF-8');
 	_mail('anilibria@protonmail.com', "Сообщение об ошибке [$title]", "Запрос отправили с IP {$var['ip']}<br/><br/>$url<br/><br/>{$var['user_agent']}<br/><br/>$report");
+	_mail('lupin@anilibria.tv', "Сообщение об ошибке [$title]", "Запрос отправили с IP {$var['ip']}<br/><br/>$url<br/><br/>{$var['user_agent']}<br/><br/>$report");
 	_message('success');
 }
 
@@ -2893,7 +2895,7 @@ function iframePlayer(){
 		$result = str_replace('{playerjs}', urlCDN(fileTime('/js/player.js')), getTemplate('playerjs'));	
 		$result = str_replace('{deny}', adsUrl(), $result);
 		$result = str_replace('{playlist}', $playList, $result);
-		return $result;
+		return ['id' => $_GET['id'], 'result' => $result];
 	}
 	return '';
 }

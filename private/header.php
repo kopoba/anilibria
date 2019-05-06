@@ -10,7 +10,8 @@ function headerAds(){
 	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
-	$data[] = ['img' => 'ragnarok', 'left' => '0px', 'url' => '/ro'];
+	$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro'];
+	$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro1'];
 	$data[] = ['img' => 'bs', 'left' => '-195px', 'url' => '/bs'];
 	//$data[] = ['img' => 'storm', 'left' => '0px', 'url' => '/storm'];
 	//$data[] = ['img' => 'cro', 'left' => '0px', 'url' => '/cro'];
@@ -35,7 +36,7 @@ function headerAds(){
 		//	$cache->set('adsCurrentDay', $cday, 172800);
 		//}
 
-		$key = 3;
+		$key = 1;
 		$ads = $data["$key"];
 		
 		$img = urlCDN('/img/other/a/'.$ads['img'].'.jpg');
