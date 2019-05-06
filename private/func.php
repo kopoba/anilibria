@@ -1733,7 +1733,7 @@ function getReleaseVideo($id){
 					continue;
 				}
 				$download = '';
-				if(!empty($val['file'])){
+				if(!empty($val['file']) && !empty($var['release']['name'])){
 					$epNumber = $key;
 					$epName = trim($var['release']['name']);
 					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber-sd.mp4";
@@ -2491,13 +2491,9 @@ function countRatingRelease($rid) {
 	return $count;
 }
 
-
 function sendHH(){
-	global $cache, $var;
-	$ip = md5($var['ip']);
-	if($cache->get($ip) !== false){
-		_message('access', 'error');
-	}
+	global $var;
+	testRecaptcha();
 	$result = '';
 	$info = [
 		'rPosition' => 'Заявка', 
@@ -2561,7 +2557,6 @@ function sendHH(){
 	$title = genRandStr(8, 1);
 	_mail('anilibriahh@protonmail.com', "{$position[$arr['rPosition']]} новая заявка [$title]", $result);
 	_mail('lupin@anilibria.tv', "{$position[$arr['rPosition']]} новая заявка [$title]", $result);
-	$cache->set($ip, 1, 86400);
 	_message('success');
 }
 

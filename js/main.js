@@ -625,12 +625,15 @@ $('#rPosition').on('change', function() {
 $('#rAccept').on('change', function() {
 	$("#rAccept").attr("disabled", true);
 	$('#sendRequest').show();
+	$("div#RecaptchaField").show();
+	$.getScript("https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit");
 });
 
 $(document).on('click', '[data-send-request]', function(e){
 	if($('select[id=rPosition]').val() === null){
 		return;
 	}
+	$('#sendRequest').hide();
 	var fields = {
 		"rPosition": $('select[id=rPosition]').val(),
 		"rName": $('input[id=rName]').val(),
@@ -650,13 +653,17 @@ $(document).on('click', '[data-send-request]', function(e){
 		"subExp": $('input[id=subExp]').val(),
 		"subPosition": $('input[id=subPosition]').val(),	
 	}
-	$.post("//"+document.domain+"/public/hh.php", {'info': JSON.stringify(fields)}, function(json){
+	$.post("//"+document.domain+"/public/hh.php", {'info': JSON.stringify(fields), 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2}, function(json){
 		if(json){
 			data = JSON.parse(json);
 			if(data.err == 'ok'){
+				$("div#RecaptchaField").hide();
 				$('#requestModal').modal('show');
 			}else{
 				$("#sendHHMes").html('Пожалуйста, заполните (<font color=red>'+data.mes+'</font>)');
+				$('#sendRequest').show();
+				$("div#RecaptchaField").show();
+				grecaptcha.reset(recaptcha1);
 			}
 		}
 	});
