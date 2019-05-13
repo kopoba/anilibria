@@ -437,10 +437,9 @@ function apiList(){
 	
 	function apiGetYears(){
 		global $sphinx, $cache;
-		$result = $cache->get('apiYears');
-		if($result === false){
+		$result = json_decode($cache->get('apiYears'), true);;
+		if($result === null || $result === false){
 			$result = [];
-			$tmpl = '<option value="{year}">{year}</option>';
 			$arr = array_reverse(range(1990, date('Y', time())));		
 			foreach($arr as $search){
 				$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
@@ -450,7 +449,7 @@ function apiList(){
 					$result[] = strval($search);
 				}
 			}
-			$cache->set('apiYears', $result, 300);
+			$cache->set('apiYears', json_encode($result), 300);
 		}
 		return $result;
 	}
