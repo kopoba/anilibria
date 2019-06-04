@@ -20,6 +20,28 @@ function apiList(){
     //only for testing
     //updateApiCache();
     
+	if(!isset($_POST['query'])){
+        throw new ApiException('No query', 400);
+	}
+    
+    // Для этих методов основная апишка не обязательна
+    switch($_POST['query']) {
+		case 'app_update':
+			$version = $var['app_version'];
+			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
+			return json_decode($src, true);
+        break;
+            
+        case 'config':
+			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/config.txt");
+			return json_decode($src, true);
+        break;
+			
+		case 'empty':
+			return [];
+        break;
+	}
+    
 	global $cache, $var; $result = [];
 	$count = $cache->get('apiInfo');
 	$info = [];
@@ -35,10 +57,6 @@ function apiList(){
     
 	if($info === null || $torrent === null || $info === false || $torrent === false){
         throw new ApiException('API is not ready', 400);
-	}
-    
-	if(!isset($_POST['query'])){
-        throw new ApiException('No query', 400);
 	}
     
 	function apiGetTorrentsMap($torrents, $idsString){
@@ -625,16 +643,6 @@ function apiList(){
 				'baseUrl' => 'https://www.anilibria.tv/',
 				'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
 			];
-        break;
-			
-		case 'app_update':
-			$version = $var['app_version'];
-			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
-			return json_decode($src, true);
-        break;
-			
-		case 'empty':
-			return [];
         break;
 			
 		case 'social_auth':
