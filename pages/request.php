@@ -47,7 +47,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<li>Базовые умения работы с субтитрами (ретайминг) / владение программой Aegisub</li>
 				<li>Умение работать с комплексом программ MKVToolNix</li>
 				<li><font color="red">Обязательно нужно выполнить задание ниже.</font></li>
-				<a href="https://yadi.sk/d/DxwF92LskjizW">Ссылка на задание</a>
+				<a href="https://yadi.sk/d/AZCZGi7txwvxHw">Ссылка на задание</a>
 			</ul>
 		</div>
 		<div class="req reqe">
