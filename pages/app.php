@@ -60,7 +60,7 @@ a#join-team-link, a#join-team-link:visited {
 <div class="news-block">
 	<div class="news-body">
 
-<div class="day">Приложение на Windows</div>
+<div class="day">Приложение на Windows и Xbox One</div>
 		<p style="text-align: left;">
 			 - Наиболее простой и предпочтительный способ установки <a target="_blank" href="//www.microsoft.com/store/apps/9n1zg939ctg5?cid=storebadge&ocid=badge">через Windows Store</a>.<br/>
              - Но также существуют и <a href="https://anilibria.github.io/anilibria-win/">альтернативные способы</a>.<br/>
