@@ -38,11 +38,24 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <?php echo $tmpPage; ?>
 
-<div style="margin-top: 10px;">
+<div style="margin-top: 10px; margin-bottom: 10px;">
 	<a href="https://vk.com/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a1.jpg" width="283" style="border-radius: 4px;"></a>
 	<a href="tg://resolve?domain=anilibria_tv" rel="nofollow"><img src="/img/other/a2.jpg" width="283" style="margin-left: 12px; border-radius: 4px;"></a>
 	<a href="https://discordapp.com/invite/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a3.jpg" width="283" style="float: right; border-radius: 4px;"></a>
 </div>
+
+<div id='bea3719d07'></div>
+
+<script type='text/javascript' data-cfasync='false'>
+    (function(){
+        var bea3719d07_proto = (document.location.protocol == 'https:' ? 'https:' : 'http:');
+        var bea3719d07_as = document.createElement('script');
+        bea3719d07_as.type = 'text/javascript';
+        bea3719d07_as.charset = 'utf-8';
+        bea3719d07_as.src = bea3719d07_proto + '//threedrive.su/code/bshow.php?id=12051&dimension=500x250&new_dimension=600x250&r='+Math.random();
+        document.body.appendChild(bea3719d07_as);
+    })();
+</script>
 
 <div id="vk_comments" style="margin-top: 10px;"></div>
 
