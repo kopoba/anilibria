@@ -44,6 +44,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<a href="https://discordapp.com/invite/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a3.jpg" width="283" style="float: right; border-radius: 4px;"></a>
 </div>
 
+<?php if (checkADS()):?>
 <div id='bea3719d07'></div>
 
 <script type='text/javascript' data-cfasync='false'>
@@ -56,6 +57,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
         document.body.appendChild(bea3719d07_as);
     })();
 </script>
+<?php endif;?>
 
 <div id="vk_comments" style="margin-top: 10px;"></div>
 
