@@ -655,7 +655,7 @@ function apiList(){
 
 function updateApiCache(){
 	global $db, $cache, $user, $var;
-	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `announce`, `day`, `year`, `genre`, `voice`, `type`, `status`, `code`, `block` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
+	$query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `announce`, `day`, `year`, `season`, `genre`, `voice`, `type`, `status`, `code`, `block` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
 	while($row=$query->fetch()){
         
         $names = [];
@@ -746,6 +746,7 @@ function updateApiCache(){
 			'genres' => $genres,
 			'voices' => $voices,
 			'year' => $row['year'],
+			'season' => $row['season'],
 			'day' => $row['day'],
 			'description' => $row['description'],
             //Для блокировки релизов
