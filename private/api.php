@@ -757,7 +757,7 @@ function updateApiCache(){
             'playlist' => $playlist
 		];
         
-		$tmp = $db->prepare('SELECT `fid`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
+		$tmp = $db->prepare('SELECT `fid`, `ctime`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
 		$tmp->bindParam(':rid', $row['id']);
 		$tmp->execute();
 		while($xrow=$tmp->fetch()){
@@ -777,7 +777,8 @@ function updateApiCache(){
 				'quality' => $data['0'],
 				'series' => $data['1'],
 				'size' => intval($data['2']),
-                'url' => $link
+                'url' => $link,
+                'ctime' => intval($xrow['ctime'])
 			];
 		}
 	}
