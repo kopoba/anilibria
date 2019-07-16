@@ -80,19 +80,28 @@ function apiList(){
 	}
     
     function apiGetReleaseById($info, $torrent, $rid) {
+        $result = NULL;
         if(array_key_exists($rid, $info)){
             $releases = array($info[$rid]);
-            return proceedReleases($releases, $torrent)[0];
+            $result = proceedReleases($releases, $torrent)[0];
+        }
+        if($result){
+            return $result;
         }
 		throw new ApiException("Release by id=$rid not found", 404);
 	}
     
     function apiGetReleaseByCode($info, $torrent, $rcode) {
+        $result = NULL;
         foreach($info as $key => $val){
             if($val['code'] == $rcode){
                 $releases = array($val);
-				return proceedReleases($releases, $torrent)[0];
+				$result = proceedReleases($releases, $torrent)[0];
+                break;
 			}
+        }
+        if($result){
+            return $result;
         }
 		throw new ApiException("Release by code=$rcode not found", 404);
 	}
@@ -206,7 +215,9 @@ function apiList(){
     
     function proceedReleases($releases, $torrent){
 		$result = []; 
-		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'announce', 'blockedInfo', 'playlist', 'torrents', 'favorite'];
+		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'announce', /*'blockedInfo',*/ 'playlist', 'torrents', 'favorite'];
+        
+        $appStoreHeader = getallheaders()['Store-Published'];
         foreach($releases as $key => $val){
             $unsettedFileds = [];
 			$names = $val['names'];
@@ -258,6 +269,12 @@ function apiList(){
 			}    
             unset($val['rating']);
             unset($val['playlist']['online']);
+            if(!empty($appStoreHeader)){
+                if(!empty($val['blockedInfo']) && $val['blockedInfo']['blocked']){
+                    continue;       
+                }
+            }
+            
 			$result[] = $val;
 		}
 		return $result;
