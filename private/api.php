@@ -16,6 +16,11 @@ function wrapApiResponse($func){
     die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 }
 
+function exitAuth(){
+    header('HTTP/1.1 401 Unauthorized');
+    exit;
+}
+
 function apiList(){
     //only for testing
     //updateApiCache();
@@ -301,6 +306,7 @@ function apiList(){
                 $favIds[] = $row['rid'];
             }
         } else {
+            exitAuth();
             throw new ApiException("No user", 401);
         }
         $favReleases = [];
@@ -319,6 +325,7 @@ function apiList(){
     function apiGetUser(){
         global $db, $user;
         if(!$user) {
+            exitAuth();
             throw new ApiException("No user", 401);
         }
 		if(!empty($user['avatar'])){
@@ -337,6 +344,7 @@ function apiList(){
     function releaseFavoriteAction($info, $torrent){
         global $db, $user;
         if(!$user){
+            exitAuth();
             throw new ApiException("No user", 401);
         }
         if(empty($_POST['id'])){
