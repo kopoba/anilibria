@@ -24,6 +24,7 @@ function exitAuth(){
 function apiList(){
     //only for testing
     //updateApiCache();
+	global $cache, $var; $result = [];
     
 	if(!isset($_POST['query'])){
         throw new ApiException('No query', 400);
@@ -47,7 +48,6 @@ function apiList(){
         break;
 	}
     
-	global $cache, $var; $result = [];
 	$count = $cache->get('apiInfo');
 	$info = [];
 	$torrent = json_decode($cache->get('apiTorrent'), true);
