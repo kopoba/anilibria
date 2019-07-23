@@ -72,6 +72,7 @@ a#join-team-link, a#join-team-link:visited {
 		<p style="text-align: left;">
              - Lite версия доступна в <a href="https://play.google.com/store/apps/details?id=tv.anilibria.store">Play Market</a>.<br>
 			 - <a href="<?php echo $appLink; ?>">Скачайте .apk файл</a>, найдите его в папке <u>downloads</u> и запустите.<br>
+			 - Минимальная версия Android 4.4 KitKat<br> 
 			 - Вы увидите окно с надписью <u>Установка заблокирована</u>, не пугайтесь, нажмите кнопку <u>настройки</u>.<br>
 			 - Найдите пункт <u>Неизвестные источники</u> и выставьте параметр <u>разрешить</u>.<br>
 			 - Выберите галочку <u>Разрешить только эту установку</u> и нажмите <u>ок</u>.<br>
