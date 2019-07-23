@@ -1,0 +1,21 @@
+{
+  "update": {
+    "version_code": "50",
+    "version_name": "2.4.0",
+    "version_build": "0",
+    "build_date": "23 июля 2019 г.",
+    "links": [
+      {
+        "name": "AniLibria",
+        "url": "https://www.anilibria.tv/upload/app/AniLibria_v2.4.0.apk",
+        "type": "file"
+      }
+    ],
+    "important": [],
+    "added": [
+      "Механизм обхода блокировки сайта"
+    ],
+    "fixed": [],
+    "changed": []
+  }
+}
