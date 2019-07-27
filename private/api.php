@@ -8,12 +8,14 @@ function safeApiList() {
 
 function unsafeApiList() {
     $response = apiList();
-    die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    header('Content-Type: application/json');
+    die(json_encode($response, JSON_UNESCAPED_UNICODE/* | JSON_PRETTY_PRINT*/));
 }
 
 function wrapApiResponse($func){
 	$response = (new ApiResponse()) -> proceed($func);
-    die(json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    header('Content-Type: application/json');
+    die(json_encode($response, JSON_UNESCAPED_UNICODE/* | JSON_PRETTY_PRINT*/));
 }
 
 function exitAuth(){
@@ -395,9 +397,12 @@ function apiList(){
 		$releaseQueryStr = "SELECT 'release' as type, `id` as id, `last` as timestamp FROM `xrelease`";
 		$youtubeQueryStr = "SELECT 'youtube' as type, `id` as id, `time` as timestamp FROM `youtube`";
 		$feedQueryStr = "SELECT type, id, timestamp FROM ($releaseQueryStr WHERE 1 AND `status` != 3 UNION $youtubeQueryStr WHERE 1) AS feed";
-		$queryStr = "$feedQueryStr ORDER BY timestamp DESC LIMIT {$startIndex}, {$perPage}";
+		$queryStr = "$feedQueryStr ORDER BY timestamp DESC LIMIT :start_index, :per_page";
 		
-		$query = $db->query($queryStr);
+		$query = $db->prepare($queryStr);
+        $query->bindParam(":start_index", intval($startIndex), \PDO::PARAM_INT);
+        $query->bindParam(":per_page", intval($perPage), \PDO::PARAM_INT);
+        $query->execute();
         while($row = $query->fetch()){
             $result[] = [
                 'id' => intval($row['id']),
@@ -437,7 +442,7 @@ function apiList(){
 	function createYoutubeFromRow($row){
 		return [
 			'id' => intval($row['id']),
-			'title' => $row['title'],
+			'title' => html_entity_decode(html_entity_decode(trim($row['title']))),
 			'image' => '/upload/youtube/'.hash('crc32', $row['vid']).'.jpg',
 			'vid' => $row['vid'],
 			'views' => intval($row['view']),
@@ -456,7 +461,10 @@ function apiList(){
         $perPage = $pagination['perPage'];
         
         $result = [];
-        $query = $db->query("SELECT * FROM `youtube` ORDER BY `time` DESC LIMIT {$startIndex}, {$perPage}");
+        $query = $db->prepare("SELECT * FROM `youtube` ORDER BY `time` DESC LIMIT :start_index, :per_page");
+        $query->bindParam(":start_index", intval($startIndex), \PDO::PARAM_INT);
+        $query->bindParam(":per_page", intval($perPage), \PDO::PARAM_INT);
+        $query->execute();
         while($row=$query->fetch()){
             $result[] = createYoutubeFromRow($row);
         }
@@ -684,8 +692,8 @@ function updateApiCache(){
 	while($row=$query->fetch()){
         
         $names = [];
-        $firstName = trim($row['name']);
-        $secondName = trim($row['ename']);
+        $firstName = html_entity_decode(trim($row['name']));
+        $secondName = html_entity_decode(trim($row['ename']));
         if(!empty($firstName)){
             $names[] = $firstName;
         }
@@ -703,13 +711,13 @@ function updateApiCache(){
         $genres = [];
         $genresTmp = array_unique(explode(',', $row['genre']));
         foreach($genresTmp as $genre){
-            $genres[] = trim($genre);
+            $genres[] = html_entity_decode(trim($genre));
         }
         
         $voices = [];
         $voicesTmp = array_unique(explode(',', $row['voice']));
         foreach($voicesTmp as $voice){
-            $voices[] = trim($voice);
+            $voices[] = html_entity_decode(trim($voice));
         }
         
         $playlist = getApiPlaylist($row['id']);
@@ -746,7 +754,7 @@ function updateApiCache(){
 		
 		$announce = $row['announce'];
 		if(!empty($announce)) {
-			$announce = trim($announce);
+			$announce = html_entity_decode(trim($announce));
 		}
 		if(empty($announce)) {
 			$announce = NULL;
@@ -765,13 +773,13 @@ function updateApiCache(){
 			'last' => $row['last'],
 			'moon' => $moon,
 			'announce' => $announce,
-			'status' => $var['status'][$row['status']],
+			'status' => html_entity_decode($var['status'][$row['status']]),
 			'statusCode' => $row['status'],
-			'type' => $row['type'],
+			'type' => html_entity_decode($row['type']),
 			'genres' => $genres,
 			'voices' => $voices,
 			'year' => $row['year'],
-			'season' => $row['season'],
+			'season' => html_entity_decode($row['season']),
 			'day' => $row['day'],
 			'description' => $row['description'],
             //Для блокировки релизов
@@ -799,8 +807,8 @@ function updateApiCache(){
 				'leechers' => intval($xrow['leechers']),
 				'seeders' => intval($xrow['seeders']),
 				'completed' => intval($xrow['completed']),
-				'quality' => $data['0'],
-				'series' => $data['1'],
+				'quality' => html_entity_decode(trim($data['0'])),
+				'series' => html_entity_decode(trim($data['1'])),
 				'size' => intval($data['2']),
                 'url' => $link,
                 'ctime' => intval($xrow['ctime'])
