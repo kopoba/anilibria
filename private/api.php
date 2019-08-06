@@ -1,5 +1,9 @@
 <?php
 
+$IGNORE_APP_ID = [
+    "tv.anilibria.store"
+];
+
 function safeApiList() {
     wrapApiResponse(function() {
         return apiList();
@@ -26,7 +30,10 @@ function exitAuth(){
 function apiList(){
     //only for testing
     //updateApiCache();
-	global $cache, $var; $result = [];
+	global $cache, $var, $IGNORE_APP_ID;
+    $result = [];
+    
+  
     
 	if(!isset($_POST['query'])){
         throw new ApiException('No query', 400);
@@ -221,10 +228,14 @@ function apiList(){
     }
     
     function proceedReleases($releases, $torrent){
+        global $IGNORE_APP_ID;
 		$result = []; 
 		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'announce', /*'blockedInfo',*/ 'playlist', 'torrents', 'favorite'];
         
         $appStoreHeader = getallheaders()['Store-Published'];
+        $appIdHeader = getallheaders()['App-Id'];
+        $appVerNamHeader = getallheaders()['App-Ver-Name'];
+        $appVerCodeHeader = getallheaders()['App-Ver-Code'];
         foreach($releases as $key => $val){
             $unsettedFileds = [];
 			$names = $val['names'];
@@ -277,8 +288,10 @@ function apiList(){
             unset($val['rating']);
             unset($val['playlist']['online']);
             if(!empty($appStoreHeader)){
-                if(!empty($val['blockedInfo']) && $val['blockedInfo']['blocked']){
-                    continue;       
+                if(!in_array($appIdHeader, $IGNORE_APP_ID)) { 
+                    if(!empty($val['blockedInfo']) && $val['blockedInfo']['blocked']){
+                        continue;       
+                    }
                 }
             }
             
