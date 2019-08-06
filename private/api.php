@@ -422,7 +422,11 @@ function apiList(){
 		foreach($rawFeed as $feedItem){
             switch($feedItem['type']){
 				case 'release':
-					$result[] = ['release' => apiGetReleaseById($info, $torrent, $feedItem['id'])];
+                    try {
+					   $result[] = ['release' => apiGetReleaseById($info, $torrent, $feedItem['id'])];
+                    } catch(ApiException $ignore) {
+                        
+                    }
 				break;
 					
 				case 'youtube':
@@ -528,7 +532,11 @@ function apiList(){
 			$query->execute();
 			$dayReleases = [];
 			while($row = $query->fetch()){
-				$dayReleases[] = apiGetReleaseById($info, $torrent, $row['id']);
+                try {
+				    $dayReleases[] = apiGetReleaseById($info, $torrent, $row['id']);
+                } catch(ApiException $ignore) {
+                    
+                }
 			}
 			$result[] = [
 				'day' => $key,
