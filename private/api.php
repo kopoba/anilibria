@@ -1,5 +1,117 @@
 <?php
 
+$BLOCKED_RELEASES_WAKANIM = [
+    8401,//Пламенный отряд / FIRE FORCE 
+    8325,//Истребитель демонов : Kimetsu no Yaiba
+    8395,//Арифурэта / ARIFURETA 
+    8400,//Разве плохо искать себе пару в подземелье? (2 сезон) / Danmachi Familia Myth II
+    8422,//Ты же любишь мамочку, удары которой бьют по площади двойным уроном? 
+    8426,//Досье Лорда Эль-Меллоя II {Рельсовый Цеппелин} форшлаг 
+    8413,//Князь Тьмы: Retry! / Demon Lord, Retry!
+    8397,//Мастерство копа / COP CRAFT
+    //___ One Piece
+    8315,//Корзинка фруктов / Fruits Basket
+    //___ GeGeGe no Kitaro
+    8340,//Атака титанов TV-3 (часть 2)
+    6831,//Атака титанов TV-3 (часть 1)
+    8306,//Мы не можем учиться / We Never Learn
+    8314,//Ушедшие феи / Fairy gone
+    8337,//Sarazanmai
+    8341,//Исчезнувший город / AFTERLOST
+    8336,//РоббиХатти / RobiHachi
+    8324,//Внук мудреца / Wise Man’s Grandchild
+    //___ Fate/Grand Order - Последний рубеж в войне против демонических существ: Вавилония
+    7439,//Sword Art Online -Алисизация
+    8040,//Обещанная страна грёз / THE PROMISED NEVERLAND 
+    //___ Рандеву с жизнью / Date A Live
+    8042,//___ У нас лицензировано под другим именем___ Бугипоп и другие / BoogiePop and Others 
+    8041,//Госпожа Кагуя: в любви как на войне / Kaguya-sama: Love Is War
+    8050,//___ Аска: Волшебница специального назначения / Magical Girl Spec Ops Asuka
+    8054,//W'z
+    //___ SAINT SEIYA SAINTIA SHO
+    7440,//Убийца гоблинов / Goblin Slayer
+    6089,//Токийский Гуль: re / Tokyo Ghoul:re
+    7462,//Негодник, которому не снилась девушка-кролик / Rascal Does Not Dream of Bunny Girl Senpai
+    //___ -DAKAICHI- Мой номер 1 / -Dakaichi- My Number 1
+    6826,//Твоё имя.
+    648,//Атака титанов
+    6917,//Юна из гостиницы у горячих источников / Yuuna and the Haunted Hot Springs
+    6830,//Повелитель 3 / Overlord Ⅲ
+    6835,//Клетки за работой! / Cells at Work!
+    7709,//Судьба/Ночь схватки: Прикосновение небес I. Цветок предзнаменования
+    6140,//Steins;Gate 0
+    6112,//Персона 5: Анимация / PERSONA5 the Animation
+    6190,//SWORD ART ONLINE ALTERNATIVE «GUN GALE ONLINE»
+    //___ Сакура - собирательница карт: Прозрачная карта / Cardcaptor Sakura : Clear Card 
+    //___ Хакумэй и Микоти / Hakumei & Mikochi
+    5614,//Повелитель 2
+    //___ Сказочная девочка / Maerchen Maedchen
+    //___ Медленный старт / Slow Start
+    5684,//Легенда о Гранкресте / Record of Grancrest War
+    //___ Трёхцветные звёздочки / Mitsuboshi Colors
+    //___ Сегодня в меню у Эмии (ONA) / Today's Menu for Emiya Family (ONA) 
+    3055,//March comes in like a lion
+    5208,//Гаро: Линия Схода / VANISHING LINE
+    5325,//Корона грешника / Guilty Crown
+    //___ Синий экзорцист / Blue Exorcist
+    395,//___ Объеденены в один___ Дюрарара!! / Durarara!!
+    //___ Судьба/Zero (Fate/Zero) 
+    //___ Маги: Лабиринт Волшебства / Magi: The Labyrinth of Magic
+    //___ Гуррен Лаганн / Gurren Lagann
+    4857,//Sword Art Online : Sword Art Online
+    5189,//Хранитель вечности! / UQ Holder!
+    5161,//Королевская игра / King’s Game "The Animation"
+    5224,//Садистская смесь / BLEND-S 
+    425,//Sword Art Online II
+    5221,//March comes in like a lion (2 сезон)
+    3943,//Атака титанов 2
+    8032,//Рандеву с жизнью III
+    
+    
+    //Дополнительные релизы, овы и т.д. которых нет у ваков
+    3945,//Может, я встречу тебя в подземелье? — Меч Оратории
+    412,//Может, я встречу тебя в подземелье?
+    3853,//Может, я встречу тебя в подземелье? OVA
+    
+    6844,//Атака титанов: Потерянные девушки
+    1543,//Атака титанов: Выбор без сожалений
+    
+    429,//Судьба/Ночь схватки: Бесконечный мир клинков
+    4580,//Судьба/Апокриф
+    5691,//Fate/Extra Last Encore
+    3788,//Судьба/Великая Кампания: Первая миссия
+    
+    5162,//Мастера Меча Онлайн: Порядковый ранг
+    1807,//Мастера меча онлайн: Дополнительное издание
+    
+    1531,//Токийский Гуль: Джек
+    432,//Токийский Гуль
+    433,//Токийский Гуль √A (ТВ-2)
+    
+    6834,//Юна из гостиницы Юраги ОВА
+    
+    774,//Повелитель
+    
+    543,//Врата Штейна (фильм)
+    
+    3606,//Гаро: Божественное пламя
+    1274,//Гаро: Багровая луна
+];
+
+$BLOCKED_RELEASES_VGTRK = [
+    8307,//Бродячие псы - литературные гении 3 сезон
+    2122,//Бродячие псы - литературные гении [ТВ-1 / ТВ-2]
+];
+
+$BLOCKED_RELEASES_ISTARI = [
+    6826,//Твоё имя.
+];
+
+$BLOCKED_RELEASES_CINEMA_GALAXY = [
+    2428,//Шарлотта: Спешл
+    3264,//Твоя апрельская ложь: Мгновения
+];
+
 $IGNORE_APP_ID = [
     "tv.anilibria.store"
 ];
@@ -30,7 +142,13 @@ function exitAuth(){
 function apiList(){
     //only for testing
     //updateApiCache();
-	global $cache, $var, $IGNORE_APP_ID;
+	global $cache,
+    $var,
+    $IGNORE_APP_ID,
+    $BLOCKED_RELEASES_WAKANIM,
+    $BLOCKED_RELEASES_VGTRK,
+    $BLOCKED_RELEASES_ISTARI,
+    $BLOCKED_RELEASES_CINEMA_GALAXY;
     $result = [];
     
   
@@ -228,7 +346,12 @@ function apiList(){
     }
     
     function proceedReleases($releases, $torrent){
-        global $IGNORE_APP_ID;
+        global $IGNORE_APP_ID,
+        $BLOCKED_RELEASES_WAKANIM,
+        $BLOCKED_RELEASES_VGTRK,
+        $BLOCKED_RELEASES_ISTARI,
+        $BLOCKED_RELEASES_CINEMA_GALAXY;
+        
 		$result = []; 
 		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'announce', /*'blockedInfo',*/ 'playlist', 'torrents', 'favorite'];
         
@@ -256,6 +379,30 @@ function apiList(){
 					}
 				}
 			}
+            
+            
+            if(!empty($val['blockedInfo'])){
+				$val['blockedInfo']['blocked'] = isBlock($val['blockedInfo']['blocked']);        
+			}   
+            
+            if(!empty($appStoreHeader)){
+                if(!in_array($appIdHeader, $IGNORE_APP_ID)) { 
+                    $idAsInt = $val['id'];
+                    $blockBySite = !empty($val['blockedInfo']) && $val['blockedInfo']['blocked'];
+                    $hardBlockWakanim = in_array($idAsInt, $BLOCKED_RELEASES_WAKANIM);
+                    $hardBlockVgtrk = in_array($idAsInt, $BLOCKED_RELEASES_VGTRK);
+                    $hardBlockIstari = in_array($idAsInt, $BLOCKED_RELEASES_ISTARI);
+                    $hardBlockCinemaGalaxy = in_array($idAsInt, $BLOCKED_RELEASES_CINEMA_GALAXY);
+                    if($blockBySite || $hardBlockWakanim || $hardBlockVgtrk || $hardBlockIstari || $hardBlockCinemaGalaxy){
+                        continue;       
+                    }
+                }
+            }
+            
+            if(!empty($val['blockedInfo'])){
+				$val['blockedInfo']['blocked'] = false;        
+			} 
+            
 			if(!empty($val['playlist']['online'])){
 				$host = anilibria_getHost($val['playlist']['online']);
 				foreach($val['playlist'] as $k => $v){
@@ -281,20 +428,9 @@ function apiList(){
             }
             if(!in_array('favorite', $unsettedFileds)) {
                 $val['favorite'] = apiGetFavoriteField($val);
-            }
-            if(!empty($val['blockedInfo'])){
-				$val['blockedInfo']['blocked'] = isBlock($val['blockedInfo']['blocked']);        
-			}    
+            } 
             unset($val['rating']);
             unset($val['playlist']['online']);
-            if(!empty($appStoreHeader)){
-                if(!in_array($appIdHeader, $IGNORE_APP_ID)) { 
-                    if(!empty($val['blockedInfo']) && $val['blockedInfo']['blocked']){
-                        continue;       
-                    }
-                }
-            }
-            
 			$result[] = $val;
 		}
 		return $result;
