@@ -484,11 +484,18 @@ function apiList(){
 		}else{
 			$tmpAvatar = 'noavatar.jpg';
 		}
-        return [
+        $result = [
             "id" => intval($user['id']),
             "login" => $user['login'],
             "avatar" => "/upload/avatars/$tmpAvatar"
         ];
+        $appStoreHeader = getallheaders()['Store-Published'];
+        if($appStoreHeader == "Apple") {
+            //$result["playerEnabled"] = $user['login'] != "example";
+            //270620 - это example юзер для модераторов appstore
+            $result["playerEnabled"] = intval($user['id']) != 270620;
+        }
+        return $result;
     }
 
     
