@@ -1143,44 +1143,18 @@ function isBlock($str){
 }
 
 function adsUrl(){
-	global $cache; $arr = []; $min = '10';
-	$arr['mix'] = ['id' => 'vast2427', 'percent' => $min];
-	$arr['rey'] = ['id' => 'vast2585', 'percent' => $min];
-	function prepareAdsUrl($arr, $win = ''){
+	$arr['mix'] = ['id' => 'vast2427'];
+	$arr['rey'] = ['id' => 'vast2585'];
+	$arr['zet'] = ['id' => 'vast2418'];
+	function prepareAdsUrl($arr){
 		foreach($arr as $key => $val){
-			if($win == $key){
-				continue;
-			}
 			$result[] = $val['id'];
 		}
 		return implode(",", $result);
 	}
-	function adsRandom($cache, $arr, $min){
-		return 'rey';
-		global $var; $host = []; 
-		if($var['country'] == 'EE'){
-			return 'rey';
-		}
-		$tmp = $cache->get('playerStatAds');
-		if($tmp !== false){
-			$arr = json_decode($tmp, true);
-			if($arr['mix']['rate'] >= 60){
-				return 'mix';
-			}
-		}
-		foreach($arr as $key => $val){
-			if($val['percent'] < $min){
-				$val['percent'] = $min;
-			}
-			$host = array_merge($host, array_fill(0, $val['percent'], $key));
-		}
-		shuffle($host);
-		return $host[random_int(0, count($host) - 1)];
-	}
 	if(!checkADS()){
 		return prepareAdsUrl($arr);
 	}
-	return prepareAdsUrl($arr, adsRandom($cache, $arr, $min));
 }
 
 function release404(){
@@ -1663,11 +1637,25 @@ function getRemoteCache(){
 	}
 }
 
+function curlTor($url){
+	$ch = curl_init($url); 
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+	curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1:9050"); 
+	curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+	$result = curl_exec($ch);
+	curl_close($ch);
+	return $result;
+}
+
 function getRemote($url, $key, $update = false){
 	global $cache;
+	$ctx = stream_context_create(['http'=> ['timeout' => 5]]);
 	$data = $cache->get('anilibria'.$key);
 	if(empty($data) || $update){
-		if(!$data = file_get_contents($url)){
+		if(!$data = file_get_contents($url, false, $ctx)){
 			return false;
 		}
 		if(!isJson($data)){
@@ -1694,8 +1682,8 @@ function wsInfoShow(){
 
 function mp4_link($value){
 	global $conf, $var;
-	$time = $var['time']+60*60*48;
-	$key = str_replace("=", "", strtr(base64_encode(md5("{$time}/videos/{$value}".$var['ip']." {$conf['nginx_secret']}", true)), "+/", "-_"));
+	$time = $var['time']+60*60*2;
+	$key = str_replace("=", "", strtr(base64_encode(md5("{$time}/videos/{$value}"." {$conf['nginx_secret']}", true)), "+/", "-_"));
 	$url = htmlspecialchars("{$conf['nginx_domain']}/get/$key/$time/$value", ENT_QUOTES, 'UTF-8');
 	return $url;
 }
@@ -1736,7 +1724,7 @@ function getReleaseVideo($id){
 				if(!empty($val['file']) && !empty($var['release']['name'])){
 					$epNumber = $key;
 					$epName = trim($var['release']['name']);
-					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber-sd.mp4";
+					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber.mp4";
 				}
 				if($host){
 					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new2'])."', download:\"$download\", 'id': 's$key'},";
@@ -2421,6 +2409,7 @@ function releaseUpdateLast(){
 		_message('wrongRelease', 'error');
 	}
 	$row = $query->fetch();
+	pushFcm("{$row['name']} / {$row['ename']}", $row['code']);
 	pushAll("{$row['ename']} / {$row['name']}", $row['code']);
 	$query = $db->prepare('UPDATE `xrelease` SET `last` = :time WHERE `id` = :id');
 	$query->bindParam(':time', $var['time']);
@@ -2541,7 +2530,7 @@ function sendHH(){
 		if(empty($val)){
 			_message('empty', 'error');
 		}
-		if(mb_strlen($val) > 300){
+		if(mb_strlen($val) > 600){
 			_message('long', 'error');
 		}
 		if(!array_key_exists($key, $info)){
@@ -2607,6 +2596,45 @@ function catalogYear(){
 		$cache->set('catalogYear', $result, 300);
 	}
 	return $result;
+}
+
+function pushFcm($name, $code) {
+	global $conf; 
+    $link = 'https://www.anilibria.tv/release/'.$code.'.html';
+    $title = 'Вышла новая серия!';
+    $body = $name;
+
+    $reqBody = [
+        'to' => '/topics/all',
+        'content_available' => true,
+        'priority' => 'high', 
+        'notification' => [
+            'body' => $body,
+            'title' => $title,
+            'link' => $link,
+            'sound' => 'default'
+        ], 
+        'data' => [
+            'body' => $body,
+            'title' => $title,
+            'link' => $link,
+            'sound' => 'default'
+        ]
+    ];
+    
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => json_encode($reqBody, JSON_UNESCAPED_UNICODE),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => array(
+            "Authorization: ".$conf["fcm_token"],
+            "Content-Type: application/json"
+        )
+    ));
+    $response = curl_exec($curl);
+    curl_close($curl);
 }
 
 function pushAll($name, $code){
