@@ -355,10 +355,10 @@ function apiList(){
 		$result = []; 
 		$filter = ['code', 'names', 'series', 'poster', /*'rating',*/ 'last', 'moon', 'status', 'type', 'genres', 'voices', 'year', 'day', 'description', 'announce', /*'blockedInfo',*/ 'playlist', 'torrents', 'favorite'];
         
-        $appStoreHeader = getallheaders()['Store-Published'];
-        $appIdHeader = getallheaders()['App-Id'];
-        $appVerNamHeader = getallheaders()['App-Ver-Name'];
-        $appVerCodeHeader = getallheaders()['App-Ver-Code'];
+        $appStoreHeader = getallheaders()['Store-Published'] ?? NULL;
+        $appIdHeader = getallheaders()['App-Id'] ?? NULL;
+        $appVerNamHeader = getallheaders()['App-Ver-Name'] ?? NULL;
+        $appVerCodeHeader = getallheaders()['App-Ver-Code'] ?? NULL;
         foreach($releases as $key => $val){
             $unsettedFileds = [];
 			$names = $val['names'];
@@ -489,11 +489,12 @@ function apiList(){
             "login" => $user['login'],
             "avatar" => "/upload/avatars/$tmpAvatar"
         ];
-        $appStoreHeader = getallheaders()['Store-Published'];
+        $appStoreHeader = getallheaders()['Store-Published'] ?? NULL;
         if($appStoreHeader == "Apple") {
             //$result["playerEnabled"] = $user['login'] != "example";
             //270620 - это example юзер для модераторов appstore
-            $result["playerEnabled"] = intval($user['id']) != 270620;
+            //$result["playerEnabled"] = intval($user['id']) != 270620;
+            $result["playerEnabled"] = false;
         }
         return $result;
     }
@@ -708,6 +709,11 @@ function apiList(){
 			'code' => $randomCode
 		];
 	}
+    
+    function apiGetReservedTestResponse() {
+        return getallheaders()['Store-Published'] ?? NULL;
+        //return getallheaders();
+    }
 	
 	function proceedBridge($funcSrc, $funcDst){
 		register_shutdown_function(function() use ($funcSrc, $funcDst) {
@@ -844,6 +850,9 @@ function apiList(){
 			
 		case 'social_auth':
 			return apiGetSocialAuth();
+            
+        case 'reserved_test':
+			return apiGetReservedTestResponse();
         break;
 	}
     //Вместо default case
