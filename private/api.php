@@ -673,8 +673,8 @@ function apiList(){
 			'key' => 'vk',
 			'title' => 'ВКонтакте',
 			'socialUrl' => 'https://oauth.vk.com/authorize?client_id=5315207&redirect_uri=https://www.anilibria.tv/public/vk.php',
-			'resultPattern' => 'https?:\/\/(?:(?:www|api)?\.)?anilibria\.tv\/public\/vk\.php([?&]code)',
-			'errorUrlPattern' => 'https?:\/\/(?:(?:www|api)?\.)?anilibria\.tv\/pages\/vk\.php'
+			'resultPattern' => 'https?:\/\/.+?\/public\/vk\.php([?&]code)',
+			'errorUrlPattern' => 'https?:\/\/.+?\/pages\/vk\.php'
 		];
 		return $result;
 	}
