@@ -710,6 +710,17 @@ function apiList(){
 		];
 	}
     
+    function apiGetLinkMenu() {
+        return [
+            LinkMenuItem::absoluteLink("Группа VK", "https://vk.com/anilibria", LinkMenuItem::$IC_VK),
+            LinkMenuItem::absoluteLink("Канал YouTube", "https://youtube.com/channel/UCuF8ghQWaa7K-28llm-K3Zg", LinkMenuItem::$IC_YOUTUBE),
+            LinkMenuItem::absoluteLink("Patreon", "https://patreon.com/anilibria", LinkMenuItem::$IC_PATREON),
+            LinkMenuItem::absoluteLink("Канал Telegram", "https://t.me/anilibria_tv", LinkMenuItem::$IC_TELEGRAM),
+            LinkMenuItem::absoluteLink("Чат Discord", "https://discord.gg/Kdr5sNw", LinkMenuItem::$IC_DISCORD),
+            LinkMenuItem::absoluteLink("Сайт AniLibria", "https://www.anilibria.tv/", LinkMenuItem::$IC_ANILIBRIA)
+        ];
+    }
+    
     function apiGetReservedTestResponse() {
         return getallheaders()['Store-Published'] ?? NULL;
         //return getallheaders();
@@ -850,6 +861,9 @@ function apiList(){
 			
 		case 'social_auth':
 			return apiGetSocialAuth();
+ 
+        case 'link_menu':
+			return apiGetLinkMenu();
             
         case 'reserved_test':
 			return apiGetReservedTestResponse();
@@ -1116,4 +1130,55 @@ class ApiException extends \Exception {
     }
     
     public function getDescription() { return $this->description; }
+}
+
+class LinkMenuItem implements \JsonSerializable{
+    private $title = "";
+    private $absoluteLink = NULL;
+    private $sitePagePath = NULL;
+    private $icon = NULL;
+    
+    public function __construct(
+        $title = "",
+        $absoluteLink = NULL,
+        $sitePagePath = NULL,
+        $icon = NULL
+    ) {
+        $this->title = strval($title);
+        $this->absoluteLink = strval($absoluteLink);
+        $this->sitePagePath = strval($sitePagePath);
+        $this->icon = strval($icon);
+    }
+    
+    public function jsonSerialize() {
+		return get_object_vars($this);
+	}
+    
+    public static function absoluteLink(
+        $title = "",
+        $absoluteLink = NULL,
+        $icon = NULL
+    ) {
+        return new LinkMenuItem($title, $absoluteLink, NULL, $icon);
+    }
+    
+    public static function pagePath(
+        $title = "",
+        $sitePagePath = NULL,
+        $icon = NULL
+    ) {
+        return new LinkMenuItem($title, NULL, $sitePagePath, $icon);
+    }
+    
+    public static $IC_VK = "vk";
+    public static $IC_YOUTUBE = "yotube";
+    public static $IC_PATREON = "patreon";
+    public static $IC_TELEGRAM = "telegram";
+    public static $IC_DISCORD = "discord";
+    public static $IC_ANILIBRIA = "anilibria";
+    public static $IC_INFO = "info";
+    public static $IC_RULES = "rules";
+    public static $IC_PERSON = "person";
+    public static $IC_SITE = "site";
+    
 }
