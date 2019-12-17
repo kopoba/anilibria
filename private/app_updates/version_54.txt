@@ -1,0 +1,27 @@
+{
+  "update": {
+    "version_code": "54",
+    "version_name": "2.4.4",
+    "version_build": "0",
+    "build_date": "17 декабря 2019 г.",
+    "links": [
+      {
+        "name": "AniLibria App (Красная иконка)",
+        "url": "https://github.com/anilibria/anilibria-app/releases/download/2.4.4/AniLibria_v2.4.4.apk",
+        "type": "file"
+      },
+      {
+        "name": "AniLibria Lite (Белая иконка)",
+        "url": "https://github.com/anilibria/anilibria-app/releases/download/2.4.4/AniLibria_Lite_v2.4.4.apk",
+        "type": "file"
+      }
+    ],
+    "important": [],
+    "added": [],
+    "fixed": [
+      "Обновлён веб плеер, теперь должен работать",
+      "Авторизация в приложении (были проблемы после блокировки сайта)"
+    ],
+    "changed": []
+  }
+}
