@@ -64,7 +64,7 @@ function _exit(){
 		session_unset();
 		session_destroy();
 		if(strpos($var['user_agent'], 'mobileApp') === false){
-			header("Location: https://".$_SERVER['SERVER_NAME']);
+			header("Location: https://".$var['origin_url']);
 		}
 	}
 }
@@ -178,14 +178,16 @@ function oAuthLogin(){
 		if(!$hash){
 			_message2('wrong', 'error');
 		}
-		die(header("Location: https://".$_SERVER['SERVER_NAME']."/pages/vk.php?id=$id&time=$htime&hash=$hash"));
+		die(header("Location: https://".$var['origin_url']."/pages/vk.php?id=$id&time=$htime&hash=$hash"));
 	}
 	if(!empty($row['2fa'])){
 		_message2('please disable 2fa', 'error');
 	}
 	enableCSRF(true);
 	startSession($row);
-	header("Location: https://".$_SERVER['SERVER_NAME']);
+    if(strpos($var['user_agent'], 'mobileApp') === false){
+		header("Location: https://".$var['origin_url']);
+    }
 }
 
 function login(){

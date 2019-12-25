@@ -722,8 +722,14 @@ function apiList(){
     }
     
     function apiGetReservedTestResponse() {
-        return getallheaders()['Store-Published'] ?? NULL;
+        //return getallheaders()['Store-Published'] ?? NULL;
         //return getallheaders();
+        global $var; 
+        return [
+            $var['origin_url'],
+            getallheaders()['X-Proxy-Origin'] ?? NULL,
+            $_SERVER['SERVER_NAME']
+        ];
     }
 	
 	function proceedBridge($funcSrc, $funcDst){

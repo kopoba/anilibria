@@ -8,11 +8,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 if($user){
-	die(header("Location: https://".$_SERVER['SERVER_NAME']));
+	die(header("Location: https://".$var['origin_url']));
 }
 
 if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
-	die(header("Location: https://".$_SERVER['SERVER_NAME']."/pages/error/403.php"));
+	die(header("Location: https://".$var['origin_url']."/pages/error/403.php"));
 }
 
 $vktmp = json_encode(['id' => $_GET['id'], 'time' => $_GET['time'], 'hash' => $_GET['hash']]);

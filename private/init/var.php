@@ -17,6 +17,14 @@ try{
 	$var['country'] = false;
 }
 
+$var['origin_url'] = $_SERVER['SERVER_NAME'];
+try{
+	$proxyOrigin = getallheaders()['X-Proxy-Origin'] ?? NULL;
+    if(!empty($proxyOrigin)){
+        $var['origin_url'] = $proxyOrigin;
+    }
+}catch(Throwable $ignore){}
+
 $var['user_agent'] = '';
 if(!empty($_SERVER['HTTP_USER_AGENT'])){
 	$var['user_agent'] = htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, 'UTF-8');
