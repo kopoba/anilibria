@@ -93,18 +93,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<br/>
 		</div>
 		<div class="req reqe">
-			<font color="#f2d20c" style="font-size: 16px;">
-				<b>Пиарщики</b>
-			</font>
-			<ul>
-				<li>Наличие свободного времени</li>
-				<li>Желание бескорыстно помочь проекту</li>
-				<li>Умение вежливо общаться с людьми</li>
-				<li>Грамотное письмо(речь)</li>
-			</ul>
-			<br/>
-		</div>
-		<div class="req">
 			<font style="font-size: 16px;">
 				<b>Условия и обязанности</b>
 			</font>
@@ -135,8 +123,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<option value="1">Технарь</option>
 		<option value="2">Войсер</option>
 		<option value="3">Саббер</option>
-		<option value="4">Сидер</option>
-		<option value="5">Пиарщик</option>
+		<option value="4" disabled>Сидер (Набор закрыт)</option>
     </select>
 	<input id="rName" class="form-control" style="margin-top: 7px;" placeholder="Имя" autocomplete="off">
 	<input id="rNickname" class="form-control" style="margin-top: 7px;" placeholder="Никнейм/ творческий псевдоним (например: Lupin)" autocomplete="off">
@@ -164,7 +151,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		С Условиями и обязанностями полностью согласен!
 	</label>
 	</div>
-	<input id="sendRequest" data-send-request class="btn btn btn-default btn-block" style="float: left; margin-top: 10px; width: 100px; display: none;" type="submit" value="Отправить">
+	
+	<div style="margin-top: 10px;">
+		<div id="RecaptchaField" style="float: left;"></div>
+		<input id="sendRequest" data-send-request class="btn btn btn-default btn-block" style="float: left; margin-left: 5px; padding: 27px 35px; border-radius: 7px; width: 146px; display: none;" type="submit" value="Отправить">
+	</div>
+	
 	<div class="clear"></div>
 	<div style="margin-top:10px;"></div>
 </div>
@@ -181,7 +173,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<div  class="modal-body">
 				Если вам долго не отвечают на почту, то возможно заявка попала в спам.<br/>
 				Пожалуйста, напишите в telegram <a href="https://t.me/AniLibriaTP">@AniLibriaTP</a> и узнайте статус.
-				
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>

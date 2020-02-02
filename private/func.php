@@ -1148,6 +1148,7 @@ function adsUrl(){
 	$arr['mix'] = ['id' => 'vast2427'];
 	$arr['rey'] = ['id' => 'vast2585'];
 	$arr['zet'] = ['id' => 'vast2418'];
+	$arr['rol'] = ['id' => 'vast3822'];
 	function prepareAdsUrl($arr){
 		foreach($arr as $key => $val){
 			$result[] = $val['id'];
@@ -1264,11 +1265,24 @@ function showRelease(){
 	$page = str_replace('{genre}', $release['genre'], $page);
 	$page = str_replace('{chosen}', getGenreList(), $page);
 	$page = str_replace('{releaseid}', $release['id'], $page);
-	$page = str_replace('{voice}', $release['voice'], $page);
+	if($user['access'] > 1) {
+		//{VoicedBy} {br}
+		$page = str_replace('{VoicedBy}', "<b>Озвучка:</b> ", $page);
+		$page = str_replace('{voice}', $release['voice'], $page);
+		$page = str_replace('{br}', "<br>", $page);
+	} else {
+		$page = str_replace('{VoicedBy}', "", $page);
+		$page = str_replace('{voice}', "", $page);
+		$page = str_replace('{br}', "", $page);
+	}
 	$page = str_replace('{year}', $release['year'], $page);
 	$page = str_replace('{edityear}', $release['edityear'], $page);
 	$page = str_replace('{type}', $release['type'], $page);
-	$page = str_replace('{other}', $release['other'], $page);
+	if($user['access'] > 1) {
+		$page = str_replace('{other}', "<b><a href=\"#\" data-show-other style=\"color: #000;\">Работа над релизом</a>:</b> ".$release['other']."<br>", $page);
+	} else {
+		$page = str_replace('{other}', "", $page);
+	}
 	
 	$page = str_replace('{translator}', $release['translator'], $page);
 	$page = str_replace('{editing}', $release['editing'], $page);
@@ -1302,6 +1316,13 @@ function showRelease(){
 	$page = str_replace('{style}', '', $page);
 	
 	$page = str_replace('{xdescription}', parse_code_bb($release['description']), $page);
+	
+	/*if(checkADS()) {
+		$adsshit = "<div id=\"M478527ScriptRootC725422\"> <div id=\"M478527PreloadC725422\"> Loading ADS... </div> <script> (function(){ var D=new Date(),d=document,b='body',ce='createElement',ac='appendChild',st='style',ds='display',n='none',gi='getElementById',lp=d.location.protocol,wp=lp.indexOf('http')==0?lp:'https:'; var i=d[ce]('iframe');i[st][ds]=n;d[gi](\"M478527ScriptRootC725422\")[ac](i);try{var iw=i.contentWindow.document;iw.open();iw.writeln(\"<ht\"+\"ml><bo\"+\"dy></bo\"+\"dy></ht\"+\"ml>\");iw.close();var c=iw[b];} catch(e){var iw=d;var c=d[gi](\"M478527ScriptRootC725422\");}var dv=iw[ce]('div');dv.id=\"MG_ID\";dv[st][ds]=n;dv.innerHTML=725422;c[ac](dv); var s=iw[ce]('script');s.async='async';s.defer='defer';s.charset='utf-8';s.src=wp+\"//jsc.adskeeper.co.uk/a/n/anilibria.tv.725422.js?t=\"+D.getUTCFullYear()+D.getUTCMonth()+D.getUTCDate()+D.getUTCHours();c[ac](s);})(); </script> </div>";
+		$page = str_replace('{newads}', $adsshit, $page);
+	} else {
+		$page = str_replace('{newads}', '', $page);
+	}*/
 	
 	$button = '';
 	
@@ -1578,7 +1599,6 @@ function footerJS(){
 			}
 			if(!empty($xname)){
 				$result .= wsInfo($xname);
-				
 			}
 			if(!empty($var['release']['id'])){
 				$result .= str_replace('{page}', '', $vk);
@@ -1608,8 +1628,8 @@ function footerJS(){
 				  }, 75);
 				</script>
 			';
-			$result .= '<script src="'.fileTime('/js/player.js').'" type="text/javascript"></script>';
-			$result .= '<script>var player = new Playerjs({ id:"anilibriaPlayer", "title":"&nbsp;", "file":"'.fileTime('/upload/donate/1.mp4').'", poster:"'.fileTime('/upload/donate/1.jpg').'", preroll_deny:"vast2427,vast2585"});</script>';
+			//$result .= '<script src="'.fileTime('/js/player.js').'" type="text/javascript"></script>';
+			//$result .= '<script>var player = new Playerjs({ id:"anilibriaPlayer", "title":"&nbsp;", "file":"'.fileTime('/upload/donate/1.mp4').'", poster:"'.fileTime('/upload/donate/1.jpg').'", preroll_deny:"vast2427,vast2585"});</script>';
 		break;
 		case '404':
 		case '403':
@@ -1702,10 +1722,10 @@ function anilibria_getHost($hosts){
 		return false;
 	}
 	if(count($host) == 1){
-		return $host[0].".anilibria.tv";
+		return $host[0].".libria.fun";
 	}
 	shuffle($host);
-	return $host[random_int(0, count($host) - 1)].".anilibria.tv";
+	return $host[random_int(0, count($host) - 1)].".libria.fun";
 }
 
 function getReleaseVideo($id){
@@ -2661,6 +2681,12 @@ function pushAll($name, $code){
 	]);
 	sendPush('http://sanasol-test.ru/librbot/hook.php', [
 		'key' => $conf['push_sanasol'],
+		'text' =>  $name,
+		'title' => 'Вышла новая серия!',
+		'url' => $url
+	]);
+	sendPush('https://bot.libria.fun/hook.php', [
+		'token' => $conf['push_albot'],
 		'text' =>  $name,
 		'title' => 'Вышла новая серия!',
 		'url' => $url

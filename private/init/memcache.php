@@ -28,7 +28,7 @@ class cacheHandler {
 			return $redis->setex($key, $time, $val);
 		}
 		if($conf['cache'] == 'memcached'){ // $key, $val, $time => memcached
-			return $memcached->set('anilibria'.$key, $data, 300);
+			return $memcached->set($key, $val, $time);
 		}
 	}
 }

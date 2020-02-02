@@ -22,6 +22,10 @@ $(document).ready(function() {
 		}
 	}
 	$('[data-toggle="tooltip"]').tooltip();
+	
+	/*if($('#buttonAni').length > 0 && $('#buttonMoon').length > 0) {
+        tabSwitch('moonPlayer');
+	}*/
 });
 
 $(document).on("click", "[data-submit-login]", function(e) {

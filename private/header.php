@@ -10,13 +10,15 @@ function headerAds(){
 	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
-	$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro'];
-	$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro1'];
+	//$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro'];
+	//$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro1'];
 	$data[] = ['img' => 'bs', 'left' => '-195px', 'url' => '/bs'];
-	//$data[] = ['img' => 'storm', 'left' => '0px', 'url' => '/storm'];
-	//$data[] = ['img' => 'cro', 'left' => '0px', 'url' => '/cro'];
+	$data[] = ['img' => 'storm', 'left' => '0px', 'url' => '/storm'];
+	$data[] = ['img' => 'cro', 'left' => '0px', 'url' => '/cro'];
 	$data[] = ['img' => 'rise', 'left' => '0px', 'url' => '/rise'];
 	$data[] = ['img' => 'ironsight1', 'left' => '0px', 'url' => '/ironsight'];
+	//$data[] = ['img' => 'bravo1', 'left' => '0px', 'url' => '/bravo1'];
+	//$data[] = ['img' => 'bravo2', 'left' => '0px', 'url' => '/bravo2'];
 
 	if(checkADS()){
 		//$cday = date('j', $var['time']);
@@ -35,16 +37,21 @@ function headerAds(){
 		//	$cache->set('adsCurrent', $key, 172800);
 		//	$cache->set('adsCurrentDay', $cday, 172800);
 		//}
-
-		$key = 1;
+/*
+		$key = 0;
 		$ads = $data["$key"];
 		
 		$img = urlCDN('/img/other/a/'.$ads['img'].'.jpg');
 		$left = $ads['left'];
 		$result['url'] = $ads['url'];
 		$result['ads'] = true;
-		
+		*/
 	}
+	/*Удалить когда голосование закончится*/
+	/*$img = urlCDN('/img/29.png');
+	$result['url'] = '/season/2020winter.html';
+	$result['ads'] = true;*/
+	/*------------------------------------*/
 	
 	$css = getTemplate('header');
 	$css = str_replace('{img}', $img, $css);
@@ -77,10 +84,7 @@ $xcss = headerAds();
 	</head>
 	<body>
 		<input type="hidden" id="csrf_token" value='<?php echo $csrf_token; ?>'>
-		<!-- 
-			https://github.com/AdguardTeam/AdguardFilters/pull/30164
-			https://forums.lanik.us/viewtopic.php?f=102&t=34618
-		-->
+		<!-- AdguardTeam and AdBlock (dimisa) , please block any ads you want. -->
 		<div id="headercontent"></div>
 		<div class="link">
 		<?php
@@ -110,3 +114,10 @@ $xcss = headerAds();
 					</ul>
 				</div>
 
+
+
+
+
+<!--<div class="alert alert-warning" role="alert" style="margin-top: 10px; margin-bottom: 0px; font-size: 12.2pt; color: #000000;">
+	Сайт заблокирован в России. Поддержите проект подпиской на <a href="https://t.me/anilibria_tv" target="_blank">телеграм</a>, <a href="https://vk.com/anilibria" target="_blank">вконтакте</a> или <a href="https://www.anilibria.tv/pages/donate.php" target="_blank">донатом</a>.<br/> Спасибо, что вы с нами!
+</div>-->

@@ -148,3 +148,4 @@ $var['youtube']['2018autumn'] = 'eocPilzfxXE';
 $var['youtube']['2019winter'] = 'PYh5yYkHZok';
 $var['youtube']['2019spring'] = '2MNMguWS7ss';
 $var['youtube']['2019summer'] = 'rDYibOzoS78';
+$var['youtube']['2019autumn'] = 'swLpoKm32OM';

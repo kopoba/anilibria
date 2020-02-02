@@ -32,6 +32,17 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     vertical-align: top;
     border-top: 0px;
 }
+#adv_block {
+	width: 600px;
+	height: 320px;
+	margin: 0 auto;
+}
+
+#M478527ScriptRootC725422 {
+	width: 880px;
+	padding: 10px 0;
+	text-align: center;
+}
 </style>
 
 <div class="light-off"></div>
@@ -41,24 +52,14 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 <div style="margin-top: 10px; margin-bottom: 10px;">
 	<a href="https://vk.com/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a1.jpg" width="283" style="border-radius: 4px;"></a>
 	<a href="tg://resolve?domain=anilibria_tv" rel="nofollow"><img src="/img/other/a2.jpg" width="283" style="margin-left: 12px; border-radius: 4px;"></a>
-	<a href="https://discordapp.com/invite/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a3.jpg" width="283" style="float: right; border-radius: 4px;"></a>
+	<a href="https://discord.gg/Kdr5sNw" target="_blank" rel="nofollow"><img src="/img/other/a3.jpg" width="283" style="float: right; border-radius: 4px;"></a>
 </div>
 
-<?php if (checkADS()):?>
-<div id='bea3719d07'></div>
-
-<script type='text/javascript' data-cfasync='false'>
-    (function(){
-        var bea3719d07_proto = (document.location.protocol == 'https:' ? 'https:' : 'http:');
-        var bea3719d07_as = document.createElement('script');
-        bea3719d07_as.type = 'text/javascript';
-        bea3719d07_as.charset = 'utf-8';
-        bea3719d07_as.src = bea3719d07_proto + '//threedrive.su/code/bshow.php?id=12051&dimension=500x250&new_dimension=600x250&r='+Math.random();
-        document.body.appendChild(bea3719d07_as);
-    })();
-</script>
+<?php if(checkADS()):?>
+<div id="adv_block">
+	<iframe id="adv_kod_frame" src="https://vidroll.ru/kod.php?param=34664f454c6831647965792b62775649687645653733355761693433676a4e663035716b42437a554a4a475651424b43585170522f34493d" width="600" height="320" frameborder="0" scrolling="no" allowfullscreen="true"></iframe><script type="text/javascript" src="https://vidroll.ru/player_html5/iframeobrabotchik.js"></script>
+</div>
 <?php endif;?>
-
 <div id="vk_comments" style="margin-top: 10px;"></div>
 
 <div class="modal fade" id="statModal" tabindex="-1" role="dialog" aria-hidden="true" >

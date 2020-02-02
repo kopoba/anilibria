@@ -450,6 +450,7 @@ div.torrent_block {
 	position: relative;
 	width: 260px;
 	height: auto;
+	min-height: 350px;
 	padding-bottom: 10px;
 	background-color: #282829;
 	margin: 10px 10px 10px 10px;
@@ -618,6 +619,7 @@ p.lasttortext {
 	padding: 5px 15px;
 	color: #fff;
 	font-size: 10pt;
+	z-index: 53;
 	border-radius: 4px;
 }
 .last_tor_button:hover {
