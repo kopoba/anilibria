@@ -1181,7 +1181,7 @@ function showRelease(){
 	if(empty($_GET['code'])){
 		return release404();
 	}
-	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `season`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code`, `block` FROM `xrelease` WHERE `code` = :code');
+	$query = $db->prepare('SELECT `id`, `name`, `ename`, `aname`, `moonplayer`, `genre`, `voice`, `year`, `season`, `type`, `translator`, `editing`, `decor`, `timing`, `description`, `announce`, `status`, `day`, `code`, `block`, `bakanim` FROM `xrelease` WHERE `code` = :code');
 	$query->bindParam(':code', $_GET['code']);
 	$query->execute();
 	if($query->rowCount() != 1){
@@ -1231,7 +1231,8 @@ function showRelease(){
 	$page = str_replace('{fullname}', $name, $page);
 	$page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
 	$page = str_replace('{block}', $release['block'], $page);
-	
+    $page = str_replace('{bakanim}', $release['bakanim'], $page);
+
 	$xtmp =  explode(',', $release['genre']);
 	$str = '';
 	foreach($xtmp as $key => $val){
@@ -1447,7 +1448,7 @@ function xrelease(){
 	if(empty($_POST['data'])){
 		_message('empty', 'error');
 	}
-	$arr = ['name', 'ename', 'aname', 'year', 'season', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day', 'block'];
+	$arr = ['name', 'ename', 'aname', 'year', 'season', 'type', 'genre', 'voice', 'translator', 'editing', 'decor', 'timing', 'announce', 'status', 'moonplayer', 'description', 'day', 'block', 'bakanim'];
 	$post = json_decode($_POST['data'], true);
 	foreach($arr as $key){
 		if(array_key_exists($key, $post)){

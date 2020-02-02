@@ -479,6 +479,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		'status': $('select[id=nStatus]').val(),
 		'day': $('select[id=nDay]').val(),
 		'moonplayer': $('input[id=nMoon]').val(),
+        'bakanim': $('input[id=nBakanim]').val(),
 		'description': $('textarea[id=nDescription]').val(),
 	};
 	if($(this).data('release-update') !== undefined){

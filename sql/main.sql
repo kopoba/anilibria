@@ -112,7 +112,8 @@ CREATE TABLE `xrelease` (
   `day` int(1) NOT NULL DEFAULT 1,
   `rating` int(11) NOT NULL DEFAULT 0,
   `code` varchar(1024) DEFAULT NULL,
-  `block` varchar(255) NOT NULL
+  `block` varchar(255) NOT NULL,
+  `bakanim` int(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `youtube` (
