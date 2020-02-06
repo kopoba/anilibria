@@ -2,6 +2,12 @@
 
 function sessionHandler(){
 	$var['origin_url'] = $_SERVER['SERVER_NAME'];
+    try{
+        $proxyOrigin = getallheaders()['X-Proxy-Origin'] ?? NULL;
+        if(!empty($proxyOrigin)){
+            $var['origin_url'] = $proxyOrigin;
+        }
+    }catch(Throwable $ignore){}
 	// http://php.net/manual/en/function.session-id.php
 	// Warning: session_start(): The session id is too long or contains illegal characters, valid characters are a-z, A-Z, 0-9 and '-,'
 	if(isset($_COOKIE['PHPSESSID']) && !preg_match('/^[-,a-zA-Z0-9]{22,64}$/', $_COOKIE['PHPSESSID'])){
