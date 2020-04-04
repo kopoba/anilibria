@@ -33,6 +33,7 @@ if(!empty($_SERVER['HTTP_USER_AGENT'])){
 $var['default_user_values'] = '{"name":"","age":"","sex":"","vk":"","telegram":"","steam":"","phone":"","skype":"","facebook":"","instagram":"","youtube":"","twitch":"","twitter":""}';
 
 $var['app_version'] = 54;
+$var['app_tv_version'] = 1;
 
 $var['sex'] = [
 	'Не указано',

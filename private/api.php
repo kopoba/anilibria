@@ -112,8 +112,11 @@ $BLOCKED_RELEASES_CINEMA_GALAXY = [
     3264,//Твоя апрельская ложь: Мгновения
 ];
 
+$APP_ID_ANDROID_MOBILE_STORE = "tv.anilibria.store";
+$APP_ID_ANDROID_TV = "ru.radiationx.anilibria.app.tv";
+
 $IGNORE_APP_ID = [
-    "tv.anilibria.store"
+    $APP_ID_ANDROID_MOBILE_STORE
 ];
 
 function safeApiList() {
@@ -144,6 +147,8 @@ function apiList(){
     //updateApiCache();
 	global $cache,
     $var,
+    $APP_ID_ANDROID_MOBILE_STORE,
+    $APP_ID_ANDROID_TV,
     $IGNORE_APP_ID,
     $BLOCKED_RELEASES_WAKANIM,
     $BLOCKED_RELEASES_VGTRK,
@@ -160,8 +165,14 @@ function apiList(){
     // Для этих методов основная апишка не обязательна
     switch($_POST['query']) {
 		case 'app_update':
+            $appIdHeader = getallheaders()['App-Id'] ?? "";
 			$version = $var['app_version'];
-			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
+            $path = "/private/app_updates/version_$version.txt";
+            if($appIdHeader == $APP_ID_ANDROID_TV) {
+                $version = $var['app_tv_version'];
+                $path = "/private/app_tv_updates/version_$version.txt";
+            }
+			$src = file_get_contents($_SERVER['DOCUMENT_ROOT'].$path);
 			return json_decode($src, true);
         break;
             
