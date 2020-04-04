@@ -132,6 +132,9 @@ $var['error'] = [
 	'wrongData' => 'Неправильные данные',
 	'wrongRelease' => 'Неправильный релиз',
 	'exitTorrent' => 'Торрент уже добавлен',
+	'otpNotFound' => 'Код не найден',
+	'otpAccepted' => 'Код уже подтверждён',
+	'otpNotAccepted' => 'Код еще не подтверждён',
 ];
 
 $var['season'] = ['winter' => 'зима', 'spring' => 'весна', 'summer' => 'лето', 'autumn' => 'осень'];

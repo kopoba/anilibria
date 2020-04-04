@@ -731,6 +731,18 @@ function apiList(){
             $_SERVER['SERVER_NAME']
         ];
     }
+    
+    function apiGetOtp($data){
+        global $var;
+        $remainingTime = intval($data['expired_at']) - $var['time'];
+        return [
+            "code" => $data['code'],
+            "expiredAt" => $data['expired_at'],
+            "description" => "Откройте на компьютере или в мобильном приложении свой профиль и введите код.\nМобильное приложение должно быть обновлено до актуальной версии.",
+            "remainingTime" => $remainingTime,
+            "rawData" => $data
+        ];
+    }
 	
 	function proceedBridge($funcSrc, $funcDst){
 		register_shutdown_function(function() use ($funcSrc, $funcDst) {
@@ -741,7 +753,7 @@ function apiList(){
 			wrapApiResponse(function() use ($message, $funcDst) {
 				$messageJson = json_decode($message, true);
 				if(!empty($messageJson['err']) && $messageJson['err']!=='ok'){
-					throw new ApiException($messageJson['mes'], 400);
+					throw new ApiException($messageJson['mes'] ?: $messageJson['key'], 400, $messageJson['key']);
 				}
 				// Выполняем функцию, которая обрабатывает данные, которые вывела $funcSrc
 				return $funcDst($messageJson);
@@ -873,6 +885,36 @@ function apiList(){
             
         case 'reserved_test':
 			return apiGetReservedTestResponse();
+            
+        case 'auth_get_otp':
+            return proceedBridge(
+				function() {
+					getOtpCode();
+				},
+				function($bridgeData) {
+					return apiGetOtp($bridgeData['mes']);
+				}
+			);
+            
+        case 'auth_accept_otp':
+            return proceedBridge(
+				function() {
+					acceptOtpCode();
+				},
+				function($bridgeData) {
+					return $bridgeData;
+				}
+			);
+            
+        case 'auth_login_otp':
+            return proceedBridge(
+				function() {
+					loginByOtpCode();
+				},
+				function($bridgeData) {
+					return $bridgeData;
+				}
+			);
         break;
 	}
     //Вместо default case

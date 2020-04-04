@@ -190,6 +190,156 @@ function oAuthLogin(){
     }
 }
 
+
+
+/* OTP Auth start */
+function generateOtpCode($length) { 
+    $symbols = "0123456789"; 
+    $result = ""; 
+  
+    for ($i = 1; $i <= $length; $i++) { 
+        $result .= substr($symbols, (rand()%(strlen($symbols))), 1); 
+    } 
+  
+    return $result; 
+} 
+
+function deleteExpiredOtpCodes() {
+	global $db, $var, $user, $conf;
+    if(random_int(1, 10) == 1){
+		$otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `expired_at` < :time');
+		$otpDeleteQuery->bindParam(':time', $var['time']);
+		$otpDeleteQuery->execute();
+	}	
+}
+
+function getOtpCode() {
+	global $db, $var, $user, $conf;
+    $argDeviceId = $_POST['deviceId'];
+    
+    if($user){
+		_message('authorized', 'error');
+	}
+    if(empty($argDeviceId)){
+		_message('empty device id', 'error');
+	}
+    
+    deleteExpiredOtpCodes();
+    
+	$otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > :time');
+	$otpQuery->bindValue(':deviceId', $argDeviceId);
+	$otpQuery->bindValue(':time', $var['time']);
+    $otpQuery->execute();
+    if($otpQuery->rowCount() == 0) {
+        $code = generateOtpCode(6);
+        $expiredAt = $var['time'] + 120;
+        
+        $insertOtpQuery = $db->prepare('INSERT INTO `otp_codes` (`code`, `expired_at`, `device_id`) VALUES (:code, :expired_at, :device_id)');
+        $insertOtpQuery->bindParam(':code', $code);
+        $insertOtpQuery->bindParam(':expired_at', $expiredAt);
+        $insertOtpQuery->bindParam(':device_id', $argDeviceId);
+        $insertOtpQuery->execute();
+        $otpId = $db->lastInsertId();
+        
+        $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > :time');
+        $otpQuery->bindValue(':deviceId', $argDeviceId);
+        $otpQuery->bindValue(':time', $var['time']);
+        $otpQuery->execute();
+    }
+    
+    $otpRow = $otpQuery->fetch();
+    $result = [
+        "code" => $otpRow['code'],
+        "expired_at" => $otpRow['expired_at']
+    ];
+    _message2($result);
+}
+
+function acceptOtpCode() {
+	global $db, $var, $user, $conf;
+    $argCode = $_POST['code'];
+    
+    if(!$user){
+		_message('unauthorized', 'error');
+	}
+    if(empty($argCode)){
+		_message('empty', 'error');
+	}
+    
+    deleteExpiredOtpCodes();
+    
+    $otpQuery = $db->prepare('SELECT `id`, `uid`, `expired_at` FROM `otp_codes` WHERE `code` = :code AND `expired_at` > :time');
+	$otpQuery->bindValue(':code', $argCode);
+	$otpQuery->bindValue(':time', $var['time']);
+    $otpQuery->execute();
+    if($otpQuery->rowCount() == 0) {
+		_message('otpNotFound', 'error');
+    }
+    
+    $otpRow = $otpQuery->fetch();
+    
+    if($otpRow['uid']) {
+		_message('otpAccepted', 'error');
+    }
+    
+	$updateOtpQuery = $db->prepare('UPDATE `otp_codes` SET `uid` = :uid WHERE `id` = :id');
+	$updateOtpQuery->bindValue(':id', $otpRow['id']);
+	$updateOtpQuery->bindParam(':uid', $user['id']);
+	$updateOtpQuery->execute();
+    
+	_message('success');
+}
+
+function loginByOtpCode() {
+	global $db, $var, $user, $conf;
+    $argCode = $_POST['code'];
+    $argDeviceId = $_POST['deviceId'];
+    
+    if($user){
+		_message('authorized', 'error');
+	}
+    if(empty($argCode)){
+		_message('empty', 'error');
+	}
+    if(empty($argDeviceId)){
+		_message('empty', 'error');
+	}
+    
+    deleteExpiredOtpCodes();
+    
+    $otpQuery = $db->prepare('SELECT `id`, `uid` FROM `otp_codes` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > :time');
+	$otpQuery->bindValue(':code', $argCode);
+	$otpQuery->bindValue(':deviceId', $argDeviceId);
+	$otpQuery->bindValue(':time', $var['time']);
+    $otpQuery->execute();
+    if($otpQuery->rowCount() == 0) {
+		_message('otpNotFound', 'error');
+    }
+    
+    $otpRow = $otpQuery->fetch();
+    if(!$otpRow['uid']){
+		_message('otpNotAccepted', 'error');
+    }
+    
+    $userQuery = $db->prepare('SELECT `id`, `login`, `passwd`, `access` FROM `users` WHERE `id` = :uid');
+	$userQuery->bindValue(':uid', $otpRow['uid']);
+	$userQuery->execute();
+    if($userQuery->rowCount() == 0) {
+        _message('invalidUser', 'error');
+    }
+    
+    $userRow = $userQuery->fetch();
+    
+    $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `id` = :id');
+    $otpDeleteQuery->bindParam(':id', $otpRow['id']);
+    $otpDeleteQuery->execute();
+    
+	startSession($userRow);
+	_message('success');
+}
+/* OTP Auth end */
+
+
 function login(){
 	global $db, $var, $user;
 	if($user){
