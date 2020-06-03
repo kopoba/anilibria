@@ -37,6 +37,14 @@ CREATE TABLE `session` (
   `info` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `otp_codes` (
+  `id` int(11) NOT NULL,
+  `uid` int(11) DEFAULT NULL,
+  `code` varchar(16) NOT NULL,
+  `expired_at` bigint(20) NOT NULL,
+  `device_id` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `login` varchar(50) NOT NULL,
@@ -157,6 +165,10 @@ ALTER TABLE `session`
   ADD PRIMARY KEY (`id`),
   ADD KEY `uid` (`uid`),
   ADD KEY `hash` (`hash`);
+  
+ALTER TABLE `otp_codes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `uid` (`uid`);
 
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -206,6 +218,9 @@ ALTER TABLE `log_ip`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `session`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  
+ALTER TABLE `otp_codes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `users`
