@@ -1,52 +1,119 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+-- MySQL dump 10.17  Distrib 10.3.14-MariaDB, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: anilibria
+-- ------------------------------------------------------
+-- Server version	10.3.14-MariaDB-1:10.3.14+maria~stretch-log
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `favorites`
+--
+
+DROP TABLE IF EXISTS `favorites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `favorites` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
-  `rid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `rid` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `rid` (`rid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3288183 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `f_tmp` (
-  `id` int(11) NOT NULL,
-  `vid` int(11) NOT NULL,
-  `rid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--
+-- Table structure for table `genre`
+--
 
+DROP TABLE IF EXISTS `genre`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `genre` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `rating` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `rating` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `log_ip`
+--
+
+DROP TABLE IF EXISTS `log_ip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_ip` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `sid` int(11) NOT NULL,
   `ip` varbinary(16) NOT NULL,
   `time` bigint(20) NOT NULL,
-  `info` varchar(256) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `info` varchar(256) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=616844 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `otp_codes`
+--
+
+DROP TABLE IF EXISTS `otp_codes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `otp_codes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) DEFAULT NULL,
+  `code` varchar(16) NOT NULL,
+  `expired_at` bigint(20) NOT NULL,
+  `device_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `session`
+--
+
+DROP TABLE IF EXISTS `session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `session` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `hash` varchar(255) NOT NULL,
   `time` bigint(20) NOT NULL,
   `ip` varbinary(16) NOT NULL,
-  `info` varchar(256) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `info` varchar(256) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`),
+  KEY `hash` (`hash`),
+  KEY `time` (`time`)
+) ENGINE=InnoDB AUTO_INCREMENT=537835 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `otp_codes` (
-  `id` int(11) NOT NULL,
-  `uid` int(11) DEFAULT NULL,
-  `code` varchar(16) NOT NULL,
-  `expired_at` bigint(20) NOT NULL,
-  `device_id` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--
+-- Table structure for table `users`
+--
 
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
   `mail` varchar(254) DEFAULT NULL,
   `vk` bigint(20) DEFAULT NULL,
@@ -57,16 +124,36 @@ CREATE TABLE `users` (
   `user_values` varchar(1024) DEFAULT NULL,
   `register_date` bigint(20) DEFAULT NULL,
   `last_activity` bigint(20) DEFAULT NULL,
-  `ads` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `ads` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `login` (`login`),
+  UNIQUE KEY `mail` (`mail`),
+  UNIQUE KEY `vk` (`vk`)
+) ENGINE=InnoDB AUTO_INCREMENT=304764 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `xbt_config`
+--
+
+DROP TABLE IF EXISTS `xbt_config`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `xbt_config` (
   `name` varchar(255) NOT NULL,
   `value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `xbt_files`
+--
+
+DROP TABLE IF EXISTS `xbt_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `xbt_files` (
-  `fid` int(11) NOT NULL,
+  `fid` int(11) NOT NULL AUTO_INCREMENT,
   `info_hash` binary(20) NOT NULL,
   `leechers` int(11) NOT NULL DEFAULT 0,
   `seeders` int(11) NOT NULL DEFAULT 0,
@@ -75,34 +162,66 @@ CREATE TABLE `xbt_files` (
   `mtime` int(11) NOT NULL,
   `ctime` int(11) NOT NULL,
   `rid` int(11) NOT NULL,
-  `info` varchar(1024) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `info` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`fid`),
+  UNIQUE KEY `info_hash` (`info_hash`),
+  KEY `rid` (`rid`),
+  KEY `flags` (`flags`)
+) ENGINE=InnoDB AUTO_INCREMENT=10789 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `xbt_files_users`
+--
+
+DROP TABLE IF EXISTS `xbt_files_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `xbt_files_users` (
   `fid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
   `active` tinyint(4) NOT NULL,
   `announced` int(11) NOT NULL,
   `completed` int(11) NOT NULL,
-  `downloaded` bigint(20) UNSIGNED NOT NULL,
-  `left` bigint(20) UNSIGNED NOT NULL,
-  `uploaded` bigint(20) UNSIGNED NOT NULL,
-  `mtime` int(11) NOT NULL
+  `downloaded` bigint(20) unsigned NOT NULL,
+  `left` bigint(20) unsigned NOT NULL,
+  `uploaded` bigint(20) unsigned NOT NULL,
+  `mtime` int(11) NOT NULL,
+  UNIQUE KEY `fid` (`fid`,`uid`),
+  KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `xbt_users`
+--
+
+DROP TABLE IF EXISTS `xbt_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `xbt_users` (
-  `uid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL AUTO_INCREMENT,
   `torrent_pass_version` int(11) NOT NULL DEFAULT 0,
-  `downloaded` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
-  `uploaded` bigint(20) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `downloaded` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `uploaded` bigint(20) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=12930 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `xrelease`
+--
+
+DROP TABLE IF EXISTS `xrelease`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `xrelease` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `ename` varchar(255) NOT NULL,
   `aname` varchar(255) NOT NULL,
   `year` int(11) NOT NULL DEFAULT 2018,
+  `season` varchar(16) NOT NULL,
   `type` varchar(255) NOT NULL,
   `genre` varchar(255) NOT NULL,
   `voice` varchar(255) NOT NULL,
@@ -115,125 +234,55 @@ CREATE TABLE `xrelease` (
   `search_status` varchar(16) NOT NULL,
   `moonplayer` varchar(128) NOT NULL,
   `description` text NOT NULL,
-  `season` varchar(255) DEFAULT NULL,
   `last` bigint(20) NOT NULL DEFAULT 0,
+  `last_change` bigint(20) NOT NULL DEFAULT unix_timestamp(),
   `day` int(1) NOT NULL DEFAULT 1,
   `rating` int(11) NOT NULL DEFAULT 0,
   `code` varchar(1024) DEFAULT NULL,
   `block` varchar(255) NOT NULL,
-  `bakanim` int(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `bakanim` int(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`),
+  KEY `last` (`last`),
+  KEY `day` (`day`),
+  KEY `status` (`status`),
+  KEY `aname` (`aname`),
+  KEY `year` (`year`),
+  KEY `season` (`season`),
+  FULLTEXT KEY `name` (`name`,`ename`,`search_status`)
+) ENGINE=InnoDB AUTO_INCREMENT=8670 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `youtube`
+--
+
+DROP TABLE IF EXISTS `youtube`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `youtube` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(256) NOT NULL,
   `vid` varchar(128) NOT NULL,
   `view` int(11) NOT NULL DEFAULT 0,
   `comment` int(11) NOT NULL DEFAULT 0,
   `hash` varchar(32) NOT NULL,
   `time` bigint(20) NOT NULL,
-  `type` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `type` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `vid` (`vid`),
+  KEY `type` (`type`),
+  KEY `time` (`time`)
+) ENGINE=InnoDB AUTO_INCREMENT=545 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-CREATE TABLE `upcoming_votes` (
-  `urid` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-
-ALTER TABLE `upcoming_votes`
-  ADD KEY `urid` (`urid`);
-
-ALTER TABLE `favorites`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `uid` (`uid`),
-  ADD KEY `rid` (`rid`);
-
-ALTER TABLE `f_tmp`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `vid` (`vid`),
-  ADD KEY `rid` (`rid`);
-
-ALTER TABLE `genre`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `log_ip`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `uid` (`uid`);
-
-ALTER TABLE `session`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `uid` (`uid`),
-  ADD KEY `hash` (`hash`);
-  
-ALTER TABLE `otp_codes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `uid` (`uid`);
-
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `login` (`login`),
-  ADD UNIQUE KEY `mail` (`mail`),
-  ADD UNIQUE KEY `vk` (`vk`);
-
-ALTER TABLE `xbt_files`
-  ADD PRIMARY KEY (`fid`),
-  ADD UNIQUE KEY `info_hash` (`info_hash`),
-  ADD KEY `rid` (`rid`),
-  ADD KEY `flags` (`flags`);
-
-ALTER TABLE `xbt_files_users`
-  ADD UNIQUE KEY `fid` (`fid`,`uid`),
-  ADD KEY `uid` (`uid`);
-
-ALTER TABLE `xbt_users`
-  ADD PRIMARY KEY (`uid`);
-
-ALTER TABLE `xrelease`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `code` (`code`),
-  ADD KEY `last` (`last`),
-  ADD KEY `day` (`day`),
-  ADD KEY `status` (`status`),
-  ADD KEY `aname` (`aname`);
-ALTER TABLE `xrelease` ADD FULLTEXT KEY `name` (`name`,`ename`,`search_status`);
-
-ALTER TABLE `youtube`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `vid` (`vid`),
-  ADD KEY `type` (`type`),
-  ADD KEY `time` (`time`);
-
-
-ALTER TABLE `favorites`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `f_tmp`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `genre`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `log_ip`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `session`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-  
-ALTER TABLE `otp_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `xbt_files`
-  MODIFY `fid` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `xbt_users`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `xrelease`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `youtube`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+-- Dump completed on 2020-06-03 17:37:18
