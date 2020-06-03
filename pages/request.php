@@ -171,8 +171,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<h4 class="modal-title" id="avatarInfo">Заявка отправлена</h4>
 			</div>
 			<div  class="modal-body">
-				Если вам долго не отвечают на почту, то возможно заявка попала в спам.<br/>
-				Пожалуйста, напишите в telegram <a href="https://t.me/AniLibriaTP">@AniLibriaTP</a> и узнайте статус.
+				Заявки на вступление в команду войсеров рассматриваются в течение месяца,</br>
+				заявки в команды технарей и сабберов рассматриваются в течение 1-2 недель.</br>
+				Если в течение заданных сроков нет ответа, пожалуйста, напишите в telegram @Libria911Bot и узнайте статус.
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>

@@ -49,17 +49,18 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <?php echo $tmpPage; ?>
 
+<?php if(checkADS()): ?>
+<!--
+Insert ads code here
+-->
+<?php endif; ?>
+
 <div style="margin-top: 10px; margin-bottom: 10px;">
 	<a href="https://vk.com/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a1.jpg" width="283" style="border-radius: 4px;"></a>
 	<a href="tg://resolve?domain=anilibria_tv" rel="nofollow"><img src="/img/other/a2.jpg" width="283" style="margin-left: 12px; border-radius: 4px;"></a>
 	<a href="https://discord.gg/Kdr5sNw" target="_blank" rel="nofollow"><img src="/img/other/a3.jpg" width="283" style="float: right; border-radius: 4px;"></a>
 </div>
 
-<?php if(checkADS()):?>
-<div id="adv_block">
-	<iframe id="adv_kod_frame" src="https://vidroll.ru/kod.php?param=34664f454c6831647965792b62775649687645653733355761693433676a4e663035716b42437a554a4a475651424b43585170522f34493d" width="600" height="320" frameborder="0" scrolling="no" allowfullscreen="true"></iframe><script type="text/javascript" src="https://vidroll.ru/player_html5/iframeobrabotchik.js"></script>
-</div>
-<?php endif;?>
 <div id="vk_comments" style="margin-top: 10px;"></div>
 
 <div class="modal fade" id="statModal" tabindex="-1" role="dialog" aria-hidden="true" >

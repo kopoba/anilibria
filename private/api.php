@@ -112,8 +112,11 @@ $BLOCKED_RELEASES_CINEMA_GALAXY = [
     3264,//Твоя апрельская ложь: Мгновения
 ];
 
+$APP_ID_ANDROID_MOBILE_STORE = "tv.anilibria.store";
+$APP_ID_ANDROID_TV = "ru.radiationx.anilibria.app.tv";
+
 $IGNORE_APP_ID = [
-    "tv.anilibria.store"
+    $APP_ID_ANDROID_MOBILE_STORE
 ];
 
 function safeApiList() {
@@ -144,6 +147,8 @@ function apiList(){
     //updateApiCache();
 	global $cache,
     $var,
+    $APP_ID_ANDROID_MOBILE_STORE,
+    $APP_ID_ANDROID_TV,
     $IGNORE_APP_ID,
     $BLOCKED_RELEASES_WAKANIM,
     $BLOCKED_RELEASES_VGTRK,
@@ -160,8 +165,14 @@ function apiList(){
     // Для этих методов основная апишка не обязательна
     switch($_POST['query']) {
 		case 'app_update':
+            $appIdHeader = getallheaders()['App-Id'] ?? "";
 			$version = $var['app_version'];
-			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/version_$version.txt");
+            $path = "/private/app_updates/version_$version.txt";
+            if($appIdHeader == $APP_ID_ANDROID_TV) {
+                $version = $var['app_tv_version'];
+                $path = "/private/app_tv_updates/version_$version.txt";
+            }
+			$src = file_get_contents($_SERVER['DOCUMENT_ROOT'].$path);
 			return json_decode($src, true);
         break;
             
@@ -731,6 +742,18 @@ function apiList(){
             $_SERVER['SERVER_NAME']
         ];
     }
+    
+    function apiGetOtp($data){
+        global $var;
+        $remainingTime = intval($data['expired_at']) - $var['time'];
+        return [
+            "code" => $data['code'],
+            "expiredAt" => $data['expired_at'],
+            "description" => "Откройте на компьютере или в мобильном приложении свой профиль и введите код.\nМобильное приложение должно быть обновлено до актуальной версии.",
+            "remainingTime" => $remainingTime,
+            "rawData" => $data
+        ];
+    }
 	
 	function proceedBridge($funcSrc, $funcDst){
 		register_shutdown_function(function() use ($funcSrc, $funcDst) {
@@ -741,7 +764,7 @@ function apiList(){
 			wrapApiResponse(function() use ($message, $funcDst) {
 				$messageJson = json_decode($message, true);
 				if(!empty($messageJson['err']) && $messageJson['err']!=='ok'){
-					throw new ApiException($messageJson['mes'], 400);
+					throw new ApiException($messageJson['mes'] ?: $messageJson['key'], 400, $messageJson['key']);
 				}
 				// Выполняем функцию, которая обрабатывает данные, которые вывела $funcSrc
 				return $funcDst($messageJson);
@@ -873,6 +896,36 @@ function apiList(){
             
         case 'reserved_test':
 			return apiGetReservedTestResponse();
+            
+        case 'auth_get_otp':
+            return proceedBridge(
+				function() {
+					getOtpCode();
+				},
+				function($bridgeData) {
+					return apiGetOtp($bridgeData['mes']);
+				}
+			);
+            
+        case 'auth_accept_otp':
+            return proceedBridge(
+				function() {
+					acceptOtpCode();
+				},
+				function($bridgeData) {
+					return $bridgeData;
+				}
+			);
+            
+        case 'auth_login_otp':
+            return proceedBridge(
+				function() {
+					loginByOtpCode();
+				},
+				function($bridgeData) {
+					return $bridgeData;
+				}
+			);
         break;
 	}
     //Вместо default case

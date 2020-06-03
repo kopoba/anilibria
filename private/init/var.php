@@ -33,6 +33,7 @@ if(!empty($_SERVER['HTTP_USER_AGENT'])){
 $var['default_user_values'] = '{"name":"","age":"","sex":"","vk":"","telegram":"","steam":"","phone":"","skype":"","facebook":"","instagram":"","youtube":"","twitch":"","twitter":""}';
 
 $var['app_version'] = 54;
+$var['app_tv_version'] = 3;
 
 $var['sex'] = [
 	'Не указано',
@@ -132,6 +133,9 @@ $var['error'] = [
 	'wrongData' => 'Неправильные данные',
 	'wrongRelease' => 'Неправильный релиз',
 	'exitTorrent' => 'Торрент уже добавлен',
+	'otpNotFound' => 'Код не найден',
+	'otpAccepted' => 'Код уже подтверждён',
+	'otpNotAccepted' => 'Код еще не подтверждён',
 ];
 
 $var['season'] = ['winter' => 'зима', 'spring' => 'весна', 'summer' => 'лето', 'autumn' => 'осень'];

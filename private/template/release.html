@@ -14,7 +14,7 @@
 	</div>
 	
 	<script> var chosenGenre = [{chosen-genre}];</script>
-	
+
 <div id="xreleaseEdit" class="detail_torrent_info" style="display: none; height: auto; overflow: hidden;">
 			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" value="{name}" required="">
 			<input id="nEname" class="form-control" style="margin-top: 8px;" type="text" placeholder="Английское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
@@ -71,19 +71,19 @@
 			</div>
 			<input id="nMoon" class="form-control" style="margin-top: 8px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
 		</div>
-	
+
 	<div id="xreleaseInfo" class="detail_torrent_info">
+		{TeamBlockMsg}
 		<h1 class="release-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 0px;">
 			{fullname}
 		</h1>
 		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
-		<b>Сезон:</b> {year}<br>
-		<b>Тип:</b> {type}<br>
-		<b>Жанры:</b> {genre}<br>
-		{VoicedBy}{voice}{br}
+		<b>Сезон:</b> {year}<br/>
+		<b>Тип:</b> {type}<br/>
+		<b>Жанры:</b> {genre}<br/>
+		<b>Озвучка:</b> {voice}<br/>
+		{timingTitle}{timing}<br/>
 		{other}
-		<!--<b>Озвучка:</b> {voice}<br>-->
-		<!--<b><a href="#" data-show-other style="color: #000;">Работа над релизом</a>:</b> {other}<br>-->
 		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
 		<p class="detail-description" style="font-size: 15.7px;">{description}</p>
 	</div>
@@ -128,14 +128,12 @@
 	<div class="modal-dialog" style="width: 550px;">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="avatarInfo">Работа над релизом [{releaseid}]</h4>
+				<h4 class="modal-title" id="avatarInfo">Работа над субтитрами [{releaseid}]</h4>
 			</div>
 			<div class="modal-body">
-				<b>Озвучка</b>: {voice}<br/>
 				<b>Перевод</b>: {translator}<br/>
 				<b>Редактура</b>: {editing}<br/>
-				<b>Оформление</b>: {decor}<br/>
-				<b>Тайминг</b>: {timing}
+				<b>Оформление</b>: {decor}
 			</div>
 			<div class="modal-footer">
 			</div>

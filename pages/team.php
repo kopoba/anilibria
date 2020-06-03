@@ -72,7 +72,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<ul>
 			<li><span style="color: #000080;">Sekai</span> - руководитель подкоманды сидеров / оформитель</li>
 			<li><span style="color: #800000;">Alkhorus </span> - технарь / куратор академии таймеров / помощник рук. технарей</li>
-			<li><span style="color: #800000;">Hikariya</span> - технарь / помощник рук. сабберов (оформитель) / дизайнер</li>
 		    <li><span style="color: #800000;">Akkakken</span> - руководитель технарей, технарь / оформитель / войсер стажёр</li>
 			<li><span style="color: #800000;">Blaze</span> - технарь</li>
 			<li><span style="color: #339966;">Amikiri</span> - войсер</li>
@@ -108,6 +107,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #000080;">basegame</span> - сидер</li>
 			<li><span style="color: #000080;">GeeKaZ0iD</span> - сидер</li>
             <li><span style="color: #000080;">OdinokijKot</span> - сидер</li>
+			<li><span style="color: #000080;">Tuxoid</span> - сидер</li>
 		</ul>
 		<div class="day">
 				<div class="teamleft">&#8547; лига</div> 
@@ -120,13 +120,15 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">Narea</span>&nbsp;- войсер / дизайнер</li>
 			<li><span style="color: #339966;">Kiyoko Koheiri</span> - войсер</li> 
 			<li><span style="color: #339966;">SlivciS</span> - войсер</li>
+			<li><span style="color: #339966;">OkanaTsoy</span> - войсер</li>
 			<li><span style="color: #800000;">Hidan</span> - технарь</li>
 			<li><span style="color: #800000;">DarkKnight</span> - технарь </li>
 			<li><span style="color: #800000;">Psychosocial76</span> - технарь</li>
-			<li><span style="color: #800000;">EncoR</span> - технарь</li>
 			<li><span style="color: #800000;">Dr.One</span> - технарь</li>
 			<li><span style="color: #800000;">ZencorZ</span> - технарь</li>
 			<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
+			<li><span style="color: #800000;">EliteNoob </span> - технарь</li>
+			<li><span style="color: #800000;">Booker</span> - технарь</li>
             <li><span style="color: #f7941d;">The Magus</span> - переводчик / оформитель</li>
 			<li><span style="color: #f7941d;">Renko</span> - переводчик</li>
             <li><span style="color: #f7941d;">drowzzzy</span> - переводчик</li>
@@ -140,13 +142,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #33cccc;">Muvik</span> - дизайнер</li>
 			<li><span style="color: #33cccc;">Residensi</span> - дизайнер</li>
 			<li><span style="color: #33cccc;">Sebastian Wilde</span> - дизайнер</li>
-			<li><span style="color: #000080;">LightKay</span> - сидер</li>
-			<li><span style="color: #000080;">Ph0enix</span> - сидер</li>
 			<li><span style="color: #000080;">Iddqd79</span> - сидер</li>
 			<li><span style="color: #000080;">Rumaruka</span> - сидер</li>
 			<li><span style="color: #000080;">btc8190</span> - сидер</li>
 			<li><span style="color: #000080;">udtpro</span> - сидер</li>
-			<li><span style="color: #000080;">Tuxoid</span> - сидер</li>
 			<li><span style="color: #000080;">zlo</span> - сидер</li>
 		</ul>
 		<div class="day">
@@ -155,9 +154,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</div>
 		<ul>
 			<li><span style="color: #339966;">HectoR</span> - войсер (в отпуске)</li>
-			<li><span style="color: #339966;">Myuk</span> - войсер (в отпуске)</li>
-			<li><span style="color: #339966;">Rexus</span> - войсер</li>
-			<li><span style="color: #339966;">OkanaTsoy</span> - войсер (в отпуске)</li>
+			<li><span style="color: #339966;">Rexus</span> - войсер (в отпуске)</li>
 			<li><span style="color: #f7941d;">Constantum</span> - переводчик (в отпуске)<br>
             <li><span style="color: #f7941d;">Suisei</span> - переводчик / оформитель (в отпуске)</li>
             <li><span style="color: #f7941d;">Skaifai</span> - переводчик (в отпуске)</li>
@@ -167,10 +164,11 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
             <li><span style="color: #f7941d;">Smallow</span> - переводчик (в отпуске)</li>
             <li><span style="color: #f7941d;">Keitaro</span> - переводчик / оформитель (в отпуске)</li>
             <li><span style="color: #800000;">Luchano</span> - технарь (в отпуске)</li>
-			<li><span style="color: #800000;">EliteNoob </span> - технарь (в отпуске)</li>
+			<li><span style="color: #800000;">Hikariya</span> - технарь (в отпуске)</li>
+			<li><span style="color: #800000;">EncoR</span> - технарь (в отпуске)</li>
 			<li><span style="color: #000080;">Tekyera</span> - сидер (в отпуске)</li>
 			<li><span style="color: #000080;">SkyMasteer</span> - сидер (в отпуске)</li>
-			<li><span style="color: #000080;">AstaSPB</span> - сидер (в отпуске)</li>
+			<li><span style="color: #000080;">LightKay</span> - сидер (в отпуске)</li>
 		</ul>
 		<div class="day">
 				<div class="teamleft">&#8549; лига</div> 
@@ -192,14 +190,19 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<li><span style="color: #339966;">BStrong</span> - войсер стажёр</li>
             <li><span style="color: #800000;">Nikanor47</span> - таймер стажёр</li>
             <li><span style="color: #800000;">ito</span> - таймер стажёр</li>			
-            <li><span style="color: #800000;">Booker</span> - таймер стажёр</li>			
             <li><span style="color: #800000;">TeagRit</span> - таймер стажёр</li>			
-            <li><span style="color: #800000;">im4x</span> - таймер стажёр</li>			
+            <li><span style="color: #800000;">im4x</span> - таймер стажёр</li>
+            <li><span style="color: #800000;">StuffyHarbor</span> - таймер стажёр</li>
+            <li><span style="color: #800000;">H3O</span> - таймер стажёр</li>			
 			<li><span style="color: #f7941d;">Kitsune</span> - саббер стажёр</li>
 			<li><span style="color: #f7941d;">Dyunan</span> - саббер стажёр</li>
 			<li><span style="color: #f7941d;">Ameno Aoki</span> - саббер стажёр</li>
 			<li><span style="color: #f7941d;">Teatral</span> - саббер стажёр</li>
-			<li><span style="color: #f7941d;">Medoed</span> - саббер стажёр</li>			
+			<li><span style="color: #f7941d;">Medoed</span> - саббер стажёр</li>	
+			<li><span style="color: #f7941d;">Selv</span> - саббер стажёр</li>
+			<li><span style="color: #f7941d;">Sinaka</span> - саббер стажёр</li>
+			<li><span style="color: #f7941d;">Zaqwerd</span> - саббер стажёр</li>
+			<li><span style="color: #000080;">Ph0enix</span> - сидер (4 лига), саббер стажёр</li>			
 		</ul>
 	
 		<div class="day">

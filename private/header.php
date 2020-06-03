@@ -10,52 +10,63 @@ function headerAds(){
 	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
-	//$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro'];
-	//$data[] = ['img' => 'ragnarok1', 'left' => '0px', 'url' => '/ro1'];
-	$data[] = ['img' => 'bs', 'left' => '-195px', 'url' => '/bs'];
-	$data[] = ['img' => 'storm', 'left' => '0px', 'url' => '/storm'];
-	$data[] = ['img' => 'cro', 'left' => '0px', 'url' => '/cro'];
-	$data[] = ['img' => 'rise', 'left' => '0px', 'url' => '/rise'];
-	$data[] = ['img' => 'ironsight1', 'left' => '0px', 'url' => '/ironsight'];
-	//$data[] = ['img' => 'bravo1', 'left' => '0px', 'url' => '/bravo1'];
-	//$data[] = ['img' => 'bravo2', 'left' => '0px', 'url' => '/bravo2'];
+	$data[] = ['img' => 'dityapogodi', 'left' => '0px', 'top' => '0px', 'url' => 'https://vk.cc/auVjXB'];
+	$data[] = ['img' => 'sao', 'left' => '420px', 'top' => '110px', 'url' => '/sao'];
+	$data[] = ['img' => 'dityapogodi', 'left' => '0px', 'top' => '0px', 'url' => 'https://vk.cc/auVjXB'];
+	$data[] = ['img' => 'pf', 'left' => '425px', 'top' => '125px', 'url' => '/pf'];
+	$data[] = ['img' => 'dityapogodi', 'left' => '0px', 'top' => '0px', 'url' => 'https://vk.cc/auVjXB'];
+	$data[] = ['img' => 'naruto', 'left' => '650px', 'top' => '150px', 'url' => '/naruto'];
+	//$data[] = ['img' => 'bdo', 'left' => '0px', 'top' => '135px', 'url' => '/bdo'];
+	//$data[] = ['img' => 'bns', 'left' => '0px', 'top' => '135px', 'url' => '/bns'];
 
 	if(checkADS()){
-		//$cday = date('j', $var['time']);
-		//$key = $cache->get('adsCurrent');
-		//$day = $cache->get('adsCurrentDay');
-		//if($key === false || $day === false || $day != $cday){
-		//	if($key === false){
-		//		$key = 0;
-		//	}else{
-		//		$key++;
-		//	}
-		//	if($key > count($data)-1){
-		//		$key = 0;
-		//	}
-		//	//$key = random_int(0, count($data)-1);
-		//	$cache->set('adsCurrent', $key, 172800);
-		//	$cache->set('adsCurrentDay', $cday, 172800);
-		//}
-/*
-		$key = 0;
+		$cHour = date('G', $var['time']);
+		$key = $cache->get('adsCurrent');
+		$adsHour = $cache->get('adsCurrentHour');
+		if($key === false || $adsHour === false || $adsHour != $cHour){
+			if($key === false){
+				$key = 0;
+			}else{
+				$key++;
+			}
+			if($key > count($data)-1){
+				$key = 0;
+			}
+			//$key = random_int(0, count($data)-1);
+			$cache->set('adsCurrent', $key, 3600);
+			$cache->set('adsCurrentHour', $cHour, 3600);
+		}
+		
+		//$key = 2;
 		$ads = $data["$key"];
 		
 		$img = urlCDN('/img/other/a/'.$ads['img'].'.jpg');
+		$height = '60px';
+		$width = '235px';
+		if($key == 0 || $key == 2 || $key == 4) {
+			$img = urlCDN('/img/other/a/'.$ads['img'].'.png');
+			$height = '215px';
+			$width = '1175px';
+		}
 		$left = $ads['left'];
+		$top = $ads['top'];
 		$result['url'] = $ads['url'];
 		$result['ads'] = true;
-		*/
+		
 	}
 	/*Удалить когда голосование закончится*/
-	/*$img = urlCDN('/img/29.png');
-	$result['url'] = '/season/2020winter.html';
+	/*$img = urlCDN('/img/season/spring2020.png');
+	$result['url'] = '/season/2020spring.html';
 	$result['ads'] = true;*/
 	/*------------------------------------*/
 	
 	$css = getTemplate('header');
 	$css = str_replace('{img}', $img, $css);
 	$css = str_replace('{left}', $left, $css);
+	$css = str_replace('{top}', $top, $css);
+	$css = str_replace('{height}', $height, $css);
+	$css = str_replace('{width}', $width, $css);
+	
 	$result['css'] = $css;
 	return $result;
 }
@@ -72,8 +83,22 @@ $xcss = headerAds();
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
-		  gtag('config', 'UA-137180052-1');
-		</script>		
+		  gtag('config', 'UA-159821219-2');
+		</script>
+		<!-- Yandex.Metrika counter -->
+		<script type="text/javascript" >
+		   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+		   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+		   (window, document, "script", "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/tag.js", "ym");
+
+		   ym(23688205, "init", {
+				clickmap:true,
+				trackLinks:true,
+				accurateTrackBounce:true
+		   });
+		</script>
+		<noscript><div><img src="https://mc.yandex.ru/watch/23688205" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+		<!-- /Yandex.Metrika counter -->
 		<?php echo $var['og']; ?>
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
@@ -113,11 +138,13 @@ $xcss = headerAds();
 						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
+				
+				<!-- <a href="http://animepik.org" target="_blank" ><img src="/img/animepik1.jpg" width="880px" height="107px" style="margin-top: 10px;" alt="animepik.org" /></a> -->
 
 
 
 
 
-<!--<div class="alert alert-warning" role="alert" style="margin-top: 10px; margin-bottom: 0px; font-size: 12.2pt; color: #000000;">
-	Сайт заблокирован в России. Поддержите проект подпиской на <a href="https://t.me/anilibria_tv" target="_blank">телеграм</a>, <a href="https://vk.com/anilibria" target="_blank">вконтакте</a> или <a href="https://www.anilibria.tv/pages/donate.php" target="_blank">донатом</a>.<br/> Спасибо, что вы с нами!
-</div>-->
+<div class="alert alert-warning" role="alert" style="margin-top: 10px; margin-bottom: 0px; font-size: 12.2pt; color: #000000;">
+	Недоступное на нашем сайте можно найти на <a href="http://animepik.org" target="_blank">АнимеПик</a> и <a href="https://dark-libria.it/" target="_blank">Тёмной Либрии</a>. Спасибо, что вы с нами!
+</div>

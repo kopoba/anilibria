@@ -47,7 +47,7 @@
 			<div class="footer_right">
 				<ul>
 					<li><a href="/pages/login.php#rules">Правила</a></li>
-					<li><a href="tg://resolve?domain=AniLibriaTP">Вопрос</a></li>
+					<li><a href="tg://resolve?domain=Libria911Bot">Вопрос</a></li>
 					<li><a href="/pages/cp.php">Личный кабинет</a></li>
 					<?php 
 						$tmpURL = "<li><a href=\"/pages/login.php\">Регистрация</a></li><li><a href=\"/pages/login.php\">Вход</a></li>";
@@ -57,7 +57,7 @@
 					?>
 				</ul>
 				<p>
-				Весь материал на сайте представлен исключительно для домашнего ознакомительного просмотра.<br/> В случаях нарушения авторских прав - обращайтесь на почту lupin@anilibria.tv 
+				Весь материал на сайте представлен исключительно для домашнего ознакомительного просмотра.<br/> В случаях нарушения авторских прав - обращайтесь на почту anilibria@protonmail.com 
 				</p>
 			</div>
 		</div>
@@ -77,38 +77,15 @@
 		<script src="<?php echo urlCDN(fileTime('/js/main.js'));?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
-		<!-- Yandex.Metrika counter -->
-		<script type="text/javascript" >
-			(function (d, w, c) {
-				(w[c] = w[c] || []).push(function() {
-					try {
-						w.yaCounter23688205 = new Ya.Metrika({
-							id:23688205,
-							clickmap:true,
-							trackLinks:true,
-							accurateTrackBounce:true
-						});
-					} catch(e) { }
-				});
-
-				var n = d.getElementsByTagName("script")[0],
-					s = d.createElement("script"),
-					f = function () { n.parentNode.insertBefore(s, n); };
-				s.type = "text/javascript";
-				s.async = true;
-				s.src = "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/watch.js";
-
-				if (w.opera == "[object Opera]") {
-					d.addEventListener("DOMContentLoaded", f, false);
-				} else { f(); }
-			})(document, window, "yandex_metrika_callbacks");
-		</script>
-		<noscript><div><img src="https://mc.yandex.ru/watch/23688205" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-		<!-- /Yandex.Metrika counter -->
 		<!-- 
 			Copyright (C) 2018-2019 The AniLibria developers.
 			Please contribute if you find AniLibria useful.
 			The source code is available from https://github.com/anilibria/
 		-->	
+		<?php if(checkADS()):?>
+		<!--
+		    Put ads code here
+		-->
+		<?php endif;?>
 	</body>
 </html>

@@ -1,0 +1,64 @@
+<div class="news-block">
+
+	<div id="emptyHeader" class="news-header"></div>
+	
+	<script> var chosenGenre = [{chosen-genre}];</script>
+
+	<div id="xreleaseInfo" class="detail_torrent_info">
+			<h1 class="release-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 0px;">
+				{fullname}
+			</h1>
+			<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
+			<b>Сезон:</b> {year}<br>
+			<b>Тип:</b> {type}<br>
+			<b>Жанры:</b> {genre}<br>
+			<b>Озвучка:</b> {voice}<br/>
+			{timingTitle}{timing}<br/>
+			{other}
+			<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
+			<p class="detail-description" style="font-size: 15.7px;">{description}</p>
+	</div>
+	<div class="detail_torrent_side">
+		<div id="nextserial" {style}>
+			<a href="" id="releaseAnnounce" data-change-announce="{userAccess}" style="color: white; text-decoration: none;">{announce}</a>
+			<input type="hidden" id="releaseID" value="{id}">
+		</div>
+		<div class="detail_pic_corner">
+			<img id="adminPoster" class="detail_torrent_pic" border="0" src="{img}" width="350" height="500" alt="{alt}">
+		</div>
+	</div>
+	<div class="clear"></div>
+	<div id="xreleaseDesc" style="display: none;">
+		<textarea id="nDescription" class="form-control" style="margin-top: 8px; resize: vertical;" rows="10" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{xdescription}</textarea>
+	</div>
+	<div class="tab-switcher">
+		<div class="tab-content">
+			{button}
+			<div class="block_fix"></div>
+		</div>
+	</div>
+	<div style="width: 100%; height: auto; background-color: #383838; color: #fff; padding: 20px;">
+		<span>Просмотр этого аниме заблокирован на сайте по требованию правообладателя.
+		Однако, его можно посмотреть на сайте наших друзей:</br>
+		<a href="https://animepik.org/anime/{id}" style="color: #d9d9d9;">{fullname}</a>
+		</span>
+	</div>
+	<div class="clear"></div>
+</div>
+
+<div class="modal fade" id="otherModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" style="width: 550px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="avatarInfo">Работа над субтитрами [{releaseid}]</h4>
+			</div>
+			<div class="modal-body">
+				<b>Перевод</b>: {translator}<br/>
+				<b>Редактура</b>: {editing}<br/>
+				<b>Оформление</b>: {decor}
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
