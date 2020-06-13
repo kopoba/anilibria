@@ -147,6 +147,9 @@ function apiList(){
     //updateApiCache();
 	global $cache,
     $var,
+    $count,
+    $info,
+    $torrent,
     $APP_ID_ANDROID_MOBILE_STORE,
     $APP_ID_ANDROID_TV,
     $IGNORE_APP_ID,
@@ -158,7 +161,7 @@ function apiList(){
     
   
     
-	if(!isset($_POST['query'])){
+	if(!isset($_POST['query']) && !isset($_GET['query'])){
         throw new ApiException('No query', 400);
 	}
     
@@ -186,22 +189,53 @@ function apiList(){
         break;
 	}
     
-	$count = $cache->get('apiInfo');
-	$info = [];
-	$torrent = json_decode($cache->get('apiTorrent'), true);
-	for($i=0; $i < $count; $i++){
-		$tmp = json_decode($cache->get("apiInfo$i"), true);
-		if(is_array($tmp)){
-			foreach($tmp as $k => $v){
-				$info["$k"] = $v; 
-			}
-		}
+    /* Checking cache */
+    function fetchNormalCache(){
+        global $cache, $count, $info, $torrent;
+        $count = $cache->get('apiInfo');
+        $info = [];
+        $torrent = json_decode($cache->get('apiTorrent'), true);
+        for($i=0; $i < $count; $i++){
+            $tmp = json_decode($cache->get("apiInfo$i"), true);
+            if(is_array($tmp)){
+                foreach($tmp as $k => $v){
+                    $info["$k"] = $v; 
+                }
+            }
+        }
+    }
+    
+    function fetchInfiniteCache(){
+        global $cache, $count, $info, $torrent;
+        $count = $cache->get('infiniteApiInfo');
+        $info = [];
+        $torrent = json_decode($cache->get('infiniteApiTorrent'), true);
+        for($i=0; $i < $count; $i++){
+            $tmp = json_decode($cache->get("infiniteApiInfo$i"), true);
+            if(is_array($tmp)){
+                foreach($tmp as $k => $v){
+                    $info["$k"] = $v; 
+                }
+            }
+        }
+    }
+    
+    function checkApiRelaxing() {
+        global $info, $torrent;
+        return $info === null || $torrent === null || $info === false || $torrent === false;
+    }
+    
+	fetchNormalCache();
+
+	if(checkApiRelaxing()) {
+        
+        fetchInfiniteCache();
+        if(checkApiRelaxing()) {
+            throw new ApiException('API is not ready', 400);
+        }
 	}
     
-	if($info === null || $torrent === null || $info === false || $torrent === false){
-        throw new ApiException('API is not ready', 400);
-	}
-    
+    /* Main api methods */
 	function apiGetTorrentsMap($torrents, $idsString){
 		$result = [];
 		$ids = array_unique(explode(',', $idsString));
@@ -790,6 +824,12 @@ function apiList(){
 		}
 	}
     
+    switch($_GET['query']){
+        case 'api_empty':
+            return [];
+        break;
+    }
+    
 	switch($_POST['query']){
 		case 'torrent':
 			if(!empty($_POST['id'])){
@@ -1063,11 +1103,26 @@ function updateApiCache(){
 		}
 	}
 	$chunk = array_chunk($info, 100, true);
+    saveNormalCache($chunk, $torrent);
+    saveInfiniteCache($chunk, $torrent);
+}
+
+function saveNormalCache($chunk, $torrent){
+    global $cache;
 	foreach($chunk as $k => $v){
 		$cache->set("apiInfo$k", json_encode($v), 300);
 	}
 	$cache->set('apiInfo', count($chunk), 300);
 	$cache->set('apiTorrent', json_encode($torrent), 300);
+}
+
+function saveInfiniteCache($chunk, $torrent){
+    global $cache;
+	foreach($chunk as $k => $v){
+		$cache->set("infiniteApiInfo$k", json_encode($v), 0);
+	}
+	$cache->set('infiniteApiInfo', count($chunk), 0);
+	$cache->set('infiniteApiTorrent', json_encode($torrent), 0);
 }
 
 function getApiPlaylist($id){

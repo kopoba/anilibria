@@ -25,7 +25,11 @@ class cacheHandler {
 	function set($key, $val, $time){
 		global $redis, $memcached, $conf;
 		if($conf['cache'] == 'redis'){ // $key, $time, $val => redis
-			return $redis->setex($key, $time, $val);
+            if($time > 0){
+                return $redis->setex($key, $time, $val);
+            } else {
+                return $redis->set($key, $val);
+            }
 		}
 		if($conf['cache'] == 'memcached'){ // $key, $val, $time => memcached
 			return $memcached->set($key, $val, $time);
