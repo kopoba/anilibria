@@ -929,6 +929,9 @@ function torrent(){
 			break;
 		}
 	}
+	if(!empty($val['rid'])) {
+        APIv2_UpdateTitle($val['rid']);
+    }
 	_message('success');
 }
 
@@ -2118,7 +2121,7 @@ function updateReleaseAnnounce(){
 	$query->bindParam(':announce', $_POST['announce']);
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
-	APIv2_UpdateTitle($id);
+	APIv2_UpdateTitle($_POST['id']);
 	_message('success');
 }
 
@@ -2616,7 +2619,7 @@ function releaseUpdateLast(){
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':id', $_POST['id']);
 	$query->execute();
-	APIv2_UpdateTitle($id);
+	APIv2_UpdateTitle($_POST['id']);
 	_message('success');
 }
 
