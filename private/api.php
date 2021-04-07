@@ -158,36 +158,32 @@ function apiList(){
     $BLOCKED_RELEASES_ISTARI,
     $BLOCKED_RELEASES_CINEMA_GALAXY;
     $result = [];
-    
-  
-    
-	if(!isset($_POST['query']) && !isset($_GET['query'])){
-        throw new ApiException('No query', 400);
-	}
-    
+
     // Для этих методов основная апишка не обязательна
-    switch($_POST['query']) {
-		case 'app_update':
-            $appIdHeader = getallheaders()['App-Id'] ?? "";
-			$version = $var['app_version'];
-            $path = "/private/app_updates/version_$version.txt";
-            if($appIdHeader == $APP_ID_ANDROID_TV) {
-                $version = $var['app_tv_version'];
-                $path = "/private/app_tv_updates/version_$version.txt";
-            }
-			$src = file_get_contents($_SERVER['DOCUMENT_ROOT'].$path);
-			return json_decode($src, true);
-        break;
-            
-        case 'config':
-			$src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/config.txt");
-			return json_decode($src, true);
-        break;
-			
-		case 'empty':
-			return [];
-        break;
-	}
+    if (isset($_POST['query'])) {
+        switch($_POST['query']) {
+            case 'app_update':
+                $appIdHeader = getallheaders()['App-Id'] ?? "";
+                $version = $var['app_version'];
+                $path = "/private/app_updates/version_$version.txt";
+                if($appIdHeader == $APP_ID_ANDROID_TV) {
+                    $version = $var['app_tv_version'];
+                    $path = "/private/app_tv_updates/version_$version.txt";
+                }
+                $src = file_get_contents($_SERVER['DOCUMENT_ROOT'].$path);
+                return json_decode($src, true);
+            break;
+                
+            case 'config':
+                $src = file_get_contents($_SERVER['DOCUMENT_ROOT']."/private/app_updates/config.txt");
+                return json_decode($src, true);
+            break;
+                
+            case 'empty':
+                return [];
+            break;
+        }
+    }
     
     /* Checking cache */
     function fetchNormalCache(){
@@ -258,9 +254,12 @@ function apiList(){
     
     function apiGetReleaseById($info, $torrent, $rid) {
         $result = NULL;
-        if(array_key_exists($rid, $info)){
+        if (array_key_exists($rid, $info)) {
             $releases = array($info[$rid]);
-            $result = proceedReleases($releases, $torrent)[0];
+            $proceededReleases = proceedReleases($releases, $torrent);
+            if (!empty($proceededReleases)) {
+                $result = $proceededReleases[0];
+            }
         }
         if($result){
             return $result;
@@ -271,9 +270,12 @@ function apiList(){
     function apiGetReleaseByCode($info, $torrent, $rcode) {
         $result = NULL;
         foreach($info as $key => $val){
-            if($val['code'] == $rcode){
+            if ($val['code'] == $rcode){
                 $releases = array($val);
-				$result = proceedReleases($releases, $torrent)[0];
+                $proceededReleases = proceedReleases($releases, $torrent);
+                if (!empty($proceededReleases)) {
+                    $result = $proceededReleases[0];
+                }
                 break;
 			}
         }
@@ -465,6 +467,12 @@ function apiList(){
 						$val['playlist']["$k"]['srcSd'] = mp4_link($val['playlist']["$k"]['file'].'-sd.mp4')."?download=$epName-$epNumber-sd.mp4";
 						$val['playlist']["$k"]['srcHd'] = mp4_link($val['playlist']["$k"]['file'].'.mp4')."?download=$epName-$epNumber-hd.mp4";
             			unset($val['playlist']["$k"]['file']);
+
+                        // Временно убираем ссылки на скачивание
+                        unset($val['playlist']["$k"]['srcSd']);
+                        unset($val['playlist']["$k"]['srcHd']);
+                        // Временная заглушка о причинах отключения скачивания
+                        $val['playlist']["$k"]['srcHd']="https://vk.com/anilibria?w=wall-37468416_493445";
 					}
 				}
 			}
@@ -824,150 +832,153 @@ function apiList(){
 		}
 	}
     
-    switch($_GET['query']){
-        case 'api_empty':
-            return [];
-        break;
-    }
-    
-	switch($_POST['query']){
-		case 'torrent':
-			if(!empty($_POST['id'])){
-				checkIsStringOrInteger($_POST['id'], 'id');
-				return apiGetTorrentsMap($torrent, $_POST['id']);
-			}else{
-				return $torrent;
-			}
-		break;
-            
-		case 'info':
-			checkIsStringOrInteger($_POST['id'], 'id');
-			return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
-		break;
-            
-        case 'release':
-            if(!empty($_POST['id'])){
-				checkIsStringOrInteger($_POST['id'], 'id');
-                return apiGetReleaseById($info, $torrent, $_POST['id']);
-            } elseif(!empty($_POST['code'])) {
-				checkIsString($_POST['code'], 'code');
-                return apiGetReleaseByCode($info, $torrent, $_POST['code']);
-            } else {
-                throw new ApiException("No id or code for release", 400);
-            }
-        break;
-			
-		case 'random_release':
-			return apiGetRandomRelease();
-		break;
-            
-        case 'list':
-            return apiGetReleases($info, $torrent);
-        break;
-            
-		case 'schedule':
-            return apiGetSchedule($info, $torrent);
-        break;
-			
-		case 'feed':
-            return apiGetFeed($info, $torrent);
-        break;
-			
-        case 'genres':
-            return apiGetGenres();
-        break;
-			
-		case 'years':
-            return apiGetYears();
-        break;
-            
-        case 'favorites':
-            if(!empty($_POST['id'])||!empty($_POST['action'])){
-				checkIsStringOrInteger($_POST['id'], 'id');
-				checkIsString($_POST['action'], 'action');
-                return releaseFavoriteAction($info, $torrent);
-            }else{
-                return apiFavorites($info, $torrent);
-            }
-        break;
-            
-        case 'youtube':
-            return apiGetYoutube();
-        break;
-            
-        case 'user':
-            return apiGetUser();
-        break;
-			
-		case 'catalog':
-            return proceedBridge(
-				function() {
-					showCatalog();
-				},
-				function($bridgeData) use ($info, $torrent) {
-					return apiGetCatalog($info, $torrent, $bridgeData['table']);
-				}
-			);
-        break;
-			
-		case 'search':
-            return proceedBridge(
-				function() {
-					xSearch();
-				},
-				function($bridgeData) use ($info, $torrent) {
-					return apiSearchReleases($info, $torrent, $bridgeData['mes']);
-				}
-			);
-        break;
-			
-		case 'vkcomments':
-            return [
-				'baseUrl' => 'https://www.anilibria.tv/',
-				'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
-			];
-        break;
-			
-		case 'social_auth':
-			return apiGetSocialAuth();
- 
-        case 'link_menu':
-			return apiGetLinkMenu();
-            
-        case 'reserved_test':
-			return apiGetReservedTestResponse();
-            
-        case 'auth_get_otp':
-            return proceedBridge(
-				function() {
-					getOtpCode();
-				},
-				function($bridgeData) {
-					return apiGetOtp($bridgeData['mes']);
-				}
-			);
-            
-        case 'auth_accept_otp':
-            return proceedBridge(
-				function() {
-					acceptOtpCode();
-				},
-				function($bridgeData) {
-					return $bridgeData;
-				}
-			);
-            
-        case 'auth_login_otp':
-            return proceedBridge(
-				function() {
-					loginByOtpCode();
-				},
-				function($bridgeData) {
-					return $bridgeData;
-				}
-			);
-        break;
+	if(isset($_GET['query'])) {
+		switch($_GET['query']){
+			case 'api_empty':
+				return [];
+			break;
+		}
 	}
+    if (isset($_POST['query'])) {
+        switch($_POST['query']){
+            case 'torrent':
+                if(!empty($_POST['id'])){
+                    checkIsStringOrInteger($_POST['id'], 'id');
+                    return apiGetTorrentsMap($torrent, $_POST['id']);
+                }else{
+                    return $torrent;
+                }
+            break;
+                
+            case 'info':
+                checkIsStringOrInteger($_POST['id'], 'id');
+                return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
+            break;
+                
+            case 'release':
+                if(!empty($_POST['id'])){
+                    checkIsStringOrInteger($_POST['id'], 'id');
+                    return apiGetReleaseById($info, $torrent, $_POST['id']);
+                } elseif(!empty($_POST['code'])) {
+                    checkIsString($_POST['code'], 'code');
+                    return apiGetReleaseByCode($info, $torrent, $_POST['code']);
+                } else {
+                    throw new ApiException("No id or code for release", 400);
+                }
+            break;
+                
+            case 'random_release':
+                return apiGetRandomRelease();
+            break;
+                
+            case 'list':
+                return apiGetReleases($info, $torrent);
+            break;
+                
+            case 'schedule':
+                return apiGetSchedule($info, $torrent);
+            break;
+                
+            case 'feed':
+                return apiGetFeed($info, $torrent);
+            break;
+                
+            case 'genres':
+                return apiGetGenres();
+            break;
+                
+            case 'years':
+                return apiGetYears();
+            break;
+                
+            case 'favorites':
+                if(!empty($_POST['id'])||!empty($_POST['action'])){
+                    checkIsStringOrInteger($_POST['id'], 'id');
+                    checkIsString($_POST['action'], 'action');
+                    return releaseFavoriteAction($info, $torrent);
+                }else{
+                    return apiFavorites($info, $torrent);
+                }
+            break;
+                
+            case 'youtube':
+                return apiGetYoutube();
+            break;
+                
+            case 'user':
+                return apiGetUser();
+            break;
+                
+            case 'catalog':
+                return proceedBridge(
+                    function() {
+                        showCatalog();
+                    },
+                    function($bridgeData) use ($info, $torrent) {
+                        return apiGetCatalog($info, $torrent, $bridgeData['table']);
+                    }
+                );
+            break;
+                
+            case 'search':
+                return proceedBridge(
+                    function() {
+                        xSearch();
+                    },
+                    function($bridgeData) use ($info, $torrent) {
+                        return apiSearchReleases($info, $torrent, $bridgeData['mes']);
+                    }
+                );
+            break;
+                
+            case 'vkcomments':
+                return [
+                    'baseUrl' => 'https://www.anilibria.tv/',
+                    'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
+                ];
+            break;
+                
+            case 'social_auth':
+                return apiGetSocialAuth();
+    
+            case 'link_menu':
+                return apiGetLinkMenu();
+                
+            case 'reserved_test':
+                return apiGetReservedTestResponse();
+                
+            case 'auth_get_otp':
+                return proceedBridge(
+                    function() {
+                        getOtpCode();
+                    },
+                    function($bridgeData) {
+                        return apiGetOtp($bridgeData['mes']);
+                    }
+                );
+                
+            case 'auth_accept_otp':
+                return proceedBridge(
+                    function() {
+                        acceptOtpCode();
+                    },
+                    function($bridgeData) {
+                        return $bridgeData;
+                    }
+                );
+                
+            case 'auth_login_otp':
+                return proceedBridge(
+                    function() {
+                        loginByOtpCode();
+                    },
+                    function($bridgeData) {
+                        return $bridgeData;
+                    }
+                );
+            break;
+        }       
+    }
     //Вместо default case
     throw new ApiException("Unknown query", 400);
 }
