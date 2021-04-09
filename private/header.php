@@ -10,14 +10,9 @@ function headerAds(){
 	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
-	$data[] = ['img' => 'dityapogodi', 'left' => '0px', 'top' => '0px', 'url' => 'https://vk.cc/auVjXB'];
-	$data[] = ['img' => 'sao', 'left' => '420px', 'top' => '110px', 'url' => '/sao'];
-	$data[] = ['img' => 'dityapogodi', 'left' => '0px', 'top' => '0px', 'url' => 'https://vk.cc/auVjXB'];
-	$data[] = ['img' => 'pf', 'left' => '425px', 'top' => '125px', 'url' => '/pf'];
-	$data[] = ['img' => 'dityapogodi', 'left' => '0px', 'top' => '0px', 'url' => 'https://vk.cc/auVjXB'];
-	$data[] = ['img' => 'naruto', 'left' => '650px', 'top' => '150px', 'url' => '/naruto'];
-	//$data[] = ['img' => 'bdo', 'left' => '0px', 'top' => '135px', 'url' => '/bdo'];
-	//$data[] = ['img' => 'bns', 'left' => '0px', 'top' => '135px', 'url' => '/bns'];
+	$data[] = ['img' => 'pf.jpg', 'left' => '425px', 'top' => '125px', 'height' => '60px', 'width' => '235px', 'url' => '/pf'];
+	$data[] = ['img' => 'sao2.jpg', 'left' => '0', 'top' => '150px', 'height' => '60px', 'width' => '235px', 'url' => '/sao2'];
+	$data[] = ['img' => 'bok.png', 'left' => '300px', 'top' => '138px', 'height' => '70px', 'width' => '240px', 'url' => '/bok'];
 
 	if(checkADS()){
 		$cHour = date('G', $var['time']);
@@ -37,35 +32,39 @@ function headerAds(){
 			$cache->set('adsCurrentHour', $cHour, 3600);
 		}
 		
-		//$key = 2;
+		//$key = 3;
 		$ads = $data["$key"];
 		
-		$img = urlCDN('/img/other/a/'.$ads['img'].'.jpg');
-		$height = '60px';
-		$width = '235px';
-		if($key == 0 || $key == 2 || $key == 4) {
-			$img = urlCDN('/img/other/a/'.$ads['img'].'.png');
-			$height = '215px';
-			$width = '1175px';
-		}
+		//$img = '/img/other/a/'.$ads['img'];
+		$img = urlCDN('/img/other/a/'.$ads['img']);
+		/*if($key == 0 || $key == 3) {
+			$img = urlCDN('/img/season/'.$ads['img']);
+		}*/
 		$left = $ads['left'];
 		$top = $ads['top'];
+		$height = $ads['height'];
+		$width = $ads['width'];
 		$result['url'] = $ads['url'];
 		$result['ads'] = true;
 		
-	}
-	/*Удалить когда голосование закончится*/
-	/*$img = urlCDN('/img/season/spring2020.png');
-	$result['url'] = '/season/2020spring.html';
-	$result['ads'] = true;*/
-	/*------------------------------------*/
+	} /*else {
+		//Удалить когда голосование закончится
+		$img = urlCDN('/img/season/autumn2020.png');
+		$left = '0';
+		$top = '0';
+		$height = '215px';
+		$width = '1175px';
+		$result['url'] = '/season/2020autumn.html';
+		$result['ads'] = true;
+		//------------------------------------
+	}*/
 	
 	$css = getTemplate('header');
 	$css = str_replace('{img}', $img, $css);
-	$css = str_replace('{left}', $left, $css);
-	$css = str_replace('{top}', $top, $css);
-	$css = str_replace('{height}', $height, $css);
-	$css = str_replace('{width}', $width, $css);
+	if(isset($left)) { $css = str_replace('{left}', $left, $css); }
+	if(isset($top)) { $css = str_replace('{top}', $top, $css); }
+	if(isset($height)) { $css = str_replace('{height}', $height, $css); }
+	if(isset($width)) { $css = str_replace('{width}', $width, $css); }
 	
 	$result['css'] = $css;
 	return $result;
@@ -78,12 +77,12 @@ $xcss = headerAds();
 <html prefix="og: http://ogp.me/ns#">
 	<head>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-137180052-1"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=[Site ID]"></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
-		  gtag('config', 'UA-159821219-2');
+		  gtag('config', '[Site ID]');
 		</script>
 		<!-- Yandex.Metrika counter -->
 		<script type="text/javascript" >
@@ -91,13 +90,17 @@ $xcss = headerAds();
 		   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
 		   (window, document, "script", "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/tag.js", "ym");
 
-		   ym(23688205, "init", {
+		   ym([Site ID], "init", {
 				clickmap:true,
 				trackLinks:true,
 				accurateTrackBounce:true
 		   });
 		</script>
-		<noscript><div><img src="https://mc.yandex.ru/watch/23688205" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+		
+		<script data-ad-client="[Site ID]" async src="https://"></script>
+		<script src="https://" crossorigin="anonymous"></script>
+		
+		<noscript><div><img src="https://mc.yandex.ru/watch/[Site ID]" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 		<!-- /Yandex.Metrika counter -->
 		<?php echo $var['og']; ?>
 		<title><?php echo $var['title']; ?></title>
@@ -114,7 +117,7 @@ $xcss = headerAds();
 		<div class="link">
 		<?php
 			if($xcss['ads']){
-				echo '<a href="'.$xcss['url'].'" data-toggle="tooltip" data-placement="right" title="Вы можете отключить рекламу в личном кабинете"></a>';
+				echo '<a href="'.$xcss['url'].'" target="_blank" data-toggle="tooltip" data-placement="right" title="Вы можете отключить рекламу в личном кабинете"></a>';
 			}
 		?>
 		</div>
@@ -133,18 +136,12 @@ $xcss = headerAds();
 						<li><a id="activelink1" href="/pages/catalog.php">РЕЛИЗЫ</a></li>
 						<li><a id="activelink2" href="/pages/schedule.php">РАСПИСАНИЕ</a></li>
 						<li><a data-random-release id="activelink3" href="/public/random.php">СЛУЧАЙНОЕ</a></li>
-						<li><a id="activelink4" href="/pages/app.php">ПРИЛОЖЕНИЕ</a></li>
+						<li><a id="activelink4" href="https://anilibria.app" target="_blank">ПРИЛОЖЕНИЕ</a></li>
 						<li><a id="activelink5" href="/pages/team.php">КОМАНДА</a></li>
 						<li><a id="activelink6" href="/pages/donate.php">ПОДДЕРЖАТЬ ПРОЕКТ</a></li>
 					</ul>
 				</div>
-				
-				<!-- <a href="http://animepik.org" target="_blank" ><img src="/img/animepik1.jpg" width="880px" height="107px" style="margin-top: 10px;" alt="animepik.org" /></a> -->
 
-
-
-
-
-<div class="alert alert-warning" role="alert" style="margin-top: 10px; margin-bottom: 0px; font-size: 12.2pt; color: #000000;">
-	Недоступное на нашем сайте можно найти на <a href="http://animepik.org" target="_blank">АнимеПик</a> и <a href="https://dark-libria.it/" target="_blank">Тёмной Либрии</a>. Спасибо, что вы с нами!
-</div>
+                <a href="https://www.patreon.com/anilibria/posts" target="_blank">
+                    <img src="/img/patreonAL.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Patreon Anilibria" />
+                </a>

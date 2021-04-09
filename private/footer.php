@@ -26,6 +26,12 @@
 				
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>
+				<?php if(checkADS()): ?>
+				<div style="margin: 0 auto 20px auto; overflow: hidden;" id=""></div>
+				<script>
+					// ADS Script here
+				</script>
+				<?php endif; ?>
 			</div>
 			
 		</div>
@@ -35,10 +41,7 @@
 			<div class="footer_left">
 				<div class="footer_left2">
 					<a href="http://www.animespirit.ru/" target="_blank" rel="nofollow"><img src="/img/button/1.jpg" alt=""></a>
-					<a href="http://allmult.com/" target="_blank" rel="nofollow"><img src="/img/button/2.gif" alt=""></a>
 					<a href="https://github.com/anilibria" target="_blank" rel="nofollow"><img src="/img/button/github.png" alt=""></a>
-					<a href="http://anidream.net/" target="_blank" rel="nofollow"><img src="/img/button/4.gif" alt=""></a>
-					<a href="http://anires.ru/pages/mainmenu.php" target="_blank" rel="nofollow"><img src="/img/button/5.gif" alt=""></a>
 					<a href="https://alice2k.work/" target="_blank" rel="nofollow"><img src="/img/button/alice2k.png" alt=""></a>
 				</div>
 			</div>
@@ -83,9 +86,8 @@
 			The source code is available from https://github.com/anilibria/
 		-->	
 		<?php if(checkADS()):?>
-		<!--
-		    Put ads code here
-		-->
+		<script type="text/javascript">
+			// ADS Script here
 		<?php endif;?>
 	</body>
 </html>

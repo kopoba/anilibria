@@ -22,12 +22,8 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<table class="table table-bordered" style="width: 450px; float:right; margin-top:0px; margin-left:30px; margin-bottom: 10px;">
 			<tbody>
 				<tr>
-					<td>QIWI</td>
-					<td><a href="https://my.qiwi.com/Aleksandr-PeUlISbRs_" target="_blank">https://my.qiwi.com/Aleksandr-PeUlISbRs_</a></td>
-				</tr>
-				<tr>
 					<td>Яндекс деньги</td>
-					<td>41001990134497</td>
+					<td>4100115839344905</td>
 				</tr>
 				<tr>
 					<td>Webmoney</td>
@@ -36,7 +32,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 				<tr>
 					<td>PayPal</td>
-					<td><a href="https://www.paypal.me/anilibria" target="_blank">https://www.paypal.me/anilibria</a></td>
+					<td>Временно не поддерживается</td>
 				</tr>
 			</tbody>
 		</table>

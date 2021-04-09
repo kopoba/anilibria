@@ -28,6 +28,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 
 <div class="news-block">
 	<div class="news-body">
+		<p style="text-align: center;">
+			<span style="color: #b32121; font-size: 16pt;">Подать заявку через <a href="https://t.me/joinlibria_bot">Telegram Бота</a><span style="font-size: 10pt;"> (Форма представленная ниже скоро станет не актуальной).</span></span>
+		</p>
 		<div class="req">
 			<font color="#800000" style="font-size: 16px;">
 				<b>Технари</b>

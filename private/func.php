@@ -925,17 +925,26 @@ function torrent(){
 				$torrent->announce(false);
 				$torrent->announce($conf['torrent_announce']);
 				$torrent->save($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$name.'.torrent');
+				if(!empty($val['rid'])) {
+					$query = $db->prepare("UPDATE `xrelease` SET `last_change` = UNIX_TIMESTAMP() WHERE `id` = :id");
+					$query->bindParam(':id', $val['rid']);
+					$query->execute();
+					APIv2_UpdateTitle($val['rid']);
+				}
 				die(json_encode(['err' => 'ok', 'mes' => $var['error']['success'], 'id' => $name, 'size' => formatBytes($size), 'date' => date('d.m.Y', $var['time'])]));
 			break;
 		}
 	}
 	if(!empty($val['rid'])) {
+		$query = $db->prepare("UPDATE `xrelease` SET `last_change` = UNIX_TIMESTAMP() WHERE `id` = :id");
+		$query->bindParam(':id', $val['rid']);
+		$query->execute();
         APIv2_UpdateTitle($val['rid']);
     }
 	_message('success');
 }
 
-function downloadTorrent(){
+/*function downloadTorrent(){
 	global $db, $user, $conf;
 	if(!$user){
 		_message('unauthorized', 'error');
@@ -970,6 +979,49 @@ function downloadTorrent(){
 	$torrent->announce(false);
 	$torrent->announce(str_replace('/announce', "/$key/announce", $conf['torrent_announce']));
 	$torrent->send();
+}*/
+
+function downloadTorrent(){
+	global $db, $user, $conf;
+	
+	if(empty($_GET['id'])){
+		_message('empty', 'error');
+	}
+	if(!ctype_digit($_GET['id'])){
+		_message('wrong', 'error');
+	}
+	
+	if($user){
+		$query = $db->prepare('SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id');
+		$query->bindParam(':id', $_GET['id']);
+		$query->execute();
+		if($query->rowCount() == 0){
+			_message('wrong', 'error');
+		}
+		$info_hash = $query->fetch()['info_hash'];
+	
+		$query = $db->prepare('SELECT `uid` FROM `xbt_users` WHERE `torrent_pass_version` = :id');
+		$query->bindParam(':id', $user['id']);
+		$query->execute();
+		if($query->rowCount() == 0){
+			$query = $db->prepare('INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)');
+			$query->bindParam(':id', $user['id']);
+			$query->execute();
+			$uid = $db->lastInsertId();
+		}else{
+			$uid = $query->fetch()['uid'];
+		}
+		
+		$key = sprintf('%08x%s', $uid, substr(sha1("{$conf['torrent_secret']} {$user['id']} $uid $info_hash"), 0, 24));
+		
+		$torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
+		$torrent->announce(false);
+		$torrent->announce(str_replace('/announce', "/$key/announce", $conf['torrent_announce']));
+		$torrent->send();
+	} else {
+		$torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
+		$torrent->send();
+	}
 }
 
 function upload_avatar() {
@@ -1300,8 +1352,8 @@ function isBlock($str){
 function adsUrl(){
 	$arr['mix'] = ['id' => 'vast2427'];
 	$arr['rey'] = ['id' => 'vast2585'];
-	$arr['zet'] = ['id' => 'vast2418'];
-	$arr['rol'] = ['id' => 'vast3822'];
+	$arr['zet'] = ['id' => 'zetcat5376'];
+	$arr['re2'] = ['id' => 'vast6088'];
 	function prepareAdsUrl($arr){
 		foreach($arr as $key => $val){
 			$result[] = $val['id'];
@@ -1455,6 +1507,8 @@ function showRelease(){
 	$page = str_replace('{img}', $tmpImg, $page);
 	$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
 	
+	$page = str_replace('{tg_bot_follow}', getTelegramFollowLink($release['id']), $page);
+	
 	if($release['status'] == '2'){
 		$page = str_replace('{style}', 'style="display: none;"', $page);
 		$page = str_replace('{announce}', 'Релиз завершен', $page);
@@ -1547,7 +1601,7 @@ function uploadPoster($id){
 	if(!in_array(exif_imagetype($_FILES['poster']['tmp_name']), [IMAGETYPE_PNG, IMAGETYPE_JPEG])){
 		return;
 	}
-	if($_FILES['poster']['size'] > 1000000){
+	if($_FILES['poster']['size'] > 2000000){
 		return;
 	}
 	$img = new Imagick($_FILES['poster']['tmp_name']);
@@ -1778,7 +1832,7 @@ function footerJS(){
 					setTimeout(function(){
 					f = document.createElement("iframe");
 					f.frameBorder = 0;
-					f.src = "https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&targets-hint=&default-sum=100&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&hint=&successURL=&quickpay=shop&account=41001990134497"; 
+					f.src = "https://yoomoney.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&targets-hint=&default-sum=100&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&hint=&successURL=&quickpay=shop&account=4100115839344905"; 
 					f.width = 360; 
 					f.height = 220;
 					$("#yandexMoney").append(f);
@@ -3135,6 +3189,11 @@ function iframePlayer(){
 }
 
 function APIv2_UpdateTitle($title_id) {
-	file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$title_id}");
-	fastcgi_finish_request();
+	global $conf;
+    $context = stream_context_create([ "http" => [ "method"=>"GET", "timeout" => .01 ]]);
+	file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$title_id}", 0, $context);
+}
+
+function getTelegramFollowLink($title_id){
+  return "tg://resolve?domain=anilibria_bot&start=_" . rtrim(strtr(base64_encode("web|add_{$title_id}"), '+/', '-_'), '=');
 }

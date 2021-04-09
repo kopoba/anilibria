@@ -2,7 +2,7 @@
 <?php
 function onlineUpdate(){
 	$sum = 0; 
-	$json = file_get_contents("https://static.anilibria.tv/stat/", false, stream_context_create(['http'=> [ 'timeout' => 5 ]]));
+	$json = file_get_contents("https://socket.anilibria.tv/stat/", false, stream_context_create(['http'=> [ 'timeout' => 5 ]]));
 	if($json === false){
 		return;
 	}
