@@ -216,6 +216,24 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 </div>
 
 <div class="news-block">
+    <div class="news-header">
+        <h2 class="news-name" style="float:left;">
+            Экспорт списка избранного в Telegram бота.
+        </h2>
+        <h2 class="news-name" id="tgTransferMes" style="float:left; padding-left: 10px;"></h2>
+        <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    <div>
+        <a href="<?=getTelegramActionLink('transfer', session_id())?>">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" value="ЭКСПОРТИРОВАТЬ">
+		</a>
+	</div>
+	<div class="clear"></div>
+	<div style="margin-top:10px;"></div>
+</div>
+
+<div class="news-block">
 	<div class="news-header">
 		<h2 class="news-name">
 			Активные сессии и авторизации
@@ -320,6 +338,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<input class="form-control" id="telegram" type="text" style="margin-top: 7px;" placeholder="Telegram" >
 			</div>
 			<div class="modal-footer">
+				<div style="color:red; float: left; position: left;">
+					PHPSESSID: <a style="color:#fff;"><?=session_id()?></a>
+				</div>
 				<button data-reset-user-values type="button" class="btn btn-default">Сбросить</button>
 				<button data-save-user-values type="button" class="btn btn-default">Сохранить</button>
 			</div>

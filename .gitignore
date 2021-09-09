@@ -3,3 +3,6 @@
 \.DS_Store
 test.php
 /lockme
+private/logs/PDOErrors1.txt
+private/logs/PDOErrors.txt
+private/logs/check.txt

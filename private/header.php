@@ -10,9 +10,9 @@ function headerAds(){
 	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
-	$data[] = ['img' => 'pf.jpg', 'left' => '425px', 'top' => '125px', 'height' => '60px', 'width' => '235px', 'url' => '/pf'];
-	$data[] = ['img' => 'sao2.jpg', 'left' => '0', 'top' => '150px', 'height' => '60px', 'width' => '235px', 'url' => '/sao2'];
+	$data[] = ['img' => 'DG.png', 'left' => '720px', 'top' => '70px', 'height' => '70px', 'width' => '260px', 'url' => '/dg'];
 	$data[] = ['img' => 'bok.png', 'left' => '300px', 'top' => '138px', 'height' => '70px', 'width' => '240px', 'url' => '/bok'];
+	$data[] = ['img' => 'DG.png', 'left' => '720px', 'top' => '70px', 'height' => '70px', 'width' => '260px', 'url' => '/dg'];
 
 	if(checkADS()){
 		$cHour = date('G', $var['time']);
@@ -32,7 +32,7 @@ function headerAds(){
 			$cache->set('adsCurrentHour', $cHour, 3600);
 		}
 		
-		//$key = 3;
+		//$key = 0;
 		$ads = $data["$key"];
 		
 		//$img = '/img/other/a/'.$ads['img'];
@@ -77,12 +77,12 @@ $xcss = headerAds();
 <html prefix="og: http://ogp.me/ns#">
 	<head>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=[Site ID]"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id="></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
-		  gtag('config', '[Site ID]');
+		  gtag('config', '');
 		</script>
 		<!-- Yandex.Metrika counter -->
 		<script type="text/javascript" >
@@ -90,17 +90,19 @@ $xcss = headerAds();
 		   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
 		   (window, document, "script", "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/tag.js", "ym");
 
-		   ym([Site ID], "init", {
+		   ym(111, "init", {
 				clickmap:true,
 				trackLinks:true,
 				accurateTrackBounce:true
 		   });
 		</script>
 		
-		<script data-ad-client="[Site ID]" async src="https://"></script>
-		<script src="https://" crossorigin="anonymous"></script>
+		<script async src="https://"></script>
+		<script type="text/javascript" src="https://"></script>
+		<script>window.yaContextCb = window.yaContextCb || []</script>
+		<script src="https://" async></script>
 		
-		<noscript><div><img src="https://mc.yandex.ru/watch/[Site ID]" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+		<noscript><div><img src="https://" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 		<!-- /Yandex.Metrika counter -->
 		<?php echo $var['og']; ?>
 		<title><?php echo $var['title']; ?></title>
@@ -142,6 +144,11 @@ $xcss = headerAds();
 					</ul>
 				</div>
 
-                <a href="https://www.patreon.com/anilibria/posts" target="_blank">
-                    <img src="/img/patreonAL.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Patreon Anilibria" />
-                </a>
+
+<!--<div class="alert alert-warning" role="alert" style="margin-top: 10px; margin-bottom: 0px; font-size: 12.2pt; color: #000000;">
+	Внимание! На сайте идёт <a href="https://www.anilibria.tv/season/2220winter.html" target="_blank">голосование</a> за неонгоинги на озвучку! ТОП-5 мы возьмём на озвучку!</br> А ещё, <a href="https://www.anilibria.tv/season/2021winter.html" target="_blank">голосование</a> за самые ожидаемые аниме зимы 2021!
+</div>-->
+
+<a href="https://www.patreon.com/anilibria/posts" target="_blank">
+	<img src="/img/patreonAL.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Patreon Anilibria" />
+</a>

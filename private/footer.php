@@ -27,9 +27,12 @@
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>
 				<?php if(checkADS()): ?>
-				<div style="margin: 0 auto 20px auto; overflow: hidden;" id=""></div>
+				<div id=""></div>
 				<script>
-					// ADS Script here
+					
+				</script>
+				<script>
+				
 				</script>
 				<?php endif; ?>
 			</div>
@@ -87,7 +90,8 @@
 		-->	
 		<?php if(checkADS()):?>
 		<script type="text/javascript">
-			// ADS Script here
+			
+		</script>
 		<?php endif;?>
 	</body>
 </html>

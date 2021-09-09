@@ -388,7 +388,7 @@ function login(){
 	_message('success');
 }
 
-function startSession($row){
+/*function startSession($row){
 	global $db, $var;
 	$hash = session_hash($row['login'], $row['passwd'], $row['access']);
 	$query = $db->prepare('INSERT INTO `session` (`uid`, `hash`, `time`, `ip`, `info`) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info)');
@@ -411,6 +411,32 @@ function startSession($row){
 	$query->bindParam(':time', $var['time']);
 	$query->bindParam(':info', $var['user_agent']);
 	$query->execute();		
+}*/
+
+function startSession($row){
+  global $db, $var;
+  $hash = session_hash($row['login'], $row['passwd'], $row['access']);
+  $query = $db->prepare('INSERT INTO session (uid, hash, time, ip, info, phpsessid) VALUES (:uid, :hash, :time, INET6_ATON(:ip), :info, :phpsessid)');
+  $query->bindParam(':uid', $row['id']);
+  $query->bindParam(':hash', $hash[0]);
+  $query->bindParam(':time', $hash[1]);
+  $query->bindParam(':ip', $var['ip']);
+  $query->bindParam(':info', $var['user_agent']);
+  $query->bindParam(':phpsessid', session_id());
+  $query->execute();
+  $sid = $db->lastInsertId();
+  $_SESSION['sess'] = $hash[0];
+  $query = $db->prepare('UPDATE users SET last_activity = :time WHERE id = :id');
+  $query->bindParam(':time', $var['time']);
+  $query->bindParam(':id', $row['id']);
+  $query->execute();
+  $query = $db->prepare('INSERT INTO log_ip (uid, sid, ip, time, info) VALUES (:uid, :sid, INET6_ATON(:ip), :time, :info)');
+  $query->bindParam(':uid', $row['id']);
+  $query->bindParam(':sid', $sid);
+  $query->bindParam(':ip', $var['ip']);
+  $query->bindParam(':time', $var['time']);
+  $query->bindParam(':info', $var['user_agent']);
+  $query->execute();    
 }
 
 function moveErrPage($page = 403){
@@ -944,43 +970,7 @@ function torrent(){
 	_message('success');
 }
 
-/*function downloadTorrent(){
-	global $db, $user, $conf;
-	if(!$user){
-		_message('unauthorized', 'error');
-	}
-	if(empty($_GET['id'])){
-		_message('empty', 'error');
-	}
-	if(!ctype_digit($_GET['id'])){
-		_message('wrong', 'error');
-	}
-	$query = $db->prepare('SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id');
-	$query->bindParam(':id', $_GET['id']);
-	$query->execute();
-	if($query->rowCount() == 0){
-		_message('wrong', 'error');
-	}
-	$info_hash = $query->fetch()['info_hash'];
-
-	$query = $db->prepare('SELECT `uid` FROM `xbt_users` WHERE `torrent_pass_version` = :id');
-	$query->bindParam(':id', $user['id']);
-	$query->execute();
-	if($query->rowCount() == 0){
-		$query = $db->prepare('INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)');
-		$query->bindParam(':id', $user['id']);
-		$query->execute();
-		$uid = $db->lastInsertId();
-	}else{
-		$uid = $query->fetch()['uid'];
-	}
-	$key = sprintf('%08x%s', $uid, substr(sha1("{$conf['torrent_secret']} {$user['id']} $uid $info_hash"), 0, 24));
-	$torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
-	$torrent->announce(false);
-	$torrent->announce(str_replace('/announce', "/$key/announce", $conf['torrent_announce']));
-	$torrent->send();
-}*/
-
+/*
 function downloadTorrent(){
 	global $db, $user, $conf;
 	
@@ -1022,6 +1012,63 @@ function downloadTorrent(){
 		$torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
 		$torrent->send();
 	}
+}
+*/
+
+function downloadTorrent() {
+    global $db, $user, $conf;
+    
+    if(empty($_GET['id'])){
+        _message('empty', 'error');
+    }
+    if(!ctype_digit($_GET['id'])){
+        _message('wrong', 'error');
+    }
+    
+    if($user || !empty($_GET['psid'])){
+        if (!empty($_GET['psid'])) {
+			$query = $db->prepare('SELECT `uid` FROM `session` WHERE `phpsessid` = :hash');
+            $query->bindParam(':hash', $_GET['psid']);
+            $query->execute();
+            if($query->rowCount() == 0){
+                _message('wrong', 'error');
+            }
+            
+            $user_id = $query->fetch()['uid'];
+        } else {
+            $user_id = $user['id'];
+        }
+        
+        $query = $db->prepare('SELECT `info_hash` FROM `xbt_files` WHERE `fid` = :id');
+        $query->bindParam(':id', $_GET['id']);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            _message('wrong', 'error');
+        }
+        $info_hash = $query->fetch()['info_hash'];
+    
+        $query = $db->prepare('SELECT `uid` FROM `xbt_users` WHERE `torrent_pass_version` = :id');
+        $query->bindParam(':id', $user_id);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $query = $db->prepare('INSERT INTO `xbt_users` (`torrent_pass_version`) VALUES (:id)');
+            $query->bindParam(':id', $user_id);
+            $query->execute();
+            $uid = $db->lastInsertId();
+        } else {
+            $uid = $query->fetch()['uid'];
+        }
+        
+        $key = sprintf('%08x%s', $uid, substr(sha1("{$conf['torrent_secret']} {$user_id} $uid $info_hash"), 0, 24));
+        
+        $torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
+        $torrent->announce(false);
+        $torrent->announce(str_replace('/announce', "/$key/announce", $conf['torrent_announce']));
+        $torrent->send();
+    } else {
+        $torrent = new Torrent($_SERVER['DOCUMENT_ROOT']."/upload/torrents/{$_GET['id']}.torrent");
+        $torrent->send();
+    }
 }
 
 function upload_avatar() {
@@ -1350,7 +1397,7 @@ function isBlock($str){
 }
 
 function adsUrl(){
-	$arr['mix'] = ['id' => 'vast2427'];
+	$arr['cli'] = ['id' => 'vast6979'];
 	$arr['rey'] = ['id' => 'vast2585'];
 	$arr['zet'] = ['id' => 'zetcat5376'];
 	$arr['re2'] = ['id' => 'vast6088'];
@@ -1506,8 +1553,8 @@ function showRelease(){
 	}
 	$page = str_replace('{img}', $tmpImg, $page);
 	$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
-	
-	$page = str_replace('{tg_bot_follow}', getTelegramFollowLink($release['id']), $page);
+
+    $page = str_replace('{tg_bot_follow}', getTelegramActionLink('add', $release['id']), $page);
 	
 	if($release['status'] == '2'){
 		$page = str_replace('{style}', 'style="display: none;"', $page);
@@ -2086,23 +2133,26 @@ function updateYoutube(){
 	}
 	global $conf;
 	
-	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId={$conf['youtube_playlist']}&key={$conf['youtube_secret']}"), true);
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=25&playlistId={$conf['youtube_playlist']}&key={$conf['youtube_secret']}"), true);
 	saveYoutube($arr, 2); // Anime announce playlist
 	
 	//$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={$conf['youtube_chanel']}&maxResults=50&key={$conf['youtube_secret']}"), true);
 	//saveYoutube($arr, 1); // video
 	
-	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId={$conf['youtube_playlist_main']}&key={$conf['youtube_secret']}"), true);
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=25&playlistId={$conf['youtube_playlist_main']}&key={$conf['youtube_secret']}"), true);
     saveYoutube($arr, 3); // AniLibria Main playlist
 
-    $arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId={$conf['youtube_playlist_lupin']}&key={$conf['youtube_secret']}"), true);
+    $arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=15&playlistId={$conf['youtube_playlist_lupin']}&key={$conf['youtube_secret']}"), true);
     saveYoutube($arr, 3); // Lupin playlist
 
-    $arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId={$conf['youtube_playlist_sharon']}&key={$conf['youtube_secret']}"), true);
+    $arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=15&playlistId={$conf['youtube_playlist_sharon']}&key={$conf['youtube_secret']}"), true);
     saveYoutube($arr, 3); // Sharon playlist
 	
-	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId={$conf['youtube_playlist_silv']}&key={$conf['youtube_secret']}"), true);
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=15&playlistId={$conf['youtube_playlist_silv']}&key={$conf['youtube_secret']}"), true);
     saveYoutube($arr, 3); // Silv playlist
+	
+	$arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=15&playlistId={$conf['youtube_playlist_dejz']}&key={$conf['youtube_secret']}"), true);
+    saveYoutube($arr, 3); // Dejz playlist
 }
 
 function youtubeShow(){
@@ -3194,6 +3244,6 @@ function APIv2_UpdateTitle($title_id) {
 	file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$title_id}", 0, $context);
 }
 
-function getTelegramFollowLink($title_id){
-  return "tg://resolve?domain=anilibria_bot&start=_" . rtrim(strtr(base64_encode("web|add_{$title_id}"), '+/', '-_'), '=');
+function getTelegramActionLink($action, $payload){
+    return "tg://resolve?domain=anilibria_bot&start=_" . rtrim(strtr(base64_encode("web|{$action}_{$payload}"), '+/', '-_'), '=');
 }
