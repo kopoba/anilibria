@@ -1122,6 +1122,29 @@ function updateApiCache()
             $announce = null;
         }
 
+
+        $telegramPlaylist = [];
+        foreach ($playlist as $key => $episode) {
+            if ($key === 'online') {
+                continue;
+            }
+            $releaseId = intval($row['id']);
+            $episodeId = intval($episode['id']);
+            $telegramPlaylist[] = [
+                'id' => $episodeId,
+                'title' => intval($episode['title']),
+                'url' => getTelegramActionLink("app", "play", "{$releaseId}_{$episodeId}"),
+            ];
+        }
+
+        $externalPlaylist = [];
+        $externalPlaylist[] = [
+            'tag' => 'telegram',
+            'title' => 'Telegram',
+            'actionText' => 'Смотреть в Telegram',
+            'episodes' => $telegramPlaylist
+        ];
+
         $info[$row['id']] = [
             'id' => intval($row['id']),
             'code' => $row['code'],
@@ -1147,7 +1170,8 @@ function updateApiCache()
                 'reason' => null,
                 'bakanim' => boolval($row['bakanim'])
             ],
-            'playlist' => $playlist
+            'playlist' => $playlist,
+            'externalPlaylist' => $externalPlaylist
         ];
 
         $tmp = $db->prepare('SELECT `fid`, `ctime`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');

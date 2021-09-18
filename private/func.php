@@ -1554,7 +1554,7 @@ function showRelease(){
 	$page = str_replace('{img}', $tmpImg, $page);
 	$var['og'] .= "<meta property='og:image' content='$tmpImg' />";
 
-    $page = str_replace('{tg_bot_follow}', getTelegramActionLink('add', $release['id']), $page);
+    $page = str_replace('{tg_bot_follow}', getTelegramActionLink('web', 'add', $release['id']), $page);
 	
 	if($release['status'] == '2'){
 		$page = str_replace('{style}', 'style="display: none;"', $page);
@@ -3244,6 +3244,6 @@ function APIv2_UpdateTitle($title_id) {
 	file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$title_id}", 0, $context);
 }
 
-function getTelegramActionLink($action, $payload){
-    return "tg://resolve?domain=anilibria_bot&start=_" . rtrim(strtr(base64_encode("web|{$action}_{$payload}"), '+/', '-_'), '=');
+function getTelegramActionLink($platform, $action, $payload){
+    return "tg://resolve?domain=anilibria_bot&start=_" . rtrim(strtr(base64_encode("{$platform}|{$action}_{$payload}"), '+/', '-_'), '=');
 }

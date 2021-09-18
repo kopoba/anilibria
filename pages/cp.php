@@ -225,7 +225,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
     </div>
     <div class="clear"></div>
     <div>
-        <a href="<?=getTelegramActionLink('transfer', session_id())?>">
+        <a href="<?=getTelegramActionLink('web', 'transfer', session_id())?>">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" value="ЭКСПОРТИРОВАТЬ">
 		</a>
 	</div>
