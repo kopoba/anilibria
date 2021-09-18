@@ -437,6 +437,7 @@ function apiList()
             'description',
             'announce', /*'blockedInfo',*/
             'playlist',
+            'externalPlaylist',
             'torrents',
             'favorite'
         ];
