@@ -1133,7 +1133,7 @@ function updateApiCache()
             $episodeId = intval($episode['id']);
             $telegramPlaylist[] = [
                 'id' => $episodeId,
-                'title' => intval($episode['title']),
+                'title' => $episode['title'],
                 'url' => getTelegramActionLink("app", "play", "{$releaseId}_{$episodeId}"),
             ];
         }
