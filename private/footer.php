@@ -78,9 +78,9 @@
 			</div>
 		</div>
 		
-		<script src="<?php echo urlCDN(fileTime('/js/jquery.min.js'));?>"></script>	
-		<script src="<?php echo urlCDN(fileTime('/js/bootstrap.min.js'));?>"></script>
-		<script src="<?php echo urlCDN(fileTime('/js/main.js'));?>"></script>
+		<script src="<?php echo '/js/jquery.min.js';?>"></script>
+		<script src="<?php echo '/js/bootstrap.min.js';?>"></script>
+		<script src="<?php echo '/js/main.js';?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
 		<!-- 

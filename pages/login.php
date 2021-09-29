@@ -23,7 +23,7 @@ if(!$user){
 		<div>
 			<input class="form-control" id="newMail" placeholder="Email или логин" type="text" required>
 			<input class="form-control" id="newPasswd" style="margin-top: 10px;"  type="password" placeholder="Пароль" required>
-			<input class="form-control" id="fa2code" style="margin-top: 10px;" type="text" placeholder="Оставьте поле пустым, если вы не настроили двухфакторную аутентификацию">
+			<input class="form-control" id="fa2code" style="margin-top: 10px;" type="hidden" placeholder="Оставьте поле пустым, если вы не настроили двухфакторную аутентификацию">
 			<div style="margin-top: 10px;">
 				<input class="btn btn btn-success" style="width: 418px;" type="submit" name="login" data-submit-login value="ВХОД ЧЕРЕЗ САЙТ">	
 				<a href="<?php echo vkAuthLink(); ?>" role="button" class="btn btn btn-success" style="width: 417px;">ВХОД ЧЕРЕЗ VK.COM</a>

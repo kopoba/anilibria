@@ -103,7 +103,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<hr/>
 				<table id="editTorrentTable" style="margin-bottom: 10px;">
 					<tbody>
-						<?php echo showEditTorrentTable(); ?>
+						<?php /*echo showEditTorrentTable();*/ ?>
 					</tbody>
 				</table>
 			</div>
@@ -116,7 +116,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>
 </div>
 
-<div class="modal fade" id="changeAnnounce" tabindex="-1" role="dialog" aria-hidden="true" >
+<!--<div class="modal fade" id="changeAnnounce" tabindex="-1" role="dialog" aria-hidden="true" >
 	<div class="modal-dialog" style="width: 480px;">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -131,7 +131,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			</div>
 		</div>
 	</div>
-</div>
+</div>-->
 
 <div class="modal fade" id="sendErrorReport" tabindex="-1" role="dialog" aria-hidden="true" >
 	<div class="modal-dialog" style="width: 480px;">

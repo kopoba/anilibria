@@ -1,6 +1,6 @@
 <?php
-require('/var/www/anilibria/root/private/MaxMind-GeoIP2/geoip2.phar');
-$maxmind = new GeoIp2\Database\Reader('/var/www/anilibria/root/private/MaxMind-GeoIP2/maxmind-db/GeoLite2-Country.mmdb');
+require('/var/www/html/private/MaxMind-GeoIP2/geoip2.phar');
+$maxmind = new GeoIp2\Database\Reader('/var/www/html/private/MaxMind-GeoIP2/maxmind-db/GeoLite2-Country.mmdb');
 
 $var['title'] = 'AniLibria - так звучит аниме!';
 $var['description'] = '';

@@ -34,7 +34,7 @@ $(document).on("click", "[data-submit-login]", function(e) {
 	mail = $('input[id=newMail]').val();
 	passwd = $('input[id=newPasswd]').val();
 	fa2code = $('input[id=fa2code]').val();
-	$.post("//"+document.domain+"/public/login.php", { 'mail': mail, 'passwd': passwd, 'fa2code': fa2code, 'csrf': '1' }, function(json){
+	$.post("/public/login.php", { 'mail': mail, 'passwd': passwd, 'fa2code': fa2code, 'csrf': '1' }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			document.location.href="/";
@@ -55,7 +55,7 @@ $(document).on("click", "[data-submit-register]", function(e) {
 	$('[data-submit-passwdrecovery]').hide();
 	if($("div#RecaptchaField").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
-			$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'passwd' : passwd, 'g-recaptcha-response': token }, function(json){
+			$.post("/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'passwd' : passwd, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';
 				if(data.err != 'ok'){
@@ -718,11 +718,11 @@ $(document).on("click", "[data-change-ads]", function(e) {
 $(document).on("click", "[data-random-release]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	$.post("//"+document.domain+"/public/random.php", { 'js': '1' }, function(data){
+	$.post("/public/random.php", { 'js': '1' }, function(data){
 		document.location.href="/release/"+data+".html";
 	});
 });
-
+1
 $(document).on("click", "[data-release-tags]", function(e) {
 	$(this).blur();
 	e.preventDefault();

@@ -39,7 +39,7 @@ function getCatalog(page, update){
 		xpage = 'catalog';
 	}
 	search = {"year":year, "genre":genre, "season": season};
-	$.post("//"+document.domain+"/public/catalog.php", { 'page': page, 'search': JSON.stringify(search), 'xpage': xpage, 'sort': sort, 'finish': finish }, function(json){
+	$.post("/public/catalog.php", { 'page': page, 'search': JSON.stringify(search), 'xpage': xpage, 'sort': sort, 'finish': finish }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			$('.simpleCatalog tbody').html(data.table);
