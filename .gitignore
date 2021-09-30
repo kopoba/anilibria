@@ -7,3 +7,7 @@ private/logs/PDOErrors1.txt
 private/logs/PDOErrors.txt
 private/logs/check.txt
 img/
+\.docker
+private/config.php
+private/config.php
+private/config.php
