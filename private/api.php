@@ -546,7 +546,7 @@ function apiList()
         global $db, $user;
         $favIds = [];
         if ($user) {
-            $query = $db->prepare('SELECT `rid` FROM `favorites` WHERE `uid` = :uid');
+            $query = $db->prepare('SELECT `releases_id` AS `rid` FROM `users_favorites` WHERE `users_id` = :uid');
             $query->bindParam(':uid', $user['id']);
             $query->execute();
             while ($row = $query->fetch()) {
@@ -621,7 +621,7 @@ function apiList()
                 if ($isFavorite) {
                     throw new ApiException("Already added", 400);
                 }
-                $query = $db->prepare('INSERT INTO `favorites` (`uid`, `rid`) VALUES (:uid, :rid)');
+                $query = $db->prepare('INSERT INTO `users_favorites` (`users_id`, `releases_id`) VALUES (:uid, :rid)');
                 $query->bindParam(':uid', $user['id']);
                 $query->bindParam(':rid', $_POST['id']);
                 $query->execute();
@@ -631,7 +631,7 @@ function apiList()
                 if (!$isFavorite) {
                     throw new ApiException("Already deleted", 400);
                 }
-                $query = $db->prepare('DELETE FROM `favorites` WHERE `uid` = :uid AND `rid` = :rid');
+                $query = $db->prepare('DELETE FROM `users_favorites` WHERE `users_id` = :uid AND `releases_id` = :rid');
                 $query->bindParam(':uid', $user['id']);
                 $query->bindParam(':rid', $_POST['id']);
                 $query->execute();
@@ -650,9 +650,12 @@ function apiList()
         $startIndex = $pagination['startIndex'];
         $perPage = $pagination['perPage'];
 
+        // TODO: what is that?
         $releaseQueryStr = "SELECT 'release' as type, `id` as id, `last` as timestamp FROM `xrelease`";
+        // TODO: what is that?
         $youtubeQueryStr = "SELECT 'youtube' as type, `id` as id, `time` as timestamp FROM `youtube`";
-        $feedQueryStr = "SELECT type, id, timestamp FROM ($releaseQueryStr WHERE 1 AND `status` != 3 UNION $youtubeQueryStr WHERE 1) AS feed";
+        // TODO: what is that?
+        $feedQueryStr = "SELECT `type`, `id`, `timestamp` FROM ($releaseQueryStr WHERE 1 AND `status` != 3 UNION $youtubeQueryStr WHERE 1) AS feed";
         $queryStr = "$feedQueryStr ORDER BY timestamp DESC LIMIT :start_index, :per_page";
 
         $query = $db->prepare($queryStr);
@@ -705,11 +708,12 @@ function apiList()
         return [
             'id' => intval($row['id']),
             'title' => html_entity_decode(html_entity_decode(trim($row['title']))),
+            // TODO: change image request
             'image' => '/upload/youtube/' . hash('crc32', $row['vid']) . '.jpg',
-            'vid' => $row['vid'],
-            'views' => intval($row['view']),
-            'comments' => intval($row['comment']),
-            'timestamp' => intval($row['time'])
+            'vid' => $row['youtube_id'],
+            'views' => intval($row['views']),
+            'comments' => intval($row['comments']),
+            'timestamp' => intval($row['created_at'])
         ];
     }
 
@@ -724,7 +728,7 @@ function apiList()
         $perPage = $pagination['perPage'];
 
         $result = [];
-        $query = $db->prepare("SELECT * FROM `youtube` ORDER BY `time` DESC LIMIT :start_index, :per_page");
+        $query = $db->prepare("SELECT * FROM `youtube` ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
         $query->bindParam(":start_index", intval($startIndex), \PDO::PARAM_INT);
         $query->bindParam(":per_page", intval($perPage), \PDO::PARAM_INT);
         $query->execute();
@@ -742,7 +746,7 @@ function apiList()
     {
         global $db;
         $result = [];
-        $query = $db->query('SELECT `name` from `genre`');
+        $query = $db->query('SELECT `name` from `genres`');
         while ($row = $query->fetch()) {
             $result[] = $row['name'];
         }
@@ -758,6 +762,7 @@ function apiList()
             $result = [];
             $arr = array_reverse(range(1990, date('Y', time())));
             foreach ($arr as $search) {
+                // TODO: remove sphinx ?
                 $query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
                 $query->bindValue(':search', "@(year) ($search)");
                 $query->execute();
@@ -790,7 +795,7 @@ function apiList()
         global $db, $var;
         $result = [];
         foreach ($var['day'] as $key => $val) {
-            $query = $db->prepare('SELECT `id` FROM `xrelease` WHERE `day` = :day AND `status` = 1');
+            $query = $db->prepare('SELECT `id` FROM `releases` WHERE `publish_day` = :day AND `is_ongoing` = 1');
             $query->bindParam(':day', $key);
             $query->execute();
             $dayReleases = [];
@@ -1048,7 +1053,32 @@ function apiList()
 function updateApiCache()
 {
     global $db, $cache, $user, $var;
-    $query = $db->query('SELECT `id`, `name`, `ename`, `rating`, `last`, `moonplayer`, `description`, `announce`, `day`, `year`, `season`, `genre`, `voice`, `type`, `status`, `code`, `block`, `bakanim` FROM `xrelease` WHERE `status` != 3 ORDER BY `last` DESC');
+    $query = $db->query('SELECT 
+       r.`id`, 
+       r.`name`, 
+       r.`name_english` AS `ename`, 
+       r.`rating_by_favorites` AS `rating`, 
+       r.`fresh_at` AS `last`, 
+       r.`external_player` AS `moonplayer`, 
+       r.`description`, 
+       r.`notification` AS `announce`, 
+       r.`publish_day` AS `day`, 
+       r.`year`, 
+       r.`season`, 
+       (
+           select GROUP_CONCAT(g.name ORDER BY g.name SEPARATOR ", " ) from genres as g
+           inner join releases_genres as rg on rg.genres_id = g.id 
+           where rg.releases_id = r.id
+       ) as `genre`,
+       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "voicing") as `voice`,
+       CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
+       IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 0))) AS `status`,
+       r.`alias` AS `code`, 
+       NULL AS `block`, -- TODO: add to current db
+       r.`is_wakanim` AS `bakanim`,
+    FROM `releases` AS r 
+    WHERE `is_hidden` = 0 
+    ORDER BY `fresh_at` DESC');
     while ($row = $query->fetch()) {
 
         $names = [];
@@ -1061,6 +1091,7 @@ function updateApiCache()
             $names[] = $secondName;
         }
 
+        //TODO: correct poster request
         $poster = $_SERVER['DOCUMENT_ROOT'] . '/upload/release/350x500/' . $row['id'] . '.jpg';
         if (!file_exists($poster)) {
             $poster = '/upload/release/350x500/default.jpg';
@@ -1175,7 +1206,7 @@ function updateApiCache()
             'externalPlaylist' => $externalPlaylist
         ];
 
-        $tmp = $db->prepare('SELECT `fid`, `ctime`, `info_hash`, `leechers`, `seeders`, `completed`, `info` FROM `xbt_files` WHERE `rid` = :rid');
+        $tmp = $db->prepare('SELECT `id` AS `fid`, `created_at` AS `ctime`, `hash` AS `info_hash`, `leechers`, `seeders`, `completed`, JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)), `description`, `size`) AS `info` FROM `torrents` WHERE `releases_id` = :rid');
         $tmp->bindParam(':rid', $row['id']);
         $tmp->execute();
         while ($xrow = $tmp->fetch()) {
