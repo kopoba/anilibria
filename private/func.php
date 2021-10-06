@@ -1,8 +1,7 @@
 <?php
 
-use Carbon\Carbon;
 
-function createPasswd($passwd = '')
+function createPasswd($passwd = '') // DONE
 {
     if (empty($passwd)) {
         $passwd = genRandStr(8, 1);
@@ -10,7 +9,7 @@ function createPasswd($passwd = '')
     return [$passwd, password_hash($passwd, PASSWORD_ARGON2ID, ['memory_cost' => 1 << 14, 'time_cost' => 3, 'threads' => 2])];
 }
 
-function genRandStr($length = 10, $mode = 2)
+function genRandStr($length = 10, $mode = 2) // DONE
 {
     $str = '';
     $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -23,7 +22,8 @@ function genRandStr($length = 10, $mode = 2)
     return $str;
 }
 
-function _mail($email, $subject, $message)
+
+function _mail($email, $subject, $message) // DONE
 {
     global $conf;
     $headers = "MIME-Version: 1.0\r\n";
@@ -34,24 +34,24 @@ function _mail($email, $subject, $message)
     mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);
 }
 
-function _message($key, $err = 'ok')
+function _message($key, $err = 'ok') // DONE
 {
     global $var;
     die(json_encode(['err' => $err, 'mes' => $var['error'][$key], 'key' => $key]));
 }
 
-function _message2($mes)
+function _message2($mes) // DONE
 {
     die(json_encode(['err' => 'ok', 'mes' => $mes]));
 }
 
-function half_string_hash($s)
+function half_string_hash($s) // DONE
 {
     global $conf;
     return hash($conf['hash_algo'], substr($s, round(strlen($s) / 2)));
 }
 
-function session_hash($login, $passwd, $access, $rand = '')
+function session_hash($login, $passwd, $access, $rand = '') // DONE
 {
     global $conf, $var;
     if (empty($rand)) {
@@ -60,7 +60,8 @@ function session_hash($login, $passwd, $access, $rand = '')
     return [$rand . hash($conf['hash_algo'], $rand . $var['user_agent'] . $login . sha1(half_string_hash($passwd))), $var['time'] + 60 * 60 * 24 * 30];
 }
 
-function _exit()
+// TODO: authorization
+function _exit() // DONE
 {
     global $db, $var;
     if (session_status() != PHP_SESSION_NONE) {
@@ -79,30 +80,29 @@ function _exit()
     }
 }
 
-function enableCSRF($force = false)
+function enableCSRF($force = false) // DONE
 {
     if (!empty($_POST['csrf']) || $force) {
         $_SESSION['csrf'] = 1;
     }
 }
 
-function disableCSRF()
+function disableCSRF() // DONE
 {
     if (!empty($_SESSION['csrf'])) {
         unset($_SESSION['csrf']);
     }
 }
 
-function csrf_token()
+function csrf_token() // DONE
 {
     global $var;
     $htime = $var['time'] + 60 * 60 * 24;
     return ['hash' => createSecret($htime), 'time' => $htime];
 }
 
-;
-
-function createSecret($params)
+// TODO: authorization
+function createSecret($params) // DONE
 {
     global $conf;
     if (empty($_SESSION['secret'])) {
@@ -111,7 +111,8 @@ function createSecret($params)
     return hash($conf['hash_algo'], $_SESSION['secret'] . $params);
 }
 
-function checkSecret($hash, $params)
+// TODO: authorization
+function checkSecret($hash, $params) // DONE
 {
     global $conf;
     if (empty($_SESSION['secret']) || $hash != hash($conf['hash_algo'], $_SESSION['secret'] . $params)) {
@@ -120,7 +121,7 @@ function checkSecret($hash, $params)
     return true;
 }
 
-function checkCSRF()
+function checkCSRF() // DONE
 {
     global $var;
     if (!empty($_SESSION['csrf'])) {
@@ -137,14 +138,15 @@ function checkCSRF()
     }
 }
 
-function vkAuth()
+// TODO: authorization
+function vkAuth() // DONE
 {
     global $conf;
     $result = false;
     if (!empty($_GET ['code'])) {
         $data = [
             'client_id' => $conf['vk_id'],
-            'client_secret' => $conf['vk_secert'],
+            'client_secret' => $conf['vk_secret'],
             'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
             'code' => $_GET["code"]
         ];
@@ -161,7 +163,8 @@ function vkAuth()
     return $result;
 }
 
-function vkAuthLink()
+// TODO: authorization
+function vkAuthLink() // DONE
 {
     global $conf;
     $vkParams = [
@@ -171,7 +174,8 @@ function vkAuthLink()
     return 'https://oauth.vk.com/authorize?' . urldecode(http_build_query($vkParams));
 }
 
-function getUserVK($id)
+// TODO: authorization
+function getUserVK($id) // DONE
 {
     global $db;
     $query = $db->prepare('SELECT `id`, `login`, `password` AS `passwd`, NULL AS `2fa`, 1 AS `access` FROM `users` WHERE `vk_id` = :id');
@@ -183,7 +187,8 @@ function getUserVK($id)
     return $query->fetch();
 }
 
-function oAuthLogin()
+// TODO: authorization
+function oAuthLogin() // DONE
 {
     global $db, $var, $user, $conf;
     if ($user) {
@@ -214,6 +219,7 @@ function oAuthLogin()
 
 
 /* OTP Auth start */
+// TODO: OTP
 function generateOtpCode($length)
 {
     $symbols = "0123456789";
@@ -226,6 +232,7 @@ function generateOtpCode($length)
     return $result;
 }
 
+// TODO: OTP
 function deleteExpiredOtpCodes()
 {
     global $db, $var, $user, $conf;
@@ -237,6 +244,7 @@ function deleteExpiredOtpCodes()
     }
 }
 
+// TODO: OTP
 function getOtpCode()
 {
     global $db, $var, $user, $conf;
@@ -283,6 +291,7 @@ function getOtpCode()
     _message2($result);
 }
 
+// TODO: OTP
 function acceptOtpCode()
 {
     global $db, $var, $user, $conf;
@@ -321,6 +330,7 @@ function acceptOtpCode()
     _message('success');
 }
 
+// TODO: OTP
 function loginByOtpCode()
 {
     global $db, $var, $user, $conf;
@@ -374,7 +384,7 @@ function loginByOtpCode()
 
 /* OTP Auth end */
 
-
+// TODO: authorization
 function login()
 {
 
@@ -455,6 +465,7 @@ function login()
 	$query->execute();
 }*/
 
+// TODO: authorization
 function startSession($row)
 {
     global $db, $var;
@@ -491,11 +502,13 @@ function startSession($row)
 
 }
 
-function moveErrPage($page = 403)
+
+function moveErrPage($page = 403) // DONE
 {
     die(header("Location: /pages/error/$page.php"));
 }
 
+// TODO: authorization
 function password_link()
 {
     global $conf, $db, $var;
@@ -528,6 +541,7 @@ function password_link()
     die(header('Location: /'));
 }
 
+// TODO: authorization
 function testRecaptcha()
 {
     $v = 3;
@@ -543,6 +557,7 @@ function testRecaptcha()
     }
 }
 
+// TODO: authorization
 function password_recovery()
 {
     global $conf, $db, $var;
@@ -570,6 +585,7 @@ function password_recovery()
     _message('checkEmail');
 }
 
+// TODO: authorization
 function registration()
 {
     global $db, $user, $var;
@@ -636,6 +652,7 @@ function registration()
     _message('success');
 }
 
+// TODO: authorization
 function auth()
 {
     global $conf, $db, $var, $user;
@@ -704,7 +721,8 @@ function auth()
     }
 }
 
-function seedersRating()
+
+function seedersRating() // DONE
 {
     global $db;
     $result = '';
@@ -726,7 +744,7 @@ function seedersRating()
     return $result;
 }
 
-function base32_map($i, $do = 'encode')
+function base32_map($i, $do = 'encode') // DONE
 {
     $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     if ($do == 'encode') {
@@ -736,13 +754,13 @@ function base32_map($i, $do = 'encode')
     }
 }
 
-function base32_bits($v)
+function base32_bits($v) // DONE
 {
     $value = ord($v);
     return vsprintf(str_repeat('%08b', 1), $value);
 }
 
-function base32_encode($data)
+function base32_encode($data) // DONE
 {
     $result = '';
     $s = 0;
@@ -766,7 +784,7 @@ function base32_encode($data)
     return $result;
 }
 
-function base32_decode($data)
+function base32_decode($data) // DONE
 { // thx Sanasol
     $x = '';
     $arr = str_split($data);
@@ -780,19 +798,19 @@ function base32_decode($data)
     return implode("", $string);
 }
 
-function generate_secret()
+function generate_secret() // DONE
 {
     return base32_encode(genRandStr());
 }
 
-function oathTruncate($hash)
+function oathTruncate($hash) // DONE
 {
     $offset = ord($hash[19]) & 0xf;
     $temp = unpack('N', substr($hash, $offset, 4));
     return substr($temp[1] & 0x7fffffff, -6);
 }
 
-function oathHotp($secret, $time)
+function oathHotp($secret, $time) // DONE
 {
     $secret = base32_decode($secret);
     $time = pack('N*', 0, $time);
@@ -800,12 +818,13 @@ function oathHotp($secret, $time)
     return str_pad(oathTruncate($hash), 6, '0', STR_PAD_LEFT);
 }
 
-function getQRCodeGoogleUrl($name, $secret)
+function getQRCodeGoogleUrl($name, $secret) // DONE
 {
     $urlencoded = urlencode('otpauth://totp/' . $name . '?secret=' . $secret . '');
     return 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . $urlencoded . '';
 }
 
+// TODO: authorization
 function auth2FA()
 {
     global $db, $user;
@@ -864,6 +883,7 @@ function auth2FA()
     }
 }
 
+// TODO: authorization
 function recaptcha($v = 3)
 {
     global $conf, $var;
@@ -885,7 +905,7 @@ function recaptcha($v = 3)
     return $result;
 }
 
-function torrentHashExist($hash)
+/*function torrentHashExist($hash)
 {
     global $db;
     $query = $db->prepare('SELECT `id` AS `fid` FROM torrents WHERE `hash` = :hash');
@@ -895,9 +915,9 @@ function torrentHashExist($hash)
         return false;
     }
     return true;
-}
+}*/
 
-function torrentExist($id)
+/*function torrentExist($id)
 {
     global $db;
     $query = $db->prepare('SELECT `id` AS `fid`, `completed`, JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)), `description`, `size`) AS `info` FROM `torrents` WHERE `id`= :id');
@@ -907,46 +927,47 @@ function torrentExist($id)
         return false;
     }
     return $query->fetch();
-}
+}*/
 
-function torrentAdd($hash, $rid, $json, $completed = 0)
+/*function torrentAdd($hash, $rid, $json, $completed = 0)
 {
     global $db, $var;
-    /*$query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , :time, :time, 0, :completed, :rid, :info)');
+    $query = $db->prepare('INSERT INTO `xbt_files` (`info_hash`, `mtime`, `ctime`, `flags`, `completed`, `rid`, `info`) VALUES( :hash , :time, :time, 0, :completed, :rid, :info)');
     $query->bindParam(':hash', $hash);
     $query->bindParam(':time', $var['time']);
     $query->bindParam(':rid', $rid);
     $query->bindParam(':completed', $completed);
     $query->bindParam(':info', $json);
     $query->execute();
-    return $db->lastInsertId();	*/
-}
+    return $db->lastInsertId();
+}*/
 
+/*function torrentDelete($id)
+{
 // https://github.com/shakahl/xbt/wiki/XBT-Tracker-(XBTT)
 // flags - This field is used to communicate with the tracker. Usable values: 0 - No changes. 1 - Torrent should be deleted. 2 - Torrent was updated.
 // flag 1 work		https://github.com/OlafvdSpek/xbt/blob/master/Tracker/server.cpp#L183-L187
 // source code		https://img.poiuty.com/img/6e/f01f40eaa783018fe12e5649315b716e.png
 // flag 2 not work	https://img.poiuty.com/img/7c/a5479067a6e3a272d66bb92c0416797c.png
 // Also I dont find it in source.
-function torrentDelete($id)
-{
+
     global $db;
-    /*$query = $db->prepare('UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id');
+    $query = $db->prepare('UPDATE `xbt_files` SET `flags` = 1 WHERE `fid` = :id');
     $query->bindParam(':id', $id);
     $query->execute();
-    deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent');*/
-}
+    deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/torrents/'.$id.'.torrent');
+}*/
 
-function isJson($string)
+function isJson($string) // DONE
 {
     json_decode($string);
     return (json_last_error() == JSON_ERROR_NONE);
 }
 
-function torrent()
+/*function torrent()
 {
     global $conf, $db, $user, $var;
-    /*function checkTD($key, $val){
+    function checkTD($key, $val){
         if(empty($val)){
             return false;
         }
@@ -1047,8 +1068,8 @@ function torrent()
         $query->execute();
         APIv2_UpdateTitle($val['rid']);
     }
-    _message('success');*/
-}
+    _message('success');
+}*/
 
 /*
 function downloadTorrent(){
@@ -1095,7 +1116,7 @@ function downloadTorrent(){
 }
 */
 
-function downloadTorrent()
+function downloadTorrent() // DONE
 {
     global $db, $user, $conf;
 
@@ -1164,6 +1185,7 @@ function downloadTorrent()
 
 }
 
+// TODO: avatar
 function upload_avatar()
 {
     global $db, $user;
@@ -1228,7 +1250,8 @@ function upload_avatar()
     _message2("$tmp/$name.jpg");
 }
 
-function getTemplate($template)
+
+function getTemplate($template) // DONE
 {
     $file = $_SERVER['DOCUMENT_ROOT'] . "/private/template/$template.html";
     if (!file_exists($file)) {
@@ -1237,7 +1260,8 @@ function getTemplate($template)
     return file_get_contents($file);
 }
 
-function saveUserValues()
+
+/*function saveUserValues()
 {
     global $db, $user, $var;
     $arr = [];
@@ -1251,10 +1275,10 @@ function saveUserValues()
         _message('maxarg', 'error');
     }
     if (!empty($_POST['reset'])) {
-        /*$query = $db->prepare('UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id');
+        $query = $db->prepare('UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id');
         $query->bindParam(':user_values', $var['default_user_values']);
         $query->bindParam(':id', $user['id']);
-        $query->execute();*/
+        $query->execute();
         _message2('Data saved');
     }
     foreach ($_POST as $key => $val) {
@@ -1291,14 +1315,14 @@ function saveUserValues()
     if (strlen($json) > 1024) {
         _message('long', 'error');
     }
-    /*$query = $db->prepare('UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id');
+    $query = $db->prepare('UPDATE `users` SET `user_values` = :user_values WHERE `id` = :id');
     $query->bindParam(':user_values', $json);
     $query->bindParam(':id', $user['id']);
-    $query->execute();*/
+    $query->execute();
     _message2('Data saved');
-}
+}*/
 
-function cryptAES($text, $key, $do = 'encrypt')
+/*function cryptAES($text, $key, $do = 'encrypt')
 {
     $key = hash('sha256', $key, true);
     $iv_size = openssl_cipher_iv_length($cipher = 'AES-256-CBC');
@@ -1319,9 +1343,9 @@ function cryptAES($text, $key, $do = 'encrypt')
             return $original;
         }
     }
-}
+}*/
 
-function change_vk()
+/*function change_vk()
 {
     global $db, $user, $var, $conf;
     if (!$user) {
@@ -1345,8 +1369,9 @@ function change_vk()
     $query->bindParam(':id', $user['id']);
     $query->execute();
     _message('success');
-}
+}*/
 
+// TODO: mail
 function change_mail()
 {
     global $db, $user, $var, $conf;
@@ -1379,6 +1404,7 @@ function change_mail()
     _message('checkEmail');
 }
 
+// TODO: mail
 function mail_link()
 {
     global $db, $user, $var, $conf;
@@ -1412,6 +1438,7 @@ function mail_link()
     die(header('Location: /'));
 }
 
+// TODO: password
 function change_passwd()
 {
     global $db, $user, $var;
@@ -1442,12 +1469,14 @@ function change_passwd()
     _message('success');
 }
 
-function pageStat()
+
+function pageStat() // DONE
 {
     global $conf;
     return "Page generated in " . round((microtime(true) - $conf['start']), 4) . " seconds. Peak memory usage: " . round(memory_get_peak_usage() / 1048576, 2) . " MB";
 }
 
+// TODO: authorization
 function close_sess()
 {
     global $db, $user, $conf;
@@ -1464,7 +1493,7 @@ function close_sess()
     _message2('Success');
 }
 
-function formatBytes($size, $precision = 2)
+function formatBytes($size, $precision = 2) // DONE
 {
     if (empty($size)) {
         return 0;
@@ -1474,7 +1503,7 @@ function formatBytes($size, $precision = 2)
     return round(pow(1024, $base - floor($base)), $precision) . ' ' . $suffixes[floor($base)];
 }
 
-function parse_code_bb($text)
+function parse_code_bb($text) // DONE
 {
     $text = str_replace('<br>', '[br]', $text);
     $find = [
@@ -1494,7 +1523,7 @@ function parse_code_bb($text)
     return preg_replace($find, $replace, $text);
 }
 
-function isBlock($str)
+function isBlock($str) // DONE
 {
     global $var;
     if (strpos($str, $var['country']) !== false) {
@@ -1503,7 +1532,8 @@ function isBlock($str)
     return false;
 }
 
-function adsUrl()
+
+function adsUrl() // DONE
 {
     $arr['cli'] = ['id' => 'vast6979'];
     $arr['rey'] = ['id' => 'vast2585'];
@@ -1522,7 +1552,8 @@ function adsUrl()
     }
 }
 
-function release404()
+
+function release404() // DONE
 {
     global $var;
     $var['title'] = '404';
@@ -1530,7 +1561,7 @@ function release404()
     return str_replace('{error}', '<center><img src="/img/404.png"></center>', getTemplate('error'));
 }
 
-function lowerMove()
+function lowerMove() // DONE
 {
     if (preg_match('/[[:upper:]]/', $_SERVER['REQUEST_URI'])) {
         header('HTTP/1.1 301 Moved Permanently');
@@ -1539,7 +1570,7 @@ function lowerMove()
     }
 }
 
-function showRelease()
+function showRelease() // DONE
 {
     global $db, $user, $var, $conf;
     $status = ['0' => 'В работе', '1' => 'Завершен'];
@@ -1754,6 +1785,7 @@ function showRelease()
     $page = str_replace('{moon}', $moon, $page);
     $page = str_replace('{xmoon}', $release['moonplayer'], $page);
     $page = str_replace('{favorites}', '', $page);
+
     $query = $db->prepare('SELECT 
        `id` AS `fid`,
        JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)),`description`, `size`) AS `info`,
@@ -1761,7 +1793,10 @@ function showRelease()
        `seeders`,
        `leechers`, 
        `completed` 
-    FROM `torrents` WHERE `releases_id` = :id AND `deleted_at` IS NULL');
+        FROM `torrents` 
+        WHERE `releases_id` = :id AND `deleted_at` IS NULL
+    ');
+
     $query->bindParam(':id', $release['id']);
     $query->execute();
     if ($query->rowCount() == 0) {
@@ -1776,11 +1811,7 @@ function showRelease()
             $torrent = str_replace('{leechers}', $row['leechers'], $torrent);
             $torrent = str_replace('{completed}', $row['completed'], $torrent);
             $torrent = str_replace('{id}', $row['fid'], $torrent);
-            /*if($user){
-                $link = "/public/torrent/download.php?id={$row['fid']}";
-            }else{
-                $link = "/upload/torrents/{$row['fid']}.torrent";
-            }*/
+
             $link = "/public/torrent/download.php?id={$row['fid']}";
             $torrent = str_replace('{link}', $link, $torrent);
             $torrent = str_replace('{rtype}', $tmp['0'], $torrent);
@@ -1792,7 +1823,7 @@ function showRelease()
     return $page;
 }
 
-function uploadPoster($id)
+/*function uploadPoster($id)
 {
     if (empty($_FILES['poster'])) {
         return;
@@ -1827,34 +1858,34 @@ function uploadPoster($id)
     $file = $_SERVER['DOCUMENT_ROOT'] . '/upload/release/200x280/' . $id . '.jpg';
     deleteFile($file);
     file_put_contents($file, $img);
-}
+}*/
 
-function parse_bb_code($text)
+/*function parse_bb_code($text)
 {
-    $text = str_replace('[br]', '<br>', $text);
-    $find = [
-        '~\[b\](.*?)\[/b\]~s',
-        '~\[i\](.*?)\[/i\]~s',
-        '~\[u\](.*?)\[/u\]~s',
-        '~\[s\](.*?)\[/s\]~s',
-        '~\[url\]((?:http|https?)://.*?)\[/url\]~s',
-        '~\[url=((?:http|https?)://.*?)\](.*?)\[/url\]~s',
-    ];
-    $replace = [
-        '<b>$1</b>',
-        '<i>$1</i>',
-        '<u>$1</u>',
-        '<s>$1</s>',
-        '<a href="$1" target="_blank">$1</a>',
-        '<a href="$1" target="_blank">$2</a>',
-    ];
-    return preg_replace($find, $replace, $text);
-}
+     $text = str_replace('[br]', '<br>', $text);
+     $find = [
+         '~\[b\](.*?)\[/b\]~s',
+         '~\[i\](.*?)\[/i\]~s',
+         '~\[u\](.*?)\[/u\]~s',
+         '~\[s\](.*?)\[/s\]~s',
+         '~\[url\]((?:http|https?)://.*?)\[/url\]~s',
+         '~\[url=((?:http|https?)://.*?)\](.*?)\[/url\]~s',
+     ];
+     $replace = [
+         '<b>$1</b>',
+         '<i>$1</i>',
+         '<u>$1</u>',
+         '<s>$1</s>',
+         '<a href="$1" target="_blank">$1</a>',
+         '<a href="$1" target="_blank">$2</a>',
+     ];
+     return preg_replace($find, $replace, $text);
+}*/
 
-function xrelease()
+/*function xrelease()
 {
     global $db, $user, $var;
-    /*$data = []; $sql = ['col' => [], 'val' => [], 'update' => []];
+    $data = []; $sql = ['col' => [], 'val' => [], 'update' => []];
     if(!$user || $user['access'] < 2){
         _message('access', 'error');
     }
@@ -1925,15 +1956,15 @@ function xrelease()
         }
         APIv2_UpdateTitle($id);
         die(json_encode(['err' => 'ok', 'url' => urlCode($id, $data['ename']),  'mes' => 'success']));
-    }*/
-}
+    }
+}*/
 
-function auth_history()
+/*function auth_history()
 {
-    // TODO: remake to users_sessions
+
     global $db, $user, $var;
     $data = [];
-    /*$query = $db->prepare('SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100');
+    $query = $db->prepare('SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100');
     $query->bindParam(':uid', $user['id']);
     $query->execute();
     while($row = $query->fetch()){
@@ -1947,10 +1978,10 @@ function auth_history()
         }
         $data[$row['time']] = [inet_ntop($row['ip']), base64_encode($row['info']), $status, $row['sid']];
     }
-    return array_reverse($data, true);*/
-}
+    return array_reverse($data, true);
+}*/
 
-function footerJS()
+function footerJS() // DONE
 {
     global $var, $user, $conf;
     $result = '';
@@ -2060,7 +2091,7 @@ function footerJS()
     return $result;
 }
 
-function wsInfo($name)
+function wsInfo($name) // DONE
 {
     global $conf;
     if (!empty($name)) {
@@ -2073,30 +2104,30 @@ function wsInfo($name)
     }
 }
 
-function getRemoteCache()
+/*function getRemoteCache()
 {
     global $db, $conf;
     $query = $db->query('SELECT `id` FROM `releases`');
     while ($row = $query->fetch()) {
         getRemote($conf['nginx_domain'] . '/?id=' . $row['id'] . '&v2=1', 'video' . $row['id'], true);
     }
-}
+}*/
 
-function curlTor($url)
+/*function curlTor($url)
 {
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
-    curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1:9050");
-    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return $result;
-}
+     $ch = curl_init($url);
+     curl_setopt($ch, CURLOPT_HEADER, 0);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+     curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+     curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1:9050");
+     curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+     $result = curl_exec($ch);
+     curl_close($ch);
+     return $result;
+}*/
 
-function getRemote($url, $key, $update = false)
+/*function getRemote($url, $key, $update = false)
 {
     global $cache;
     $ctx = stream_context_create(['http' => ['timeout' => 5]]);
@@ -2111,9 +2142,9 @@ function getRemote($url, $key, $update = false)
         $cache->set('anilibria' . $key, $data, 300);
     }
     return $data;
-}
+}*/
 
-function wsInfoShow()
+function wsInfoShow() // DONE
 {
     $result = '';
     $arr = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/upload/stats.json'), true);
@@ -2128,6 +2159,7 @@ function wsInfoShow()
     return $result;
 }
 
+// TODO: Clean
 function mp4_link($value)
 {
     global $conf, $var;
@@ -2137,6 +2169,7 @@ function mp4_link($value)
     return $url;
 }
 
+// TODO: Clean
 function anilibria_getHost($hosts)
 {
     $host = [];
@@ -2156,7 +2189,8 @@ function anilibria_getHost($hosts)
     return $host[random_int(0, count($host) - 1)] . ".libria.fun";
 }
 
-function getReleaseVideo($id)
+
+function getReleaseVideo($id) // DONE
 {
     global $conf, $var, $db;
 
@@ -2193,38 +2227,12 @@ function getReleaseVideo($id)
     }
 
     return json_encode($playlist);
-
-    /*$playlist = '';
-	$data = getRemote($conf['nginx_domain'].'/?id='.$id.'&v2=1', 'video'.$id);
-	if($data){
-		$arr = json_decode($data, true);
-		$host = anilibria_getHost($arr['online']);
-		if(!empty($arr) && !empty($arr['updated'])){
-			unset($arr['updated']);
-			$arr = array_reverse($arr, true);
-			foreach($arr as $key => $val) {
-				if($key == 'online' || $key == 'new'){
-					continue;
-				}
-				$download = '';
-				if(!empty($val['file']) && !empty($var['release']['name'])){
-					$epNumber = $key;
-					$epName = trim($var['release']['name']);
-					$download = mp4_link($val['file'].'.mp4')."?download=$epName-$epNumber.mp4";
-				}
-				if($host){
-					$playlist .= "{'title':'Серия $key', 'file':'".str_replace('{host}', $host, $val['new2'])."', download:\"$download\", 'id': 's$key'},";
-				}
-			}
-		}
-	}
-	return $playlist;*/
 }
 
-function youtubeVideoExists($id)
+/*function youtubeVideoExists($id)
 {
     global $db;
-    /*$x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
+    $x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
     if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized'){
         $query = $db->prepare('DELETE FROM `youtube` WHERE `vid` = :vid');
         $query->bindParam(':vid', $id);
@@ -2232,13 +2240,13 @@ function youtubeVideoExists($id)
         deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg');
         return false;
     }
-    return true;*/
-}
+    return true;
+}*/
 
-function updateYoutubeStat()
+/*function updateYoutubeStat()
 {
     global $db;
-    /*$query = $db->query('SELECT `id`, `vid` FROM `youtube`');
+    $query = $db->query('SELECT `id`, `vid` FROM `youtube`');
     $query->execute();
     while($row = $query->fetch()){
         $stat = youtubeStat($row['vid']);
@@ -2251,13 +2259,13 @@ function updateYoutubeStat()
         $tmp->bindParam(':comment', $stat['1']);
         $tmp->bindParam(':id', $row['id']);
         $tmp->execute();
-    }*/
-}
+    }
+}*/
 
-function youtubeStat($id)
+/*function youtubeStat($id)
 {
     global $db, $conf;
-    /*if(youtubeVideoExists($id)){
+    if(youtubeVideoExists($id)){
         $json = file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=$id&key={$conf['youtube_secret']}");
         if(!empty($json)){
             $arr = json_decode($json, true);
@@ -2267,13 +2275,13 @@ function youtubeStat($id)
         }
         return [$view, $comment];
     }
-    return false;*/
-}
+    return false;
+}*/
 
-function youtubeGetImage($id)
+/*function youtubeGetImage($id)
 {
     global $db;
-    /*$remote = "https://img.youtube.com/vi/$id/maxresdefault.jpg";
+    $remote = "https://img.youtube.com/vi/$id/maxresdefault.jpg";
     $x = get_headers($remote)[0];
     if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized'){
         return;
@@ -2297,12 +2305,12 @@ function youtubeGetImage($id)
         $query->bindParam(':hash', $hash);
         $query->bindParam(':vid', $id);
         $query->execute();
-    }*/
-}
+    }
+}*/
 
-function updateYoutube()
+/*function updateYoutube()
 {
-    /*function saveYoutube($arr, $type){
+    function saveYoutube($arr, $type){
         global $db;
         $arr['items'] = array_reverse($arr['items']);
         foreach($arr['items'] as $val){
@@ -2363,10 +2371,10 @@ function updateYoutube()
     saveYoutube($arr, 3); // Silv playlist
 
     $arr = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=15&playlistId={$conf['youtube_playlist_dejz']}&key={$conf['youtube_secret']}"), true);
-    saveYoutube($arr, 3); // Dejz playlist*/
-}
+    saveYoutube($arr, 3); // Dejz playlist
+}*/
 
-function youtubeShow()
+function youtubeShow() // DONE
 {
     global $conf;
     global $db;
@@ -2377,13 +2385,13 @@ function youtubeShow()
     $data = [];
     $result = '';
     $tmpl = '<td><a href="{url}" target="_blank"><img src="{img}" alt="{alt}" height="245"></a></td>';
-    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` ORDER BY `created_at` DESC  LIMIT 0,11');
+    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 0 ORDER BY `created_at` DESC  LIMIT 6');
     $query->execute();
     while ($row = $query->fetch()) {
         $arr1[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview_original' => $row['preview_original']];
     }
 
-    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` ORDER BY `created_at` DESC  LIMIT 12,23');
+    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 1 ORDER BY `created_at` DESC  LIMIT 6');
     $query->execute();
     while ($row = $query->fetch()) {
         $arr2[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview_original' => $row['preview_original']];
@@ -2421,10 +2429,10 @@ function youtubeShow()
     return $result;
 }
 
-function updateReleaseAnnounce()
+/*function updateReleaseAnnounce()
 {
     global $db, $user, $var;
-    /*if(!$user || $user['access'] < 2){
+    if(!$user || $user['access'] < 2){
         _message('access', 'error');
     }
     if(empty($_POST['id'])){
@@ -2448,15 +2456,15 @@ function updateReleaseAnnounce()
     $query->bindParam(':id', $_POST['id']);
     $query->execute();
     APIv2_UpdateTitle($_POST['id']);
-    _message('success');*/
-}
+    _message('success');
+}*/
 
-function showEditTorrentTable()
+/*function showEditTorrentTable()
 {
     global $db, $var;
     $result = '';
     $arr = [];
-    /*$query = $db->prepare('SELECT `fid`, `rid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid');
+    $query = $db->prepare('SELECT `fid`, `rid`, `ctime`, `info` FROM `xbt_files` WHERE `rid` = :rid');
     $query->bindParam(':rid', $var['release']['id']);
     $query->execute();
     while($row = $query->fetch()){
@@ -2471,20 +2479,20 @@ function showEditTorrentTable()
 
         $arr[] = ['do' => 'change', 'fid' => $row['fid'], 'rid' => $row['rid'], 'series' => $info['1'], 'quality' => $info['0'], 'ctime' => $date, 'delete' => ''];
     }
-    return $result;*/
-}
+    return $result;
+}*/
 
-function deleteFile($f)
+function deleteFile($f) // DONE
 {
     if (file_exists($f)) {
         unlink($f);
     }
 }
 
-function removeRelease()
+/*function removeRelease()
 {
     global $db, $user;
-    /*if(!$user || $user['access'] < 2){
+    if(!$user || $user['access'] < 2){
         _message('access', 'error');
     }
     if(empty($_POST['id'])){
@@ -2519,15 +2527,15 @@ function removeRelease()
         $query = $db->prepare('UPDATE `xrelease` SET `status` = \'3\' WHERE `id` = :id');
         $query->bindParam(':id', $_POST['id']);
         $query->execute();
-    }*/
+    }
     _message('success');
-}
+}*/
 
-function releaseTable()
+/*function releaseTable()
 {
     global $db, $user, $var;
     $result = '';
-    /*if(!$user || $user['access'] < 2){
+    if(!$user || $user['access'] < 2){
         _message('access', 'error');
     }
     $data = []; $order = 'DESC'; $column = 'id'; $search = '';
@@ -2578,10 +2586,10 @@ function releaseTable()
         $tmp['last'] = "<a data-admin-release-delete='{$row['id']}' href='#' style='color: #383838;'><span class='glyphicon glyphicon-remove'></span></a>";
         $data[] = array_values($tmp);
     }
-    return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];*/
-}
+    return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];
+}*/
 
-function fileTime($file)
+function fileTime($file) // DONE
 {
     global $cache, $var;
     if (!file_exists($file)) {
@@ -2599,17 +2607,52 @@ function fileTime($file)
     return str_replace($_SERVER['DOCUMENT_ROOT'], '', $file) . '?' . $time;
 }
 
-function sphinxPrepare($x)
+/*function sphinxPrepare($x)
 {
-    $x = explode(',', $x);
-    $x = array_filter($x);
-    $x = implode(',', $x);
-    return preg_replace('/[^\w, ]+/u', '', $x);
-}
+      $x = explode(',', $x);
+      $x = array_filter($x);
+      $x = implode(',', $x);
+      return preg_replace('/[^\w, ]+/u', '', $x);
+}*/
 
-function xSearch()
+function xSearch() // DONE
 {
-    global $sphinx, $db;
+    global $db;
+
+    $search = trim($_POST['search'] ?? '');
+
+    if (empty($search)) die();
+
+    $query = $db->prepare("
+        SELECT * from `releases` 
+        WHERE 
+            (
+                name LIKE CONCAT('%', :search, '%') or
+                name_english LIKE CONCAT('%', :search, '%') or
+                name_alternative LIKE CONCAT('%', :search, '%')
+            ) 
+            AND deleted_at IS NULL AND is_hidden = 0
+        LIMIT 12
+    ");
+
+    $query->bindValue('search', $search);
+    $query->execute();
+
+    $json = [];
+    $result = '';
+    $releases = $query->fetchAll();
+
+    foreach ($releases as $release) {
+        $code = $release['alias'];
+        $json[] = ['id' => $release['id'], 'name' => base64_encode($release['name']), 'ename' => $release['name_english'], 'code' => $code];
+        $result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px;'>{$release['name']}</span></a></td></tr>";
+    }
+
+    if (isset($_POST['json'])) $result = $json;
+
+    _message2($result);
+
+    /*global $sphinx, $db;
     $result = '';
     $limit = '';
     $data = [];
@@ -2629,12 +2672,14 @@ function xSearch()
     if (!$data['search'] = sphinxPrepare($data['search'])) {
         die;
     }
-    // TODO: check if sphinx works
+
     $query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND `status` != 3 ORDER BY `rating` DESC LIMIT 12");
     $query->bindValue(':search', "@({$data['key']}) ({$data['search']})");
     $query->execute();
     $tmp = $query->fetchAll();
     $json = [];
+
+
     foreach ($tmp as $k => $v) {
         $query = $db->prepare('SELECT `id`, `name`, `name_english` AS `ename` FROM `releases` WHERE `id` = :id');
         $query->bindParam(':id', $v['id']);
@@ -2644,16 +2689,18 @@ function xSearch()
         }
         $row = $query->fetch();
         $code = releaseCodeByID($row['id']);
+
         $json[] = ['id' => $row['id'], 'name' => base64_encode($row['name']), 'ename' => $row['ename'], 'code' => $code];
+
         $result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px;'>{$row['name']}</span></a></td></tr>";
     }
     if (isset($_POST['json'])) {
         $result = $json;
     }
-    _message2($result);
+    _message2($result);*/
 }
 
-function showPosters()
+function showPosters() // DONE
 {
     global $db, $var, $conf;
     $result = '';
@@ -2683,11 +2730,11 @@ function showPosters()
     while ($row = $query->fetch()) {
 
         //$img = urlCDN(fileTime('/upload/release/240x350/'.$row['id'].'.jpg'));
-        $img = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
 
-        if (!$img) {
-            $img = urlCDN('/upload/release/240x350/default.jpg');
-        }
+        $img = empty($row['poster_medium'])
+            ? urlCDN('/upload/release/240x350/default.jpg')
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+
         $tmp = getTemplate('torrent-block');
         $tmp = str_replace('{id}', $row['code'], $tmp);
         $tmp = str_replace('{img}', $img, $tmp);
@@ -2704,10 +2751,11 @@ function showPosters()
         }
         $result .= $tmp;
     }
+
     return $result;
 }
 
-function getGenreList()
+function getGenreList() // DONE
 {
     global $db;
     $arr = [];
@@ -2725,7 +2773,7 @@ function getGenreList()
     return $result;
 }
 
-function releaseNameByID($id)
+/*function releaseNameByID($id)
 {
     global $db;
     $query = $db->prepare('SELECT `name`, `name_english` AS `ename` FROM `releases` WHERE `id` = :id');
@@ -2733,8 +2781,9 @@ function releaseNameByID($id)
     $query->execute();
     $result = $query->fetch();
     return [$result['name'], $result['ename']];
-}
+}*/
 
+// TODO: clean
 function releaseCodeByID($id)
 {
     global $db;
@@ -2744,6 +2793,7 @@ function releaseCodeByID($id)
     return $query->fetch()['code'];
 }
 
+// TODO: clean
 function releaseSeriesByID($id)
 {
     global $db;
@@ -2755,7 +2805,7 @@ function releaseSeriesByID($id)
     return $result['1'];
 }
 
-function releaseDescriptionByID($id, $SymCount)
+function releaseDescriptionByID($id, $SymCount) // DONE
 {
     global $db;
     $query = $db->prepare('SELECT `description` FROM `releases` WHERE `id` = :id');
@@ -2767,22 +2817,25 @@ function releaseDescriptionByID($id, $SymCount)
     return strip_tags($cutdescription[0]);
 }
 
-function getTorrentDownloadLink($id)
+function getTorrentDownloadLink($id) // DONE
 {
     global $db, $user;
     $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `releases_id` = :id ORDER BY `updated_at` DESC LIMIT 1');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
-    if ($user) {
+
+    return "/public/torrent/download.php?id={$row['fid']}";
+
+    /*if ($user) {
         $link = "/public/torrent/download.php?id={$row['fid']}";
     } else {
         $link = "/upload/torrents/{$row['fid']}.torrent";
     }
-    return $link;
+    return $link;*/
 }
 
-function showCatalog()
+function showCatalog() // DONE
 {
     global $db, $user;
     $i = 0;
@@ -2790,85 +2843,94 @@ function showCatalog()
     $result = '';
     $page = 0;
 
-    if (!isset($_POST['search']) || !is_string($_POST['search'])) {
-        $_POST['search'] = '';
-    }
+    if (!isset($_POST['search']) || !is_string($_POST['search'])) $_POST['search'] = '';
 
-    function checkFinish()
+
+    function checkFinish() // DONE
     {
-        $result = '`is_hidden` = 0 AND `deleted_at` IS NULL';
+        $result = '`is_hidden` = 0 AND r.`deleted_at` IS NULL';
+
         if (isset($_POST['finish']) && $_POST['finish'] == 2) {
             $result .= ' AND `is_completed` = 1';
         }
+
         return $result;
     }
 
-    function aSearch($db, $page, $sort)
+
+    function aSearch($db, $page, $sort) // DONE
     {
 
-        $query = $db->query('SELECT count(*) as total FROM `releases` WHERE ' . checkFinish());
+        $query = $db->query('SELECT count(r.id) as total FROM `releases` as r WHERE ' . checkFinish());
         $total = $query->fetch()['total'];
 
-        $query = $db->query("SELECT `id` FROM `releases` WHERE " . checkFinish() . " ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
+        $query = $db->query("SELECT r.`id` FROM `releases` as r WHERE " . checkFinish() . " ORDER BY `{$sort}` DESC LIMIT {$page}, 12");
         $data = $query->fetchAll(PDO::FETCH_ASSOC);
         return ['data' => $data, 'total' => $total];
     }
 
-    function bSearch($db, $page, $sort)
+    function bSearch($db, $page, $sort) // DONE
     {
         if (empty($_POST['search'])) {
             return false;
         }
 
-
         $search = json_decode($_POST['search'] ?? null, true);
 
-        $years = isset($search['year']) ? explode(',', $search['year']) : [];
-        $genres = isset($search['genre']) ? explode(',', $search['genre']) : [];
-        $seasons = isset($search['season']) ? explode(',', $search['season']) : [];
+        $years = isset($search['year']) && empty($search['year']) === false ? explode(',', $search['year']) : [];
+        $genres = isset($search['genre']) && empty($search['genre']) === false ? explode(',', $search['genre']) : [];
+        $seasons = isset($search['season']) && empty($search['season']) === false ? explode(',', $search['season']) : [];
 
-        /*$search = []; $s = []; $arr = ['genre', 'year', 'season'];
-        $data = json_decode($_POST['search'], true);
-        foreach($arr as $val){
-            if(empty($data["$val"])){
-                continue;
-            }
-            $tmp = sphinxPrepare($data["$val"]);
-            if($val == 'year' || $val == 'season'){
-                $tmp = str_replace(',', '|', sphinxPrepare($tmp));
-            }
-            if(!empty($tmp)){
-                $search["$val"] = $tmp;
-            }
+        $sql = 'SELECT 
+            r.id
+            FROM `releases` as r
+            left join `releases_genres` as rg on rg.`releases_id` = r.`id`
+            left join `genres` as g on g.`id` = rg.`genres_id`
+
+            WHERE {years} {genres} {seasons} ' . checkFinish() . "
+            GROUP BY r.id
+            ORDER BY `{$sort}` DESC
+        ";
+        $arguments = [];
+
+        // Years
+        if (count($years) > 0) {
+            $sql = str_replace('{years}', " r.year IN (" . str_repeat('?, ', count($years) - 1) . '?' . ") AND ", $sql);
+            $arguments = array_merge($arguments, $years);
         }
-        foreach($search as $key => $val){
-            $s[] = "@{$key}({$val})";
+
+        // Genres
+        if (count($genres) > 0) {
+            $sql = str_replace('{genres}', " g.name IN (" . str_repeat('?, ', count($genres) - 1) . '?' . ") AND ", $sql);
+            $arguments = array_merge($arguments, $genres);
         }
 
-        $s = implode(' ', $s);
-        if(empty($s)){
-            return false;
-        }*/
+        // Seasons
+        if (count($seasons) > 0) {
+            $sql = str_replace('{seasons}', " r.season IN (" . str_repeat('?, ', count($seasons) - 1) . '?' . ") AND ", $sql);
+            $arguments = array_merge($arguments, $seasons);
+        }
 
-        // TODO: check if sphinx works
-        $query = $db->prepare('SELECT count(*) as total FROM `releases` WHERE `year` IN (?)  AND ' . checkFinish());
-        //$query->bindValue(':year', implode(',', $years));
-        //$query->bindValue(':search', "$s");
-        $query->execute(implode(',', $years));
-        $total = $query->fetch()['total'];
+        $sql = str_replace('{years}', '', $sql);
+        $sql = str_replace('{genres}', '', $sql);
+        $sql = str_replace('{seasons}', '', $sql);
 
-        print_r($total);
-        die();
+        $query = $db->prepare($sql);
+        $query->execute($arguments);
+
+        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+        $total = count($data);
 
         // TODO: check if sphinx works
         /*$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND ".checkFinish()." ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
         $query->bindValue(':search', "$s");
         $query->execute();
-        $data = $query->fetchAll(PDO::FETCH_ASSOC);*/
-        return ['data' => $data ?? [], 'total' => $total ?? 0];
+        */
+
+        return ['data' => array_slice($data ?? [], $page, 12), 'total' => $total ?? 0];
     }
 
-    function cSearch($db, $user, $page)
+    function cSearch($db, $user, $page) // DONE
     {
         $data = [];
         $total = 0;
@@ -2876,46 +2938,69 @@ function showCatalog()
         $query->bindParam(':uid', $user['id']);
         $query->execute();
         $total = $query->fetch()['total'];
-        $query = $db->prepare("SELECT `releases_id` AS `rid` FROM `users_favorites` WHERE `users_id` = :uid ORDER BY `id` DESC LIMIT {$page}, 12");
+        $query = $db->prepare("SELECT `releases_id` AS `rid` FROM `users_favorites` WHERE `users_id` = :uid ORDER BY `releases_id` DESC LIMIT {$page}, 12");
         $query->bindParam(':uid', $user['id']);
         $query->execute();
+
         while ($row = $query->fetch()) {
             $data[]['id'] = $row['rid'];
         }
+
         return ['data' => $data, 'total' => $total];
     }
 
-    function prepareSearchResult($data)
+
+    function prepareSearchResult($data) // DONE
     {
+        global $conf;
+
         $arr = [];
         $i = 0;
-        $animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">Серия: {series}</span><span class="anime_description">{description}</span></div>';
+        $animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">{series}</span><span class="anime_description">{description}</span></div>';
         $tmplTD = '<td><a href="/release/{id}.html">' . $animeDescription . '<img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
         foreach ($data as $key => $val) {
-            $poster = $_SERVER['DOCUMENT_ROOT'] . '/upload/release/270x390/' . $val['id'] . '.jpg';
-            if (!file_exists($poster)) {
-                $img = urlCDN('/upload/release/270x390/default.jpg');
-            } else {
-                $img = urlCDN(fileTime($poster));
+
+            $releaseId = $val['id'];
+            $release = _getReleaseById($releaseId);
+            $episodes = _getReleaseEpisodes($releaseId);
+
+            $ordinals = [];
+            foreach ($episodes as $episode) $ordinals[] = $episode['ordinal'];
+
+            if ($release) {
+
+                $img = empty($release['poster_medium'])
+                    ? urlCDN('/upload/release/270x390/default.jpg')
+                    : sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster_medium']);
+
+                $item = $tmplTD;
+                $item = str_replace('{img}', $img, $item);
+                $item = str_replace('{alt}', "{$release['name']} / {$release['name_english']}", $item);
+                $item = str_replace('{id}', $release['alias'], $item);
+
+                $item = str_replace('{series}', count($episodes) > 1 ? ("Серия: " . implode(' — ', [min($ordinals), max($ordinals)])) : '', $item);
+                $item = str_replace('{runame}', "{$release['name']}", $item);
+                $item = str_replace('{description}', releaseDescriptionByID($val['id'], 199), $item);
+
+                $arr[$i][] = $item;
+
+                if (count($arr[$i]) == 3) {
+                    $i++;
+                }
+
             }
-            $xname = releaseNameByID($val['id']);
-            $arr[$i][] = str_replace('{alt}', "{$xname['0']} / {$xname['1']}", str_replace('{id}', releaseCodeByID($val['id']), str_replace('{img}', $img, $tmplTD)));
-            $arr[$i] = str_replace('{series}', releaseSeriesByID($val['id']), $arr[$i]);
-            $arr[$i] = str_replace('{runame}', "{$xname['0']}", $arr[$i]);
-            $arr[$i] = str_replace('{description}', releaseDescriptionByID($val['id'], 199), $arr[$i]);
-            if (count($arr[$i]) == 3) {
-                $i++;
-            }
+
         }
         return $arr;
     }
 
-    $sort = ['1' => 'last', '2' => 'rating'];
-    if (!empty($_POST['sort']) && array_key_exists($_POST['sort'], $sort)) {
-        $sort = $sort[$_POST['sort']];
-    } else {
-        $sort = $sort['1'];
-    }
+    // Get sort column
+    $sort = ['1' => 'fresh_at', '2' => 'rating_by_favorites'];
+    $sort = !empty($_POST['sort']) && array_key_exists($_POST['sort'], $sort)
+        ? $sort[$_POST['sort']]
+        : $sort['1'];
+
+
     if (!empty($_POST['page'])) {
         $page = abs(intval($_POST['page']));
         if (empty($page) || $page == 1) {
@@ -2933,18 +3018,24 @@ function showCatalog()
     }
 
     if ($_POST['xpage'] == 'favorites') {
+
         if (!$user) {
             _message('access', 'error');
         }
+
         $arr = cSearch($db, $user, $page);
+
     } else {
 
         $arr = bSearch($db, $page, $sort);
+
         if (!$arr) {
             $arr = aSearch($db, $page, $sort);
         }
     }
+
     if (!isset($_POST['json'])) {
+
         $arr['data'] = prepareSearchResult($arr['data']);
 
         foreach ($arr['data'] as $key => $val) {
@@ -2960,10 +3051,15 @@ function showCatalog()
         $result = $arr['data'];
     }
 
-    die(json_encode(['err' => 'ok', 'table' => $result, 'total' => $arr['total'], 'update' => md5($arr['total'] . $_POST['search'])]));
+    die(json_encode([
+        'err' => 'ok',
+        'table' => $result,
+        'total' => $arr['total'],
+        'update' => md5($arr['total'] . $_POST['search'])
+    ]));
 }
 
-function isFavorite($uid, $rid)
+function isFavorite($uid, $rid) // DONE
 {
     global $db;
     $query = $db->prepare('SELECT `id` FROM `users_favorites` WHERE `users_id` = :uid AND `releases_id` = :rid');
@@ -2976,7 +3072,7 @@ function isFavorite($uid, $rid)
     return true;
 }
 
-function releaseFavorite()
+function releaseFavorite() // DONE
 {
     global $db, $user;
     if (!$user) {
@@ -3005,10 +3101,10 @@ function releaseFavorite()
     _message('success');
 }
 
-function releaseUpdateLast()
+/*function releaseUpdateLast()
 {
     global $db, $user, $var;
-    /*if(!$user || $user['access'] < 2){
+    if(!$user || $user['access'] < 2){
         _message('access', 'error');
     }
     if(empty($_POST['id'])){
@@ -3027,11 +3123,11 @@ function releaseUpdateLast()
     $query->bindParam(':time', $var['time']);
     $query->bindParam(':id', $_POST['id']);
     $query->execute();
-    APIv2_UpdateTitle($_POST['id']);*/
+    APIv2_UpdateTitle($_POST['id']);
     _message('success');
-}
+}*/
 
-function showSchedule()
+function showSchedule() // DONE
 {
     global $db, $var, $conf;
     $arr = [];
@@ -3080,19 +3176,19 @@ function showSchedule()
     return $result;
 }
 
-function countRating()
+/*function countRating()
 {
     global $db;
     $query = $db->query('SELECT `id` FROM `releases`');
     while ($row = $query->fetch()) {
         countRatingRelease($row['id']);
     }
-}
+}*/
 
-function countRatingRelease($rid)
+/*function countRatingRelease($rid)
 {
     global $db;
-    /*$tmp = $db->prepare('SELECT count(`id`) as total FROM `users_favorites` WHERE `releases_id` = :rid');
+    $tmp = $db->prepare('SELECT count(`id`) as total FROM `users_favorites` WHERE `releases_id` = :rid');
     $tmp->bindParam(':rid', $rid);
     $tmp->execute();
     $count = $tmp->fetch()['total'];
@@ -3102,10 +3198,10 @@ function countRatingRelease($rid)
         $tmp->bindParam(':id', $rid);
         $tmp->execute();
     }
-    return $count;*/
-}
+    return $count;
+}*/
 
-function sendHH()
+/*function sendHH()
 {
     global $var;
     testRecaptcha();
@@ -3173,13 +3269,13 @@ function sendHH()
     _mail('anilibriahh@protonmail.com', "{$position[$arr['rPosition']]} новая заявка [$title]", $result);
     _mail('lupin@anilibria.tv', "{$position[$arr['rPosition']]} новая заявка [$title]", $result);
     _message('success');
-}
+}*/
 
-function urlCode($id, $ename)
+/*function urlCode($id, $ename)
 {
     global $db;
     $result = '';
-    /*$code = preg_replace('/[^a-z0-9-]/', '', str_replace(" ", "-", mb_strtolower(preg_replace('/\s+/u', " ", trim($ename)))));
+    $code = preg_replace('/[^a-z0-9-]/', '', str_replace(" ", "-", mb_strtolower(preg_replace('/\s+/u', " ", trim($ename)))));
     function updateUrlCode($db, $code, $id){
         $query = $db->prepare('UPDATE `xrelease` SET `code` = :code WHERE `id` = :id');
         $query->bindParam(':code', $code);
@@ -3203,15 +3299,15 @@ function urlCode($id, $ename)
     }elseif(!ctype_digit($code) && ctype_digit($row['code'])){
         $result = updateUrlCode($db, $code, $id);
     }
-    return "/release/$result.html";*/
-}
+    return "/release/$result.html";
+}*/
 
-function catalogYear()
+function catalogYear() // DONE
 {
     global $db, $sphinx, $cache, $var;
 
     $options = "";
-    $query = $db->prepare('SELECT `year` FROM `releases` WHERE `is_hidden` = 0 AND deleted_at IS NULL GROUP BY `year` ORDER BY `year` DESC');
+    $query = $db->prepare('SELECT `year` FROM `releases` WHERE `is_hidden` = 0 AND `deleted_at` IS NULL GROUP BY `year` ORDER BY `year` DESC');
     $query->execute();
     $years = $query->fetchAll();
 
@@ -3220,105 +3316,86 @@ function catalogYear()
     }
 
     return $options;
-
-    /*$result = $cache->get('catalogYear');
-    if($result === false){
-        $result = '';
-        $tmpl = '<option value="{year}">{year}</option>';
-        $arr = array_reverse(range(1990, date('Y', $var['time'])));
-
-        foreach($arr as $search){
-            // TODO: check if sphinx works
-            $query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
-            $query->bindValue(':search', "@(year) ($search)");
-            $query->execute();
-            if($query->rowCount() > 0){
-                $result .= str_replace('{year}', $search, $tmpl);
-            }
-        }
-        $cache->set('catalogYear', $result, 300);
-    }
-    return $result;*/
 }
 
-function pushFcm($name, $code)
+/*function pushFcm($name, $code)
 {
-    global $conf;
-    $link = 'https://www.anilibria.tv/release/' . $code . '.html';
-    $title = 'Вышла новая серия!';
-    $body = $name;
+     global $conf;
+     $link = 'https://www.anilibria.tv/release/' . $code . '.html';
+     $title = 'Вышла новая серия!';
+     $body = $name;
 
-    $reqBody = [
-        'to' => '/topics/all',
-        'content_available' => true,
-        'priority' => 'high',
-        'notification' => [
-            'body' => $body,
-            'title' => $title,
-            'link' => $link,
-            'sound' => 'default'
-        ],
-        'data' => [
-            'body' => $body,
-            'title' => $title,
-            'link' => $link,
-            'sound' => 'default'
-        ]
-    ];
+     $reqBody = [
+         'to' => '/topics/all',
+         'content_available' => true,
+         'priority' => 'high',
+         'notification' => [
+             'body' => $body,
+             'title' => $title,
+             'link' => $link,
+             'sound' => 'default'
+         ],
+         'data' => [
+             'body' => $body,
+             'title' => $title,
+             'link' => $link,
+             'sound' => 'default'
+         ]
+     ];
 
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => json_encode($reqBody, JSON_UNESCAPED_UNICODE),
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => array(
-            "Authorization: " . $conf["fcm_token"],
-            "Content-Type: application/json"
-        )
-    ));
-    $response = curl_exec($curl);
-    curl_close($curl);
-}
+     $curl = curl_init();
+     curl_setopt_array($curl, array(
+         CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
+         CURLOPT_CUSTOMREQUEST => "POST",
+         CURLOPT_POSTFIELDS => json_encode($reqBody, JSON_UNESCAPED_UNICODE),
+         CURLOPT_RETURNTRANSFER => true,
+         CURLOPT_HTTPHEADER => array(
+             "Authorization: " . $conf["fcm_token"],
+             "Content-Type: application/json"
+         )
+     ));
+     $response = curl_exec($curl);
+     curl_close($curl);
+}*/
 
-function pushAll($name, $code)
+/*function pushAll($name, $code)
 {
-    global $conf;
-    $url = 'https://www.anilibria.tv/release/' . $code . '.html';
-    function sendPush($api, $data)
-    {
-        curl_setopt_array($ch = curl_init(), [
-            CURLOPT_URL => $api,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_RETURNTRANSFER => true
-        ]);
-        curl_exec($ch);
-        curl_close($ch);
-    }
+      global $conf;
+      $url = 'https://www.anilibria.tv/release/' . $code . '.html';
+      function sendPush($api, $data)
+      {
+          curl_setopt_array($ch = curl_init(), [
+              CURLOPT_URL => $api,
+              CURLOPT_POSTFIELDS => $data,
+              CURLOPT_RETURNTRANSFER => true
+          ]);
+          curl_exec($ch);
+          curl_close($ch);
+      }
 
-    sendPush('https://pushall.ru/api.php', [
-        'type' => 'broadcast',
-        'id' => '943',
-        'key' => $conf['push_all'],
-        'text' => $name,
-        'title' => '[AnilibriaTV] новая серия!',
-        'url' => $url
-    ]);
-    sendPush('http://sanasol-test.ru/librbot/hook.php', [
-        'key' => $conf['push_sanasol'],
-        'text' => $name,
-        'title' => 'Вышла новая серия!',
-        'url' => $url
-    ]);
-    sendPush('https://bot.libria.fun/hook.php', [
-        'token' => $conf['push_albot'],
-        'text' => $name,
-        'title' => 'Вышла новая серия!',
-        'url' => $url
-    ]);
-}
+      sendPush('https://pushall.ru/api.php', [
+          'type' => 'broadcast',
+          'id' => '943',
+          'key' => $conf['push_all'],
+          'text' => $name,
+          'title' => '[AnilibriaTV] новая серия!',
+          'url' => $url
+      ]);
+      sendPush('http://sanasol-test.ru/librbot/hook.php', [
+          'key' => $conf['push_sanasol'],
+          'text' => $name,
+          'title' => 'Вышла новая серия!',
+          'url' => $url
+      ]);
+      sendPush('https://bot.libria.fun/hook.php', [
+          'token' => $conf['push_albot'],
+          'text' => $name,
+          'title' => 'Вышла новая серия!',
+          'url' => $url
+      ]);
+}*/
 
-function telegram_send($chanel, $msg)
+/*function telegram_send($chanel, $msg)
 {
     global $conf;
     $arr = [
@@ -3326,15 +3403,15 @@ function telegram_send($chanel, $msg)
         'text' => $msg
     ];
     file_get_contents("https://api.telegram.org/bot{$conf['telegram']}/sendMessage?" . http_build_query($arr));
-}
+}*/
 
-function helpSeed()
+/*function helpSeed()
 {
     global $db;
     $url = false;
-    $query = $db->query('SELECT `releases_id` AS `rid` FROM `torrents` WHERE `seeders` < 10 ORDER BY `seeders` DESC');
+    $query = $db->query('SELECT `releases_id` AS `rid` FROM `torrents` WHERE `seeders` < 10 ORDER BY `seeders` DESC LIMIT 10');
     while ($row = $query->fetch()) {
-        $tmp = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id AND `is_hidden` = 0');
+        $tmp = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 and `deleted_at` IS NULL');
         $tmp->bindParam(':id', $row['rid']);
         $tmp->execute();
         if ($tmp->rowCount() == 1) {
@@ -3345,11 +3422,11 @@ function helpSeed()
     if ($url) {
         telegram_send('@anilibriahelpseed', $url);
     }
-}
+}*/
 
-function showAscReleases()
+function showAscReleases() // DONE
 {
-    global $db, $var, $cache;
+    global $db, $var, $cache, $conf;
     $arr = [];
     $result = '';
     $links = '';
@@ -3376,16 +3453,29 @@ function showAscReleases()
     $tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">' . $descTPL . '<img width="200" height="280" data-src="{img}" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="{alt}" class="lazy"></a></td>';
     $result = $cache->get('showAscReleases');
     if ($result === false) {
-        $query = $db->query('SELECT `id`, `name`, `name_english` AS `ename`, NULL AS `voice`, `alias` AS `code` FROM `releases` WHERE `is_hidden` = 0 ORDER BY `name` ASC');
+        $query = $db->query('
+            SELECT `id`, `name`, `name_english` AS `ename`, NULL AS `voice`, `alias` AS `code`, `poster_medium`
+            FROM `releases` 
+            WHERE `is_hidden` = 0 and `deleted_at` IS NULL
+            ORDER BY `name` ASC
+        ');
         $query->bindParam(':day', $key);
         $query->execute();
         while ($row = $query->fetch()) {
-            $poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
-            if (!file_exists($poster)) {
-                $img = urlCDN('/upload/release/200x280/default.jpg');
-            } else {
-                $img = urlCDN(fileTime($poster));
-            }
+
+            $img = empty($row['poster_medium'])
+                ? urlCDN('/upload/release/240x350/default.jpg')
+                : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+
+            //$poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
+
+
+            //if (!file_exists($poster)) {
+            //     $img = urlCDN('/upload/release/200x280/default.jpg');
+            // } else {
+            //     $img = urlCDN(fileTime($poster));
+            // }
+
             $key = mb_strtoupper(mb_substr($row['name'], 0, 1, "utf-8"));
 
             if (!in_array($key, $chars)) {
@@ -3421,10 +3511,11 @@ function showAscReleases()
     return $result;
 }
 
+// TODO: add db column with ads
 function changeADS()
 {
     global $db, $user, $var, $conf;
-    /*if(!$user){
+    if(!$user){
         _message('unauthorized', 'error');
     }
     if(!$user['ads']){
@@ -3435,11 +3526,12 @@ function changeADS()
     $query = $db->prepare('UPDATE `users` SET `ads` = :ads WHERE `id` = :id');
     $query->bindParam(':ads', $ads);
     $query->bindParam(':id', $user['id']);
-    $query->execute();*/
-    // TODO: add to DB
+    $query->execute();
+
     _message('success');
 }
 
+// TODO: add db column with ads
 function checkADS()
 {
     global $user;
@@ -3450,7 +3542,7 @@ function checkADS()
     }
 }
 
-function randomRelease()
+function randomRelease() // DONE
 {
     global $db, $cache;
     $arr = [];
@@ -3459,27 +3551,13 @@ function randomRelease()
     $release = $query->fetch();
 
     return $release['code'];
-    /*
-        $result = $cache->get('randomRelease');
-        if($result !== false){
-            $arr = json_decode($result, true);
-        }else{
-            $query = $db->query('SELECT `alias` AS `code` FROM `releases` WHERE `is_hidden` = 0');
-            while($row=$query->fetch()){
-                $arr[] = $row['code'];
-            }
-            $cache->set('randomRelease', json_encode($arr), 300);
-        }
-        shuffle($arr);
-        $key = random_int(0, count($arr)-1);
-        return $arr[$key];*/
 }
 
-function updateGenreRating()
+/*function updateGenreRating()
 {
     global $db, $sphinx;
     $data = [];
-    /*$query = $db->query('SELECT * FROM `genre`');
+    $query = $db->query('SELECT * FROM `genre`');
     while($row = $query->fetch()){
         $select = $sphinx->prepare('SELECT `id` FROM anilibria WHERE MATCH(:search) AND `status` != 3 LIMIT 1000');
         $select->bindValue(':search', "@(genre) ({$row['name']})");
@@ -3494,14 +3572,14 @@ function updateGenreRating()
         $update->bindParam(':rating', $data["{$row['id']}"]);
         $update->bindParam(':id', $row['id']);
         $update->execute();
-    }*/
-}
+    }
+}*/
 
-function showSitemap()
+function showSitemap() // DONE
 {
     global $db;
     $release = '';
-    $query = $db->query('SELECT `alias` AS `code` FROM `releases` WHERE `is_hidden` = 0');
+    $query = $db->query('SELECT `alias` AS `code` FROM `releases` WHERE `is_hidden` = 0 and `deleted_at` IS NULL');
     while ($row = $query->fetch()) {
         $release .= "\t<url><loc>https://www.anilibria.tv/release/{$row['code']}.html</loc></url>\n";
     }
@@ -3509,7 +3587,7 @@ function showSitemap()
     file_put_contents('/var/www/anilibria/root/sitemap.xml', $result);
 }
 
-function checkIfVoted($rid)
+function checkIfVoted($rid) // DONE
 {
     global $db, $user;
     $svg = 'heart-regular.svg';
@@ -3527,6 +3605,7 @@ function checkIfVoted($rid)
     return "<a href='' data-release-favorites='$rid' class='upcoming_season_like'>БУДУ СМОТРЕТЬ $img</a>";
 }
 
+// TODO: release query
 function showNewSeason()
 {
     global $db, $user, $var;
@@ -3582,7 +3661,7 @@ function showNewSeason()
     return "<div class='news-block'>$video<div>$result</div><div class='clear'></div><div style='margin-top:10px;'></div></div>";
 }
 
-function urlCDN($url)
+function urlCDN($url) // DONE
 {
     global $conf;
     if ($conf['cdn']) {
@@ -3591,7 +3670,7 @@ function urlCDN($url)
     return $url;
 }
 
-function sendReleaseReport()
+function sendReleaseReport() // DONE
 {
     global $var;
     if (empty($_POST['mes']) || empty($_POST['url']) || mb_strlen($_POST['mes']) > 250) {
@@ -3606,7 +3685,7 @@ function sendReleaseReport()
     _message('success');
 }
 
-function iframePlayer()
+function iframePlayer() // DONE
 {
     if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
         _message('empty', 'error');
@@ -3621,6 +3700,7 @@ function iframePlayer()
     return '';
 }
 
+// TODO: hooks!
 function APIv2_UpdateTitle($title_id)
 {
     global $conf;
@@ -3628,7 +3708,27 @@ function APIv2_UpdateTitle($title_id)
     file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$title_id}", 0, $context);
 }
 
-function getTelegramActionLink($platform, $action, $payload)
+function getTelegramActionLink($platform, $action, $payload) // DONE
 {
     return "tg://resolve?domain=anilibria_bot&start=_" . rtrim(strtr(base64_encode("{$platform}|{$action}_{$payload}"), '+/', '-_'), '=');
+}
+
+function _getReleaseById($releaseId) // DONE
+{
+    global $db;
+    $query = $db->prepare('SELECT * FROM `releases` WHERE `id` = :id');
+    $query->bindParam(':id', $releaseId);
+    $query->execute();
+
+    return $query->fetch();
+}
+
+function _getReleaseEpisodes($releaseId) // DONE
+{
+    global $db;
+
+    $query = $db->prepare('SELECT * from `releases_episodes` where `releases_id` = :id and `is_visible` = 1 and `deleted_at` IS NULL ORDER BY `sort_order`');
+    $query->bindValue(':id', $releaseId);
+    $query->execute();
+    return $query->fetchAll();
 }

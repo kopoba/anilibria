@@ -79,7 +79,7 @@ $(document).on("click", "[data-submit-register]", function(e) {
 			});
 		});
 	}else{
-		$.post("//"+document.domain+"/public/registration.php", { 'login': login, 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
+		$.post("/public/registration.php", { 'login': login, 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
 			console.log(json);
 			data = JSON.parse(json);
 			color = 'green';
@@ -105,7 +105,7 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 	$('[data-submit-passwdrecovery]').hide();
 	if($("div#RecaptchaField").css('display') == 'none'){
 		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
-			$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': token }, function(json){
+			$.post("/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';
 				if(data.err != 'ok'){
@@ -121,7 +121,7 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 			});
 		});
 	}else{
-		$.post("//"+document.domain+"/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
+		$.post("/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
 			data = JSON.parse(json);
 			color = 'green';
 			if(data.err == 'ok'){
@@ -142,7 +142,7 @@ $(document).on("click", "[data-2fa-generate]", function(e) {
 	var _this = $(this);
 	_this.blur();
 	e.preventDefault();
-	$.post("//"+document.domain+"/public/2fa.php", {do: 'gen', 'csrf_token': csrf_token}, function(json){
+	$.post("/public/2fa.php", {do: 'gen', 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			_this.hide();
@@ -157,7 +157,7 @@ $(document).on("click", "[data-2fa-start]", function(e) {
 	secret = $('input[id=2fa]').val();
 	check = $('input[id=2facheck]').val();
 	passwd = $('input[id=2fapasswd]').val();
-	$.post("//"+document.domain+"/public/2fa.php", {do: 'save', '2fa': secret, code: check, passwd: passwd, 'csrf_token': csrf_token}, function(json){
+	$.post("/public/2fa.php", {do: 'save', '2fa': secret, code: check, passwd: passwd, 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -183,7 +183,7 @@ $(document).on("click", "[data-change-email]", function(e) {
 	e.preventDefault();
 	mail = $('input[id=changeEmail]').val();
 	passwd = $('input[id=changeEmailPasswd]').val();
-	$.post("//"+document.domain+"/public/change/mail.php", {'mail': mail, 'passwd': passwd, 'csrf_token': csrf_token }, function(json){
+	$.post("/public/change/mail.php", {'mail': mail, 'passwd': passwd, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -200,7 +200,7 @@ $(document).on("click", "[data-change-passwd]", function(e) {
 	oldPasswd = $('input[id=oldPasswd]').val();
 	newPasswd = $('input[id=newPasswd]').val();
 	repPasswd = $('input[id=repeatPasswd]').val();
-	$.post("//"+document.domain+"/public/change/passwd.php", {'oldPasswd': oldPasswd, 'newPasswd': newPasswd, 'repPasswd': repPasswd, 'csrf_token': csrf_token }, function(json){
+	$.post("/public/change/passwd.php", {'oldPasswd': oldPasswd, 'newPasswd': newPasswd, 'repPasswd': repPasswd, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -219,7 +219,7 @@ $(document).on("click", "[data-edit-profile]", function(e) {
 $(document).on("click", "[data-reset-user-values]", function(e) {
 	$(this).blur();
 	e.preventDefault();
-	$.post("//"+document.domain+"/public/save.php", {'reset': 1, 'csrf_token': csrf_token }, function(json){
+	$.post("/public/save.php", {'reset': 1, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			text = 'Не указано';
@@ -259,7 +259,7 @@ $(document).on("click", "[data-save-user-values]", function(e) {
 	var youtube = $('input[id=youtube]').val();
 	var twitch = $('input[id=twitch]').val();
 	var twitter = $('input[id=twitter]').val();
-	$.post("//"+document.domain+"/public/save.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter, 'csrf_token': csrf_token }, function(json){
+	$.post("/public/save.php", {'name': name, 'age': age, 'sex': sex, 'vk': vk, 'telegram': telegram, 'steam': steam, 'phone': phone, 'skype': skype, 'facebook': facebook, 'instagram': instagram, 'youtube': youtube, 'twitch': twitch, 'twitter': twitter, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			if(name != "") $("#name").text(name);
@@ -341,7 +341,7 @@ $(document).on('click', '[data-send-announce]', function(e){
 	e.preventDefault();
 	id = $('input[id=releaseID]').val();
 	var announce = $('input[id=announce]').val();
-	$.post("//"+document.domain+"/public/release/announce.php", {'id': id, 'announce': announce, 'csrf_token': csrf_token }, function(json){
+	$.post("/public/release/announce.php", {'id': id, 'announce': announce, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		if(data.err != 'ok'){
 			$("#changeAnnounceMes").html('Изменить анонс (<font color=red>'+data.mes+'</font>)');
@@ -407,7 +407,7 @@ $(document).on('click', '[data-send-torrent]', function(e){
 		processData: false,
 		contentType: false,
 		data: form_data,
-		url: "//"+document.domain+"/public/torrent/index.php",
+		url: "/public/torrent/index.php",
 		success: function(json) {
 			data = JSON.parse(json);			
 			if(data.err != 'ok'){
@@ -432,7 +432,7 @@ $(document).on('click', '[data-release-delete]', function(e){
 	$(this).blur();
 	e.preventDefault();
 	if(window.confirm('Действительно хотите удалить релиз?')){
-		$.post("//"+document.domain+"/public/release/delete.php", {'id': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
+		$.post("/public/release/delete.php", {'id': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			window.location.replace('/pages/new.php');
@@ -497,7 +497,7 @@ $(document).on('click', '[data-release-new], [data-release-update]', function(e)
 		processData: false,
 		contentType: false,
 		data: form_data,
-		url: "//"+document.domain+"/public/release/index.php",
+		url: "/public/release/index.php",
 		success: function(json) {
 			//console.log(json);
 			data = JSON.parse(json);
@@ -541,7 +541,7 @@ $("#smallSearchInput").focusout(function(){
 
 $("#smallSearchInput").bind("input", function(){
 	if($('input[id=smallSearchInput]').val().length > 2){
-		$.post("//"+document.domain+"/public/search.php", {'search': $('input[id=smallSearchInput]').val(), 'small': '1'}, function(json){
+		$.post("/public/search.php", {'search': $('input[id=smallSearchInput]').val(), 'small': '1'}, function(json){
 			if(json){
 				data = JSON.parse(json);
 				if(data.err == 'ok'){
@@ -562,7 +562,7 @@ $(document).on('click', '[data-release-favorites]', function(e){
 		var page = 'release';
 		var rid = $('input[id=releaseID]').val();
 	}
-	$.post("//"+document.domain+"/public/favorites.php", {'rid': rid, 'csrf_token': csrf_token}, function(json){
+	$.post("/public/favorites.php", {'rid': rid, 'csrf_token': csrf_token}, function(json){
 		console.log(json);
 		data = JSON.parse(json);
 		if(data.key == 'access'){
@@ -589,7 +589,7 @@ $(document).on('click', '[data-release-favorites]', function(e){
 
 $(document).on('click', '[data-release-last]', function(e){
 	var _this = $(this);
-	$.post("//"+document.domain+"/public/release/last.php", {'id': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
+	$.post("/public/release/last.php", {'id': $('input[id=releaseID]').val(), 'csrf_token': csrf_token}, function(json){
 		data = JSON.parse(json);
 		if(data.err == 'ok'){
 			location.reload();
@@ -658,7 +658,7 @@ $(document).on('click', '[data-send-request]', function(e){
 		"subExp": $('input[id=subExp]').val(),
 		"subPosition": $('input[id=subPosition]').val(),	
 	}
-	$.post("//"+document.domain+"/public/hh.php", {'info': JSON.stringify(fields), 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2}, function(json){
+	$.post("/public/hh.php", {'info': JSON.stringify(fields), 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2}, function(json){
 		if(json){
 			data = JSON.parse(json);
 			if(data.err == 'ok'){
@@ -684,7 +684,7 @@ $(document).on("click", "[data-change-vk]", function(e) {
 	$(this).blur();
 	e.preventDefault();
 	vk = $('input[id=changeVKID]').val();
-	$.post("//"+document.domain+"/public/change/vk.php", {'vk': vk, 'csrf_token': csrf_token }, function(json){
+	$.post("/public/change/vk.php", {'vk': vk, 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -698,7 +698,7 @@ $(document).on("click", "[data-change-ads]", function(e) {
 	$(this).blur();
 	e.preventDefault();
 	var change = $(this).data("change-ads");
-	$.post("//"+document.domain+"/public/change/a.php", { 'csrf_token': csrf_token }, function(json){
+	$.post("/public/change/a.php", { 'csrf_token': csrf_token }, function(json){
 		data = JSON.parse(json);
 		color = 'red';
 		if(data.err == 'ok'){
@@ -745,7 +745,7 @@ $(document).on("click", "[data-send-release-error]", function(e) {
 	e.preventDefault();
 	mes = $('textarea[id=reportMes]').val();
 	$("[data-send-release-error]").hide();
-	$.post("//"+document.domain+"/public/error.php", { 'mes': mes, 'url': window.location.pathname, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
+	$.post("/public/error.php", { 'mes': mes, 'url': window.location.pathname, 'g-recaptcha-response': grecaptcha.getResponse(recaptcha1), 'recaptcha': 2 }, function(json){
 		console.log(json);
 		data = JSON.parse(json);
 		if(data.err == 'ok'){

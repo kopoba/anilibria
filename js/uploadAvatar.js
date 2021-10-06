@@ -62,7 +62,7 @@ $(document).on("click", "[data-upload-avatar]", function(e) {
 		processData: false,
 		contentType: false,
 		data: form_data,
-		url: "//"+document.domain+"/public/avatar.php",
+		url: "/public/avatar.php",
 		success: function(json) {
 			data = JSON.parse(json);			
 			if(data.err != 'ok'){

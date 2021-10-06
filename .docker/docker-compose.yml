@@ -1,0 +1,23 @@
+version: "3"
+services:
+
+  anilibria.legacy:
+    container_name: anilibria.legacy
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: anilibria.legacy:build
+    restart: always
+    volumes:
+      - ..:/var/www/html
+    networks:
+      - anilibria
+    ports:
+      - $DOCKER_EXTERNAL_PORT:80
+    env_file:
+      - .env
+
+networks:
+  anilibria:
+    external:
+      name: anilibria

@@ -231,25 +231,37 @@ function apiList()
 
     fetchNormalCache();
 
-    if (checkApiRelaxing()) {
+    /*if (checkApiRelaxing()) {
 
         fetchInfiniteCache();
         if (checkApiRelaxing()) {
             throw new ApiException('API is not ready', 400);
         }
-    }
+    }*/
 
     /* Main api methods */
-    function apiGetTorrentsMap($torrents, $idsString)
+    function apiGetTorrentsMap($torrents, $idsString) // DONE
     {
+        global $db;
+
         $result = [];
         $ids = array_unique(explode(',', $idsString));
+
         if (!empty($ids)) {
-            foreach ($ids as $id) {
+
+            $query = $db->prepare("SELECT * from torrents WHERE `releases_id` IN (". implode(', ', array_fill(0, count($ids), '?')) . ")");
+            $query->execute(array_values($ids));
+
+            $torrents = $query->fetchAll();
+            foreach ($torrents as $torrent) {
+                $result[$torrent['releases_id']][] = _transformTorrentData($torrent);
+            }
+
+            /*foreach ($ids as $id) {
                 if (array_key_exists($id, $torrents)) {
                     $result["$id"] = $torrents["$id"];
                 }
-            }
+            }*/
         }
         return $result;
     }
@@ -262,9 +274,11 @@ function apiList()
         return [];
     }
 
+    // TODO: GET RELEASE
     function apiGetReleaseById($info, $torrent, $rid)
     {
         $result = null;
+
         if (array_key_exists($rid, $info)) {
             $releases = array($info[$rid]);
             $proceededReleases = proceedReleases($releases, $torrent);
@@ -278,6 +292,7 @@ function apiList()
         throw new ApiException("Release by id=$rid not found", 404);
     }
 
+    // TODO: GET RELEASE
     function apiGetReleaseByCode($info, $torrent, $rcode)
     {
         $result = null;
@@ -297,6 +312,7 @@ function apiList()
         throw new ApiException("Release by code=$rcode not found", 404);
     }
 
+    // TODO: GET RELEASE
     function apiGetReleasesByIdsString($info, $torrent, $rid)
     {
         $list = [];
@@ -306,6 +322,7 @@ function apiList()
         return apiGetReleasesByIdsArray($info, $torrent, $list);
     }
 
+    // TODO: GET RELEASE
     function apiGetCatalog($info, $torrent, $items)
     {
         if (!isset($items)) {
@@ -322,6 +339,7 @@ function apiList()
         ];
     }
 
+    // TODO: GET RELEASE
     function apiSearchReleases($info, $torrent, $items)
     {
         if (!isset($items)) {
@@ -333,6 +351,7 @@ function apiList()
         return apiGetReleasesByIdsArray($info, $torrent, $ids);
     }
 
+    // TODO: GET RELEASE
     function apiGetReleasesByIdsArray($info, $torrent, $ids)
     {
         $releases = [];
@@ -345,6 +364,7 @@ function apiList()
         return proceedReleases($releases, $torrent);
     }
 
+    // TODO: GET RELEASE
     function apiGetReleases($info, $torrent)
     {
         $pagination = createPagination(count($info));
@@ -358,7 +378,7 @@ function apiList()
         ];
     }
 
-    function proceedPagination($pagination)
+    function proceedPagination($pagination) // DONE
     {
         unset($pagination['startIndex'], $pagination['endIndex']);
         $pagination['page'] = $pagination['page'] + 1;
@@ -366,7 +386,7 @@ function apiList()
         return $pagination;
     }
 
-    function preparePagination()
+    function preparePagination() // DONE
     {
         $startIndex = 0;
         $endIndex = 0;
@@ -399,7 +419,8 @@ function apiList()
         ];
     }
 
-    function createPagination($allItemsCount)
+
+    function createPagination($allItemsCount) // DONE
     {
         $prepared = preparePagination();
         return [
@@ -412,6 +433,7 @@ function apiList()
         ];
     }
 
+    // TODO: GET RELEASE
     function proceedReleases($releases, $torrent)
     {
         global $IGNORE_APP_ID,
@@ -507,11 +529,14 @@ function apiList()
                         $epName = $names[1];
                         $val['playlist']["$k"]['srcSd'] = mp4_link($val['playlist']["$k"]['file'] . '-sd.mp4') . "?download=$epName-$epNumber-sd.mp4";
                         $val['playlist']["$k"]['srcHd'] = mp4_link($val['playlist']["$k"]['file'] . '.mp4') . "?download=$epName-$epNumber-hd.mp4";
+
                         unset($val['playlist']["$k"]['file']);
+
 
                         // Временно убираем ссылки на скачивание
                         unset($val['playlist']["$k"]['srcSd']);
                         unset($val['playlist']["$k"]['srcHd']);
+
                         // Временная заглушка о причинах отключения скачивания
                         $val['playlist']["$k"]['srcHd'] = "https://vk.com/anilibria?w=wall-37468416_493445";
                     }
@@ -530,18 +555,26 @@ function apiList()
         return $result;
     }
 
-    function apiGetFavoriteField($release)
+
+    function apiGetFavoriteField($release) // DONE
     {
-        global $user;
-        $count = countRatingRelease($release['id']);
+        global $user, $db;
+
+        //$count = countRatingRelease($release['id']);
+
+        $query = $db->query('SELECT `rating_by_favorites` from `releases` WHERE id = :id');
+        $query->bindValue(':id', $release['id']);
+        $query->execute();
+        $release = $query->fetch();
+
         return [
-            'rating' => intval($count),
+            'rating' => intval($release['rating_by_favorites'] ?? 0),
             'added' => isFavorite($user['id'], $release['id'])
         ];
     }
 
 
-    function apiFavorites($info, $torrent)
+    function apiFavorites($info, $torrent) // DONE
     {
         global $db, $user;
         $favIds = [];
@@ -569,23 +602,33 @@ function apiList()
         return $result;
     }
 
+
+    // TODO: Check authorization
     function apiGetUser()
     {
-        global $db, $user;
+        global $db, $conf, $user;
+
         if (!$user) {
             exitAuth();
             throw new ApiException("No user", 401);
         }
-        if (!empty($user['avatar'])) {
-            $tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
+
+
+        $tmpAvatar = empty($user['avatar'])
+            ? '/upload/avatars/noavatar.jpg'
+            : sprintf('%s/%s/%s', $conf['user_avatar_host'], $user['id'], $user['avatar']);
+
+            /*$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
         } else {
             $tmpAvatar = 'noavatar.jpg';
-        }
+        }*/
+
         $result = [
             "id" => intval($user['id']),
             "login" => $user['login'],
-            "avatar" => "/upload/avatars/$tmpAvatar"
+            "avatar" => $tmpAvatar
         ];
+
         $appStoreHeader = getallheaders()['Store-Published'] ?? null;
         if ($appStoreHeader == "Apple") {
             //$result["playerEnabled"] = $user['login'] != "example";
@@ -597,7 +640,7 @@ function apiList()
     }
 
 
-    function releaseFavoriteAction($info, $torrent)
+    function releaseFavoriteAction($info, $torrent) // DONE
     {
         global $db, $user;
         if (!$user) {
@@ -641,26 +684,37 @@ function apiList()
         return apiGetReleaseById($info, $torrent, $_POST['id']);
     }
 
-    function getRawFeed()
+    function getRawFeed() // DONE
     {
         global $db;
         $result = [];
 
         $pagination = preparePagination();
-        $startIndex = $pagination['startIndex'];
-        $perPage = $pagination['perPage'];
+        $startIndex = intval($pagination['startIndex']);
+        $perPage = intval($pagination['perPage']);
 
-        // TODO: what is that?
-        $releaseQueryStr = "SELECT 'release' as type, `id` as id, `last` as timestamp FROM `xrelease`";
-        // TODO: what is that?
-        $youtubeQueryStr = "SELECT 'youtube' as type, `id` as id, `time` as timestamp FROM `youtube`";
-        // TODO: what is that?
-        $feedQueryStr = "SELECT `type`, `id`, `timestamp` FROM ($releaseQueryStr WHERE 1 AND `status` != 3 UNION $youtubeQueryStr WHERE 1) AS feed";
-        $queryStr = "$feedQueryStr ORDER BY timestamp DESC LIMIT :start_index, :per_page";
 
-        $query = $db->prepare($queryStr);
-        $query->bindParam(":start_index", intval($startIndex), \PDO::PARAM_INT);
-        $query->bindParam(":per_page", intval($perPage), \PDO::PARAM_INT);
+        $sql = "
+            SELECT `type`, `id`, `timestamp` FROM (
+              SELECT 'release' as type, `id` as id, UNIX_TIMESTAMP(`fresh_at`) as timestamp FROM `releases` WHERE `is_hidden` = 0 and deleted_at IS NULL
+              UNION
+              SELECT 'youtube' as type, `id` as id, UNIX_TIMESTAMP(`created_at`) as timestamp FROM `youtube`                                    
+            )
+            AS feed
+            ORDER BY timestamp DESC 
+            LIMIT :start_index, :per_page
+        ";
+
+        //$releaseQueryStr = "SELECT 'release' as type, `id` as id, UNIX_TIMESTAMP(`fresh_at`) as timestamp FROM `releases`";
+        //$youtubeQueryStr = "SELECT 'youtube' as type, `id` as id, UNIX_TIMESTAMP(`created_at`) as timestamp FROM `youtube`";
+        /*$feedQueryStr = "SELECT `type`, `id`, `timestamp` FROM
+                (
+                    $releaseQueryStr WHERE 1 AND `status` != 3 UNION $youtubeQueryStr WHERE 1) AS feed";
+        $queryStr = "$feedQueryStr ORDER BY timestamp DESC LIMIT :start_index, :per_page";*/
+
+        $query = $db->prepare($sql);
+        $query->bindParam(":start_index", $startIndex, \PDO::PARAM_INT);
+        $query->bindParam(":per_page", $perPage, \PDO::PARAM_INT);
         $query->execute();
         while ($row = $query->fetch()) {
             $result[] = [
@@ -673,7 +727,7 @@ function apiList()
         return $result;
     }
 
-    function apiGetFeed($info, $torrent)
+    function apiGetFeed($info, $torrent) // DONE
     {
         global $db;
         $result = [];
@@ -703,13 +757,13 @@ function apiList()
         return $result;
     }
 
-    function createYoutubeFromRow($row)
+    function createYoutubeFromRow($row) // DONE
     {
+        global $conf;
         return [
             'id' => intval($row['id']),
             'title' => html_entity_decode(html_entity_decode(trim($row['title']))),
-            // TODO: change image request
-            'image' => '/upload/youtube/' . hash('crc32', $row['vid']) . '.jpg',
+            'image' => sprintf('%s/%s/%s', $conf['youtube_poster_host'], $row['id'], $row['preview_original']),
             'vid' => $row['youtube_id'],
             'views' => intval($row['views']),
             'comments' => intval($row['comments']),
@@ -717,7 +771,7 @@ function apiList()
         ];
     }
 
-    function apiGetYoutube()
+    function apiGetYoutube() // DONE
     {
         global $db;
         $countQuery = $db->query('SELECT COUNT(*) FROM `youtube`');
@@ -728,7 +782,7 @@ function apiList()
         $perPage = $pagination['perPage'];
 
         $result = [];
-        $query = $db->prepare("SELECT * FROM `youtube` ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
+        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `youtube` ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
         $query->bindParam(":start_index", intval($startIndex), \PDO::PARAM_INT);
         $query->bindParam(":per_page", intval($perPage), \PDO::PARAM_INT);
         $query->execute();
@@ -742,22 +796,30 @@ function apiList()
         ];
     }
 
-    function apiGetGenres()
+    function apiGetGenres() // DONE
     {
         global $db;
         $result = [];
-        $query = $db->query('SELECT `name` from `genres`');
+        $query = $db->query('SELECT `name` from `genres` ORDER BY `name`');
         while ($row = $query->fetch()) {
             $result[] = $row['name'];
         }
-        sort($result);
+        //sort($result);
         return $result;
     }
 
-    function apiGetYears()
+    function apiGetYears() // DONE
     {
-        global $sphinx, $cache;
-        $result = json_decode($cache->get('apiYears'), true);;
+        //global $sphinx, $cache;
+        global $db;
+
+        $years = [];
+        $query = $db->prepare('SELECT `year` FROM `releases` WHERE `is_hidden` = 0 AND deleted_at IS NULL GROUP BY `year` ORDER BY `year` DESC');
+        $query->execute();
+        foreach ($query->fetchAll() as $item) $years[] = $item['year'];
+
+        return $years;
+        /*$result = json_decode($cache->get('apiYears'), true);;
         if ($result === null || $result === false) {
             $result = [];
             $arr = array_reverse(range(1990, date('Y', time())));
@@ -772,10 +834,10 @@ function apiList()
             }
             $cache->set('apiYears', json_encode($result), 300);
         }
-        return $result;
+        return $result;*/
     }
 
-    function apiGetSocialAuth()
+    function apiGetSocialAuth() // DONE
     {
         $result = [];
 
@@ -790,12 +852,12 @@ function apiList()
     }
 
 
-    function apiGetSchedule($info, $torrent)
+    function apiGetSchedule($info, $torrent) // DONE
     {
         global $db, $var;
         $result = [];
         foreach ($var['day'] as $key => $val) {
-            $query = $db->prepare('SELECT `id` FROM `releases` WHERE `publish_day` = :day AND `is_ongoing` = 1');
+            $query = $db->prepare('SELECT `id` FROM `releases` WHERE `publish_day` = :day AND `is_ongoing` = 1 AND `deleted_at` IS NULL');
             $query->bindParam(':day', $key);
             $query->execute();
             $dayReleases = [];
@@ -814,7 +876,7 @@ function apiList()
         return $result;
     }
 
-    function apiGetRandomRelease()
+    function apiGetRandomRelease() // DONE
     {
         $randomCode = randomRelease();
         return [
@@ -822,7 +884,7 @@ function apiList()
         ];
     }
 
-    function apiGetLinkMenu()
+    function apiGetLinkMenu() // DONE
     {
         return [
             LinkMenuItem::absoluteLink("Группа VK", "https://vk.com/anilibria", LinkMenuItem::$IC_VK),
@@ -835,7 +897,7 @@ function apiList()
         ];
     }
 
-    function apiGetReservedTestResponse()
+    function apiGetReservedTestResponse() // DONE
     {
         //return getallheaders()['Store-Published'] ?? NULL;
         //return getallheaders();
@@ -847,7 +909,7 @@ function apiList()
         ];
     }
 
-    function apiGetOtp($data)
+    function apiGetOtp($data) // DONE
     {
         global $var;
         $remainingTime = intval($data['expired_at']) - $var['time'];
@@ -860,7 +922,7 @@ function apiList()
         ];
     }
 
-    function proceedBridge($funcSrc, $funcDst)
+    function proceedBridge($funcSrc, $funcDst) // DONE
     {
         register_shutdown_function(function () use ($funcSrc, $funcDst) {
             // Получаем то, что было выведено во время работы $funcSrc
@@ -883,7 +945,7 @@ function apiList()
         ob_end_clean();
     }
 
-    function checkIsStringOrInteger($value, $key)
+    function checkIsStringOrInteger($value, $key) // DONE
     {
         $type = gettype($value);
         if ($type != "string" && $type != "integer") {
@@ -891,7 +953,7 @@ function apiList()
         }
     }
 
-    function checkIsString($value, $key)
+    function checkIsString($value, $key) // DONE
     {
         $type = gettype($value);
         if ($type != "string") {
@@ -906,6 +968,7 @@ function apiList()
                 break;
         }
     }
+
     if (isset($_POST['query'])) {
         switch ($_POST['query']) {
             case 'torrent':
@@ -917,12 +980,12 @@ function apiList()
                 }
                 break;
 
-            case 'info':
+            case 'info': // TODO: relase
                 checkIsStringOrInteger($_POST['id'], 'id');
                 return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
                 break;
 
-            case 'release':
+            case 'release': // TODO: release
                 if (!empty($_POST['id'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
                     return apiGetReleaseById($info, $torrent, $_POST['id']);
@@ -934,31 +997,31 @@ function apiList()
                 }
                 break;
 
-            case 'random_release':
+            case 'random_release': // DONE // TODO: release
                 return apiGetRandomRelease();
                 break;
 
-            case 'list':
+            case 'list': // TODO: releases
                 return apiGetReleases($info, $torrent);
                 break;
 
-            case 'schedule':
+            case 'schedule': // TODO: release
                 return apiGetSchedule($info, $torrent);
                 break;
 
-            case 'feed':
+            case 'feed': // DONE // TODO: release
                 return apiGetFeed($info, $torrent);
                 break;
 
-            case 'genres':
+            case 'genres': // DONE
                 return apiGetGenres();
                 break;
 
-            case 'years':
+            case 'years': // DONE
                 return apiGetYears();
                 break;
 
-            case 'favorites':
+            case 'favorites': // TODO: authorization
                 if (!empty($_POST['id']) || !empty($_POST['action'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
                     checkIsString($_POST['action'], 'action');
@@ -968,15 +1031,15 @@ function apiList()
                 }
                 break;
 
-            case 'youtube':
+            case 'youtube': // DONE
                 return apiGetYoutube();
                 break;
 
-            case 'user':
+            case 'user': // TODO: authorization
                 return apiGetUser();
                 break;
 
-            case 'catalog':
+            case 'catalog': // TODO: RELEASE
                 return proceedBridge(
                     function () {
                         showCatalog();
@@ -987,7 +1050,7 @@ function apiList()
                 );
                 break;
 
-            case 'search':
+            case 'search': // TODO: RELEASE
                 return proceedBridge(
                     function () {
                         xSearch();
@@ -998,23 +1061,23 @@ function apiList()
                 );
                 break;
 
-            case 'vkcomments':
+            case 'vkcomments': // DONE
                 return [
                     'baseUrl' => 'https://www.anilibria.tv/',
                     'script' => '<div id="vk_comments"></div><script type="text/javascript" src="https://vk.com/js/api/openapi.js?160" async onload="VK.init({apiId: 5315207, onlyWidgets: true}); VK.Widgets.Comments(\'vk_comments\', {limit: 8, attach: false});" ></script>'
                 ];
                 break;
 
-            case 'social_auth':
+            case 'social_auth': // DONE
                 return apiGetSocialAuth();
 
-            case 'link_menu':
+            case 'link_menu': // DONE
                 return apiGetLinkMenu();
 
-            case 'reserved_test':
+            case 'reserved_test': // DONE
                 return apiGetReservedTestResponse();
 
-            case 'auth_get_otp':
+            case 'auth_get_otp': // TODO: OTP
                 return proceedBridge(
                     function () {
                         getOtpCode();
@@ -1024,7 +1087,7 @@ function apiList()
                     }
                 );
 
-            case 'auth_accept_otp':
+            case 'auth_accept_otp': // TODO: OTP
                 return proceedBridge(
                     function () {
                         acceptOtpCode();
@@ -1034,7 +1097,7 @@ function apiList()
                     }
                 );
 
-            case 'auth_login_otp':
+            case 'auth_login_otp': // TODO: OTP
                 return proceedBridge(
                     function () {
                         loginByOtpCode();
@@ -1050,19 +1113,21 @@ function apiList()
     throw new ApiException("Unknown query", 400);
 }
 
-function updateApiCache()
+function updateApiCache() // DONE
 {
-    global $db, $cache, $user, $var;
+    global $db, $cache, $conf, $user, $var;
+
     $query = $db->query('SELECT 
        r.`id`, 
        r.`name`, 
        r.`name_english` AS `ename`, 
        r.`rating_by_favorites` AS `rating`, 
-       r.`fresh_at` AS `last`, 
+       UNIX_TIMESTAMP(r.`fresh_at`) AS `last`, 
        r.`external_player` AS `moonplayer`, 
        r.`description`, 
        r.`notification` AS `announce`, 
-       r.`publish_day` AS `day`, 
+       r.`publish_day` AS `day`,
+       r.`poster_medium`,
        r.`year`, 
        r.`season`, 
        (
@@ -1070,14 +1135,19 @@ function updateApiCache()
            inner join releases_genres as rg on rg.genres_id = g.id 
            where rg.releases_id = r.id
        ) as `genre`,
+       
        (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "voicing") as `voice`,
+       
        CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
+       
        IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 0))) AS `status`,
+       
        r.`alias` AS `code`, 
        NULL AS `block`, -- TODO: add to current db
        r.`is_wakanim` AS `bakanim`,
+       
     FROM `releases` AS r 
-    WHERE `is_hidden` = 0 
+    WHERE `is_hidden` = 0 and `deleted_at` IS NULL 
     ORDER BY `fresh_at` DESC');
     while ($row = $query->fetch()) {
 
@@ -1091,13 +1161,16 @@ function updateApiCache()
             $names[] = $secondName;
         }
 
-        //TODO: correct poster request
-        $poster = $_SERVER['DOCUMENT_ROOT'] . '/upload/release/350x500/' . $row['id'] . '.jpg';
+        $poster = empty($row['poster_medium'])
+            ? urlCDN('/upload/release/350x500/default.jpg')
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+
+        /*$poster = $_SERVER['DOCUMENT_ROOT'] . '/upload/release/350x500/' . $row['id'] . '.jpg';
         if (!file_exists($poster)) {
             $poster = '/upload/release/350x500/default.jpg';
         } else {
             $poster = fileTime($poster);
-        }
+        }*/
 
         $genres = [];
         $genresTmp = array_unique(explode(',', $row['genre']));
@@ -1206,17 +1279,31 @@ function updateApiCache()
             'externalPlaylist' => $externalPlaylist
         ];
 
-        $tmp = $db->prepare('SELECT `id` AS `fid`, `created_at` AS `ctime`, `hash` AS `info_hash`, `leechers`, `seeders`, `completed`, JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)), `description`, `size`) AS `info` FROM `torrents` WHERE `releases_id` = :rid');
+        $tmp = $db->prepare('
+            SELECT 
+                   `id` AS `fid`, 
+                   `created_at` AS `ctime`, 
+                   `hash` AS `info_hash`, 
+                   `leechers`,
+                   `seeders`, 
+                   `completed`,
+                   JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)), `description`, `size`) AS `info`
+            FROM `torrents`
+            WHERE `releases_id` = :rid AND deleted_at IS NULL
+        ');
         $tmp->bindParam(':rid', $row['id']);
         $tmp->execute();
         while ($xrow = $tmp->fetch()) {
             $data = json_decode($xrow['info'], true);
-            $link = null;
+            /*$link = null;
             if ($user) {
                 $link = "/public/torrent/download.php?id={$xrow['fid']}";
             } else {
                 $link = "/upload/torrents/{$xrow['fid']}.torrent";
-            }
+            }*/
+
+            $link = "/public/torrent/download.php?id={$row['fid']}";
+
             $torrent[$row['id']][] = [
                 'id' => intval($xrow['fid']),
                 'hash' => unpack('H*', $xrow['info_hash'])['1'],
@@ -1236,7 +1323,24 @@ function updateApiCache()
     saveInfiniteCache($chunk, $torrent);
 }
 
-function saveNormalCache($chunk, $torrent)
+
+function _transformTorrentData($torrent) // DONE
+{
+    return [
+        'id' => $torrent['id'],
+        'hash' => $torrent['hash'] ?? null,
+        'leechers' => (int)($torrent['leechers'] ?? 0),
+        'seeders' => (int)($torrent['seeders'] ?? 0),
+        'completed' => (int)($torrent['completed'] ?? 0),
+        'quality' => $torrent['quality'],
+        'series' => $torrent['description'],
+        'size' => (int)($torrent['size'] ?? 0),
+        'url' => "/public/torrent/download.php?id={$torrent['id']}",
+        'ctime' => strtotime($torrent['created_at'])
+    ];
+}
+
+function saveNormalCache($chunk, $torrent) // DONE
 {
     global $cache;
     foreach ($chunk as $k => $v) {
@@ -1246,7 +1350,7 @@ function saveNormalCache($chunk, $torrent)
     $cache->set('apiTorrent', json_encode($torrent), 300);
 }
 
-function saveInfiniteCache($chunk, $torrent)
+function saveInfiniteCache($chunk, $torrent) // DONE
 {
     global $cache;
     foreach ($chunk as $k => $v) {
@@ -1256,9 +1360,48 @@ function saveInfiniteCache($chunk, $torrent)
     $cache->set('infiniteApiTorrent', json_encode($torrent), 0);
 }
 
-function getApiPlaylist($id)
+function getApiPlaylist($id) // DONE
 {
-    global $conf;
+
+    global $conf, $var, $db;
+
+    // Episodes
+    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 ORDER BY `sort_order`');
+    $query->bindValue(':id', $id);
+    $query->execute();
+    $episodes = $query->fetchAll();
+
+    // Cache Servers
+    $query = $db->prepare('SELECT * from `cache_servers` where deleted_at is NULL ORDER BY `response_seconds` ASC, `outgoing_traffic` ASC LIMIT 3');
+    $query->bindValue(':id', $id);
+    $query->execute();
+    $servers = $query->fetchAll();
+
+    $playlist = [];
+
+    foreach ($episodes as $episode) {
+
+        $server = $servers[array_rand($servers, 1)];
+
+        $item = [
+            'id' => "s{$episode['ordinal']}",
+            'title' => sprintf('Серия %s', $episode['ordinal']),
+            'srcSd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
+            'srcHd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
+        ];
+
+        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/%s', $server['url'], $episode['hls_480']);
+        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/%s', $server['url'], $episode['hls_720']);
+        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/%s', $server['url'], $episode['hls_1080']);
+
+
+        $playlist[] = $item;
+    }
+
+    return json_encode($playlist);
+
+
+    /*global $conf;
     $playlist = [];
     $episodesSrc = getRemote($conf['nginx_domain'] . '/?id=' . $id . '&v2=1', 'video' . $id);
     if ($episodesSrc) {
@@ -1308,7 +1451,7 @@ function getApiPlaylist($id)
             $playlist['online'] = $episodesArr['online'];
         }
     }
-    return $playlist;
+    return $playlist;*/
 }
 
 class ApiResponse
@@ -1317,33 +1460,41 @@ class ApiResponse
     private $data = null;
     private $error = null;
 
-    public function proceed($func)
+    public function proceed($func) // DONE
     {
         try {
+
             $data = $func();
             $this->success($data);
+
         } catch (ApiException $e) {
+
             $this->error(
                 $e->getMessage(),
                 $e->getCode(),
                 $e->getDescription()
             );
+
         } catch (Throwable $e) {
+
             $this->error(
                 $e->getMessage(),
                 $e->getCode()
             );
+
         } catch (Exception $e) {
+
             $this->error(
                 $e->getMessage(),
                 $e->getCode()
             );
+
         } finally {
             return $this->build();
         }
     }
 
-    public function success($data)
+    public function success($data) // DONE
     {
         $this->status = true;
         $this->error = null;
@@ -1351,7 +1502,7 @@ class ApiResponse
         return $this->build();
     }
 
-    public function error($message = "Default API error", $code = 400, $description = null)
+    public function error($message = "Default API error", $code = 400, $description = null) // DONE
     {
         $this->status = false;
         $this->data = null;
@@ -1363,7 +1514,7 @@ class ApiResponse
         return $this->build();
     }
 
-    private function build()
+    private function build() // DONE
     {
         return [
             'status' => $this->status,
@@ -1373,23 +1524,23 @@ class ApiResponse
     }
 }
 
-class ApiException extends \Exception
+class ApiException extends \Exception // DONE
 {
     protected $description = null;
 
-    public function __construct($message = "Default API error", $code = 400, $description = null)
+    public function __construct($message = "Default API error", $code = 400, $description = null) // DONE
     {
         parent::__construct($message, $code);
         $this->description = $description;
     }
 
-    public function getDescription()
+    public function getDescription() // DONE
     {
         return $this->description;
     }
 }
 
-class LinkMenuItem implements \JsonSerializable
+class LinkMenuItem implements \JsonSerializable // DONE
 {
     private $title = "";
     private $absoluteLink = null;
@@ -1401,7 +1552,8 @@ class LinkMenuItem implements \JsonSerializable
         $absoluteLink = null,
         $sitePagePath = null,
         $icon = null
-    ) {
+    )
+    {
         $this->title = strval($title);
         $this->absoluteLink = strval($absoluteLink);
         $this->sitePagePath = strval($sitePagePath);
@@ -1417,7 +1569,8 @@ class LinkMenuItem implements \JsonSerializable
         $title = "",
         $absoluteLink = null,
         $icon = null
-    ) {
+    )
+    {
         return new LinkMenuItem($title, $absoluteLink, null, $icon);
     }
 
@@ -1425,7 +1578,8 @@ class LinkMenuItem implements \JsonSerializable
         $title = "",
         $sitePagePath = null,
         $icon = null
-    ) {
+    )
+    {
         return new LinkMenuItem($title, null, $sitePagePath, $icon);
     }
 
