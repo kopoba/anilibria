@@ -22,7 +22,6 @@ function genRandStr($length = 10, $mode = 2) // DONE
     return $str;
 }
 
-
 function _mail($email, $subject, $message) // DONE
 {
     global $conf;
@@ -219,8 +218,7 @@ function oAuthLogin() // DONE
 
 
 /* OTP Auth start */
-// TODO: OTP
-function generateOtpCode($length)
+function generateOtpCode($length) // DONE
 {
     $symbols = "0123456789";
     $result = "";
@@ -232,20 +230,17 @@ function generateOtpCode($length)
     return $result;
 }
 
-// TODO: OTP
-function deleteExpiredOtpCodes()
+function deleteExpiredOtpCodes() // DONE
 {
     global $db, $var, $user, $conf;
     if (random_int(1, 10) == 1) {
-        // TODO: what to do with this?
         $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `expired_at` < :time');
         $otpDeleteQuery->bindParam(':time', $var['time']);
         $otpDeleteQuery->execute();
     }
 }
 
-// TODO: OTP
-function getOtpCode()
+function getOtpCode() // DONE
 {
     global $db, $var, $user, $conf;
     $argDeviceId = $_POST['deviceId'];
@@ -259,7 +254,6 @@ function getOtpCode()
 
     deleteExpiredOtpCodes();
 
-    // TODO: what to do with this?
     $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > :time');
     $otpQuery->bindValue(':deviceId', $argDeviceId);
     $otpQuery->bindValue(':time', $var['time']);
@@ -268,15 +262,13 @@ function getOtpCode()
         $code = generateOtpCode(6);
         $expiredAt = $var['time'] + 120;
 
-        // TODO: what to do with this?
-        $insertOtpQuery = $db->prepare('INSERT INTO `otp_codes` (`code`, `expired_at`, `device_id`) VALUES (:code, :expired_at, :device_id)');
+        $insertOtpQuery = $db->prepare('INSERT INTO `otp_codes` (`code`, `expired_at`, `device_id`, `created_at`, `updated_at`) VALUES (:code, :expired_at, :device_id, NOW(), NOW())');
         $insertOtpQuery->bindParam(':code', $code);
         $insertOtpQuery->bindParam(':expired_at', $expiredAt);
         $insertOtpQuery->bindParam(':device_id', $argDeviceId);
         $insertOtpQuery->execute();
         $otpId = $db->lastInsertId();
 
-        // TODO: what to do with this?
         $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > :time');
         $otpQuery->bindValue(':deviceId', $argDeviceId);
         $otpQuery->bindValue(':time', $var['time']);
@@ -291,8 +283,7 @@ function getOtpCode()
     _message2($result);
 }
 
-// TODO: OTP
-function acceptOtpCode()
+function acceptOtpCode() // DONE
 {
     global $db, $var, $user, $conf;
     $argCode = $_POST['code'];
@@ -306,8 +297,7 @@ function acceptOtpCode()
 
     deleteExpiredOtpCodes();
 
-    // TODO: what to do with this?
-    $otpQuery = $db->prepare('SELECT `id`, `uid`, `expired_at` FROM `otp_codes` WHERE `code` = :code AND `expired_at` > :time');
+    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid`, `expired_at` FROM `otp_codes` WHERE `code` = :code AND `expired_at` > :time');
     $otpQuery->bindValue(':code', $argCode);
     $otpQuery->bindValue(':time', $var['time']);
     $otpQuery->execute();
@@ -321,8 +311,7 @@ function acceptOtpCode()
         _message('otpAccepted', 'error');
     }
 
-    // TODO: what to do with this?
-    $updateOtpQuery = $db->prepare('UPDATE `otp_codes` SET `uid` = :uid WHERE `id` = :id');
+    $updateOtpQuery = $db->prepare('UPDATE `otp_codes` SET `users_id` = :uid WHERE `id` = :id');
     $updateOtpQuery->bindValue(':id', $otpRow['id']);
     $updateOtpQuery->bindParam(':uid', $user['id']);
     $updateOtpQuery->execute();
@@ -330,8 +319,7 @@ function acceptOtpCode()
     _message('success');
 }
 
-// TODO: OTP
-function loginByOtpCode()
+function loginByOtpCode() // DONE
 {
     global $db, $var, $user, $conf;
     $argCode = $_POST['code'];
@@ -349,8 +337,7 @@ function loginByOtpCode()
 
     deleteExpiredOtpCodes();
 
-    // TODO: what to do with this?
-    $otpQuery = $db->prepare('SELECT `id`, `uid` FROM `otp_codes` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > :time');
+    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid` FROM `otp_codes` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > :time');
     $otpQuery->bindValue(':code', $argCode);
     $otpQuery->bindValue(':deviceId', $argDeviceId);
     $otpQuery->bindValue(':time', $var['time']);
@@ -373,7 +360,6 @@ function loginByOtpCode()
 
     $userRow = $userQuery->fetch();
 
-    // TODO: what to do with this?
     $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `id` = :id');
     $otpDeleteQuery->bindParam(':id', $otpRow['id']);
     $otpDeleteQuery->execute();
@@ -3515,12 +3501,12 @@ function showAscReleases() // DONE
 function changeADS()
 {
     global $db, $user, $var, $conf;
-    if(!$user){
+    if (!$user) {
         _message('unauthorized', 'error');
     }
-    if(!$user['ads']){
+    if (!$user['ads']) {
         $ads = 1;
-    }else{
+    } else {
         $ads = 0;
     }
     $query = $db->prepare('UPDATE `users` SET `ads` = :ads WHERE `id` = :id');
