@@ -59,10 +59,13 @@ function session_hash($login, $passwd, $access, $rand = '') // DONE
     return [$rand . hash($conf['hash_algo'], $rand . $var['user_agent'] . $login . sha1(half_string_hash($passwd))), $var['time'] + 60 * 60 * 24 * 30];
 }
 
-// TODO: authorization
+
 function _exit() // DONE
 {
     global $db, $var;
+
+    $redirectURL = $_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? null;
+
     if (session_status() != PHP_SESSION_NONE) {
         if (!empty($_SESSION['sess'])) {
             $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :hash');
@@ -73,10 +76,12 @@ function _exit() // DONE
         setcookie(session_name(), '', $var['time'] - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
         session_unset();
         session_destroy();
-        if (strpos($var['user_agent'], 'mobileApp') === false) {
-            header("Location: https://" . $var['origin_url']);
+
+        if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
+            header("Location: //" . $redirectURL);
         }
     }
+
 }
 
 function enableCSRF($force = false) // DONE
@@ -100,7 +105,6 @@ function csrf_token() // DONE
     return ['hash' => createSecret($htime), 'time' => $htime];
 }
 
-// TODO: authorization
 function createSecret($params) // DONE
 {
     global $conf;
@@ -110,7 +114,6 @@ function createSecret($params) // DONE
     return hash($conf['hash_algo'], $_SESSION['secret'] . $params);
 }
 
-// TODO: authorization
 function checkSecret($hash, $params) // DONE
 {
     global $conf;
@@ -137,7 +140,6 @@ function checkCSRF() // DONE
     }
 }
 
-// TODO: authorization
 function vkAuth() // DONE
 {
     global $conf;
@@ -146,15 +148,17 @@ function vkAuth() // DONE
         $data = [
             'client_id' => $conf['vk_id'],
             'client_secret' => $conf['vk_secret'],
-            'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
+            'redirect_uri' => sprintf('%s/public/vk.php', _getHostname()),  //'https://www.anilibria.tv/public/vk.php',
             'code' => $_GET["code"]
         ];
+
         $string = http_build_query($data);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, "https://oauth.vk.com/access_token?" . urldecode($string));
         $tmp = json_decode(curl_exec($ch), true);
         curl_close($ch);
+
         if (!empty($tmp['user_id'])) {
             $result = $tmp['user_id'];
         }
@@ -162,18 +166,16 @@ function vkAuth() // DONE
     return $result;
 }
 
-// TODO: authorization
 function vkAuthLink() // DONE
 {
     global $conf;
     $vkParams = [
         'client_id' => $conf['vk_id'],
-        'redirect_uri' => 'https://www.anilibria.tv/public/vk.php',
+        'redirect_uri' => sprintf('%s/public/vk.php', _getHostname()),  //'https://www.anilibria.tv/public/vk.php',
     ];
     return 'https://oauth.vk.com/authorize?' . urldecode(http_build_query($vkParams));
 }
 
-// TODO: authorization
 function getUserVK($id) // DONE
 {
     global $db;
@@ -186,7 +188,6 @@ function getUserVK($id) // DONE
     return $query->fetch();
 }
 
-// TODO: authorization
 function oAuthLogin() // DONE
 {
     global $db, $var, $user, $conf;
@@ -194,6 +195,7 @@ function oAuthLogin() // DONE
         _message('authorized', 'error');
     }
     $id = vkAuth();
+
     if (!$id) {
         _message2('vk auth error', 'error');
     }
@@ -204,15 +206,19 @@ function oAuthLogin() // DONE
         if (!$hash) {
             _message2('wrong', 'error');
         }
-        die(header("Location: https://" . $var['origin_url'] . "/pages/vk.php?id=$id&time=$htime&hash=$hash"));
+
+        die(header("Location: " . sprintf('%s/pages/vk.php?id=%s&time=%s&hash=%s', _getHostname(), $id, $htime, $hash)));
     }
-    if (!empty($row['2fa'])) {
+
+    /*if (!empty($row['2fa'])) {
         _message2('please disable 2fa', 'error');
-    }
+    }*/
+
     enableCSRF(true);
     startSession($row);
+
     if (strpos($var['user_agent'], 'mobileApp') === false) {
-        header("Location: https://" . $var['origin_url']);
+        header("Location:" . _getHostname());
     }
 }
 
@@ -233,11 +239,9 @@ function generateOtpCode($length) // DONE
 function deleteExpiredOtpCodes() // DONE
 {
     global $db, $var, $user, $conf;
-    if (random_int(1, 10) == 1) {
-        $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `expired_at` < :time');
-        $otpDeleteQuery->bindParam(':time', $var['time']);
-        $otpDeleteQuery->execute();
-    }
+
+    $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `expired_at` < NOW()');
+    $otpDeleteQuery->execute();
 }
 
 function getOtpCode() // DONE
@@ -254,13 +258,12 @@ function getOtpCode() // DONE
 
     deleteExpiredOtpCodes();
 
-    $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > :time');
+    $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > NOW()');
     $otpQuery->bindValue(':deviceId', $argDeviceId);
-    $otpQuery->bindValue(':time', $var['time']);
     $otpQuery->execute();
     if ($otpQuery->rowCount() == 0) {
         $code = generateOtpCode(6);
-        $expiredAt = $var['time'] + 120;
+        $expiredAt = date('Y-m-d H:i:s', $var['time'] + 120);
 
         $insertOtpQuery = $db->prepare('INSERT INTO `otp_codes` (`code`, `expired_at`, `device_id`, `created_at`, `updated_at`) VALUES (:code, :expired_at, :device_id, NOW(), NOW())');
         $insertOtpQuery->bindParam(':code', $code);
@@ -278,7 +281,7 @@ function getOtpCode() // DONE
     $otpRow = $otpQuery->fetch();
     $result = [
         "code" => $otpRow['code'],
-        "expired_at" => $otpRow['expired_at']
+        "expired_at" => (string)strtotime($otpRow['expired_at'])
     ];
     _message2($result);
 }
@@ -297,9 +300,9 @@ function acceptOtpCode() // DONE
 
     deleteExpiredOtpCodes();
 
-    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid`, `expired_at` FROM `otp_codes` WHERE `code` = :code AND `expired_at` > :time');
+    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid`, `expired_at` FROM `otp_codes` WHERE `code` = :code AND `expired_at` > NOW()');
     $otpQuery->bindValue(':code', $argCode);
-    $otpQuery->bindValue(':time', $var['time']);
+    //$otpQuery->bindValue(':time', $var['time']);
     $otpQuery->execute();
     if ($otpQuery->rowCount() == 0) {
         _message('otpNotFound', 'error');
@@ -337,10 +340,10 @@ function loginByOtpCode() // DONE
 
     deleteExpiredOtpCodes();
 
-    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid` FROM `otp_codes` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > :time');
+    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid` FROM `otp_codes` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > NOW()');
     $otpQuery->bindValue(':code', $argCode);
     $otpQuery->bindValue(':deviceId', $argDeviceId);
-    $otpQuery->bindValue(':time', $var['time']);
+    //$otpQuery->bindValue(':time', $var['time']);
     $otpQuery->execute();
     if ($otpQuery->rowCount() == 0) {
         _message('otpNotFound', 'error');
@@ -370,8 +373,7 @@ function loginByOtpCode() // DONE
 
 /* OTP Auth end */
 
-// TODO: authorization
-function login()
+function login() // DONE
 {
 
     global $db, $var, $user;
@@ -399,6 +401,7 @@ function login()
     }
     $row = $query->fetch();
 
+
     /*if(!empty($row['2fa'])){
         if(empty($_POST['fa2code'])){
             _message('empty', 'error');
@@ -411,6 +414,7 @@ function login()
     if (!password_verify($_POST['passwd'], $row['passwd'])) {
         _message('wrongPasswd', 'error');
     }
+
     if (password_needs_rehash($row['passwd'], PASSWORD_ARGON2ID, ['memory_cost' => 1 << 14, 'time_cost' => 3, 'threads' => 2])) {
         $passwd = createPasswd($_POST['passwd']);
         $query = $db->prepare('UPDATE `users` SET `password` = :passwd WHERE `id` = :id');
@@ -451,12 +455,11 @@ function login()
 	$query->execute();
 }*/
 
-// TODO: authorization
-function startSession($row)
+function startSession($row) // DONE
 {
     global $db, $var;
 
-    $hash = session_id(); //session_hash($row['login'], $row['passwd'], $row['access']);
+    $hash = genRandStr(32, 1); // session_hash($row['login'], $row['passwd'], $row['access'])[0];
     $datetime = date('Y-m-d H:i:s');
 
     $query = $db->prepare('INSERT INTO `users_sessions` (users_id, id, created_at, updated_at, ip_address, user_agent) VALUES (:uid, :hash, :time, :time, :ip, :info)');
@@ -465,18 +468,19 @@ function startSession($row)
     $query->bindParam(':time', $datetime);
     $query->bindParam(':ip', $var['ip']);
     $query->bindParam(':info', $var['user_agent']);
-    // TODO: what to do with it?
     //$query->bindParam(':phpsessid', session_id());
 
     $query->execute();
 
     //$sid = $db->lastInsertId();
-    $_SESSION['sess'] = $hash[0];
+    //$_SESSION['sess'] = $hash;
+
     /*
     $query = $db->prepare('UPDATE users SET last_activity = :time WHERE id = :id');
     $query->bindParam(':time', $var['time']);
     $query->bindParam(':id', $row['id']);
     $query->execute();*/
+
     /*
     $query = $db->prepare('INSERT INTO log_ip (uid, sid, ip, time, info) VALUES (:uid, :sid, INET6_ATON(:ip), :time, :info)');
     $query->bindParam(':uid', $row['id']);
@@ -486,8 +490,9 @@ function startSession($row)
     $query->bindParam(':info', $var['user_agent']);
     $query->execute();*/
 
-}
+    setcookie('PHPSESSID', $hash, time() + 60 * 60 * 24 * 30, '/', null, false, true);
 
+}
 
 function moveErrPage($page = 403) // DONE
 {
@@ -617,11 +622,11 @@ function registration()
         _message('registered', 'error');
     }
     $passwd = createPasswd($_POST['passwd']);
-    $query = $db->prepare('INSERT INTO `users` (`login`, `email`, `password`, `created_at`, `updated_at`) VALUES (:login, :mail, :passwd, :time, :time)');
+    $query = $db->prepare('INSERT INTO `users` (`login`, `email`, `password`, `created_at`, `updated_at`) VALUES (:login, :mail, :passwd, NOW(), NOW())');
     $query->bindValue(':login', $_POST['login']);
     $query->bindParam(':mail', $_POST['mail']);
     $query->bindParam(':passwd', $passwd['1']);
-    $query->bindParam(':time', $var['time']);
+    // $query->bindParam(':time', $var['time']);
     $query->execute();
     if (!empty($_POST['vk'])) {
         $id = $db->lastInsertId();
@@ -638,8 +643,7 @@ function registration()
     _message('success');
 }
 
-// TODO: authorization
-function auth()
+function auth() // DONE
 {
     global $conf, $db, $var, $user;
     /*if(random_int(1, 1000) == 1){
@@ -648,35 +652,47 @@ function auth()
         $query->bindParam(':time', $tmp);
         $query->execute();
     }*/
-    if (!empty($_SESSION['sess'])) {
-        $query = $db->prepare('SELECT `id`, `users_id` AS `uid`, `id` AS `hash` FROM `users_sessions` WHERE `id` = :hash AND `created_at` > :time');
-        $query->bindParam(':hash', $_SESSION['sess']);
-        $query->bindParam(':time', $var['time']);
+
+    $cookieSession = $_COOKIE['PHPSESSID'] ?? null;
+
+
+    if (empty($cookieSession) === false) {
+
+        $query = $db->prepare('SELECT `id`, `users_id` AS `uid`, `id` AS `hash` FROM `users_sessions` WHERE `id` = :hash');
+        $query->bindParam(':hash', $cookieSession);
+        //$query->bindParam(':time', $var['time']);
         $query->execute();
+
         if ($query->rowCount() != 1) {
             _exit();
             return;
         }
+
         $session = $query->fetch();
         $query = $db->prepare('SELECT `id`, `login`, `vk_id` AS `vk`, `avatar_original` AS `avatar`, `password` AS `passwd`, `email` AS `mail`, NULL AS `2fa`, 1 AS `access`, `created_at` AS `register_date`, NULL AS `last_activity`, NULL AS `user_values`, 0 AS `ads` FROM `users` WHERE `id` = :id');
         $query->bindParam(':id', $session['uid']);
+
         $query->execute();
+
         if ($query->rowCount() != 1) {
             _exit();
             return;
         }
+
         $row = $query->fetch();
-        if ($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], $row['access'], substr($session['hash'], 0, 8))['0']) {
+        /*if ($_SESSION['sess'] != session_hash($row['login'], $row['passwd'], $row['access'], substr($session['hash'], 0, 8))['0']) {
             _exit();
             return;
-        }
-        if (random_int(1, 10) == 1) {
-            $tmp = $var['time'] + 60 * 60 * 24 * 30;
-            $query = $db->prepare('UPDATE `users_sessions` set `updated_at` = :time WHERE `id` = :id');
-            $query->bindParam(':time', $tmp);
-            $query->bindParam(':id', $session['id']);
-            $query->execute();
-        }
+        }*/
+
+        // if (random_int(1, 10) == 1) {
+        $tmp = $var['time'] + 60 * 60 * 24 * 30;
+        $query = $db->prepare('UPDATE `users_sessions` set `updated_at` = NOW() WHERE `id` = :id');
+        // $query->bindParam(':time', $tmp);
+        $query->bindParam(':id', $session['id']);
+        $query->execute();
+        // }
+
         $user = ['id' => $row['id'],
             'login' => $row['login'],
             'vk' => $row['vk'],
@@ -810,8 +826,8 @@ function getQRCodeGoogleUrl($name, $secret) // DONE
     return 'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' . $urlencoded . '';
 }
 
-// TODO: authorization
-function auth2FA()
+
+/*function auth2FA()
 {
     global $db, $user;
     if (!$user) {
@@ -867,7 +883,7 @@ function auth2FA()
             }
             break;
     }
-}
+}*/
 
 // TODO: authorization
 function recaptcha($v = 3)
@@ -1462,20 +1478,18 @@ function pageStat() // DONE
     return "Page generated in " . round((microtime(true) - $conf['start']), 4) . " seconds. Peak memory usage: " . round(memory_get_peak_usage() / 1048576, 2) . " MB";
 }
 
-// TODO: authorization
-function close_sess()
+function close_sess() // DONE
 {
     global $db, $user, $conf;
-    if (!$user) {
-        _message('unauthorized', 'error');
-    }
-    if (empty($_POST['id']) || !ctype_digit($_POST['id'])) {
-        _message('wrong', 'error');
-    }
-    $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :id AND `users_id` = :uid');
-    $query->bindParam(':id', $_POST['id']);
+
+    if (!$user) _message('unauthorized', 'error');
+    if (empty($_POST['id'])) _message('wrong', 'error');
+
+    $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :hash AND `users_id` = :uid');
+    $query->bindParam(':hash', $_POST['id']);
     $query->bindParam(':uid', $user['id']);
     $query->execute();
+
     _message2('Success');
 }
 
@@ -1518,7 +1532,6 @@ function isBlock($str) // DONE
     return false;
 }
 
-
 function adsUrl() // DONE
 {
     $arr['cli'] = ['id' => 'vast6979'];
@@ -1537,7 +1550,6 @@ function adsUrl() // DONE
         return prepareAdsUrl($arr);
     }
 }
-
 
 function release404() // DONE
 {
@@ -1945,27 +1957,29 @@ function showRelease() // DONE
     }
 }*/
 
-/*function auth_history()
+function auth_history() // DONE
 {
 
     global $db, $user, $var;
     $data = [];
-    $query = $db->prepare('SELECT `time`, `ip`, `info`, `sid` FROM `log_ip` WHERE `uid` = :uid ORDER BY `id` DESC LIMIT 100');
+    $query = $db->prepare('SELECT `created_at` as `time`, `ip_address` as `ip`, `user_agent` as `info`, `id` as  `sid` FROM `users_sessions` WHERE `users_id` = :uid ORDER BY `created_at` DESC LIMIT 100');
     $query->bindParam(':uid', $user['id']);
     $query->execute();
+
     while($row = $query->fetch()){
         $status = false;
-        $tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > :time');
+        /*$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > :time');
         $tmp->bindParam(':id', $row['sid']);
         $tmp->bindParam(':time', $var['time']);
         $tmp->execute();
         if($tmp->rowCount() == 1){
             $status = true;
-        }
-        $data[$row['time']] = [inet_ntop($row['ip']), base64_encode($row['info']), $status, $row['sid']];
+        }*/
+        $data[strtotime($row['time'])] = [$row['ip'], $row['info'], $status, $row['sid']];
     }
+
     return array_reverse($data, true);
-}*/
+}
 
 function footerJS() // DONE
 {
@@ -3717,4 +3731,29 @@ function _getReleaseEpisodes($releaseId) // DONE
     $query->bindValue(':id', $releaseId);
     $query->execute();
     return $query->fetchAll();
+}
+
+
+function _getHostname(): string
+{
+    $host = $_SERVER['HTTP_HOST'];
+    $scheme = $_SERVER['REQUEST_SCHEME'];
+
+    return $host && $scheme
+        ? sprintf('%s://%s', $scheme, $host)
+        : '';
+}
+
+function _debugExceptions($callback)
+{
+
+    try {
+
+        call_user_func($callback);
+
+    } catch (Throwable $exception) {
+        print_r($exception);
+        die();
+    }
+
 }

@@ -36,7 +36,7 @@ if(!empty($user['avatar'])){
 
 function profileMes($name){
 	global $user, $var;
-	$x = empty($user['user_values']["$name"]) ? false : $user['user_values']["$name"];	
+	$x = empty($user['user_values']["$name"]) ? false : $user['user_values']["$name"];
 	if($x){
 		switch($name){
 			case 'sex': $x = $var['sex'][$x]; break;
@@ -50,30 +50,45 @@ function profileMes($name){
 }
 
 function tableSess($data){
-	$text = ''; $i = 0;	$td = count($data)-1;
-	foreach($data as $key => $val){
-		$i++; $status = 'Closed';
-		if($data[$key][2]){
-			$status = '<font color="green">Active</a>';
-		}
-		$text .= "<tr><td>$i</td><td>{$data[$key][0]}</td><td>".geoip_country_name_by_name($data[$key][0])."</td><td>".date("Y-m-d H:i", $key)."</td><td>$status</td>
-		<td><a href=\"#\" style=\"color: #383838;\" data-history-show-header=\"{$data[$key][1]}\"><span class=\"glyphicon glyphicon-edit\"></span></a>";
-		if($data[$key][2]){
-			$text .= "&nbsp;<a href=\"#\" style=\"color: #383838;\" data-session-id=\"{$data[$key][3]}\" data-session-td=\"$td\"><span class=\"glyphicon glyphicon-remove\"></span>";
-		}
-		$text .= "</td></tr>";
-		$td--;
-	}
+
+        $text = ''; $i = 0;	$td = count($data)-1;
+
+        foreach($data as $key => $val){
+            $i++;
+            /*$status = '';*/
+
+            /*if($data[$key][2]){
+                $status = '<font color="green">Active</a>';
+            }*/
+
+            // <td>".geoip_country_name_by_name($data[$key][0])."</td>
+            $text .= "<tr>
+                    <td>$i</td>
+                    <td>{$data[$key][0]}</td>
+                    <td></td>
+                    <td>".date("Y-m-d H:i", $key)."</td>
+                    <td><font color='green'>Active</a></td>
+		            <td><a href=\"#\" style=\"color: #383838;\" data-history-show-header=\"{$data[$key][1]}\"><span class=\"glyphicon glyphicon-edit\"></span></a>
+            ";
+
+            if($data[$key][2] === false){
+                $text .= "&nbsp;<a href=\"#\" style=\"color: #383838;\" data-session-id=\"{$data[$key][3]}\" data-session-td=\"$td\"><span class=\"glyphicon glyphicon-remove\"></span>";
+            }
+
+            $text .= "</td></tr>";
+            $td--;
+        }
+
 	return $text;
 }
 
 require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 ?>
 
-<div class="news-block">		
+<div class="news-block">
 	<div class="profile-info-left-side">
 		<div class="profile-left-block-wrapper">
-			<span class="profile-nickname"><b><?php echo $user['login']; ?></b></span>			
+			<span class="profile-nickname"><b><?php echo $user['login']; ?></b></span>
 			<div class="profile-avatar-wrapper">
 				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/<?php echo $tmpAvatar; ?>" id="profile-avatar" alt="" width="150" height="150"></a>
 			</div>
@@ -83,9 +98,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="profile-line"></div>
-	
+
 	<div class="profile-info-right-side">
 		<div class="profile-right-block-content">
 			<h3 class="profile-content-title">Личные данные</h3>
@@ -101,7 +116,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<p><a href="/pages/seeders.php">Рейтинг сидеров</a></p>
 		</div>
 	</div>
-		
+
 	<div class="profile-info-right-side">
 		<div class="profile-right-block-content">
 			<h3 class="profile-content-title">Контактная информация</h3>
@@ -145,10 +160,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				Изменить почту
 			</h2>
 			<h2 class="news-name" id="changeEmailMes" style="float:left; padding-left: 10px;"></h2>
-			<div class="clear"></div>	
+			<div class="clear"></div>
 		</div>
 		<div class="clear"></div>
-		<div>			
+		<div>
 			<input class="form-control" id="changeEmail" type="text" placeholder="Новый email">
 			<input class="form-control" id="changeEmailPasswd" style="margin-top: 10px;" type="password" placeholder="Пароль">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-email type="submit" value="ОТПРАВИТЬ">
@@ -163,10 +178,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				Изменить пароль
 			</h2>
 			<h2 class="news-name" id="changePasswdMes" style="float:left; padding-left: 10px;"></h2>
-			<div class="clear"></div>	
+			<div class="clear"></div>
 		</div>
 		<div class="clear"></div>
-		<div>			
+		<div>
 			<input class="form-control" id="oldPasswd" type="password" placeholder="Старый пароль">
 			<input class="form-control" id="newPasswd" style="margin-top: 10px;" type="password" placeholder="Новый пароль (минимум 7 символов)">
 			<input class="form-control" id="repeatPasswd" style="margin-top: 10px;" type="password" placeholder="Повторите пароль">
@@ -176,7 +191,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div style="margin-top:10px;"></div>
 </div>
 
-<div class="news-block">
+<!--<div class="news-block">
 		<div class="news-header">
 			<h2 class="news-name" style="float:left;">
 				Двухфакторная аутентификация
@@ -187,17 +202,17 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="clear"></div>
 		<div>
 			Установите на мобильный телефон приложение Google Authenticator [<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=ru">android</a>] [<a href="https://itunes.apple.com/ru/app/google-authenticator/id388497605?mt=8">ios</a>]<br/>
-			<div id="2fagen" style="<?php if(!empty($user['2fa'])){ echo "display: none;"; }?>">
+			<div id="2fagen" style="<?php /*if(!empty($user['2fa'])){ echo "display: none;"; }*/?>">
 			<div id="2fakey"></div>
 				<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" data-2fa-generate value="СГЕНЕРИРОВАТЬ КЛЮЧ">
 			</div>
 			<input class="form-control" id="2fapasswd" style="margin-top: 10px;" type="password" placeholder="Пароль" required="">
 			<input class="form-control" id="2facheck" style="margin-top: 10px;" type="text" placeholder="Код" required="">
-			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" id="send2fa" data-2fa-start value="<?php echo $tmpMes; ?>">
+			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" type="submit" id="send2fa" data-2fa-start value="<?php /*echo $tmpMes; */?>">
 		</div>
 		<div class="clear"></div>
 		<div style="margin-top:10px;"></div>
-</div>
+</div>-->
 
 <div class="news-block">
 		<div class="news-header">
@@ -205,7 +220,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				Реклама на сайте
 			</h2>
 			<h2 class="news-name" id="changeAMes" style="float:left; padding-left: 10px;"></h2>
-			<div class="clear"></div>	
+			<div class="clear"></div>
 		</div>
 		<div class="clear"></div>
 		<div>
@@ -238,7 +253,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<h2 class="news-name">
 			Активные сессии и авторизации
 		</h2>
-		<div class="clear"></div>	
+		<div class="clear"></div>
 	</div>
 	<div class="clear"></div>
 	<div>
@@ -274,7 +289,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<pre id="showHeader">
 				
 			</pre>
-			
+
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
@@ -324,7 +339,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 					<option selected="true" value="" disabled="disabled">Выберите пол</option>
 					<option value="1">Мужской</option>
 					<option value="2">Женский</option>
-				</select>				
+				</select>
 				<input class="form-control" id="age" type="text" style="margin-top: 7px;" placeholder="Возраст (например 18)" >
 				<input class="form-control" id="phone" type="text" style="margin-top: 7px;" placeholder="Телефон" >
 				<input class="form-control" id="steam" type="text" style="margin-top: 7px;" placeholder="Steam" >

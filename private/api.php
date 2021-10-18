@@ -119,28 +119,28 @@ $IGNORE_APP_ID = [
     $APP_ID_ANDROID_MOBILE_STORE
 ];
 
-function safeApiList()
+function safeApiList() // DONE
 {
     wrapApiResponse(function () {
         return apiList();
     });
 }
 
-function unsafeApiList()
+function unsafeApiList() // DONE
 {
     $response = apiList();
     header('Content-Type: application/json');
     die(json_encode($response, JSON_UNESCAPED_UNICODE/* | JSON_PRETTY_PRINT*/));
 }
 
-function wrapApiResponse($func)
+function wrapApiResponse($func) // DONE
 {
     $response = (new ApiResponse())->proceed($func);
     header('Content-Type: application/json');
     die(json_encode($response, JSON_UNESCAPED_UNICODE/* | JSON_PRETTY_PRINT*/));
 }
 
-function exitAuth()
+function exitAuth() // DONE
 {
     header('HTTP/1.1 401 Unauthorized');
     exit;
@@ -191,7 +191,7 @@ function apiList()
     }
 
     /* Checking cache */
-    function fetchNormalCache()
+    function fetchNormalCache() // DONE
     {
         global $cache, $count, $info, $torrent;
         $count = $cache->get('apiInfo');
@@ -207,7 +207,7 @@ function apiList()
         }
     }
 
-    function fetchInfiniteCache()
+    function fetchInfiniteCache() // DONE
     {
         global $cache, $count, $info, $torrent;
         $count = $cache->get('infiniteApiInfo');
@@ -223,14 +223,15 @@ function apiList()
         }
     }
 
-    function checkApiRelaxing()
+    function checkApiRelaxing() // DONE
     {
         global $info, $torrent;
         return $info === null || $torrent === null || $info === false || $torrent === false;
     }
 
-    fetchNormalCache();
+    fetchNormalCache(); // DONE
 
+    // TODO: check api caching
     /*if (checkApiRelaxing()) {
 
         fetchInfiniteCache();
@@ -249,7 +250,7 @@ function apiList()
 
         if (!empty($ids)) {
 
-            $query = $db->prepare("SELECT * from torrents WHERE `releases_id` IN (". implode(', ', array_fill(0, count($ids), '?')) . ")");
+            $query = $db->prepare("SELECT * from torrents WHERE `releases_id` IN (" . implode(', ', array_fill(0, count($ids), '?')) . ")");
             $query->execute(array_values($ids));
 
             $torrents = $query->fetchAll();
@@ -266,7 +267,7 @@ function apiList()
         return $result;
     }
 
-    function apiGetTorrentsList($torrents, $id)
+    function apiGetTorrentsList($torrents, $id) // DONE
     {
         if (array_key_exists($id, $torrents)) {
             return $torrents["$id"];
@@ -618,10 +619,10 @@ function apiList()
             ? '/upload/avatars/noavatar.jpg'
             : sprintf('%s/%s/%s', $conf['user_avatar_host'], $user['id'], $user['avatar']);
 
-            /*$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
-        } else {
-            $tmpAvatar = 'noavatar.jpg';
-        }*/
+        /*$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
+    } else {
+        $tmpAvatar = 'noavatar.jpg';
+    }*/
 
         $result = [
             "id" => intval($user['id']),
@@ -778,13 +779,13 @@ function apiList()
         $count = intval($countQuery->fetch()[0]);
 
         $pagination = createPagination($count);
-        $startIndex = $pagination['startIndex'];
-        $perPage = $pagination['perPage'];
+        $startIndex = (int)$pagination['startIndex'];
+        $perPage = (int)$pagination['perPage'];
 
         $result = [];
         $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `youtube` ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
-        $query->bindParam(":start_index", intval($startIndex), \PDO::PARAM_INT);
-        $query->bindParam(":per_page", intval($perPage), \PDO::PARAM_INT);
+        $query->bindParam(":start_index", $startIndex, \PDO::PARAM_INT);
+        $query->bindParam(":per_page", $perPage, \PDO::PARAM_INT);
         $query->execute();
         while ($row = $query->fetch()) {
             $result[] = createYoutubeFromRow($row);
@@ -912,7 +913,7 @@ function apiList()
     function apiGetOtp($data) // DONE
     {
         global $var;
-        $remainingTime = intval($data['expired_at']) - $var['time'];
+        $remainingTime = $data['expired_at'] - $var['time'];
         return [
             "code" => $data['code'],
             "expiredAt" => $data['expired_at'],
@@ -971,7 +972,7 @@ function apiList()
 
     if (isset($_POST['query'])) {
         switch ($_POST['query']) {
-            case 'torrent':
+            case 'torrent':  // DONE
                 if (!empty($_POST['id'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
                     return apiGetTorrentsMap($torrent, $_POST['id']);
@@ -988,7 +989,9 @@ function apiList()
             case 'release': // TODO: release
                 if (!empty($_POST['id'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
+
                     return apiGetReleaseById($info, $torrent, $_POST['id']);
+
                 } elseif (!empty($_POST['code'])) {
                     checkIsString($_POST['code'], 'code');
                     return apiGetReleaseByCode($info, $torrent, $_POST['code']);
@@ -1077,7 +1080,7 @@ function apiList()
             case 'reserved_test': // DONE
                 return apiGetReservedTestResponse();
 
-            case 'auth_get_otp': // TODO: OTP
+            case 'auth_get_otp':  // DONE
                 return proceedBridge(
                     function () {
                         getOtpCode();
@@ -1087,7 +1090,7 @@ function apiList()
                     }
                 );
 
-            case 'auth_accept_otp': // TODO: OTP
+            case 'auth_accept_otp': // DONE
                 return proceedBridge(
                     function () {
                         acceptOtpCode();
@@ -1097,7 +1100,7 @@ function apiList()
                     }
                 );
 
-            case 'auth_login_otp': // TODO: OTP
+            case 'auth_login_otp':  // DONE
                 return proceedBridge(
                     function () {
                         loginByOtpCode();
@@ -1323,23 +1326,6 @@ function updateApiCache() // DONE
     saveInfiniteCache($chunk, $torrent);
 }
 
-
-function _transformTorrentData($torrent) // DONE
-{
-    return [
-        'id' => $torrent['id'],
-        'hash' => $torrent['hash'] ?? null,
-        'leechers' => (int)($torrent['leechers'] ?? 0),
-        'seeders' => (int)($torrent['seeders'] ?? 0),
-        'completed' => (int)($torrent['completed'] ?? 0),
-        'quality' => $torrent['quality'],
-        'series' => $torrent['description'],
-        'size' => (int)($torrent['size'] ?? 0),
-        'url' => "/public/torrent/download.php?id={$torrent['id']}",
-        'ctime' => strtotime($torrent['created_at'])
-    ];
-}
-
 function saveNormalCache($chunk, $torrent) // DONE
 {
     global $cache;
@@ -1453,6 +1439,23 @@ function getApiPlaylist($id) // DONE
     }
     return $playlist;*/
 }
+
+function _transformTorrentData($torrent) // DONE
+{
+    return [
+        'id' => $torrent['id'],
+        'hash' => $torrent['hash'] ?? null,
+        'leechers' => (int)($torrent['leechers'] ?? 0),
+        'seeders' => (int)($torrent['seeders'] ?? 0),
+        'completed' => (int)($torrent['completed'] ?? 0),
+        'quality' => $torrent['quality'],
+        'series' => $torrent['description'],
+        'size' => (int)($torrent['size'] ?? 0),
+        'url' => "/public/torrent/download.php?id={$torrent['id']}",
+        'ctime' => strtotime($torrent['created_at'])
+    ];
+}
+
 
 class ApiResponse
 {
