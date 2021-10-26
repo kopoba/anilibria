@@ -18,7 +18,7 @@ try{
 }
 
 // Этот участок кода продублирован в session.php, так что в случае чего, не забудь там поправить
-$var['origin_url'] = $_SERVER['SERVER_NAME'];
+$var['origin_url'] = $_SERVER['SERVER_NAME'] ?? null;
 try{
 	$proxyOrigin = getallheaders()['X-Proxy-Origin'] ?? NULL;
     if(!empty($proxyOrigin)){

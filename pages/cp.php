@@ -22,7 +22,7 @@ if(!empty($user['2fa'])){
 	$tmpMes = 'ВКЛЮЧИТЬ 2FA';
 }
 
-if(!$user['ads']){
+if($user['ads'] == 1){
 	$tmpAds = 'ОТКЛЮЧИТЬ';
 }else{
 	$tmpAds = 'ВКЛЮЧИТЬ';
@@ -137,7 +137,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	</div>-->
 </div>
 
-<!--<div class="news-block">
+<div class="news-block">
 		<div class="news-header">
 			<h2 class="news-name" style="float:left;">
 				Привязать VK аккаунт
@@ -147,12 +147,12 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		</div>
 		<div class="clear"></div>
 		<div>
-			<input class="form-control" id="changeVKID" type="text" placeholder="Ваш vk id, например: 123456" value="<?php /*if(!empty($user['vk'])) echo $user['vk']; */?>">
+			<input class="form-control" id="changeVKID" type="text" placeholder="Ваш vk id, например: 123456" value="<?php if(!empty($user['vk'])) echo $user['vk']; ?>">
 			<input class="btn btn btn-success btn-block" style="margin-top: 10px;" data-change-vk type="submit" value="ОТПРАВИТЬ">
 		</div>
 		<div class="clear"></div>
 		<div style="margin-top:10px;"></div>
-</div>-->
+</div>
 
 <div class="news-block">
 		<div class="news-header">

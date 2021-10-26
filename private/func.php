@@ -22,15 +22,18 @@ function genRandStr($length = 10, $mode = 2) // DONE
     return $str;
 }
 
-function _mail($email, $subject, $message) // DONE
+// TODO: mail server
+function _mail($email, $subject, $message)
 {
     global $conf;
+
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "Content-type: text/html; charset=utf-8\r\n";
     $headers .= "Content-Transfer-Encoding: base64\r\n";
     $subject = "=?utf-8?B?" . base64_encode($subject) . "?=";
     $headers .= "From: {$conf['email_from']} <{$conf['email']}>\r\n";
-    mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);
+
+    // mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);
 }
 
 function _message($key, $err = 'ok') // DONE
@@ -59,14 +62,13 @@ function session_hash($login, $passwd, $access, $rand = '') // DONE
     return [$rand . hash($conf['hash_algo'], $rand . $var['user_agent'] . $login . sha1(half_string_hash($passwd))), $var['time'] + 60 * 60 * 24 * 30];
 }
 
-
 function _exit() // DONE
 {
     global $db, $var;
 
     $redirectURL = $_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? null;
 
-    if (session_status() != PHP_SESSION_NONE) {
+    /*if (session_status() != PHP_SESSION_NONE) {
         if (!empty($_SESSION['sess'])) {
             $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :hash');
             $query->bindParam(':hash', $_SESSION["sess"]);
@@ -80,6 +82,12 @@ function _exit() // DONE
         if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
             header("Location: //" . $redirectURL);
         }
+    }*/
+
+    setcookie('PHPSESSID', null, time() - 42000, '/', null, false, true);
+
+    if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
+        header("Location: //" . $redirectURL);
     }
 
 }
@@ -108,10 +116,12 @@ function csrf_token() // DONE
 function createSecret($params) // DONE
 {
     global $conf;
-    if (empty($_SESSION['secret'])) {
-        return false;
-    }
-    return hash($conf['hash_algo'], $_SESSION['secret'] . $params);
+
+    /* if (empty($_SESSION['secret'])) {
+         return false;
+     }*/
+
+    return hash($conf['hash_algo'], $params);
 }
 
 function checkSecret($hash, $params) // DONE
@@ -221,7 +231,6 @@ function oAuthLogin() // DONE
         header("Location:" . _getHostname());
     }
 }
-
 
 /* OTP Auth start */
 function generateOtpCode($length) // DONE
@@ -503,12 +512,15 @@ function moveErrPage($page = 403) // DONE
 function password_link()
 {
     global $conf, $db, $var;
+
     if (empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])) {
         moveErrPage();
     }
+
     if (!ctype_digit($_GET['id']) || !ctype_digit($_GET['time'])) {
         moveErrPage();
     }
+
     $query = $db->prepare('SELECT `id`, `email` AS `mail`, `password` AS `passwd` FROM `users` WHERE `id` = :id');
     $query->bindParam(':id', $_GET['id']);
     $query->execute();
@@ -669,7 +681,7 @@ function auth() // DONE
         }
 
         $session = $query->fetch();
-        $query = $db->prepare('SELECT `id`, `login`, `vk_id` AS `vk`, `avatar_original` AS `avatar`, `password` AS `passwd`, `email` AS `mail`, NULL AS `2fa`, 1 AS `access`, `created_at` AS `register_date`, NULL AS `last_activity`, NULL AS `user_values`, 0 AS `ads` FROM `users` WHERE `id` = :id');
+        $query = $db->prepare('SELECT `id`, `login`, `vk_id` AS `vk`, `avatar_original` AS `avatar`, `password` AS `passwd`, `email` AS `mail`, NULL AS `2fa`, 1 AS `access`, `created_at` AS `register_date`, NULL AS `last_activity`, NULL AS `user_values`, `show_ads` AS `ads` FROM `users` WHERE `id` = :id');
         $query->bindParam(':id', $session['uid']);
 
         $query->execute();
@@ -722,7 +734,6 @@ function auth() // DONE
         }
     }
 }
-
 
 function seedersRating() // DONE
 {
@@ -1347,7 +1358,7 @@ function getTemplate($template) // DONE
     }
 }*/
 
-/*function change_vk()
+function change_vk() // DONE
 {
     global $db, $user, $var, $conf;
     if (!$user) {
@@ -1368,10 +1379,12 @@ function getTemplate($template) // DONE
     } else {
         $query->bindParam(':vk', $_POST['vk']);
     }
+
     $query->bindParam(':id', $user['id']);
     $query->execute();
+
     _message('success');
-}*/
+}
 
 // TODO: mail
 function change_mail()
@@ -1440,37 +1453,45 @@ function mail_link()
     die(header('Location: /'));
 }
 
-// TODO: password
-function change_passwd()
+
+function change_passwd() // DONE
 {
     global $db, $user, $var;
+
     if (!$user) {
         _message('unauthorized', 'error');
     }
+
     if (empty($_POST['oldPasswd']) || empty($_POST['newPasswd']) || empty($_POST['repPasswd'])) {
         _message('empty', 'error');
     }
+
     if (strlen($_POST['newPasswd']) < 7) {
         _message('short', 'error');
     }
+
     if ($_POST['oldPasswd'] == $_POST['newPasswd']) {
         _message('samePasswd', 'error');
     }
+
     if ($_POST['newPasswd'] != $_POST['repPasswd']) {
         _message('wrongNewPasswd', 'error');
     }
+
     if (!password_verify($_POST['oldPasswd'], $user['passwd'])) {
         _message('wrongPasswd', 'error');
     }
+
     $passwd = createPasswd($_POST['newPasswd']);
+
     $query = $db->prepare('UPDATE `users` SET `password` = :passwd WHERE `id` = :id');
     $query->bindParam(':passwd', $passwd['1']);
     $query->bindParam(':id', $user['id']);
     $query->execute();
+
     _mail($user['mail'], "Изменение пароля", "Здравствуйте, {$user['login']}!<br/><br/>Пароль от вашего аккаунта на сайте https://www.anilibria.tv был изменен.<br/><br/>Запрос отправили с IP {$var['ip']}");
     _message('success');
 }
-
 
 function pageStat() // DONE
 {
@@ -1966,7 +1987,7 @@ function auth_history() // DONE
     $query->bindParam(':uid', $user['id']);
     $query->execute();
 
-    while($row = $query->fetch()){
+    while ($row = $query->fetch()) {
         $status = false;
         /*$tmp = $db->prepare('SELECT `id` FROM `session` WHERE `id` = :id AND `time` > :time');
         $tmp->bindParam(':id', $row['sid']);
@@ -2159,18 +2180,16 @@ function wsInfoShow() // DONE
     return $result;
 }
 
-// TODO: Clean
-function mp4_link($value)
+/*function mp4_link($value)
 {
     global $conf, $var;
     $time = $var['time'] + 60 * 60 * 2;
     $key = str_replace("=", "", strtr(base64_encode(md5("{$time}/videos/{$value}" . " {$conf['nginx_secret']}", true)), "+/", "-_"));
     $url = htmlspecialchars("{$conf['nginx_download_cache_server']}/get/$key/$time/$value", ENT_QUOTES, 'UTF-8');
     return $url;
-}
+}*/
 
-// TODO: Clean
-function anilibria_getHost($hosts)
+/*function anilibria_getHost($hosts)
 {
     $host = [];
     if (empty($hosts)) {
@@ -2187,8 +2206,7 @@ function anilibria_getHost($hosts)
     }
     shuffle($host);
     return $host[random_int(0, count($host) - 1)] . ".libria.fun";
-}
-
+}*/
 
 function getReleaseVideo($id) // DONE
 {
@@ -2783,8 +2801,7 @@ function getGenreList() // DONE
     return [$result['name'], $result['ename']];
 }*/
 
-// TODO: clean
-function releaseCodeByID($id)
+function releaseCodeByID($id) // DONE
 {
     global $db;
     $query = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id');
@@ -2793,8 +2810,7 @@ function releaseCodeByID($id)
     return $query->fetch()['code'];
 }
 
-// TODO: clean
-function releaseSeriesByID($id)
+function releaseSeriesByID($id) // DONE
 {
     global $db;
     $query = $db->prepare('SELECT JSON_ARRAY(type, description) AS `info` FROM `torrents` WHERE `releases_id` = :id  ORDER BY `updated_at` DESC');
@@ -2921,7 +2937,6 @@ function showCatalog() // DONE
         $data = $query->fetchAll(PDO::FETCH_ASSOC);
         $total = count($data);
 
-        // TODO: check if sphinx works
         /*$query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) AND ".checkFinish()." ORDER BY `{$sort}` DESC LIMIT {$page}, 12 OPTION max_matches=2012");
         $query->bindValue(':search', "$s");
         $query->execute();
@@ -3511,19 +3526,22 @@ function showAscReleases() // DONE
     return $result;
 }
 
-// TODO: add db column with ads
-function changeADS()
+function changeADS() // DONE
 {
     global $db, $user, $var, $conf;
+
     if (!$user) {
         _message('unauthorized', 'error');
     }
-    if (!$user['ads']) {
-        $ads = 1;
-    } else {
+
+    if ($user['ads'] == 1) {
         $ads = 0;
+
+    } else {
+        $ads = 1;
     }
-    $query = $db->prepare('UPDATE `users` SET `ads` = :ads WHERE `id` = :id');
+
+    $query = $db->prepare('UPDATE `users` SET `show_ads` = :ads WHERE `id` = :id');
     $query->bindParam(':ads', $ads);
     $query->bindParam(':id', $user['id']);
     $query->execute();
@@ -3531,11 +3549,10 @@ function changeADS()
     _message('success');
 }
 
-// TODO: add db column with ads
-function checkADS()
+function checkADS() // DONE
 {
     global $user;
-    if (!$user || !$user['ads']) {
+    if (!$user || $user['ads'] == 1) {
         return true;
     } else {
         return false;
@@ -3612,9 +3629,11 @@ function showNewSeason()
     $result = '';
     $order = '';
     $video = '';
+
     if (empty($_GET['year']) || !ctype_digit($_GET['year']) || empty($_GET['season']) || !array_key_exists($_GET['season'], $var['season'])) {
         return release404();
     }
+
     $season = $var['season'][$_GET['season']];
     $year = $_GET['year'];
     $query = $db->prepare('SELECT 
@@ -3733,8 +3752,7 @@ function _getReleaseEpisodes($releaseId) // DONE
     return $query->fetchAll();
 }
 
-
-function _getHostname(): string
+function _getHostname(): string // DONE
 {
     $host = $_SERVER['HTTP_HOST'];
     $scheme = $_SERVER['REQUEST_SCHEME'];
@@ -3742,18 +3760,4 @@ function _getHostname(): string
     return $host && $scheme
         ? sprintf('%s://%s', $scheme, $host)
         : '';
-}
-
-function _debugExceptions($callback)
-{
-
-    try {
-
-        call_user_func($callback);
-
-    } catch (Throwable $exception) {
-        print_r($exception);
-        die();
-    }
-
 }

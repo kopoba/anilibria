@@ -150,6 +150,7 @@ function apiList()
 {
     //only for testing
     //updateApiCache();
+
     global $cache,
            $var,
            $count,
@@ -231,14 +232,13 @@ function apiList()
 
     fetchNormalCache(); // DONE
 
-    // TODO: check api caching
-    /*if (checkApiRelaxing()) {
+    if (checkApiRelaxing()) { // DONE
 
         fetchInfiniteCache();
         if (checkApiRelaxing()) {
             throw new ApiException('API is not ready', 400);
         }
-    }*/
+    }
 
     /* Main api methods */
     function apiGetTorrentsMap($torrents, $idsString) // DONE
@@ -275,13 +275,13 @@ function apiList()
         return [];
     }
 
-    // TODO: GET RELEASE
-    function apiGetReleaseById($info, $torrent, $rid)
+    function apiGetReleaseById($info, $torrent, $rid) // DONE
     {
         $result = null;
 
         if (array_key_exists($rid, $info)) {
             $releases = array($info[$rid]);
+
             $proceededReleases = proceedReleases($releases, $torrent);
             if (!empty($proceededReleases)) {
                 $result = $proceededReleases[0];
@@ -293,8 +293,7 @@ function apiList()
         throw new ApiException("Release by id=$rid not found", 404);
     }
 
-    // TODO: GET RELEASE
-    function apiGetReleaseByCode($info, $torrent, $rcode)
+    function apiGetReleaseByCode($info, $torrent, $rcode) // DONE
     {
         $result = null;
         foreach ($info as $key => $val) {
@@ -313,8 +312,7 @@ function apiList()
         throw new ApiException("Release by code=$rcode not found", 404);
     }
 
-    // TODO: GET RELEASE
-    function apiGetReleasesByIdsString($info, $torrent, $rid)
+    function apiGetReleasesByIdsString($info, $torrent, $rid) // DONE
     {
         $list = [];
         if (!empty($rid)) {
@@ -340,8 +338,7 @@ function apiList()
         ];
     }
 
-    // TODO: GET RELEASE
-    function apiSearchReleases($info, $torrent, $items)
+    function apiSearchReleases($info, $torrent, $items) // DONE
     {
         if (!isset($items)) {
             $items = [];
@@ -352,8 +349,7 @@ function apiList()
         return apiGetReleasesByIdsArray($info, $torrent, $ids);
     }
 
-    // TODO: GET RELEASE
-    function apiGetReleasesByIdsArray($info, $torrent, $ids)
+    function apiGetReleasesByIdsArray($info, $torrent, $ids) // DONE
     {
         $releases = [];
         foreach ($ids as $id) {
@@ -365,8 +361,7 @@ function apiList()
         return proceedReleases($releases, $torrent);
     }
 
-    // TODO: GET RELEASE
-    function apiGetReleases($info, $torrent)
+    function apiGetReleases($info, $torrent) // DONE
     {
         $pagination = createPagination(count($info));
         $startIndex = $pagination['startIndex'];
@@ -420,7 +415,6 @@ function apiList()
         ];
     }
 
-
     function createPagination($allItemsCount) // DONE
     {
         $prepared = preparePagination();
@@ -434,8 +428,7 @@ function apiList()
         ];
     }
 
-    // TODO: GET RELEASE
-    function proceedReleases($releases, $torrent)
+    function proceedReleases($releases, $torrent) // DONE
     {
         global $IGNORE_APP_ID,
                $BLOCKED_RELEASES_WAKANIM,
@@ -513,7 +506,7 @@ function apiList()
                 $val['blockedInfo']['blocked'] = false;
             }
 
-            if (!empty($val['playlist']['online'])) {
+            /*if (!empty($val['playlist']['online'])) {
                 $host = anilibria_getHost($val['playlist']['online']);
                 foreach ($val['playlist'] as $k => $v) {
                     if (empty($val['playlist']["$k"]['sd']) || empty($val['playlist']["$k"]['hd'])) {
@@ -542,20 +535,24 @@ function apiList()
                         $val['playlist']["$k"]['srcHd'] = "https://vk.com/anilibria?w=wall-37468416_493445";
                     }
                 }
-            }
+            }*/
+
+
             if (!in_array('torrents', $unsettedFileds)) {
                 $val['torrents'] = apiGetTorrentsList($torrent, $val['id']);
             }
+
             if (!in_array('favorite', $unsettedFileds)) {
                 $val['favorite'] = apiGetFavoriteField($val);
             }
+
             unset($val['rating']);
             unset($val['playlist']['online']);
+
             $result[] = $val;
         }
         return $result;
     }
-
 
     function apiGetFavoriteField($release) // DONE
     {
@@ -563,17 +560,16 @@ function apiList()
 
         //$count = countRatingRelease($release['id']);
 
-        $query = $db->query('SELECT `rating_by_favorites` from `releases` WHERE id = :id');
+        $query = $db->prepare('SELECT `rating_by_favorites` from `releases` WHERE id = :id');
         $query->bindValue(':id', $release['id']);
         $query->execute();
-        $release = $query->fetch();
+        $result = $query->fetch();
 
         return [
-            'rating' => intval($release['rating_by_favorites'] ?? 0),
+            'rating' => intval($result['rating_by_favorites'] ?? 0),
             'added' => isFavorite($user['id'], $release['id'])
         ];
     }
-
 
     function apiFavorites($info, $torrent) // DONE
     {
@@ -603,9 +599,7 @@ function apiList()
         return $result;
     }
 
-
-    // TODO: Check authorization
-    function apiGetUser()
+    function apiGetUser() // DONE
     {
         global $db, $conf, $user;
 
@@ -614,15 +608,10 @@ function apiList()
             throw new ApiException("No user", 401);
         }
 
-
         $tmpAvatar = empty($user['avatar'])
             ? '/upload/avatars/noavatar.jpg'
             : sprintf('%s/%s/%s', $conf['user_avatar_host'], $user['id'], $user['avatar']);
 
-        /*$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
-    } else {
-        $tmpAvatar = 'noavatar.jpg';
-    }*/
 
         $result = [
             "id" => intval($user['id']),
@@ -639,7 +628,6 @@ function apiList()
         }
         return $result;
     }
-
 
     function releaseFavoriteAction($info, $torrent) // DONE
     {
@@ -697,12 +685,12 @@ function apiList()
 
         $sql = "
             SELECT `type`, `id`, `timestamp` FROM (
-              SELECT 'release' as type, `id` as id, UNIX_TIMESTAMP(`fresh_at`) as timestamp FROM `releases` WHERE `is_hidden` = 0 and deleted_at IS NULL
+              SELECT 'release' as `type`, `id` as id, UNIX_TIMESTAMP(`fresh_at`) as `timestamp` FROM `releases` WHERE `is_hidden` = 0 and `deleted_at` IS NULL
               UNION
-              SELECT 'youtube' as type, `id` as id, UNIX_TIMESTAMP(`created_at`) as timestamp FROM `youtube`                                    
+              SELECT 'youtube' as `type`, `id` as id, UNIX_TIMESTAMP(`created_at`) as `timestamp` FROM `youtube` WHERE `deleted_at` IS NULL                                   
             )
             AS feed
-            ORDER BY timestamp DESC 
+            ORDER BY `timestamp` DESC 
             LIMIT :start_index, :per_page
         ";
 
@@ -717,6 +705,7 @@ function apiList()
         $query->bindParam(":start_index", $startIndex, \PDO::PARAM_INT);
         $query->bindParam(":per_page", $perPage, \PDO::PARAM_INT);
         $query->execute();
+
         while ($row = $query->fetch()) {
             $result[] = [
                 'id' => intval($row['id']),
@@ -745,7 +734,7 @@ function apiList()
                     break;
 
                 case 'youtube':
-                    $query = $db->prepare('SELECT * FROM `youtube` WHERE `id` = :id');
+                    $query = $db->prepare('SELECT *, UNIX_TIMESTAMP(`created_at`) as `created_at` FROM `youtube` WHERE `id` = :id');
                     $query->bindParam(':id', $feedItem['id']);
                     $query->execute();
                     if ($row = $query->fetch()) {
@@ -851,7 +840,6 @@ function apiList()
         ];
         return $result;
     }
-
 
     function apiGetSchedule($info, $torrent) // DONE
     {
@@ -981,12 +969,12 @@ function apiList()
                 }
                 break;
 
-            case 'info': // TODO: relase
+            case 'info': // DONE
                 checkIsStringOrInteger($_POST['id'], 'id');
                 return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
                 break;
 
-            case 'release': // TODO: release
+            case 'release': // DONE
                 if (!empty($_POST['id'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
 
@@ -1000,19 +988,19 @@ function apiList()
                 }
                 break;
 
-            case 'random_release': // DONE // TODO: release
+            case 'random_release': // DONE
                 return apiGetRandomRelease();
                 break;
 
-            case 'list': // TODO: releases
+            case 'list': // DONE
                 return apiGetReleases($info, $torrent);
                 break;
 
-            case 'schedule': // TODO: release
+            case 'schedule': // DONE
                 return apiGetSchedule($info, $torrent);
                 break;
 
-            case 'feed': // DONE // TODO: release
+            case 'feed': // DONE
                 return apiGetFeed($info, $torrent);
                 break;
 
@@ -1024,7 +1012,7 @@ function apiList()
                 return apiGetYears();
                 break;
 
-            case 'favorites': // TODO: authorization
+            case 'favorites': // DONE
                 if (!empty($_POST['id']) || !empty($_POST['action'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
                     checkIsString($_POST['action'], 'action');
@@ -1038,7 +1026,7 @@ function apiList()
                 return apiGetYoutube();
                 break;
 
-            case 'user': // TODO: authorization
+            case 'user': // DONE
                 return apiGetUser();
                 break;
 
@@ -1053,7 +1041,7 @@ function apiList()
                 );
                 break;
 
-            case 'search': // TODO: RELEASE
+            case 'search': // DONE
                 return proceedBridge(
                     function () {
                         xSearch();
@@ -1143,11 +1131,11 @@ function updateApiCache() // DONE
        
        CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
        
-       IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 0))) AS `status`,
+       IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 4))) AS `status`,
        
        r.`alias` AS `code`, 
        NULL AS `block`, -- TODO: add to current db
-       r.`is_wakanim` AS `bakanim`,
+       r.`is_wakanim` AS `bakanim`
        
     FROM `releases` AS r 
     WHERE `is_hidden` = 0 and `deleted_at` IS NULL 
@@ -1187,12 +1175,13 @@ function updateApiCache() // DONE
             $voices[] = html_entity_decode(trim($voice));
         }
 
-        $playlist = getApiPlaylist($row['id']);
+        $playlist = json_decode(getApiPlaylist($row['id']), true);
 
         $series = null;
         $episodesIds = [];
         $minId = PHP_INT_MAX;
         $maxId = PHP_INT_MIN;
+
         foreach ($playlist as $key => $episode) {
             if ($key === 'online') {
                 continue;
@@ -1200,6 +1189,9 @@ function updateApiCache() // DONE
             $id = intval($episode['id']);
             $episodesIds[] = $id;
         }
+
+
+
         if (!empty($episodesIds)) {
             $minId = min($episodesIds);
             $maxId = max($episodesIds);
@@ -1285,7 +1277,7 @@ function updateApiCache() // DONE
         $tmp = $db->prepare('
             SELECT 
                    `id` AS `fid`, 
-                   `created_at` AS `ctime`, 
+                   UNIX_TIMESTAMP(`created_at`) AS `ctime`, 
                    `hash` AS `info_hash`, 
                    `leechers`,
                    `seeders`, 
@@ -1305,11 +1297,11 @@ function updateApiCache() // DONE
                 $link = "/upload/torrents/{$xrow['fid']}.torrent";
             }*/
 
-            $link = "/public/torrent/download.php?id={$row['fid']}";
+            $link = "/public/torrent/download.php?id={$row['id']}";
 
             $torrent[$row['id']][] = [
-                'id' => intval($xrow['fid']),
-                'hash' => unpack('H*', $xrow['info_hash'])['1'],
+                'id' => $xrow['fid'],
+                'hash' => $xrow['info_hash'],
                 'leechers' => intval($xrow['leechers']),
                 'seeders' => intval($xrow['seeders']),
                 'completed' => intval($xrow['completed']),
@@ -1352,7 +1344,7 @@ function getApiPlaylist($id) // DONE
     global $conf, $var, $db;
 
     // Episodes
-    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 ORDER BY `sort_order`');
+    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 ORDER BY `sort_order` DESC');
     $query->bindValue(':id', $id);
     $query->execute();
     $episodes = $query->fetchAll();
@@ -1370,7 +1362,7 @@ function getApiPlaylist($id) // DONE
         $server = $servers[array_rand($servers, 1)];
 
         $item = [
-            'id' => "s{$episode['ordinal']}",
+            'id' => (int)$episode['ordinal'],
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'srcSd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
