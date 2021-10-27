@@ -28,11 +28,16 @@ if($user['ads'] == 1){
 	$tmpAds = 'ВКЛЮЧИТЬ';
 }
 
-if(!empty($user['avatar'])){
+$tmpAvatar = empty($user['avatar'])
+    ? '/upload/avatars/noavatar.jpg'
+    : sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user['id'] / 100), $user['id'], $user['avatar']);
+
+/*if(!empty($user['avatar'])){
 	$tmpAvatar = "{$user['dir']}/{$user['avatar']}.jpg";
+
 }else{
 	$tmpAvatar = 'noavatar.jpg';
-}
+}*/
 
 function profileMes($name){
 	global $user, $var;
@@ -90,7 +95,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="profile-left-block-wrapper">
 			<span class="profile-nickname"><b><?php echo $user['login']; ?></b></span>
 			<div class="profile-avatar-wrapper">
-				<a href="#" data-modal-show title="Изменить"><img src="/upload/avatars/<?php echo $tmpAvatar; ?>" id="profile-avatar" alt="" width="150" height="150"></a>
+				<a href="#" data-modal-show title="Изменить"><img src="<?php echo $tmpAvatar; ?>" id="profile-avatar" alt="" width="150" height="150"></a>
 			</div>
 			<div class="user-status">
 				<?php echo $var['group'][$user['access']]; ?><br/>
@@ -107,7 +112,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<p>Имя: <span id="name"><?php echo profileMes('name'); ?></span></p>
 				<p>Пол: <span id="sex"><?php echo profileMes('sex'); ?></span></p>
 				<p>Возраст: <span id="age"><?php echo profileMes('age'); ?></span></p>
-				<p>Был в сети: <span><?php echo date('d.m.Y', $user['last_activity']); ?></span></p>
+				<!--<p>Был в сети: <span><?php /*echo date('d.m.Y', $user['last_activity']); */?></span></p>-->
 				<p>Регистрация: <span><?php echo date('d.m.Y', $user['register_date']); ?></span></p>
 				<br/>
 				<h3 class="profile-content-title">Статистика</h3>
@@ -312,7 +317,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 				<h4 class="modal-title" id="avatarInfo">Загрузка аватара</h4>
 			</div>
 			<div class="modal-body" style="max-height: 500px; max-width:100%; overflow: hidden;">
-				<center><img id="avatarPreview" src="/upload/avatars/<?php echo $tmpAvatar; ?>" ></center>
+				<center><img id="avatarPreview" src="<?php echo $tmpAvatar; ?>" ></center>
 				<input type="hidden" id="x1" name="x1" />
 				<input type="hidden" id="y1" name="y1" />
 				<input type="hidden" id="w" name="w" />

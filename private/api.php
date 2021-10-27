@@ -321,8 +321,7 @@ function apiList()
         return apiGetReleasesByIdsArray($info, $torrent, $list);
     }
 
-    // TODO: GET RELEASE
-    function apiGetCatalog($info, $torrent, $items)
+    function apiGetCatalog($info, $torrent, $items) // DONE
     {
         if (!isset($items)) {
             $items = [];
@@ -610,7 +609,7 @@ function apiList()
 
         $tmpAvatar = empty($user['avatar'])
             ? '/upload/avatars/noavatar.jpg'
-            : sprintf('%s/%s/%s', $conf['user_avatar_host'], $user['id'], $user['avatar']);
+            : sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user['id'] / 100), $user['id'], $user['avatar']);
 
 
         $result = [
@@ -1030,7 +1029,7 @@ function apiList()
                 return apiGetUser();
                 break;
 
-            case 'catalog': // TODO: RELEASE
+            case 'catalog': // DONE
                 return proceedBridge(
                     function () {
                         showCatalog();

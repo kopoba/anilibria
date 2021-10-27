@@ -6,9 +6,6 @@ WORKDIR /var/www/html
 # Use the default development configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Set custom config
-# COPY .docker/modules/backend/configs/php $PHP_INI_DIR/conf.d/
-
 # Install required dependencies
 RUN  \
     apk --update add \
@@ -22,6 +19,7 @@ RUN  \
     docker-php-ext-install -j$(nproc) \
         zip \
         xml \
+        exif \
         bcmath \
         pdo_mysql
 
@@ -32,6 +30,12 @@ RUN \
     rm -rf /tmp/pear && \
     docker-php-ext-enable redis
 
+
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
+    install-php-extensions \
+        imagick
+
 # Copy source code
 COPY . .
 
@@ -41,16 +45,8 @@ COPY .docker/configs/supervisor/supervisord.conf /etc/supervisor/supervisord.con
 # Copy nginx configurations
 RUN mkdir -p /run/nginx
 COPY .docker/configs/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY .docker/configs/nginx/locker.conf /etc/nginx/locker.conf
 COPY .docker/configs/nginx/snippets /etc/nginx/snippets
 COPY .docker/configs/nginx/conf.d /etc/nginx/conf.d
 
-# Copy php-fpm configuration
-#COPY .docker/modules/backend/configs/php-fpm/zz-custom-docker.conf /usr/local/etc/php-fpm.d/
-
-# Copy dependencies to outer folder
-#RUN mkdir -p /dependencies && cp -r vendor /dependencies
-
 # Start supervisor
 ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
-#ENTRYPOINT ["php", "-S", "0.0.0.0:8000"]

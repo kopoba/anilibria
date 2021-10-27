@@ -508,7 +508,7 @@ function moveErrPage($page = 403) // DONE
     die(header("Location: /pages/error/$page.php"));
 }
 
-// TODO: authorization
+// TODO: mail
 function password_link()
 {
     global $conf, $db, $var;
@@ -545,6 +545,7 @@ function password_link()
 }
 
 // TODO: authorization
+// TODO: recaptcha
 function testRecaptcha()
 {
     $v = 3;
@@ -561,6 +562,7 @@ function testRecaptcha()
 }
 
 // TODO: authorization
+// TODO: recaptcha
 function password_recovery()
 {
     global $conf, $db, $var;
@@ -589,6 +591,7 @@ function password_recovery()
 }
 
 // TODO: authorization
+// TODO: recaptcha
 function registration()
 {
     global $db, $user, $var;
@@ -681,7 +684,21 @@ function auth() // DONE
         }
 
         $session = $query->fetch();
-        $query = $db->prepare('SELECT `id`, `login`, `vk_id` AS `vk`, `avatar_original` AS `avatar`, `password` AS `passwd`, `email` AS `mail`, NULL AS `2fa`, 1 AS `access`, `created_at` AS `register_date`, NULL AS `last_activity`, NULL AS `user_values`, `show_ads` AS `ads` FROM `users` WHERE `id` = :id');
+        $query = $db->prepare('SELECT 
+            `id`, 
+            `login`, 
+            `vk_id` AS `vk`, 
+            `avatar_original` AS `avatar`,
+            `password` AS `passwd`,
+            `email` AS `mail`,
+            NULL AS `2fa`, 
+            1 AS `access`, 
+            UNIX_TIMESTAMP(`created_at`) AS `register_date`, 
+            NULL AS `last_activity`,
+            NULL AS `user_values`, 
+            `show_ads` AS `ads` 
+
+        FROM `users` WHERE `id` = :id');
         $query->bindParam(':id', $session['uid']);
 
         $query->execute();
@@ -897,6 +914,7 @@ function getQRCodeGoogleUrl($name, $secret) // DONE
 }*/
 
 // TODO: authorization
+// TODO: recaptcha
 function recaptcha($v = 3)
 {
     global $conf, $var;
@@ -1198,10 +1216,10 @@ function downloadTorrent() // DONE
 
 }
 
-// TODO: avatar
-function upload_avatar()
+function upload_avatar() // DONE
 {
-    global $db, $user;
+    global $db, $user, $conf;
+
     if (!$user) {
         _message('unauthorized', 'error');
     }
@@ -1245,24 +1263,31 @@ function upload_avatar()
     $img->setImageCompressionQuality(85);
     $img->stripImage();
 
-    $name = hash('crc32', $img);
+    /*$name = hash('crc32', $img);
     $tmp = $dir = '/upload/avatars/' . $user['dir'];
+
     $dir = $_SERVER['DOCUMENT_ROOT'] . $dir;
-    $file = "$dir/$name.jpg";
-    if (!file_exists($dir)) {
-        mkdir($dir, 0755, true);
-    }
-    file_put_contents($file, $img);
-    if (!empty($user['avatar']) && $user['avatar'] != $name) {
-        deleteFile("$dir/{$user['avatar']}.jpg");
-    }
-    $query = $db->prepare('UPDATE `users` SET `avatar_original` = :avatar WHERE `id` = :id');
-    $query->bindParam(':avatar', $name);
+    $file = "$dir/$name.jpg";*/
+
+    $dir = sprintf('%s/%s/%s', '/var/www/storage/users/avatars/', floor($user['id'] / 100), $user['id']);
+    $name = genRandStr(10, 1);
+    $filename = $name . '.jpg';
+
+    $filepath = sprintf('%s/%s', $dir, $filename);
+
+    if (!file_exists($filepath)) mkdir($dir, 0755, true);
+
+    file_put_contents($filepath, $img);
+
+    // if (!empty($user['avatar']) && $user['avatar'] != $filename) deleteFile($filepath);
+
+    $query = $db->prepare('UPDATE `users` SET `avatar_original` = :avatar, `avatar_thumbnail` = :avatar WHERE `id` = :id');
+    $query->bindParam(':avatar', $filename);
     $query->bindParam(':id', $user['id']);
     $query->execute();
-    _message2("$tmp/$name.jpg");
-}
 
+    _message2(sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user['id'] / 100), $user['id'], $filename));
+}
 
 function getTemplate($template) // DONE
 {
@@ -3622,10 +3647,11 @@ function checkIfVoted($rid) // DONE
     return "<a href='' data-release-favorites='$rid' class='upcoming_season_like'>БУДУ СМОТРЕТЬ $img</a>";
 }
 
-// TODO: release query
-function showNewSeason()
+
+function showNewSeason() // DONE
 {
-    global $db, $user, $var;
+
+    global $db, $user, $var, $conf;
     $result = '';
     $order = '';
     $video = '';
@@ -3634,17 +3660,23 @@ function showNewSeason()
         return release404();
     }
 
-    $season = $var['season'][$_GET['season']];
+    $season = $_GET['season']; //$var['season'][$_GET['season']];
     $year = $_GET['year'];
+
     $query = $db->prepare('SELECT 
        `id`, 
        `name`, 
        `name_english` AS `ename`, 
-       NULL AS `genre`, -- TODO: join genres
-       `season`, -- TODO: values to labels
+        (
+           select GROUP_CONCAT(g.name ORDER BY g.name SEPARATOR ", " ) from genres as g
+           inner join releases_genres as rg on rg.genres_id = g.id 
+           where rg.releases_id = releases.id
+       ) as `genre`,
+       `season`,
        `description`, 
        `rating_by_favorites` AS `rating`, 
-       `alias` AS `code` 
+       `alias` AS `code`,
+       `poster_medium`
     FROM `releases` WHERE `year` = :year AND `season` = :season ORDER BY `rating_by_favorites` DESC');
     $query->bindParam(':year', $year);
     $query->bindParam(':season', $season);
@@ -3654,16 +3686,24 @@ function showNewSeason()
     }
     lowerMove();
     while ($row = $query->fetch()) {
-        $img = fileTime('/upload/release/270x390/' . $row['id'] . '.jpg');
+
+        /*$img = fileTime('/upload/release/270x390/' . $row['id'] . '.jpg');
         if (!$img) {
             $img = '/upload/release/270x390/default.jpg';
-        }
+        }*/
+
+
+        $img = empty($row['poster_medium'])
+            ? urlCDN('/upload/release/270x390/default.jpg')
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+
+
         $tmp = getTemplate('season-vote');
         $tmp = str_replace('{id}', $row['id'], $tmp);
         $tmp = str_replace('{name}', $row['name'], $tmp);
         $tmp = str_replace('{ename}', $row['ename'], $tmp);
         $tmp = str_replace('{genres}', $row['genre'], $tmp);
-        $tmp = str_replace('{season}', $row['season'], $tmp);
+        $tmp = str_replace('{season}', $var['season'][$row['season']], $tmp);
         $tmp = str_replace('{description}', $row['description'], $tmp);
         $tmp = str_replace('{votes}', $row['rating'], $tmp);
         $tmp = str_replace('{img}', $img, $tmp);

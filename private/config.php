@@ -50,7 +50,7 @@ $conf['vk_secret'] = getenv('VK_SECRET') ?? 'secret';
 //$conf['youtube_playlist_silv'] = 'playlist';
 //$conf['youtube_playlist_dejz'] = 'playlist';
 
-$conf['youtube_poster_host'] = getenv('YOUTUBE_POSTER_HOST') ?? '/';
+
 
 $conf['push_all'] = getenv('PUSH_ALL') ?? 'secret';
 $conf['push_sanasol'] = getenv('PUSH_SANASOL') ?? 'secret';
@@ -67,5 +67,7 @@ $conf['fcm_token'] = getenv('FCM_TOKEN') ?? "fcm_token";
 
 $conf['api_v2'] = getenv('API_V2_HOST') ?? 'api v2 host';
 
-$conf['user_avatar_host'] = getenv('USER_AVATAR_HOST') ?? '/';
+// NEXT
+$conf['users_avatars_host'] = getenv('USERS_AVATARS_HOST') ?? '/';
 $conf['release_poster_host'] = getenv('RELEASE_POSTER_HOST') ?? '/';
+$conf['youtube_poster_host'] = getenv('YOUTUBE_POSTER_HOST') ?? '/';
