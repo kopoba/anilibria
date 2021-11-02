@@ -48,5 +48,8 @@ COPY .docker/configs/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY .docker/configs/nginx/snippets /etc/nginx/snippets
 COPY .docker/configs/nginx/conf.d /etc/nginx/conf.d
 
+# Cron
+RUN crontab .docker/configs/cron/crontab
+
 # Start supervisor
 ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

@@ -1269,7 +1269,7 @@ function upload_avatar() // DONE
     $dir = $_SERVER['DOCUMENT_ROOT'] . $dir;
     $file = "$dir/$name.jpg";*/
 
-    $dir = sprintf('%s/%s/%s', '/var/www/storage/users/avatars/', floor($user['id'] / 100), $user['id']);
+    $dir = sprintf('%s/%s/%s', '/var/www/media/users/avatars/', floor($user['id'] / 100), $user['id']);
     $name = genRandStr(10, 1);
     $filename = $name . '.jpg';
 
@@ -3626,7 +3626,7 @@ function showSitemap() // DONE
         $release .= "\t<url><loc>https://www.anilibria.tv/release/{$row['code']}.html</loc></url>\n";
     }
     $result = str_replace('{release}', rtrim($release), getTemplate('sitemap'));
-    file_put_contents('/var/www/anilibria/root/sitemap.xml', $result);
+    file_put_contents('/var/www/html/sitemap.xml', $result);
 }
 
 function checkIfVoted($rid) // DONE

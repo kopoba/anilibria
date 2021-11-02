@@ -24,7 +24,7 @@ function onlineUpdate(){
 	krsort($data, true);
 	$data = array_slice($data, 0, 20);
 	$data['sum'] = $sum;
-	file_put_contents('/var/www/anilibria/root/upload/stats.json', json_encode($data));
+	file_put_contents('/var/www/html/upload/stats.json', json_encode($data));
 }
 
 onlineUpdate();

@@ -10,7 +10,7 @@ services:
     restart: always
     volumes:
       - ..:/var/www/html
-      - ./../../storage/media:/var/www/storage/
+      - ./../../storage/media:/var/www/media/
       - ./configs/nginx/includes:/etc/nginx/includes
     networks:
       - anilibria

@@ -10,6 +10,7 @@ if($conf['cache'] == 'memcached'){
 if($conf['cache'] == 'redis'){
 	$redis = new Redis();
 	$redis->connect($conf['redis']);
+	$redis->select(15);
 }
 
 class cacheHandler {

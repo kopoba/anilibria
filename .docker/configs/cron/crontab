@@ -1,0 +1,12 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=""
+HOME=/
+
+*/10 * * * * anilibria php /var/www/html/private/cron/rating.php >/dev/null 2>&1
+*/5 * * * * anilibria php /var/www/html/private/cron/api.php >/dev/null 2>&1
+*/5 * * * * anilibria php /var/www/html/private/cron/stat.php >/dev/null 2>&1
+*/5 * * * * anilibria php /var/www/html/private/cron/video.php >/dev/null 2>&1
+01 */10 * * * anilibria php /var/www/html/private/cron/seed.php >/dev/null 2>&1
+*/30 * * * * anilibria php /var/www/html/private/cron/youtube.php >/dev/null 2>&1
+*/10 * * * * anilibria php /var/www/html/private/cron/player_stat.php >/dev/null 2>&1

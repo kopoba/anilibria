@@ -63,7 +63,7 @@ $conf['player_passwd'] = getenv('PLAYER_PASSWORD') ?? 'secret';
 
 $conf['cdn'] = true;
 
-$conf['fcm_token'] = getenv('FCM_TOKEN') ?? "fcm_token";
+// $conf['fcm_token'] = getenv('FCM_TOKEN') ?? "fcm_token";
 
 $conf['api_v2'] = getenv('API_V2_HOST') ?? 'api v2 host';
 

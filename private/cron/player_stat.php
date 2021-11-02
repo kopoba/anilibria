@@ -1,8 +1,8 @@
 #!/usr/bin/php
 <?php
 
-require('/var/www/anilibria/root/private/config.php');
-require('/var/www/anilibria/root/private/init/memcache.php');
+require('/var/www/html/private/config.php');
+require('/var/www/html/private/init/memcache.php');
 
 function sendApi($url, $data, $cookie = ''){
 	$options = [
