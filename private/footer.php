@@ -80,7 +80,7 @@
 
 		<script src="<?php echo '/js/jquery.min.js';?>"></script>
 		<script src="<?php echo '/js/bootstrap.min.js';?>"></script>
-		<script src="<?php echo '/js/main.js?hash=' . md5_file('./js/main.js');?>"></script>
+		<script src="<?php echo '/js/main.js?hash=' . md5_file('/var/www/html/js/main.js');?>"></script>
 		<?php echo footerJS(); ?>
 		<script>console.log("<?php echo pageStat(); ?>");</script>
 		<!--
