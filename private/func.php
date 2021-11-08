@@ -544,25 +544,25 @@ function password_link()
     die(header('Location: /'));
 }
 
-// TODO: authorization
-// TODO: recaptcha
-function testRecaptcha()
+function testRecaptcha() // DONE
 {
     $v = 3;
     if (!empty($_POST['recaptcha']) && $_POST['recaptcha'] == 2) {
         $v = $_POST['recaptcha'];
     }
     $result = recaptcha($v);
+
     if (!$result['success']) {
         _message('reCaptchaFail', 'error');
     }
+
+
     if ($v == 3 && $result['score'] < 0.5) {
         _message('reCaptcha3', 'error');
     }
 }
 
-// TODO: authorization
-// TODO: recaptcha
+// TODO: mail
 function password_recovery()
 {
     global $conf, $db, $var;
@@ -590,8 +590,7 @@ function password_recovery()
     _message('checkEmail');
 }
 
-// TODO: authorization
-// TODO: recaptcha
+// TODO: mail
 function registration()
 {
     global $db, $user, $var;
@@ -913,19 +912,16 @@ function getQRCodeGoogleUrl($name, $secret) // DONE
     }
 }*/
 
-// TODO: authorization
-// TODO: recaptcha
-function recaptcha($v = 3)
+
+function recaptcha($v = 3) // DONE
 {
     global $conf, $var;
     if (empty($_POST['g-recaptcha-response'])) {
         _message('reCaptchaFail', 'error');
     }
-    $secret = 'recaptcha_secret';
-    if ($v != 3) {
-        $secret = 'recaptcha2_secret';
-    }
-    $data = ['secret' => $conf[$secret], 'response' => $_POST['g-recaptcha-response'], 'remoteip' => $var['ip']];
+    $secret = $v == 3 ? $conf['recaptcha_secret'] :  $conf['recaptcha2_secret'];
+
+    $data = ['secret' => $secret, 'response' => $_POST['g-recaptcha-response'], 'remoteip' => $var['ip']];
     $verify = curl_init();
     curl_setopt($verify, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
     curl_setopt($verify, CURLOPT_POST, true);

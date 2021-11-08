@@ -1,6 +1,6 @@
 var csrf_token = $('input[id=csrf_token]').val();
 var recaptcha1;
-var CaptchaCallback = function() { recaptcha1 = grecaptcha.render('RecaptchaField', {'sitekey' : '6LfDB34UAAAAABoC-9OH2WvVylwqILVcnlrmYBQj'}); };
+var CaptchaCallback = function() { recaptcha1 = grecaptcha.render('RecaptchaField', {'sitekey' : $('meta[name=recaptcha2_site_key]').attr("content")}); };
 
 $(document).ready(function() {
 	if(window.location.hash.substr(1) == 'rules'){
@@ -45,6 +45,7 @@ $(document).on("click", "[data-submit-login]", function(e) {
 });
 
 $(document).on("click", "[data-submit-register]", function(e) {
+
 	$(this).blur();
 	e.preventDefault();
 	var vk = $('input[id=regVK]').val();
@@ -54,7 +55,7 @@ $(document).on("click", "[data-submit-register]", function(e) {
 	$('[data-submit-register]').hide(); // recaptchav3 has some delay
 	$('[data-submit-passwdrecovery]').hide();
 	if($("div#RecaptchaField").css('display') == 'none'){
-		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
+		grecaptcha.execute($('meta[name=recaptcha3_site_key]').attr("content")).then(function(token) {
 			$.post("/public/registration.php", { 'login': login, 'mail': mail, 'vk': vk, 'passwd' : passwd, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';
@@ -104,7 +105,7 @@ $(document).on("click", "[data-submit-passwdrecovery]", function(e) {
 	$('[data-submit-register]').hide(); // recaptchav3 has some delay
 	$('[data-submit-passwdrecovery]').hide();
 	if($("div#RecaptchaField").css('display') == 'none'){
-		grecaptcha.execute('6LfA2mUUAAAAAAbcTyBWyTXV2Kp6vi247GywQF1A').then(function(token) {
+		grecaptcha.execute($('meta[name=recaptcha3_site_key]').attr("content")).then(function(token) {
 			$.post("/public/recovery.php", { 'mail': mail, 'g-recaptcha-response': token }, function(json){
 				data = JSON.parse(json);
 				color = 'green';

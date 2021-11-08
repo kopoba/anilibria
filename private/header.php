@@ -108,6 +108,12 @@ $xcss = headerAds();
 		<title><?php echo $var['title']; ?></title>
 		<meta charset="UTF-8">
 		<meta name="description" content="<?php echo strip_tags($var['description']); ?>" />
+
+
+        <!-- Recaptcha -->
+        <meta name="recaptcha2_site_key" content="<?php echo $conf['recaptcha2_public']; ?>" />
+        <meta name="recaptcha3_site_key" content="<?php echo $conf['recaptcha_public']; ?>" />
+
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/main.css'));?>" />
 		<style><?php echo $xcss['css']; ?></style>
