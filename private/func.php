@@ -2021,7 +2021,7 @@ function auth_history() // DONE
         if($tmp->rowCount() == 1){
             $status = true;
         }*/
-        $data[strtotime($row['time'])] = [$row['ip'], $row['info'], $status, $row['sid']];
+        $data[strtotime($row['time'])] = [$row['ip'], base64_encode($row['info']), $status, $row['sid']];
     }
 
     return array_reverse($data, true);

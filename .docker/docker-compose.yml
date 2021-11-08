@@ -21,5 +21,4 @@ services:
 
 networks:
   anilibria:
-    external:
-      name: anilibria
+    name: anilibria

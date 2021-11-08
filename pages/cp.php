@@ -70,7 +70,6 @@ function tableSess($data){
             $text .= "<tr>
                     <td>$i</td>
                     <td>{$data[$key][0]}</td>
-                    <td></td>
                     <td>".date("Y-m-d H:i", $key)."</td>
                     <td><font color='green'>Active</a></td>
 		            <td><a href=\"#\" style=\"color: #383838;\" data-history-show-header=\"{$data[$key][1]}\"><span class=\"glyphicon glyphicon-edit\"></span></a>
@@ -268,7 +267,6 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 			<tr>
 				<th>ID</th>
 				<th>IP</th>
-				<th>Country</th>
 				<th>Time</th>
 				<th>Session</th>
 				<th></th>

@@ -8,7 +8,7 @@ $var['og'] = '';
 $var['page'] = '';
 $var['release'] = [];
 $var['time'] = time();
-$var['ip'] = $_SERVER['REMOTE_ADDR'];
+$var['ip'] = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
 
 try{
 	$maxmindInfo = $maxmind->country($var['ip']);
