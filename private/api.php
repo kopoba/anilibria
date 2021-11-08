@@ -813,7 +813,6 @@ function apiList()
             $result = [];
             $arr = array_reverse(range(1990, date('Y', time())));
             foreach ($arr as $search) {
-                // TODO: remove sphinx ?
                 $query = $sphinx->prepare("SELECT `id` FROM anilibria WHERE MATCH(:search) LIMIT 1");
                 $query->bindValue(':search', "@(year) ($search)");
                 $query->execute();
@@ -1133,7 +1132,7 @@ function updateApiCache() // DONE
        IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 4))) AS `status`,
        
        r.`alias` AS `code`, 
-       NULL AS `block`, -- TODO: add to current db
+       NULL AS `block`,
        r.`is_wakanim` AS `bakanim`
        
     FROM `releases` AS r 

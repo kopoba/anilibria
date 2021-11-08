@@ -1645,7 +1645,7 @@ function showRelease() // DONE
        IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 0))) AS `status`,
        r.`publish_day` AS `day`,
        r.`alias` AS `code`,
-       NULL AS `block`, -- TODO: add to current db
+       NULL AS `block`,
        r.`is_wakanim` AS `bakanim`,
        r.`poster_medium`
         

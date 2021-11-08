@@ -2,7 +2,6 @@
 <?php
 
 $_SERVER['DOCUMENT_ROOT'] = '/var/www/html';
-$_SERVER['REMOTE_ADDR'] = '37.1.217.18';
 
 require('/var/www/html/private/config.php');
 require('/var/www/html/private/init/mysql.php');

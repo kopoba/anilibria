@@ -11,6 +11,7 @@ RUN  \
     apk --update add \
         mc \
         git \
+        nano \
         nginx \
         libzip-dev \
         libxml2-dev \
