@@ -14,7 +14,13 @@ down: ## Down legacy service
 stop: ## Stop legacy service
 	cd .docker && docker-compose -f docker-compose.yml stop
 
-.PHONY: start-from-local
+
+.PHONY: rebuild
+start-from-local: ## Start legacy in development environment
+	docker build -t anilibria.legacy:build .
+
+
+.PHONY: start
 start-from-local: ## Start legacy in development environment
 	cd .docker && docker-compose -f docker-compose.yml up -d
 
