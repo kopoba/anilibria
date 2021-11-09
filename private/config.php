@@ -42,8 +42,6 @@ $conf['push_all'] = getenv('PUSH_ALL') ?? 'secret';
 $conf['push_sanasol'] = getenv('PUSH_SANASOL') ?? 'secret';
 $conf['push_albot'] = getenv('PUSH_ALBOT') ?? 'secret';
 
-$conf['telegram'] = getenv('TELEGRAM') ?? 'secret';
-
 $conf['player_login'] = getenv('PLAYER_LOGIN') ?? 'login';
 $conf['player_passwd'] = getenv('PLAYER_PASSWORD') ?? 'secret';
 
