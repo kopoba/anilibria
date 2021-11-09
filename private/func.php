@@ -1724,9 +1724,12 @@ function showRelease() // DONE
     $release['edityear'] = $release['year'];
 
     if (!empty($release['year']) && !empty($release['season'])) {
-        $xtmp = implode(' ', [$release['year'], $release['season']]);
-        if (in_array($release['season'], $var['season'])) {
-            $tmpLink = $release['year'] . array_search($release['season'], $var['season']);
+
+        $xtmp = implode(' ', [$release['year'], $var['season'][$release['season']]]);
+        
+        if (isset($var['season'][$release['season']])) {
+
+            $tmpLink = $release['year'] . $release['season'];
             $xtmp = "<a href='/season/$tmpLink.html' style='color: #333;'>$xtmp</a>";
         }
         $release['year'] = $xtmp;
