@@ -3643,7 +3643,6 @@ function checkIfVoted($rid) // DONE
     return "<a href='' data-release-favorites='$rid' class='upcoming_season_like'>БУДУ СМОТРЕТЬ $img</a>";
 }
 
-
 function showNewSeason() // DONE
 {
 
@@ -3755,12 +3754,14 @@ function iframePlayer() // DONE
     return '';
 }
 
-// TODO: hooks!
-function APIv2_UpdateTitle($title_id)
+function APIv2_UpdateTitle($releaseId) // DONE
 {
     global $conf;
-    $context = stream_context_create(["http" => ["method" => "GET", "timeout" => .01]]);
-    file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$title_id}", 0, $context);
+
+    if($conf['api_v2'] && $releaseId > 0) {
+        $context = stream_context_create(["http" => ["method" => "GET", "timeout" => .01]]);
+        file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$releaseId}", 0, $context);
+    }
 }
 
 function getTelegramActionLink($platform, $action, $payload) // DONE
@@ -3796,4 +3797,15 @@ function _getHostname(): string // DONE
     return $host && $scheme
         ? sprintf('%s://%s', $scheme, $host)
         : '';
+}
+
+function _getLatestUpdatesReleases(int $secondsOffset = 0): array
+{
+    global $db;
+    $query = $db->prepare('SELECT id FROM `releases` WHERE `fresh_at` >= DATE_SUB(NOW(), INTERVAL :seconds SECOND)');
+    $query->bindParam(':seconds', $secondsOffset);
+    $query->execute();
+
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+
 }

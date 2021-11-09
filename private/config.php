@@ -28,9 +28,6 @@ $conf['hash_algo'] = 'sha256';
 $conf['torrent_secret'] = 'secret';
 $conf['torrent_announce'] = getenv('TORRENT_ANNOUNCE') ?? 'secret';
 
-//$conf['sphinx_host'] = 'ip';
-//$conf['sphinx_port'] = 'port';
-
 $conf['stat_url'] = getenv('STAT_URL') ?? 'WS Link';
 $conf['stat_secret'] = getenv('STAT_SECRET') ?? 'secret';
 
@@ -40,17 +37,6 @@ $conf['nginx_secret'] = 'secret';
 
 $conf['vk_id'] = getenv('VK_ID') ?? 'id';
 $conf['vk_secret'] = getenv('VK_SECRET') ?? 'secret';
-
-//$conf['youtube_secret'] = 'secret';
-//$conf['youtube_chanel'] = 'channel';
-//$conf['youtube_playlist'] = 'playlist';
-//$conf['youtube_playlist_main'] = 'playlist';
-//$conf['youtube_playlist_lupin'] = 'playlist';
-//$conf['youtube_playlist_sharon'] = 'playlist';
-//$conf['youtube_playlist_silv'] = 'playlist';
-//$conf['youtube_playlist_dejz'] = 'playlist';
-
-
 
 $conf['push_all'] = getenv('PUSH_ALL') ?? 'secret';
 $conf['push_sanasol'] = getenv('PUSH_SANASOL') ?? 'secret';
@@ -62,8 +48,6 @@ $conf['player_login'] = getenv('PLAYER_LOGIN') ?? 'login';
 $conf['player_passwd'] = getenv('PLAYER_PASSWORD') ?? 'secret';
 
 $conf['cdn'] = true;
-
-// $conf['fcm_token'] = getenv('FCM_TOKEN') ?? "fcm_token";
 
 $conf['api_v2'] = getenv('API_V2_HOST') ?? 'api v2 host';
 

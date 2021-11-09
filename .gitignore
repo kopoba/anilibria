@@ -8,3 +8,5 @@ private/logs/PDOErrors.txt
 private/logs/check.txt
 img/
 supervisord.pid
+/sitemap.xml
+/upload/stats.json

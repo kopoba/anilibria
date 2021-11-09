@@ -8,12 +8,14 @@ $var['og'] = '';
 $var['page'] = '';
 $var['release'] = [];
 $var['time'] = time();
-$var['ip'] = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
+$var['ip'] = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 
 try{
+
 	$maxmindInfo = $maxmind->country($var['ip']);
 	$var['country'] = $maxmindInfo->country->isoCode;
-}catch(GeoIp2\Exception\AddressNotFoundException $e){
+
+}catch(Throwable $e){
 	$var['country'] = false;
 }
 
