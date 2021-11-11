@@ -892,7 +892,7 @@ function apiList()
         return [
             $var['origin_url'],
             getallheaders()['X-Proxy-Origin'] ?? null,
-            $_SERVER['SERVER_NAME']
+            $_SERVER['HTTP_HOST']
         ];
     }
 

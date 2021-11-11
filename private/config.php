@@ -11,8 +11,12 @@ $conf['mysql_user'] = getenv('MYSQL_USER') ?? 'secret';
 $conf['mysql_pass'] = getenv('MYSQL_PASSWORD') ?? 'secret';
 $conf['mysql_base'] = getenv('MYSQL_DATABASE') ?? 'secret';
 
-$conf['email'] = getenv('EMAIL') ?? 'email';
-$conf['email_from'] = getenv('EMAIL_SENDER') ?? 'Sender';
+// Email
+$conf['email_host'] = getenv('EMAIL_HOST') ?? 'email host';
+$conf['email_login'] = getenv('EMAIL_LOGIN') ?? 'email login';
+$conf['email_sender'] = getenv('EMAIL_SENDER') ?? 'email login';
+$conf['email_password'] = getenv('EMAIL_PASSWORD') ?? 'email password';
+
 
 // v3
 $conf['recaptcha_secret'] = getenv('RECAPTCHA3_SECRET') ?? 'secret';

@@ -22,18 +22,52 @@ function genRandStr($length = 10, $mode = 2) // DONE
     return $str;
 }
 
-// TODO: mail server
-function _mail($email, $subject, $message)
+function _mail($email, $subject, $message) // DONE
 {
-    global $conf;
+    try {
 
-    $headers = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-type: text/html; charset=utf-8\r\n";
-    $headers .= "Content-Transfer-Encoding: base64\r\n";
-    $subject = "=?utf-8?B?" . base64_encode($subject) . "?=";
-    $headers .= "From: {$conf['email_from']} <{$conf['email']}>\r\n";
+        global $conf;
 
-    // mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);
+        //require '/var/www/html/private/vendor/PHPMailer/src/Exception.php';
+        require '/var/www/html/private/vendor/PHPMailer/src/PHPMailer.php';
+        require '/var/www/html/private/vendor/PHPMailer/src/SMTP.php';
+
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(false);
+
+        //$mail->SMTPDebug = \PHPMailer\PHPMailer\SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host = $conf['email_host'];                   //Set the SMTP server to send through
+        $mail->SMTPAuth = true;                                   //Enable SMTP authentication
+        $mail->Username = $conf['email_login'];                     //SMTP username
+        $mail->Password = $conf['email_password'];                               //SMTP password
+        $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+        $mail->Port = 465;
+        $mail->XMailer = 'AniLibria.TV';
+        $mail->CharSet = 'UTF-8'; // the same as 'utf-8'//TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        //Recipients
+        $mail->setFrom($conf['email_login'], $conf['email_sender']);
+        $mail->addAddress($email);
+
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->send();
+
+        /* $headers = "MIME-Version: 1.0\r\n";
+         $headers .= "Content-type: text/html; charset=utf-8\r\n";
+         $headers .= "Content-Transfer-Encoding: base64\r\n";
+         $subject = "=?utf-8?B?" . base64_encode($subject) . "?=";
+         $headers .= "From: {$conf['email_from']} <{$conf['email']}>\r\n";
+
+         // mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);*/
+
+    } catch (Throwable $exception) {
+
+        // Ignore
+    }
 }
 
 function _message($key, $err = 'ok') // DONE
@@ -508,8 +542,7 @@ function moveErrPage($page = 403) // DONE
     die(header("Location: /pages/error/$page.php"));
 }
 
-// TODO: mail
-function password_link()
+function password_link() // DONE
 {
     global $conf, $db, $var;
 
@@ -562,8 +595,7 @@ function testRecaptcha() // DONE
     }
 }
 
-// TODO: mail
-function password_recovery()
+function password_recovery() // DONE
 {
     global $conf, $db, $var;
     testRecaptcha();
@@ -585,13 +617,12 @@ function password_recovery()
     $row = $query->fetch();
     $time = $var['time'] + 43200;
     $hash = hash($conf['hash_algo'], $row['id'] . $time . sha1(half_string_hash($row['passwd'])));
-    $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/password.php?id={$row['id']}&time={$time}&hash={$hash}";
+    $link = "http://" . $_SERVER['HTTP_HOST'] . "/public/link/password.php?id={$row['id']}&time={$time}&hash={$hash}";
     _mail($row['mail'], "Восстановление пароля", "Запрос отправили с IP {$var['ip']}<br/>Чтобы восстановить пароль <a href='$link'>перейдите по ссылке</a>.<br/>Далее вам придет письмо с паролем на почту.");
     _message('checkEmail');
 }
 
-// TODO: mail
-function registration()
+function registration() // DONE
 {
     global $db, $user, $var;
     if ($user) {
@@ -919,7 +950,7 @@ function recaptcha($v = 3) // DONE
     if (empty($_POST['g-recaptcha-response'])) {
         _message('reCaptchaFail', 'error');
     }
-    $secret = $v == 3 ? $conf['recaptcha_secret'] :  $conf['recaptcha2_secret'];
+    $secret = $v == 3 ? $conf['recaptcha_secret'] : $conf['recaptcha2_secret'];
 
     $data = ['secret' => $secret, 'response' => $_POST['g-recaptcha-response'], 'remoteip' => $var['ip']];
     $verify = curl_init();
@@ -1407,8 +1438,7 @@ function change_vk() // DONE
     _message('success');
 }
 
-// TODO: mail
-function change_mail()
+function change_mail() // DONE
 {
     global $db, $user, $var, $conf;
     if (!$user) {
@@ -1435,13 +1465,12 @@ function change_mail()
     }
     $time = $var['time'] + 43200;
     $hash = hash($conf['hash_algo'], $var['ip'] . $user['id'] . $user['mail'] . $_POST['mail'] . $time . sha1(half_string_hash($user['passwd'])));
-    $link = "https://" . $_SERVER['SERVER_NAME'] . "/public/link/mail.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
+    $link = "http://" . $_SERVER['HTTP_HOST'] . "/public/link/mail.php?time=$time&mail=" . urlencode($_POST['mail']) . "&hash=$hash";
     _mail($user['mail'], "Изменение email", "Запрос отправили с IP {$var['ip']}<br/>Если вы хотите изменить email на {$_POST['mail']} - <a href='$link'>перейдите по ссылке</a>.");
     _message('checkEmail');
 }
 
-// TODO: mail
-function mail_link()
+function mail_link() // DONE
 {
     global $db, $user, $var, $conf;
     if (!$user) {
@@ -1473,7 +1502,6 @@ function mail_link()
     $query->execute();
     die(header('Location: /'));
 }
-
 
 function change_passwd() // DONE
 {
@@ -1660,9 +1688,10 @@ function showRelease() // DONE
         $var['release']['block'] = isBlock($release['block']);
     }
 
-    if (!$user && $release['status'] == 3) {
+    if ((!$user || $user['access'] == 1) && $release['status'] == 3) {
         return release404();
     }
+
 
     $var['title'] = "{$release['name']} / {$release['ename']}";
     $var['release']['id'] = $release['id'];
@@ -1726,7 +1755,7 @@ function showRelease() // DONE
     if (!empty($release['year']) && !empty($release['season'])) {
 
         $xtmp = implode(' ', [$release['year'], $var['season'][$release['season']]]);
-        
+
         if (isset($var['season'][$release['season']])) {
 
             $tmpLink = $release['year'] . $release['season'];
@@ -3761,7 +3790,7 @@ function APIv2_UpdateTitle($releaseId) // DONE
 {
     global $conf;
 
-    if($conf['api_v2'] && $releaseId > 0) {
+    if ($conf['api_v2'] && $releaseId > 0) {
         $context = stream_context_create(["http" => ["method" => "GET", "timeout" => .01]]);
         file_get_contents("{$conf['api_v2']}/webhook/updateTitle?id={$releaseId}", 0, $context);
     }
