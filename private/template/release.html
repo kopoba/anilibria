@@ -100,9 +100,13 @@
 	<div id="xreleaseDesc" style="display: none;">
 		<textarea id="nDescription" class="form-control" style="margin-top: 8px; resize: vertical;" rows="10" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{xdescription}</textarea>
 	</div>
+
+	<div>
+
+	</div>
 	<div class="tab-switcher">
 		<div class="tab-content">
-			<button id="buttonAni" data-tab="anilibriaPlayer" class="active">Наш плеер</button>
+			<button id="buttonAni" data-tab="anilibriaPlayer" class="active" style="{hasEpisodesVisibility}">Наш плеер</button>
 			<button id="buttonMoon" data-tab="moonPlayer" style="display: none;">Внешний плеер</button>
 			<button data-light class="xdark z-fix">Свет</button>
 			{button}
@@ -114,7 +118,7 @@
 			<div class="block_fix"></div>
 		</div>
 	</div>
-	<div class="z-fix">
+	<div class="z-fix" style="{hasEpisodesVisibility}">
 		<div class="xplayer" id="anilibriaPlayer"></div>
 	</div>
 	<div class="xplayer z-fix" id="moonPlayer">

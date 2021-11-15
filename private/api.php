@@ -763,7 +763,7 @@ function apiList()
     function apiGetYoutube() // DONE
     {
         global $db;
-        $countQuery = $db->query('SELECT COUNT(*) FROM `youtube`');
+        $countQuery = $db->query('SELECT COUNT(*) FROM `youtube` WHERE `deleted_at` IS NULL');
         $count = intval($countQuery->fetch()[0]);
 
         $pagination = createPagination($count);
@@ -771,7 +771,7 @@ function apiList()
         $perPage = (int)$pagination['perPage'];
 
         $result = [];
-        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `youtube` ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
+        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `youtube` WHERE `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
         $query->bindParam(":start_index", $startIndex, \PDO::PARAM_INT);
         $query->bindParam(":per_page", $perPage, \PDO::PARAM_INT);
         $query->execute();
@@ -844,7 +844,7 @@ function apiList()
         global $db, $var;
         $result = [];
         foreach ($var['day'] as $key => $val) {
-            $query = $db->prepare('SELECT `id` FROM `releases` WHERE `publish_day` = :day AND `is_ongoing` = 1 AND `deleted_at` IS NULL');
+            $query = $db->prepare('SELECT `id` FROM `releases` WHERE `publish_day` = :day AND `is_ongoing` = 1 AND `is_hidden` = 0 AND `deleted_at` IS NULL');
             $query->bindParam(':day', $key);
             $query->execute();
             $dayReleases = [];
@@ -1106,39 +1106,10 @@ function updateApiCache() // DONE
 {
     global $db, $cache, $conf, $user, $var;
 
-    $query = $db->query('SELECT 
-       r.`id`, 
-       r.`name`, 
-       r.`name_english` AS `ename`, 
-       r.`rating_by_favorites` AS `rating`, 
-       UNIX_TIMESTAMP(r.`fresh_at`) AS `last`, 
-       r.`external_player` AS `moonplayer`, 
-       r.`description`, 
-       r.`notification` AS `announce`, 
-       r.`publish_day` AS `day`,
-       r.`poster_medium`,
-       r.`year`, 
-       r.`season`, 
-       (
-           select GROUP_CONCAT(g.name ORDER BY g.name SEPARATOR ", " ) from genres as g
-           inner join releases_genres as rg on rg.genres_id = g.id 
-           where rg.releases_id = r.id
-       ) as `genre`,
-       
-       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "voicing") as `voice`,
-       
-       CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
-       
-       IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 4))) AS `status`,
-       
-       r.`alias` AS `code`, 
-       NULL AS `block`,
-       r.`is_wakanim` AS `bakanim`
-       
-    FROM `releases` AS r 
-    WHERE `is_hidden` = 0 and `deleted_at` IS NULL 
-    ORDER BY `fresh_at` DESC');
-    while ($row = $query->fetch()) {
+
+    $releases = _getFullReleasesDataInLegacyStructure();
+
+    foreach ($releases as $row) {
 
         $names = [];
         $firstName = html_entity_decode(trim($row['name']));
@@ -1150,16 +1121,7 @@ function updateApiCache() // DONE
             $names[] = $secondName;
         }
 
-        $poster = empty($row['poster_medium'])
-            ? urlCDN('/upload/release/350x500/default.jpg')
-            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
-
-        /*$poster = $_SERVER['DOCUMENT_ROOT'] . '/upload/release/350x500/' . $row['id'] . '.jpg';
-        if (!file_exists($poster)) {
-            $poster = '/upload/release/350x500/default.jpg';
-        } else {
-            $poster = fileTime($poster);
-        }*/
+        $poster = $row['poster_medium'];
 
         $genres = [];
         $genresTmp = array_unique(explode(',', $row['genre']));
@@ -1274,27 +1236,23 @@ function updateApiCache() // DONE
 
         $tmp = $db->prepare('
             SELECT 
-                   `id` AS `fid`, 
-                   UNIX_TIMESTAMP(`created_at`) AS `ctime`, 
-                   `hash` AS `info_hash`, 
-                   `leechers`,
-                   `seeders`, 
-                   `completed`,
-                   JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)), `description`, `size`) AS `info`
+               `id` AS `fid`, 
+               UNIX_TIMESTAMP(`created_at`) AS `ctime`, 
+               `hash` AS `info_hash`, 
+               `leechers`,
+               `seeders`, 
+               `completed`,
+               JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)), `description`, `size`) AS `info`
             FROM `torrents`
             WHERE `releases_id` = :rid AND deleted_at IS NULL
         ');
+
         $tmp->bindParam(':rid', $row['id']);
         $tmp->execute();
-        while ($xrow = $tmp->fetch()) {
-            $data = json_decode($xrow['info'], true);
-            /*$link = null;
-            if ($user) {
-                $link = "/public/torrent/download.php?id={$xrow['fid']}";
-            } else {
-                $link = "/upload/torrents/{$xrow['fid']}.torrent";
-            }*/
 
+        while ($xrow = $tmp->fetch()) {
+
+            $data = json_decode($xrow['info'], true);
             $link = "/public/torrent/download.php?id={$row['id']}";
 
             $torrent[$row['id']][] = [
@@ -1311,6 +1269,8 @@ function updateApiCache() // DONE
             ];
         }
     }
+
+
     $chunk = array_chunk($info, 100, true);
     saveNormalCache($chunk, $torrent);
     saveInfiniteCache($chunk, $torrent);
@@ -1342,7 +1302,7 @@ function getApiPlaylist($id) // DONE
     global $conf, $var, $db;
 
     // Episodes
-    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 ORDER BY `sort_order` DESC');
+    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 and `deleted_at` IS NULL ORDER BY `sort_order` DESC');
     $query->bindValue(':id', $id);
     $query->execute();
     $episodes = $query->fetchAll();

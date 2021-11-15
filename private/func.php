@@ -28,7 +28,6 @@ function _mail($email, $subject, $message) // DONE
 
         global $conf;
 
-        //require '/var/www/html/private/vendor/PHPMailer/src/Exception.php';
         require '/var/www/html/private/vendor/PHPMailer/src/PHPMailer.php';
         require '/var/www/html/private/vendor/PHPMailer/src/SMTP.php';
 
@@ -55,14 +54,6 @@ function _mail($email, $subject, $message) // DONE
         $mail->Body = $message;
 
         $mail->send();
-
-        /* $headers = "MIME-Version: 1.0\r\n";
-         $headers .= "Content-type: text/html; charset=utf-8\r\n";
-         $headers .= "Content-Transfer-Encoding: base64\r\n";
-         $subject = "=?utf-8?B?" . base64_encode($subject) . "?=";
-         $headers .= "From: {$conf['email_from']} <{$conf['email']}>\r\n";
-
-         // mail($email, $subject, rtrim(chunk_split(base64_encode($message))), $headers);*/
 
     } catch (Throwable $exception) {
 
@@ -714,21 +705,24 @@ function auth() // DONE
         }
 
         $session = $query->fetch();
-        $query = $db->prepare('SELECT 
-            `id`, 
-            `login`, 
-            `vk_id` AS `vk`, 
-            `avatar_original` AS `avatar`,
-            `password` AS `passwd`,
-            `email` AS `mail`,
-            NULL AS `2fa`, 
-            1 AS `access`, 
-            UNIX_TIMESTAMP(`created_at`) AS `register_date`, 
-            NULL AS `last_activity`,
-            NULL AS `user_values`, 
-            `show_ads` AS `ads` 
-
-        FROM `users` WHERE `id` = :id');
+        $query = $db->prepare('
+            SELECT 
+                `id`, 
+                `login`, 
+                `vk_id` AS `vk`, 
+                `avatar_original` AS `avatar`,
+                `password` AS `passwd`,
+                `email` AS `mail`,
+                NULL AS `2fa`, 
+                1 AS `access`, 
+                UNIX_TIMESTAMP(`created_at`) AS `register_date`, 
+                NULL AS `last_activity`,
+                NULL AS `user_values`, 
+                `show_ads` AS `ads` 
+    
+            FROM `users` 
+            WHERE `id` = :id
+        ');
         $query->bindParam(':id', $session['uid']);
 
         $query->execute();
@@ -1192,7 +1186,7 @@ function downloadTorrent() // DONE
             t.`description`,
             t.`is_hevc`
         FROM `torrents` as t
-        inner join `releases` as r on r.id = t.releases_id
+        INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
         WHERE t.`id` = :id
     ');
     $query->bindParam(':id', $_GET['id']);
@@ -1645,45 +1639,17 @@ function showRelease() // DONE
     if (empty($_GET['code'])) {
         return release404();
     }
-    $query = $db->prepare('SELECT 
-       r.`id`,
-       r.`name`,
-       r.`name_english` AS `ename`,
-       r.`name_alternative` AS `aname`,
-       r.`external_player` AS `moonplayer`,
-       (
-           select GROUP_CONCAT(g.name ORDER BY g.name SEPARATOR ", " ) from genres as g
-           inner join releases_genres as rg on rg.genres_id = g.id 
-           where rg.releases_id = r.id
-       ) as `genre`,
-       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "voicing") as `voice`,
-       r.`year`,
-       r.`season`,
-       CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
-       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "translating") as `translator`,
-       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "editing") as `editing`,
-       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "decorating") AS `decor`,
-       (select GROUP_CONCAT(nickname ORDER BY nickname  SEPARATOR ", " ) from `releases_members` as m where m.releases_id = r.id and m.role = "timing") AS `timing`,
-       r.`description`,
-       r.`notification` AS `announce`,
-       IF(r.is_hidden = 1, 3, IF(r.is_ongoing = 1, 1, IF(r.is_completed = 1, 2, 0))) AS `status`,
-       r.`publish_day` AS `day`,
-       r.`alias` AS `code`,
-       NULL AS `block`,
-       r.`is_wakanim` AS `bakanim`,
-       r.`poster_medium`
-        
-       FROM `releases` as r  
-       WHERE r.`alias` = :code
-    ');
-    $query->bindParam(':code', $_GET['code']);
-    $query->execute();
-    if ($query->rowCount() != 1) {
+
+    $release = _getReleaseByColumn('alias', $_GET['code']);
+
+    if ($release === null) {
         return release404();
     }
+
     lowerMove();
-    $release = $query->fetch();
+
     $var['release']['block'] = false;
+
     if (!$user || $user['access'] == 1) {
         $var['release']['block'] = isBlock($release['block']);
     }
@@ -1730,6 +1696,7 @@ function showRelease() // DONE
     $page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
     $page = str_replace('{block}', $release['block'], $page);
     $page = str_replace('{bakanim}', $release['bakanim'], $page);
+    $page = str_replace('{hasEpisodesVisibility}', $release['has_episodes'] ? '' : 'display: none', $page);
 
     $xtmp = explode(',', $release['genre']);
     $str = '';
@@ -1754,15 +1721,16 @@ function showRelease() // DONE
 
     if (!empty($release['year']) && !empty($release['season'])) {
 
-        $xtmp = implode(' ', [$release['year'], $var['season'][$release['season']]]);
+        $xtmp = implode(' ', [$release['year'], $release['season']]);
 
-        if (isset($var['season'][$release['season']])) {
+        if (in_array($release['season'], $var['season'])) {
 
-            $tmpLink = $release['year'] . $release['season'];
+            $tmpLink = $release['year'] . array_search($release['season'], $var['season']);
             $xtmp = "<a href='/season/$tmpLink.html' style='color: #333;'>$xtmp</a>";
         }
         $release['year'] = $xtmp;
     }
+
     $page = str_replace('{chosen-genre}', $str, $page);
     $page = str_replace('{genre}', $release['genre'], $page);
     $page = str_replace('{chosen}', getGenreList(), $page);
@@ -1794,11 +1762,7 @@ function showRelease() // DONE
     //$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
     // $poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster_medium']);
 
-    if (empty($release['poster_medium'])) {
-        $tmpImg = urlCDN('/upload/release/350x500/default.jpg');
-    } else {
-        $tmpImg = sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster_medium']);
-    }
+    $tmpImg = $release['poster_medium'];
 
     $page = str_replace('{img}', $tmpImg, $page);
     $var['og'] .= "<meta property='og:image' content='$tmpImg' />";
@@ -1858,15 +1822,17 @@ function showRelease() // DONE
     $page = str_replace('{xmoon}', $release['moonplayer'], $page);
     $page = str_replace('{favorites}', '', $page);
 
-    $query = $db->prepare('SELECT 
-       `id` AS `fid`,
-       JSON_ARRAY(CONCAT_WS(\' \', `type`, `quality`, IF(`is_hevc` = 1, \'HEVC\', null)),`description`, `size`) AS `info`,
-       UNIX_TIMESTAMP(`created_at`) AS `ctime`,
-       `seeders`,
-       `leechers`, 
-       `completed` 
-        FROM `torrents` 
-        WHERE `releases_id` = :id AND `deleted_at` IS NULL
+    $query = $db->prepare('
+        SELECT 
+           t.`id` AS `fid`,
+           JSON_ARRAY(CONCAT_WS(\' \', t.`type`, t.`quality`, IF(t.`is_hevc` = 1, \'HEVC\', null)),t.`description`, t.`size`) AS `info`,
+           UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
+           t.`seeders`,
+           t.`leechers`, 
+           t.`completed` 
+        FROM `torrents` as t
+        INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
+        WHERE t.`releases_id` = :id AND t.`deleted_at` IS NULL
     ');
 
     $query->bindParam(':id', $release['id']);
@@ -2266,13 +2232,13 @@ function getReleaseVideo($id) // DONE
     global $conf, $var, $db;
 
     // Episodes
-    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 ORDER BY `sort_order`');
+    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 AND `deleted_at` IS NULL ORDER BY `sort_order`');
     $query->bindValue(':id', $id);
     $query->execute();
     $episodes = $query->fetchAll();
 
     // Cache Servers
-    $query = $db->prepare('SELECT * from `cache_servers` where deleted_at is NULL ORDER BY `response_seconds` ASC, `outgoing_traffic` ASC LIMIT 3');
+    $query = $db->prepare('SELECT * from `cache_servers` where `deleted_at` IS NULL ORDER BY `response_seconds` ASC, `outgoing_traffic` ASC LIMIT 3');
     $query->bindValue(':id', $id);
     $query->execute();
     $servers = $query->fetchAll();
@@ -2456,13 +2422,13 @@ function youtubeShow() // DONE
     $data = [];
     $result = '';
     $tmpl = '<td><a href="{url}" target="_blank"><img src="{img}" alt="{alt}" height="245"></a></td>';
-    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 0 ORDER BY `created_at` DESC  LIMIT 6');
+    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 0 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
     $query->execute();
     while ($row = $query->fetch()) {
         $arr1[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview_original' => $row['preview_original']];
     }
 
-    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 1 ORDER BY `created_at` DESC  LIMIT 6');
+    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 1 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
     $query->execute();
     while ($row = $query->fetch()) {
         $arr2[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview_original' => $row['preview_original']];
@@ -2702,7 +2668,7 @@ function xSearch() // DONE
                 name_english LIKE CONCAT('%', :search, '%') or
                 name_alternative LIKE CONCAT('%', :search, '%')
             ) 
-            AND deleted_at IS NULL AND is_hidden = 0
+            AND `deleted_at` IS NULL AND `is_hidden` = 0
         LIMIT 12
     ");
 
@@ -2785,26 +2751,23 @@ function showPosters() // DONE
             break;
     }
 
-    $query = $db->query('SELECT 
-       `id`, 
-       `name`, 
-       `name_english` AS `ename`, 
-       `alias` AS `code`, 
-       `description`, 
-       `poster_medium`, 
-        `is_wakanim` AS `bakanim`
-        
+    $query = $db->query('
+        SELECT 
+           `id`, 
+           `name`, 
+           `name_english` AS `ename`, 
+           `alias` AS `code`, 
+           `description`, 
+           IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium`, 
+           `is_wakanim` AS `bakanim`
+            
         FROM `releases`
         where `is_hidden` = 0 and `deleted_at` IS NULL
         ORDER BY `fresh_at` DESC LIMIT ' . $limit
     );
     while ($row = $query->fetch()) {
 
-        //$img = urlCDN(fileTime('/upload/release/240x350/'.$row['id'].'.jpg'));
-
-        $img = empty($row['poster_medium'])
-            ? urlCDN('/upload/release/240x350/default.jpg')
-            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+        $img = $row['poster_medium'];
 
         $tmp = getTemplate('torrent-block');
         $tmp = str_replace('{id}', $row['code'], $tmp);
@@ -2857,7 +2820,7 @@ function getGenreList() // DONE
 function releaseCodeByID($id) // DONE
 {
     global $db;
-    $query = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id');
+    $query = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 AND `deleted_at` IS NULL');
     $query->bindParam(':id', $id);
     $query->execute();
     return $query->fetch()['code'];
@@ -2866,7 +2829,7 @@ function releaseCodeByID($id) // DONE
 function releaseSeriesByID($id) // DONE
 {
     global $db;
-    $query = $db->prepare('SELECT JSON_ARRAY(type, description) AS `info` FROM `torrents` WHERE `releases_id` = :id  ORDER BY `updated_at` DESC');
+    $query = $db->prepare('SELECT JSON_ARRAY(type, description) AS `info` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
@@ -2877,7 +2840,7 @@ function releaseSeriesByID($id) // DONE
 function releaseDescriptionByID($id, $SymCount) // DONE
 {
     global $db;
-    $query = $db->prepare('SELECT `description` FROM `releases` WHERE `id` = :id');
+    $query = $db->prepare('SELECT `description` FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 AND `deleted_at` IS NULL');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
@@ -2889,7 +2852,7 @@ function releaseDescriptionByID($id, $SymCount) // DONE
 function getTorrentDownloadLink($id) // DONE
 {
     global $db, $user;
-    $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `releases_id` = :id ORDER BY `updated_at` DESC LIMIT 1');
+    $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC LIMIT 1');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
@@ -3205,7 +3168,16 @@ function showSchedule() // DONE
     $descTPL = '<div class="schedule-anime-desc"><span class="schedule-runame">{runame}</span><span class="schedule-series">Серия: {series}</span><span class="schedule-description">{description}</span></div>';
     $tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">' . $descTPL . '<img width="200" height="280" src="{img}" alt="{alt}"}></a></td>';
     foreach ($var['day'] as $key => $val) {
-        $query = $db->prepare('SELECT `id`, `name`, `name_english` AS `ename`, `poster_medium` FROM `releases` WHERE `publish_day` = :day AND `is_ongoing` = 1');
+        $query = $db->prepare('
+            SELECT 
+               `id`, 
+               `name`, 
+               `name_english` AS `ename`, 
+               IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium` 
+            FROM `releases` 
+            WHERE `publish_day` = :day AND `is_ongoing` = 1 
+              AND `is_hidden` = 0 AND `deleted_at` IS NULL
+        ');
         $query->bindParam(':day', $key);
         $query->execute();
         while ($row = $query->fetch()) {
@@ -3213,14 +3185,9 @@ function showSchedule() // DONE
             // $poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
             // $poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
 
-            if (empty($row['poster_medium'])) {
 
-                $img = urlCDN('/upload/release/200x280/default.jpg');
+            $img = $row['poster_medium'];
 
-            } else {
-
-                $img = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);;
-            }
             $arr["$key"][$i][] = [
                 str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, str_replace('{runame}', "{$row['name']}", str_replace('{series}', releaseSeriesByID($row['id']), str_replace('{description}', releaseDescriptionByID($row['id'], 99), $tmpl2))))))
             ];
@@ -3522,7 +3489,13 @@ function showAscReleases() // DONE
     $result = $cache->get('showAscReleases');
     if ($result === false) {
         $query = $db->query('
-            SELECT `id`, `name`, `name_english` AS `ename`, NULL AS `voice`, `alias` AS `code`, `poster_medium`
+            SELECT 
+               `id`,
+               `name`, `name_english` AS `ename`, 
+               NULL AS `voice`, 
+               `alias` AS `code`, 
+               IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium`
+               
             FROM `releases` 
             WHERE `is_hidden` = 0 and `deleted_at` IS NULL
             ORDER BY `name` ASC
@@ -3531,9 +3504,11 @@ function showAscReleases() // DONE
         $query->execute();
         while ($row = $query->fetch()) {
 
-            $img = empty($row['poster_medium'])
+            /*$img = empty($row['poster_medium'])
                 ? urlCDN('/upload/release/240x350/default.jpg')
-                : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+                : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);*/
+
+            $img = $row['poster_medium'];
 
             //$poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
 
@@ -3703,8 +3678,12 @@ function showNewSeason() // DONE
        `description`, 
        `rating_by_favorites` AS `rating`, 
        `alias` AS `code`,
-       `poster_medium`
-    FROM `releases` WHERE `year` = :year AND `season` = :season ORDER BY `rating_by_favorites` DESC');
+        IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/270x390/default.jpg") as `poster_medium`
+       
+        FROM `releases` 
+        WHERE `year` = :year AND `season` = :season AND `is_hidden` = 0 AND `deleted_at` IS NULL 
+        ORDER BY `rating_by_favorites` DESC'
+    );
     $query->bindParam(':year', $year);
     $query->bindParam(':season', $season);
     $query->execute();
@@ -3804,7 +3783,7 @@ function getTelegramActionLink($platform, $action, $payload) // DONE
 function _getReleaseById($releaseId) // DONE
 {
     global $db;
-    $query = $db->prepare('SELECT * FROM `releases` WHERE `id` = :id');
+    $query = $db->prepare('SELECT * FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 AND `deleted_at` IS NULL');
     $query->bindParam(':id', $releaseId);
     $query->execute();
 
@@ -3834,10 +3813,121 @@ function _getHostname(): string // DONE
 function _getLatestUpdatesReleases(int $secondsOffset = 0): array
 {
     global $db;
-    $query = $db->prepare('SELECT id FROM `releases` WHERE `fresh_at` >= DATE_SUB(NOW(), INTERVAL :seconds SECOND)');
+    $query = $db->prepare('SELECT id FROM `releases` WHERE `fresh_at` >= DATE_SUB(NOW(), INTERVAL :seconds SECOND) AND `is_hidden` = 0 AND `deleted_at` IS NULL');
     $query->bindParam(':seconds', $secondsOffset);
     $query->execute();
 
     return $query->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+
+/**
+ * Get full releases data
+ * Convert to legacy db structure format
+ *
+ * @param null $releasesId
+ * @return array
+ */
+function _getFullReleasesDataInLegacyStructure($releasesId = null): array
+{
+    global $db, $conf;
+
+    $sql = '
+        SELECT 
+            r.`id`, 
+            r.`name`, 
+            r.`name_english` AS `ename`,
+            r.`name_alternative` AS `aname`, 
+            r.`year`,
+            r.`season`,
+            CASE r.`season` WHEN "winter" THEN "зима" WHEN "spring" THEN "весна" WHEN "summer" THEN "лето" WHEN "autumn" THEN "осень" END AS `season`,
+            CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
+            GROUP_CONCAT(DISTINCT TRIM(g.`name`) ORDER BY g.`name` SEPARATOR ", " ) AS `genre`,
+            GROUP_CONCAT(DISTINCT IF(rm.`role` = "voicing", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `voice`,
+            GROUP_CONCAT(DISTINCT IF(rm.`role` = "translating", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `translator`,
+            GROUP_CONCAT(DISTINCT IF(rm.`role` = "editing", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `editing`,
+            GROUP_CONCAT(DISTINCT IF(rm.`role` = "decorating", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `decor`,
+            GROUP_CONCAT(DISTINCT IF(rm.`role` = "timing", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `timing`,
+            r.`notification` AS `announce`,
+            IF(r.`is_hidden` = 1, 3, IF(r.`is_ongoing` = 1, 1, IF(r.`is_completed` = 1, 2, 0))) AS `status`,
+            "Скрыт" as `search_status`,
+            TRIM(r.`external_player`) AS `moonplayer`,
+            r.`description`,
+            UNIX_TIMESTAMP(r.`fresh_at`) AS `last`,
+            UNIX_TIMESTAMP(r.`updated_at`) AS `last_change`,
+            r.`publish_day` AS `day`,
+            r.`rating_by_favorites` as `rating`,
+            r.`alias` AS `code`,
+            NULL AS `block`,
+            r.`is_wakanim` AS `bakanim`,
+            IF(r.`poster_small` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster_small`), "/upload/release/240x350/default.jpg") as `poster_small`,
+            IF(r.`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium`,
+            IF(r.`poster_original` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster_original`), "/upload/release/350x500/default.jpg") as `poster_original`,
+            IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`
+               
+            
+        FROM `releases` AS r
+        
+        -- Genres
+        LEFT JOIN `releases_genres` AS rg ON rg.`releases_id` = r.`id`
+        LEFT JOIN `genres` AS g ON g.`id` = rg.`genres_id`
+        
+        -- Members
+        LEFT JOIN `releases_members` AS rm ON rm.`releases_id` = r.`id`
+        LEFT JOIN `users` AS rmu ON rmu.`id` = rm.`users_id`
+        
+        -- Episodes
+        LEFT JOIN `releases_episodes` AS re ON re.`releases_id` = r.`id` AND re.`deleted_at` IS NULL and re.`is_visible` = 1
+        
+        WHERE r.`is_hidden` = 0 AND r.`deleted_at` IS NULL :releasesPlaceholders
+        
+        GROUP BY r.`id`
+    ';
+
+
+    // Check if releases are provided
+    // Create releases placeholders for all releases in provided array
+    $hasReleasesFilter = count($releasesId ?? []) > 0;
+    $releasesPlaceholders = $hasReleasesFilter
+        ? sprintf('AND r.id IN(%s)', str_repeat('?,', count($releasesId ?? []) - 1) . '?')
+        : '';
+
+    // Replace releasesPlaceholders with part of sql query (or empty)
+    $sql = str_replace(':releasesPlaceholders', $releasesPlaceholders, $sql);
+
+    $query = $db->prepare($sql);
+    $query->execute($hasReleasesFilter ? $releasesId : null);
+
+    // Can fetch all/multiple/single release
+    return count($releasesId ?? []) === 1
+        ? $query->fetch(PDO::FETCH_ASSOC)
+        : $query->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+
+/**
+ * Get release by column
+ *
+ * @param string $column
+ * @param null $value
+ * @return array|null
+ */
+function _getReleaseByColumn(string $column, $value = null): ?array
+{
+    global $db;
+
+    $sql = 'SELECT `id` FROM `releases` WHERE `%s` = :value AND `is_hidden` = 0 AND `deleted_at` IS NULL';
+
+    $query = $db->prepare(sprintf($sql, $column));
+    $query->bindParam('value', $value);
+    $query->execute();
+    $release = $query->fetch(PDO::FETCH_ASSOC);
+
+    // Check if release is found in DB
+    $hasRelease = isset($release['id']);
+
+    return $hasRelease ? _getFullReleasesDataInLegacyStructure([$release['id']]) : null;
 
 }
