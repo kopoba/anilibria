@@ -108,7 +108,7 @@ $router->map('GET', '/getTitlesByLastChange/[i:limit]', function ($limit) {
 });
 
 
-// getTorrents
+// getTorrents TODO
 $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     global $db;
     $query = $db->prepare('
@@ -195,6 +195,29 @@ $router->map('GET', '/getSchedule/[:day]', function ($day) {
     return $query->fetchAll(PDO::FETCH_ASSOC);
 });
 
+// getTorrentSeedStats
+$router->map('GET', '/getTorrentSeedStats/[i:limit]', function ($limit) {
+
+    $limit = $limit && (int)$limit > 0 ? (int)$limit : 999999999999;
+
+    global $db;
+    $query = $db->prepare(
+        sprintf('
+            SELECT 
+               `torrents_downloaded` as `downloaded`,
+               `torrents_uploaded` as `uploaded`,
+               `login` 
+            FROM `users`
+            WHERE `torrents_uploaded` IS NOT NULL
+            ORDER BY `torrents_uploaded` DESC
+            %s',
+            "LIMIT " . $limit
+        )
+    );
+
+    $query->execute();
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+});
 
 // getUserIdBySession
 $router->map('GET', '/getUserIdBySession/[:sessionId]', function ($sessionId) {
