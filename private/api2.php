@@ -17,7 +17,6 @@ $router->map('GET', '/getReleases', function () {
     return _getFullReleasesDataInLegacyStructure();
 });
 
-
 // getTitleByID
 $router->map('GET', '/getTitleByID/[:releaseId]', function ($releaseId) {
     return _getReleaseByColumn('id', $releaseId);
@@ -27,7 +26,6 @@ $router->map('GET', '/getTitleByID/[:releaseId]', function ($releaseId) {
 $router->map('GET', '/getTitleByCode/[:releaseAlias]', function ($releaseAlias) {
     return _getReleaseByColumn('alias', $releaseAlias);
 });
-
 
 // getTitleByTorrentID
 $router->map('GET', '/getTitleByTorrentID/[:torrentId]', function ($torrentId) {
@@ -46,7 +44,6 @@ $router->map('GET', '/getTitleByTorrentID/[:torrentId]', function ($torrentId) {
     return $query->fetch(PDO::FETCH_ASSOC);
 
 });
-
 
 // IsReleaseExists
 $router->map('GET', '/IsReleaseExists/[:releaseId]', function ($releaseId) {
@@ -107,25 +104,25 @@ $router->map('GET', '/getTitlesByLastChange/[i:limit]', function ($limit) {
 
 });
 
-
-// getTorrents TODO
+// getTorrents
 $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     global $db;
     $query = $db->prepare('
           SELECT 
-          
              t.`id` AS `fid`,
-             t.`leechers`, 
-             t.`seeders`,
-             t.`completed`,
+             tf.`leechers`, 
+             tf.`seeders`,
+             t.`completed_times` as `completed`,
              0 AS `flags`,
-             UNIX_TIMESTAMP(t.`created_at`) AS `mtime`,
+             UNIX_TIMESTAMP(CONVERT(tf.`created_at`, datetime)) AS `mtime`,
              UNIX_TIMESTAMP(t.`updated_at`) AS `ctime`,
-             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, t.`size`) as `info`
+             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, tf.`size`) as `info`
           
           FROM `torrents` AS t
           INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
+          INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
           WHERE r.`id` = :releaseId
+          GROUP BY t.`id`
     ');
 
     $query->bindParam('releaseId', $releaseId);
@@ -170,7 +167,6 @@ $router->map('GET', '/getGenres', function () {
     return $query->fetchAll(PDO::FETCH_ASSOC);
 });
 
-
 // getYears
 $router->map('GET', '/getYears', function () {
     global $db;
@@ -178,7 +174,6 @@ $router->map('GET', '/getYears', function () {
     $query->execute();
     return $query->fetchAll(PDO::FETCH_ASSOC);
 });
-
 
 // getSchedule
 $router->map('GET', '/getSchedule/[:day]', function ($day) {
@@ -228,7 +223,6 @@ $router->map('GET', '/getUserIdBySession/[:sessionId]', function ($sessionId) {
     return $query->fetch(PDO::FETCH_ASSOC);
 });
 
-
 // getUserFavorites
 $router->map('GET', '/getUserFavorites/[:userId]', function ($userId) {
     global $db;
@@ -251,7 +245,6 @@ $router->map('GET', '/delUserFavorite/[:userId]/[:releaseId]', function ($userId
     $query = $db->prepare('DELETE FROM `users_favorites` WHERE `users_id` = :userId and `releases_id` = :releaseId');
     return $query->execute(['userId' => $userId, 'releaseId' => $releaseId]);
 });
-
 
 // buildSearchCache
 $router->map('GET', '/buildSearchCache', function () {
