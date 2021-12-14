@@ -114,8 +114,8 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
              tf.`seeders`,
              t.`completed_times` as `completed`,
              0 AS `flags`,
-             UNIX_TIMESTAMP(CONVERT(tf.`created_at`, datetime)) AS `mtime`,
-             UNIX_TIMESTAMP(t.`updated_at`) AS `ctime`,
+             UNIX_TIMESTAMP(t.`fresh_at`) AS `mtime`,
+             UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
              JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, tf.`size`) as `info`
           
           FROM `torrents` AS t
@@ -123,6 +123,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
           INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
           WHERE r.`id` = :releaseId
           GROUP BY t.`id`
+          ORDER BY t.`created_at` ASC
     ');
 
     $query->bindParam('releaseId', $releaseId);

@@ -1237,7 +1237,7 @@ function updateApiCache() // DONE
         $tmp = $db->prepare('
             SELECT 
                t.`id` AS `fid`, 
-               UNIX_TIMESTAMP(tf.`created_at`) AS `ctime`, 
+               UNIX_TIMESTAMP(t.`fresh_at`) AS `ctime`, 
                tf.`hash` AS `info_hash`, 
                tf.`leechers`,
                tf.`seeders`, 
@@ -1247,6 +1247,7 @@ function updateApiCache() // DONE
             INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
             WHERE t.`releases_id` = :rid AND t.`deleted_at` IS NULL
             GROUP BY t.id
+            ORDER BY t.`created_at` ASC
         ');
 
         $tmp->bindParam(':rid', $row['id']);
