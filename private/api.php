@@ -652,7 +652,7 @@ function apiList()
                 if ($isFavorite) {
                     throw new ApiException("Already added", 400);
                 }
-                $query = $db->prepare('INSERT INTO `users_favorites` (`users_id`, `releases_id`) VALUES (:uid, :rid)');
+                $query = $db->prepare('INSERT INTO `users_favorites` (`id`, `users_id`, `releases_id`) VALUES (UUID(), :uid, :rid)');
                 $query->bindParam(':uid', $user['id']);
                 $query->bindParam(':rid', $_POST['id']);
                 $query->execute();
