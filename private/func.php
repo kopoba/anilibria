@@ -2256,9 +2256,9 @@ function getReleaseVideo($id) // DONE
         $server = $servers[array_rand($servers, 1)];
         $qualities = [];
 
-        if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/%s', $server['url'], $episode['hls_1080']);
-        if (empty($episode['hls_720']) === false) $qualities[] = sprintf('[720p]%s/%s', $server['url'], $episode['hls_720']);
-        if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/%s', $server['url'], $episode['hls_480']);
+        if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
+        if (empty($episode['hls_720']) === false) $qualities[] = sprintf('[720p]%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
+        if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
 
 
         $playlist[] = [
