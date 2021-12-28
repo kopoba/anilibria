@@ -2783,6 +2783,7 @@ function showPosters() // DONE
         $tmp = str_replace('{description}', releaseDescriptionByID($row['id'], 179), $tmp);
         $tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
         //$tmp = str_replace('{torlink}', getTorrentDownloadLink($row['id']), $tmp);
+
         $torbtn = "<a href='" . getTorrentDownloadLink($row['id']) . "' class='last_tor_button'>СКАЧАТЬ</a>";
         if ($row['bakanim'] == 0) {
             $tmp = str_replace('{torlink}', $torbtn, $tmp);
@@ -2834,13 +2835,33 @@ function releaseCodeByID($id) // DONE
 
 function releaseSeriesByID($id) // DONE
 {
+
     global $db;
-    $query = $db->prepare('SELECT JSON_ARRAY(`type`, `description`) AS `info` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC');
+
+    $query = $db->prepare('SELECT `description` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `fresh_at` DESC');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
-    $result = json_decode($row['info'], true);
-    return $result['1'];
+    $seriesFromTorrents = $row['description'] ?? null;
+
+    $query = $db->prepare('
+        SELECT re.`ordinal` 
+        FROM `releases_episodes` as re
+        INNER JOIN `releases` as r on r.`id` = re.`releases_id`
+        WHERE r.`id` = :id AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL AND  re.`is_visible` = 1 and re.`deleted_at` IS NULL 
+    ');
+    $query->bindParam(':id', $id);
+    $query->execute();
+    $seriesOrdinals = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    $seriesOrdinals = array_map(function(array $episode) {
+        return (float)$episode['ordinal'] ?? 0;
+    }, $seriesOrdinals);
+
+    $seriesFromEpisodes = count($seriesOrdinals) > 0 ? (min($seriesOrdinals) . " — " . max($seriesOrdinals)) : null;
+
+    return $seriesFromTorrents ?? $seriesFromEpisodes ?? '';
+
 }
 
 function releaseDescriptionByID($id, $SymCount) // DONE
