@@ -3910,6 +3910,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         WHERE r.`is_hidden` = 0 AND r.`deleted_at` IS NULL :releasesPlaceholders
         
         GROUP BY r.`id`
+        ORDER BY r.`fresh_at` DESC
     ';
 
 

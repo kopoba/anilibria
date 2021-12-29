@@ -1215,7 +1215,7 @@ function updateApiCache() // DONE
             'last' => $row['last'],
             'moon' => $moon,
             'announce' => $announce,
-            'status' => html_entity_decode($var['status'][$row['status']]),
+            'status' => html_entity_decode($var['status'][$row['status']] ?? null),
             'statusCode' => $row['status'],
             'type' => html_entity_decode($row['type']),
             'genres' => $genres,
@@ -1256,7 +1256,7 @@ function updateApiCache() // DONE
         while ($xrow = $tmp->fetch()) {
 
             $data = json_decode($xrow['info'], true);
-            $link = "/public/torrent/download.php?id={$row['id']}";
+            $link = "/public/torrent/download.php?id={$xrow['fid']}";
 
             $torrent[$row['id']][] = [
                 'id' => $xrow['fid'],
