@@ -1212,7 +1212,7 @@ function updateApiCache() // DONE
             'series' => $series,
             'poster' => $poster,
             'rating' => $row['rating'],
-            'last' => $row['last'],
+            'last' => (int)$row['last'],
             'moon' => $moon,
             'announce' => $announce,
             'status' => html_entity_decode($var['status'][$row['status']] ?? null),
@@ -1220,7 +1220,7 @@ function updateApiCache() // DONE
             'type' => html_entity_decode($row['type']),
             'genres' => $genres,
             'voices' => $voices,
-            'year' => $row['year'],
+            'year' => (int)$row['year'],
             'season' => html_entity_decode($row['season']),
             'day' => $row['day'],
             'description' => $row['description'],
@@ -1329,10 +1329,9 @@ function getApiPlaylist($id) // DONE
             'srcHd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
         ];
 
-        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/%s', $server['url'], $episode['hls_480']);
-        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/%s', $server['url'], $episode['hls_720']);
-        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/%s', $server['url'], $episode['hls_1080']);
-
+        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
+        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
+        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
 
         $playlist[] = $item;
     }
