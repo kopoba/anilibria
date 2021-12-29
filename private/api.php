@@ -1151,7 +1151,6 @@ function updateApiCache() // DONE
         }
 
 
-
         if (!empty($episodesIds)) {
             $minId = min($episodesIds);
             $maxId = max($episodesIds);
@@ -1327,7 +1326,7 @@ function getApiPlaylist($id) // DONE
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'srcSd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
-            'poster' => $episode['preview_original'],
+            'poster' => implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]),
         ];
 
         if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
