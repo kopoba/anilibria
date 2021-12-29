@@ -2265,6 +2265,7 @@ function getReleaseVideo($id) // DONE
             'id' => "s{$episode['ordinal']}",
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'file' => implode(',', $qualities),
+            'poster' => $episode['preview_original'],
             'download' => null,
         ];
     }
