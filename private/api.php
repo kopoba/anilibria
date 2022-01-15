@@ -1210,18 +1210,18 @@ function updateApiCache() // DONE
             'names' => $names,
             'series' => $series,
             'poster' => $poster,
-            'rating' => $row['rating'],
-            'last' => (int)$row['last'],
+            'rating' => (int)$row['rating'],
+            'last' => (string)$row['last'],
             'moon' => $moon,
             'announce' => $announce,
             'status' => html_entity_decode($var['status'][$row['status']] ?? null),
-            'statusCode' => $row['status'],
+            'statusCode' => (string)$row['status'],
             'type' => html_entity_decode($row['type']),
             'genres' => $genres,
             'voices' => $voices,
-            'year' => (int)$row['year'],
+            'year' => (string)$row['year'],
             'season' => html_entity_decode($row['season']),
-            'day' => $row['day'],
+            'day' => (string)$row['day'],
             'description' => $row['description'],
             //Для блокировки релизов
             'blockedInfo' => [
@@ -1249,7 +1249,8 @@ function updateApiCache() // DONE
             ORDER BY t.`created_at` ASC
         ');
 
-        $tmp->bindParam(':rid', $row['id']);
+        $rowId = $row['id'];
+        $tmp->bindParam(':rid', $rowId);
         $tmp->execute();
 
         while ($xrow = $tmp->fetch()) {
@@ -1258,7 +1259,7 @@ function updateApiCache() // DONE
             $link = "/public/torrent/download.php?id={$xrow['fid']}";
 
             $torrent[$row['id']][] = [
-                'id' => $xrow['fid'],
+                'id' => (int)$xrow['fid'],
                 'hash' => $xrow['info_hash'],
                 'leechers' => intval($xrow['leechers']),
                 'seeders' => intval($xrow['seeders']),
@@ -1326,12 +1327,19 @@ function getApiPlaylist($id) // DONE
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'srcSd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https:\/\/vk.com\/anilibria?w=wall-37468416_493445',
-            'poster' => implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]),
+            'poster' => $episode['preview_original']
+                ? implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']])
+                : null,
         ];
 
-        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
-        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
-        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
+        //if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
+        //if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
+        //if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
+
+        // TEMP FIX
+        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/%s', $server['url'], $episode['hls_480']);
+        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/%s', $server['url'], $episode['hls_720']);
+        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/%s', $server['url'], $episode['hls_1080']);
 
         $playlist[] = $item;
     }
@@ -1395,7 +1403,7 @@ function getApiPlaylist($id) // DONE
 function _transformTorrentData($torrent) // DONE
 {
     return [
-        'id' => $torrent['id'],
+        'id' => (int)$torrent['id'],
         'hash' => $torrent['hash'] ?? null,
         'leechers' => (int)($torrent['leechers'] ?? 0),
         'seeders' => (int)($torrent['seeders'] ?? 0),

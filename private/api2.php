@@ -41,7 +41,9 @@ $router->map('GET', '/getTitleByTorrentID/[:torrentId]', function ($torrentId) {
     $query->bindParam('torrentId', $torrentId);
     $query->execute();
 
-    return $query->fetch(PDO::FETCH_ASSOC);
+    $torrent = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $torrent ? ['rid' => (int)$torrent['rid']] : null;
 
 });
 
@@ -52,7 +54,7 @@ $router->map('GET', '/IsReleaseExists/[:releaseId]', function ($releaseId) {
 
     return [
         'is_exists' => is_null($release) === false,
-        'releases_id' => $releaseId,
+        'releases_id' => $releaseId ? (int)$releaseId : null,
     ];
 });
 
@@ -76,7 +78,17 @@ $router->map('GET', '/getTitlesByLastUpdate/[i:limit]', function ($limit) {
     );
 
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $releases = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($releases as $index => $release) {
+        $releases[$index] = [
+            'id' => (int)$release['id'],
+            'last' => (int)$release['last'],
+            'status' => (int)$release['status']
+        ];
+    }
+
+    return $releases;
 
 });
 
@@ -100,7 +112,18 @@ $router->map('GET', '/getTitlesByLastChange/[i:limit]', function ($limit) {
     );
 
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $releases = $query->fetchAll(PDO::FETCH_ASSOC);
+
+
+    foreach ($releases as $index => $release) {
+        $releases[$index] = [
+            'id' => (int)$release['id'],
+            'status' => (int)$release['status'],
+            'last_change' => (int)$release['last_change'],
+        ];
+    }
+
+    return $releases;
 
 });
 
@@ -129,7 +152,21 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     $query->bindParam('releaseId', $releaseId);
     $query->execute();
 
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $torrents = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($torrents as $index => $torrent) {
+        $torrents[$index] = array_merge($torrent, [
+            'fid' => (int)$torrent['fid'],
+            'seeders' => (int)$torrent['seeders'],
+            'leechers' => (int)$torrent['leechers'],
+            'completed' => (int)$torrent['completed'],
+            'flags' => (int)$torrent['flags'],
+            'mtime' => (int)$torrent['mtime'],
+            'ctime' => (int)$torrent['ctime'],
+        ]);
+    }
+
+    return $torrents;
 
 });
 
@@ -156,7 +193,18 @@ $router->map('GET', '/getYouTube/[i:limit]', function ($limit) {
         LIMIT ' . $limit);
 
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $youtube = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($youtube as $index => $video) {
+        $youtube[$index] = array_merge($video, [
+            'id' => (int)$video['id'],
+            'time' => (int)$video['time'],
+            'view' => (int)$video['view'],
+            'comment' => (int)$video['comment'],
+        ]);
+    }
+
+    return $youtube;
 
 });
 
@@ -165,7 +213,17 @@ $router->map('GET', '/getGenres', function () {
     global $db;
     $query = $db->prepare('SELECT `id`, `name`, 0 as `rating` FROM `genres` ORDER BY `name`');
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $genres = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($genres as $index => $genre) {
+        $genres[$index] = array_merge($genre, [
+            'id' => (int)$genre['id'],
+            'rating' => (int)$genre['rating']
+        ]);
+    }
+
+    return $genres;
+
 });
 
 // getYears
@@ -173,7 +231,16 @@ $router->map('GET', '/getYears', function () {
     global $db;
     $query = $db->prepare('SELECT `year` FROM `releases` WHERE `year` > 0 AND `is_hidden` = 0 AND `deleted_at` IS NULL GROUP BY `year`');
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $years = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($years as $index => $year) {
+        $years[$index] = array_merge($year, [
+            'year' => (int)$year['year']
+        ]);
+    }
+
+    return $years;
+
 });
 
 // getSchedule
@@ -188,7 +255,17 @@ $router->map('GET', '/getSchedule/[:day]', function ($day) {
     ');
     $query->bindParam('day', $day);
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $releases = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($releases as $index => $release) {
+        $releases[$index] = array_merge($release, [
+            'id' => (int)$release['id'],
+            'status' => (int)$release['status']
+        ]);
+    }
+
+    return $releases;
+
 });
 
 // getTorrentSeedStats
@@ -212,7 +289,17 @@ $router->map('GET', '/getTorrentSeedStats/[i:limit]', function ($limit) {
     );
 
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $torrents = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($torrents as $index => $torrent) {
+        $torrents[$index] = array_merge($torrent, [
+            'uploaded' => (int)$torrent['uploaded'],
+            'downloaded' => (int)$torrent['downloaded'],
+        ]);
+    }
+
+    return $torrents;
+
 });
 
 // getUserIdBySession
@@ -221,7 +308,10 @@ $router->map('GET', '/getUserIdBySession/[:sessionId]', function ($sessionId) {
     $query = $db->prepare('SELECT `users_id` as `uid` FROM `users_sessions` WHERE `id` = :sessionId');
     $query->bindParam('sessionId', $sessionId);
     $query->execute();
-    return $query->fetch(PDO::FETCH_ASSOC);
+    $session = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $session ? ['uid' => (int)$session['uid']] : null;
+
 });
 
 // getUserFavorites
@@ -230,7 +320,15 @@ $router->map('GET', '/getUserFavorites/[:userId]', function ($userId) {
     $query = $db->prepare('SELECT `releases_id` as `rid` FROM `users_favorites` WHERE `users_id` = :userId');
     $query->bindParam('userId', $userId);
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $favorites = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($favorites as $index => $favorite) {
+        $favorites[$index] = array_merge($favorite, [
+            'rid' => (int)$favorite['rid']
+        ]);
+    }
+
+    return $favorites ?? [];
 });
 
 // addUserFavorite
@@ -252,14 +350,22 @@ $router->map('GET', '/buildSearchCache', function () {
     global $db;
     $query = $db->prepare('SELECT `id`, `name`, `name_english` as ename, `name_alternative` as aname, `description` FROM `releases` WHERE `is_hidden` = 0 AND `deleted_at` IS NULL');
     $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
+    $releases = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($releases as $index => $release) {
+        $releases[$index] = array_merge($release, [
+           'id' => (int)$release['id'],
+        ]);
+    }
+
+    return $releases;
 });
 
 
 $match = $router->match();
 $response = is_array($match) && is_callable($match['target']) ? call_user_func_array($match['target'], $match['params']) : null;
 
-if (empty($response)) header($_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
-if (empty($response) === false) echo json_encode($response);
+if (empty($response) && !is_array($response)) header($_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
+if (empty($response) === false || is_array($response)) echo json_encode($response);
 
 

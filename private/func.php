@@ -2256,9 +2256,14 @@ function getReleaseVideo($id) // DONE
         $server = $servers[array_rand($servers, 1)];
         $qualities = [];
 
-        if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
+        /*if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
         if (empty($episode['hls_720']) === false) $qualities[] = sprintf('[720p]%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
-        if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
+        if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);*/
+
+        // TEMP FIX
+        if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/%s', $server['url'], $episode['hls_1080']);
+        if (empty($episode['hls_720']) === false) $qualities[] = sprintf('[720p]%s/%s', $server['url'], $episode['hls_720']);
+        if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/%s', $server['url'], $episode['hls_480']);
 
 
         $playlist[] = [
@@ -2855,7 +2860,7 @@ function releaseSeriesByID($id) // DONE
     $query->execute();
     $seriesOrdinals = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    $seriesOrdinals = array_map(function(array $episode) {
+    $seriesOrdinals = array_map(function (array $episode) {
         return (float)$episode['ordinal'] ?? 0;
     }, $seriesOrdinals);
 
@@ -3928,10 +3933,29 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
     $query = $db->prepare($sql);
     $query->execute($hasReleasesFilter ? $releasesId : null);
 
+    $isSingleRelease = count($releasesId ?? []) === 1;
+
     // Can fetch all/multiple/single release
-    return count($releasesId ?? []) === 1
-        ? $query->fetch(PDO::FETCH_ASSOC)
+    $releases = $isSingleRelease
+        ? [$query->fetch(PDO::FETCH_ASSOC)]
         : $query->fetchAll(PDO::FETCH_ASSOC);
+
+
+    foreach ($releases as $index => $release) {
+        $releases[$index] = array_merge($release, [
+            'id' => (int)$release['id'],
+            'day' => (int)$release['day'],
+            'year' => (int)$release['year'],
+            'last' => (int)$release['last'],
+            'status' => (int)$release['status'],
+            'rating' => (int)$release['rating'],
+            'bakanim' => (int)$release['bakanim'],
+            'last_change' => (int)$release['last_change'],
+            'has_episodes' => (int)$release['has_episodes'],
+        ]);
+    }
+
+    return $isSingleRelease ? $releases[0] : $releases;
 
 }
 
