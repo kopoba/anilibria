@@ -2970,6 +2970,9 @@ function showCatalog() // DONE
 
     function bSearch($db, $page, $sort) // DONE
     {
+
+        global $var;
+
         if (empty($_POST['search'])) {
             return false;
         }
@@ -3006,6 +3009,11 @@ function showCatalog() // DONE
 
         // Seasons
         if (count($seasons) > 0) {
+
+            foreach ($seasons as $key => $season) {
+                $seasons[$key] = array_search($season, $var['season']);
+            }
+
             $sql = str_replace('{seasons}', " r.season IN (" . str_repeat('?, ', count($seasons) - 1) . '?' . ") AND ", $sql);
             $arguments = array_merge($arguments, $seasons);
         }

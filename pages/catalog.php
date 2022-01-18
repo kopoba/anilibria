@@ -119,10 +119,10 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		
 		<div style="margin-bottom: 25px; margin-left: 10px; width: 180px; float: left;">
 			<select id="catalogSeason" class="form-control chosen" data-placeholder="Сезон" name="tags[]" multiple style="">
-				<option value="winter">Зима</option>
-				<option value="spring">Весна</option>
-				<option value="summer">Лето</option>
-				<option value="autumn">Осень</option>
+                <option value="зима">Зима</option>
+                <option value="весна">Весна</option>
+                <option value="лето">Лето</option>
+                <option value="осень">Осень</option>
 			</select>
 		</div>
 		
