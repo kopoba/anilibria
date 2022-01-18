@@ -1337,14 +1337,9 @@ function getApiPlaylist($id) // DONE
                 : null,
         ];
 
-        //if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
-        //if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
-        //if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
-
-        // TEMP FIX
-        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/%s', $server['url'], $episode['hls_480']);
-        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/%s', $server['url'], $episode['hls_720']);
-        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/%s', $server['url'], $episode['hls_1080']);
+        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
+        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
+        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
 
         $playlist[] = $item;
     }
