@@ -6,7 +6,7 @@ require('/var/www/html/private/init/var.php');
 require('/var/www/html/private/func.php');
 
 // Get updated releases in last 2 minutes
-$releases = _getLatestUpdatesReleases(60);
+$releases = _getLatestUpdatedReleases(60);
 
 // Make hook
 foreach ($releases as $key => $release) {

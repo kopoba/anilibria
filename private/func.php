@@ -707,21 +707,24 @@ function auth() // DONE
         $session = $query->fetch();
         $query = $db->prepare('
             SELECT 
-                `id`, 
-                `login`, 
-                `vk_id` AS `vk`, 
-                `avatar_original` AS `avatar`,
-                `password` AS `passwd`,
-                `email` AS `mail`,
+                u.`id`, 
+                u.`login`, 
+                u.`vk_id` AS `vk`, 
+                u.`avatar_original` AS `avatar`,
+                u.`password` AS `passwd`,
+                u.`email` AS `mail`,
                 NULL AS `2fa`, 
                 1 AS `access`, 
-                UNIX_TIMESTAMP(`created_at`) AS `register_date`, 
+                UNIX_TIMESTAMP(u.`created_at`) AS `register_date`, 
                 NULL AS `last_activity`,
                 NULL AS `user_values`, 
-                `show_ads` AS `ads` 
+                u.`show_ads` AS `ads`,
+                IF(COUNT(ur.`roles_id`) > 0, 1, IF(u.`is_admin` = 1, 1, 0)) AS `has_roles`
     
-            FROM `users` 
-            WHERE `id` = :id
+            FROM `users` as u
+            left join `users_roles` AS ur ON ur.users_id = u.id
+            WHERE u.`id` = :id
+            GROUP BY u.id
         ');
         $query->bindParam(':id', $session['uid']);
 
@@ -746,7 +749,9 @@ function auth() // DONE
         $query->execute();
         // }
 
-        $user = ['id' => $row['id'],
+
+        $user = [
+            'id' => $row['id'],
             'login' => $row['login'],
             'vk' => $row['vk'],
             'avatar' => $row['avatar'],
@@ -759,7 +764,8 @@ function auth() // DONE
             'dir' => substr(md5($row['id']), 0, 2),
             'ads' => $row['ads'],
             'downloaded' => 0,
-            'uploaded' => 0
+            'uploaded' => 0,
+            'has_roles' => (int)$row['has_roles'] === 1
         ];
         $user['user_values'] = [];
         if (!empty($row['user_values'])) {
@@ -1657,9 +1663,9 @@ function showRelease() // DONE
         $var['release']['block'] = isBlock($release['block']);
     }
 
-    if ((!$user || $user['access'] == 1) && $release['status'] == 3) {
-        return release404();
-    }
+    //if ((!$user || $user['access'] == 1) && $release['status'] == 3) {
+    //    return release404();
+    //}
 
 
     $var['title'] = "{$release['name']} / {$release['ename']}";
@@ -1834,14 +1840,18 @@ function showRelease() // DONE
            tf.`leechers`, 
            t.`completed_times` as `completed` 
         FROM `torrents` as t
-        INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
+        INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
         INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
         WHERE t.`releases_id` = :id AND t.`deleted_at` IS NULL
         GROUP BY t.id
         ORDER BY t.`created_at` ASC
     ');
 
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
     $query->bindParam(':id', $release['id']);
+    $query->bindParam(':userHasRoles', $userHasRoles);
+
     $query->execute();
     if ($query->rowCount() == 0) {
         $page = str_replace('{torrent}', '', $page);
@@ -2666,7 +2676,7 @@ function fileTime($file) // DONE
 
 function xSearch() // DONE
 {
-    global $db;
+    global $db, $user;
 
     $search = trim($_POST['search'] ?? '');
 
@@ -2680,11 +2690,15 @@ function xSearch() // DONE
                 name_english LIKE CONCAT('%', :search, '%') or
                 name_alternative LIKE CONCAT('%', :search, '%')
             ) 
-            AND `deleted_at` IS NULL AND `is_hidden` = 0
+            AND `deleted_at` IS NULL AND (`is_hidden` = 0 OR :userHasRoles)
         LIMIT 12
     ");
 
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
     $query->bindValue('search', $search);
+    $query->bindParam('userHasRoles', $userHasRoles);
+
     $query->execute();
 
     $json = [];
@@ -2832,17 +2846,25 @@ function getGenreList() // DONE
 
 function releaseCodeByID($id) // DONE
 {
-    global $db;
-    $query = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 AND `deleted_at` IS NULL');
+    global $db, $user;
+
+
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
+    $query = $db->prepare('SELECT `alias` AS `code` FROM `releases` WHERE `id` = :id AND (`is_hidden` = 0 OR :userHasRoles) AND `deleted_at` IS NULL');
+
     $query->bindParam(':id', $id);
+    $query->bindParam(':userHasRoles', $userHasRoles);
+
     $query->execute();
+
     return $query->fetch()['code'];
 }
 
 function releaseSeriesByID($id) // DONE
 {
 
-    global $db;
+    global $db, $user;
 
     $query = $db->prepare('SELECT `description` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `fresh_at` DESC');
     $query->bindParam(':id', $id);
@@ -2854,11 +2876,17 @@ function releaseSeriesByID($id) // DONE
         SELECT re.`ordinal` 
         FROM `releases_episodes` as re
         INNER JOIN `releases` as r on r.`id` = re.`releases_id`
-        WHERE r.`id` = :id AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL AND  re.`is_visible` = 1 and re.`deleted_at` IS NULL 
+        WHERE r.`id` = :id AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL AND  re.`is_visible` = 1 and re.`deleted_at` IS NULL 
     ');
+
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
     $query->bindParam(':id', $id);
+    $query->bindParam(':userHasRoles', $userHasRoles);
+
     $query->execute();
     $seriesOrdinals = $query->fetchAll(PDO::FETCH_ASSOC);
+
 
     $seriesOrdinals = array_map(function (array $episode) {
         return (float)$episode['ordinal'] ?? 0;
@@ -2872,9 +2900,15 @@ function releaseSeriesByID($id) // DONE
 
 function releaseDescriptionByID($id, $SymCount) // DONE
 {
-    global $db;
-    $query = $db->prepare('SELECT `description` FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 AND `deleted_at` IS NULL');
+    global $db, $user;
+
+    $query = $db->prepare('SELECT `description` FROM `releases` WHERE `id` = :id AND (`is_hidden` = 0 OR :userHasRoles) AND `deleted_at` IS NULL');
+
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
     $query->bindParam(':id', $id);
+    $query->bindParam(':userHasRoles', $userHasRoles);
+
     $query->execute();
     $row = $query->fetch();
     $shortdescription = mb_strimwidth($row['description'], 0, $SymCount, "...");
@@ -3200,7 +3234,9 @@ function showSchedule() // DONE
     $tmpl1 = '<div class="day">{day}</div>';
     $descTPL = '<div class="schedule-anime-desc"><span class="schedule-runame">{runame}</span><span class="schedule-series">Серия: {series}</span><span class="schedule-description">{description}</span></div>';
     $tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">' . $descTPL . '<img width="200" height="280" src="{img}" alt="{alt}"}></a></td>';
+
     foreach ($var['day'] as $key => $val) {
+
         $query = $db->prepare('
             SELECT 
                `id`, 
@@ -3208,22 +3244,33 @@ function showSchedule() // DONE
                `name_english` AS `ename`, 
                IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium` 
             FROM `releases` 
-            WHERE `publish_day` = :day AND `is_ongoing` = 1 
-              AND `is_hidden` = 0 AND `deleted_at` IS NULL
+            WHERE `publish_day` = :day AND `is_ongoing` = 1 AND `is_hidden` = 0 AND `deleted_at` IS NULL
         ');
+
         $query->bindParam(':day', $key);
         $query->execute();
+
         while ($row = $query->fetch()) {
 
-            // $poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
-            // $poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
-
+            //$poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
+            //$poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
 
             $img = $row['poster_medium'];
 
             $arr["$key"][$i][] = [
-                str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, str_replace('{runame}', "{$row['name']}", str_replace('{series}', releaseSeriesByID($row['id']), str_replace('{description}', releaseDescriptionByID($row['id'], 99), $tmpl2))))))
+                str_replace('{alt}', "{$row['name']} / {$row['ename']}",
+                    str_replace('{id}', releaseCodeByID($row['id']),
+                        str_replace('{img}', $img,
+                            str_replace('{runame}', "{$row['name']}",
+                                str_replace('{series}', releaseSeriesByID($row['id']),
+                                    str_replace('{description}', releaseDescriptionByID($row['id'], 99), $tmpl2)
+                                )
+                            )
+                        )
+                    )
+                )
             ];
+
             if (count($arr["$key"][$i]) == 4) {
                 $i++;
             }
@@ -3815,9 +3862,15 @@ function getTelegramActionLink($platform, $action, $payload) // DONE
 
 function _getReleaseById($releaseId) // DONE
 {
-    global $db;
-    $query = $db->prepare('SELECT * FROM `releases` WHERE `id` = :id AND `is_hidden` = 0 AND `deleted_at` IS NULL');
+    global $db, $user;
+
+    $query = $db->prepare('SELECT * FROM `releases` WHERE `id` = :id AND (`is_hidden` = 0 OR :userHasRoles) AND `deleted_at` IS NULL');
+
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
     $query->bindParam(':id', $releaseId);
+    $query->bindParam(':userHasRoles', $userHasRoles);
+
     $query->execute();
 
     return $query->fetch();
@@ -3843,7 +3896,7 @@ function _getHostname(): string // DONE
         : '';
 }
 
-function _getLatestUpdatesReleases(int $secondsOffset = 0): array
+function _getLatestUpdatedReleases(int $secondsOffset = 0): array
 {
     global $db;
     $query = $db->prepare('SELECT id FROM `releases` WHERE `fresh_at` >= DATE_SUB(NOW(), INTERVAL :seconds SECOND) AND `is_hidden` = 0 AND `deleted_at` IS NULL');
@@ -3864,7 +3917,7 @@ function _getLatestUpdatesReleases(int $secondsOffset = 0): array
  */
 function _getFullReleasesDataInLegacyStructure($releasesId = null): array
 {
-    global $db, $conf;
+    global $db, $conf, $user;
 
     $sql = '
         SELECT 
@@ -3913,7 +3966,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         -- Episodes
         LEFT JOIN `releases_episodes` AS re ON re.`releases_id` = r.`id` AND re.`deleted_at` IS NULL and re.`is_visible` = 1
         
-        WHERE r.`is_hidden` = 0 AND r.`deleted_at` IS NULL :releasesPlaceholders
+        WHERE (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL :releasesPlaceholders
         
         GROUP BY r.`id`
         ORDER BY r.`fresh_at` DESC
@@ -3928,6 +3981,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         : '';
 
     // Replace releasesPlaceholders with part of sql query (or empty)
+    $sql = str_replace(':userHasRoles', $user && $user['has_roles'] === true ? 1 : 0, $sql);
     $sql = str_replace(':releasesPlaceholders', $releasesPlaceholders, $sql);
 
     $query = $db->prepare($sql);
@@ -3939,7 +3993,6 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
     $releases = $isSingleRelease
         ? [$query->fetch(PDO::FETCH_ASSOC)]
         : $query->fetchAll(PDO::FETCH_ASSOC);
-
 
     foreach ($releases as $index => $release) {
         $releases[$index] = array_merge($release, [
@@ -3969,12 +4022,16 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
  */
 function _getReleaseByColumn(string $column, $value = null): ?array
 {
-    global $db;
+    global $db, $user;
 
-    $sql = 'SELECT `id` FROM `releases` WHERE `%s` = :value AND `is_hidden` = 0 AND `deleted_at` IS NULL';
+    $sql = 'SELECT `id` FROM `releases` WHERE `%s` = :value AND (`is_hidden` = 0 OR :userHasRoles) AND `deleted_at` IS NULL';
+
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
 
     $query = $db->prepare(sprintf($sql, $column));
     $query->bindParam('value', $value);
+    $query->bindParam('userHasRoles', $userHasRoles);
+
     $query->execute();
     $release = $query->fetch(PDO::FETCH_ASSOC);
 
