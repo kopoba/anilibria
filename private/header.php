@@ -90,7 +90,7 @@ $xcss = headerAds();
 		   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
 		   (window, document, "script", "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/tag.js", "ym");
 
-		   ym('<?php global $conf;  echo $conf['yandex_metrika_id']; ?>', "init", {
+		   ym(<?php global $conf;  echo $conf['yandex_metrika_id']; ?>, "init", {
 				clickmap:true,
 				trackLinks:true,
 				accurateTrackBounce:true
