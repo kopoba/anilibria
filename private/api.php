@@ -1280,8 +1280,8 @@ function updateApiCache() // DONE
 
 
     $chunk = array_chunk($info, 100, true);
-    saveNormalCache($chunk, $torrent);
-    saveInfiniteCache($chunk, $torrent);
+    saveNormalCache($chunk, $torrent ?? []);
+    saveInfiniteCache($chunk, $torrent ?? []);
 }
 
 function saveNormalCache($chunk, $torrent) // DONE
@@ -1315,7 +1315,7 @@ function getApiPlaylist($id) // DONE
             from `releases_episodes` as re 
             inner join `releases` as r on re.releases_id = r.id
             where re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL AND r.`is_hidden` = 0  AND r.`deleted_at` IS NULL
-            ORDER BY re.`sort_order`
+            ORDER BY re.`sort_order` DESC
         ');
 
     $query->bindValue(':id', $id);
