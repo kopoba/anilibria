@@ -51,17 +51,20 @@ $router->map('GET', '/getTitleEpisodesById/[:releaseId]', function ($releaseId) 
     $response['series']['string'] = $firstEpisode && $lastEpisode ? sprintf('%s-%s', $firstEpisode['ordinal'] ?? 0, $lastEpisode['ordinal'] ?? 0) : null;
 
     foreach ($releaseEpisodes as $episode) {
+
+        $url480 = parse_url($episode['sd']);
+        $url720 = parse_url($episode['hd']);
+        $url1080 = parse_url($episode['fullhd']);
+
         $response['playlist'][] = [
             'id' => $episode['id'],
-            '480' => $episode['sd'] ? sprintf('/ts/%s', (explode('/ts/', $episode['sd']))[1]) : null,
-            '720' => $episode['hd'] ? sprintf('/ts/%s', (explode('/ts/', $episode['hd']))[1]) : null,
-            '1080' => $episode['fullhd'] ? sprintf('/ts/%s', (explode('/ts/', $episode['fullhd']))[1]) : null,
-            'mp4' => null,
+            '480' => $episode['sd'] ? $url480['path'] ?? null : null,
+            '720' => $episode['hd'] ? $url720['path'] ?? null : null,
+            '1080' => $episode['fullhd'] ? $url1080['path'] ?? null : null,
             'poster' => $episode['poster'] ?? null,
             'created_time' => $episode['updated_at'] ?? null,
         ];
     }
-
 
     return $response;
 
