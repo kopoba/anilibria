@@ -91,6 +91,7 @@ function _exit() // DONE
 {
     global $db, $var;
 
+
     $redirectURL = $_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? null;
 
     /*if (session_status() != PHP_SESSION_NONE) {
@@ -111,9 +112,9 @@ function _exit() // DONE
 
     setcookie('PHPSESSID', null, time() - 42000, '/', null, false, true);
 
-    if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
-        header("Location: //" . $redirectURL);
-    }
+    //if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
+        //header("Location: //" . $redirectURL);
+   // }
 
 }
 
