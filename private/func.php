@@ -3594,8 +3594,8 @@ function showAscReleases() // DONE
 
     $descTPL = '<div class="schedule-anime-desc"><span class="schedule-runame">{runame}</span><span class="schedule-series">Серия: {series}</span><span class="schedule-description">{description}</span></div>';
     $tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">' . $descTPL . '<img width="200" height="280" data-src="{img}" alt="{alt}" class="lazy"></a></td>';
-    $result = $cache->get('showAscReleases');
-    if ($result === false) {
+   // $result = $cache->get('showAscReleases');
+   // if ($result === false) {
         $query = $db->query('
             SELECT 
                `id`,
@@ -3657,8 +3657,10 @@ function showAscReleases() // DONE
                 $result .= '</tbody></table>';
             }
         }
-        $cache->set('showAscReleases', $result, 86400);
-    }
+
+     //   $cache->set('showAscReleases', $result, 86400);
+   // }
+
     return $result;
 }
 
