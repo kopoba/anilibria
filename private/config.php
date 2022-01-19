@@ -58,3 +58,8 @@ $conf['users_avatars_host'] = getenv('USERS_AVATARS_HOST') ?? '/';
 $conf['release_poster_host'] = getenv('RELEASE_POSTER_HOST') ?? '/';
 $conf['youtube_poster_host'] = getenv('YOUTUBE_POSTER_HOST') ?? '/';
 $conf['release_episode_poster_host'] = getenv('RELEASE_EPISODE_POSTER_HOST') ?? '/';
+
+
+// Analytics
+$conf['yandex_metrika_id'] = getenv('YANDEX_METRIKA_ID') ?? '';
+$conf['google_analytics_id'] = getenv('GOOGLE_ANALYTICS_ID') ?? '';

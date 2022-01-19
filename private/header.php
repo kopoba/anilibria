@@ -31,10 +31,10 @@ function headerAds(){
 			$cache->set('adsCurrent', $key, 3600);
 			$cache->set('adsCurrentHour', $cHour, 3600);
 		}
-		
+
 		//$key = 0;
 		$ads = $data["$key"];
-		
+
 		//$img = '/img/other/a/'.$ads['img'];
 		$img = urlCDN('/img/other/a/'.$ads['img']);
 		/*if($key == 0 || $key == 3) {
@@ -46,7 +46,7 @@ function headerAds(){
 		$width = $ads['width'];
 		$result['url'] = $ads['url'];
 		$result['ads'] = true;
-		
+
 	} /*else {
 		//Удалить когда голосование закончится
 		$img = urlCDN('/img/season/autumn2020.png');
@@ -58,14 +58,14 @@ function headerAds(){
 		$result['ads'] = true;
 		//------------------------------------
 	}*/
-	
+
 	$css = getTemplate('header');
 	$css = str_replace('{img}', $img, $css);
 	if(isset($left)) { $css = str_replace('{left}', $left, $css); }
 	if(isset($top)) { $css = str_replace('{top}', $top, $css); }
 	if(isset($height)) { $css = str_replace('{height}', $height, $css); }
 	if(isset($width)) { $css = str_replace('{width}', $width, $css); }
-	
+
 	$result['css'] = $css;
 	return $result;
 }
@@ -82,7 +82,7 @@ $xcss = headerAds();
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
-		  gtag('config', '');
+		  gtag('config', '<?php global $conf; echo $conf['google_analytics_id']; ?>');
 		</script>
 		<!-- Yandex.Metrika counter -->
 		<script type="text/javascript" >
@@ -90,18 +90,18 @@ $xcss = headerAds();
 		   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
 		   (window, document, "script", "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/tag.js", "ym");
 
-		   ym(111, "init", {
+		   ym('<?php global $conf;  echo $conf['yandex_metrika_id']; ?>', "init", {
 				clickmap:true,
 				trackLinks:true,
 				accurateTrackBounce:true
 		   });
 		</script>
-		
+
 		<script async src="https://"></script>
 		<script type="text/javascript" src="https://"></script>
 		<script>window.yaContextCb = window.yaContextCb || []</script>
 		<script src="https://" async></script>
-		
+
 		<noscript><div><img src="https://" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 		<!-- /Yandex.Metrika counter -->
 		<?php echo $var['og']; ?>
