@@ -6,6 +6,7 @@ require '/var/www/html/private/config.php';
 require '/var/www/html/private/init/mysql.php';
 require '/var/www/html/private/init/var.php';
 require '/var/www/html/private/func.php';
+require '/var/www/html/private/api.php';
 
 $router = new AltoRouter();
 $router->setBasePath('/api2');
@@ -25,6 +26,12 @@ $router->map('GET', '/getTitleByID/[:releaseId]', function ($releaseId) {
 // getTitleByCode
 $router->map('GET', '/getTitleByCode/[:releaseAlias]', function ($releaseAlias) {
     return _getReleaseByColumn('alias', $releaseAlias);
+});
+
+
+// getTitleEpisodesById
+$router->map('GET', '/getTitleEpisodesById/[:releaseId]', function ($releaseId) {
+    return json_decode(getApiPlaylist($releaseId) ?? null);
 });
 
 // getTitleByTorrentID
@@ -354,7 +361,7 @@ $router->map('GET', '/buildSearchCache', function () {
 
     foreach ($releases as $index => $release) {
         $releases[$index] = array_merge($release, [
-           'id' => (int)$release['id'],
+            'id' => (int)$release['id'],
         ]);
     }
 

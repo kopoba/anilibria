@@ -113,8 +113,8 @@ function _exit() // DONE
     setcookie('PHPSESSID', null, time() - 42000, '/', null, false, true);
 
     //if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
-        //header("Location: //" . $redirectURL);
-   // }
+    //header("Location: //" . $redirectURL);
+    // }
 
 }
 
@@ -180,11 +180,13 @@ function vkAuth() // DONE
 {
     global $conf;
     $result = false;
+
     if (!empty($_GET ['code'])) {
+
         $data = [
             'client_id' => $conf['vk_id'],
             'client_secret' => $conf['vk_secret'],
-            'redirect_uri' => sprintf('%s/public/vk.php', _getHostname()),  //'https://www.anilibria.tv/public/vk.php',
+            'redirect_uri' => 'https://www.anilibria.tv/public/vk.php', //sprintf('%s/public/vk.php', _getHostname()),  //'https://www.anilibria.tv/public/vk.php',
             'code' => $_GET["code"]
         ];
 
@@ -199,6 +201,7 @@ function vkAuth() // DONE
             $result = $tmp['user_id'];
         }
     }
+
     return $result;
 }
 
@@ -207,7 +210,7 @@ function vkAuthLink() // DONE
     global $conf;
     $vkParams = [
         'client_id' => $conf['vk_id'],
-        'redirect_uri' => sprintf('%s/public/vk.php', _getHostname()),  //'https://www.anilibria.tv/public/vk.php',
+        'redirect_uri' => 'https://www.anilibria.tv/public/vk.php', //sprintf('%s/public/vk.php', _getHostname()),  //'https://www.anilibria.tv/public/vk.php',
     ];
     return 'https://oauth.vk.com/authorize?' . urldecode(http_build_query($vkParams));
 }
@@ -227,18 +230,26 @@ function getUserVK($id) // DONE
 function oAuthLogin() // DONE
 {
     global $db, $var, $user, $conf;
+
     if ($user) {
-        _message('authorized', 'error');
+
+        //_message('authorized', 'error');
+        die(header('Location: /'));
     }
+
     $id = vkAuth();
 
     if (!$id) {
         _message2('vk auth error', 'error');
     }
+
     $row = getUserVK($id);
+
     if (!$row) {
+
         $htime = $var['time'] + 60 * 60;
         $hash = createSecret($id . $htime);
+
         if (!$hash) {
             _message2('wrong', 'error');
         }
@@ -254,7 +265,7 @@ function oAuthLogin() // DONE
     startSession($row);
 
     if (strpos($var['user_agent'], 'mobileApp') === false) {
-        header("Location:" . _getHostname());
+        header("Location: /");
     }
 }
 
@@ -2246,11 +2257,23 @@ function wsInfoShow() // DONE
 
 function getReleaseVideo($id) // DONE
 {
-    global $conf, $var, $db;
+    global $conf, $var, $db, $user;
 
     // Episodes
-    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 AND `deleted_at` IS NULL ORDER BY `sort_order`');
+    $query = $db->prepare('
+        SELECT re.* 
+            from `releases_episodes` as re 
+            inner join `releases` as r on re.releases_id = r.id
+            where re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL 
+              AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
+            ORDER BY re.`sort_order`
+        ');
+
+    $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
+
     $query->bindValue(':id', $id);
+    $query->bindParam(':userHasRoles', $userHasRoles);
+
     $query->execute();
     $episodes = $query->fetchAll();
 
@@ -4042,5 +4065,11 @@ function _getReleaseByColumn(string $column, $value = null): ?array
     $hasRelease = isset($release['id']);
 
     return $hasRelease ? _getFullReleasesDataInLegacyStructure([$release['id']]) : null;
+
+}
+
+
+function _getReleaseEpisodesById()
+{
 
 }

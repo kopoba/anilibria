@@ -1310,7 +1310,14 @@ function getApiPlaylist($id) // DONE
     global $conf, $var, $db;
 
     // Episodes
-    $query = $db->prepare('SELECT * from `releases_episodes` where releases_id = :id and `is_visible` = 1 and `deleted_at` IS NULL ORDER BY `sort_order` DESC');
+    $query = $db->prepare('
+        SELECT re.* 
+            from `releases_episodes` as re 
+            inner join `releases` as r on re.releases_id = r.id
+            where re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL AND r.`is_hidden` = 0  AND r.`deleted_at` IS NULL
+            ORDER BY re.`sort_order`
+        ');
+
     $query->bindValue(':id', $id);
     $query->execute();
     $episodes = $query->fetchAll();

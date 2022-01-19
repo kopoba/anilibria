@@ -8,14 +8,15 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/func.php');
 require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 if($user){
-	die(header("Location: https://".$var['origin_url']));
+	die(header("Location: /"));
 }
 
 if(empty($_GET['id']) || empty($_GET['time']) || empty($_GET['hash'])){
-	die(header("Location: https://".$var['origin_url']."/pages/error/403.php"));
+	die(header("Location: /pages/error/403.php"));
 }
 
 $vktmp = json_encode(['id' => $_GET['id'], 'time' => $_GET['time'], 'hash' => $_GET['hash']]);
+
 $var['title'] = 'Регистрация аккаунта';
 $var['page'] = 'vk';
 
