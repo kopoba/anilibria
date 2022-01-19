@@ -360,7 +360,7 @@ $router->map('GET', '/getUserIdBySession/[:sessionId]', function ($sessionId) {
 // getUserFavorites
 $router->map('GET', '/getUserFavorites/[:userId]', function ($userId) {
     global $db;
-    $query = $db->prepare('SELECT `releases_id` as `rid` FROM `users_favorites` WHERE `users_id` = :userId');
+    $query = $db->prepare('SELECT `releases_id` as `rid` FROM `users_favorites` WHERE `users_id` = :userId ORDER BY `id` ASC');
     $query->bindParam('userId', $userId);
     $query->execute();
     $favorites = $query->fetchAll(PDO::FETCH_ASSOC);

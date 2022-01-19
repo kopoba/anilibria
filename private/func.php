@@ -2266,7 +2266,8 @@ function getReleaseVideo($id) // DONE
             inner join `releases` as r on re.releases_id = r.id
             where re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL 
               AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
-            ORDER BY re.`sort_order`
+        
+            ORDER BY re.`sort_order` DESC
         ');
 
     $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
@@ -2895,6 +2896,7 @@ function releaseSeriesByID($id) // DONE
         FROM `releases_episodes` as re
         INNER JOIN `releases` as r on r.`id` = re.`releases_id`
         WHERE r.`id` = :id AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL AND  re.`is_visible` = 1 and re.`deleted_at` IS NULL 
+        ORDER BY re.`ordinal` DESC
     ');
 
     $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
@@ -3906,7 +3908,7 @@ function _getReleaseEpisodes($releaseId) // DONE
 {
     global $db;
 
-    $query = $db->prepare('SELECT * from `releases_episodes` where `releases_id` = :id and `is_visible` = 1 and `deleted_at` IS NULL ORDER BY `sort_order`');
+    $query = $db->prepare('SELECT * from `releases_episodes` where `releases_id` = :id and `is_visible` = 1 and `deleted_at` IS NULL ORDER BY `sort_order` DESC');
     $query->bindValue(':id', $releaseId);
     $query->execute();
     return $query->fetchAll();

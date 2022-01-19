@@ -580,7 +580,7 @@ function apiList()
         global $db, $user;
         $favIds = [];
         if ($user) {
-            $query = $db->prepare('SELECT `releases_id` AS `rid` FROM `users_favorites` WHERE `users_id` = :uid');
+            $query = $db->prepare('SELECT `releases_id` AS `rid` FROM `users_favorites` WHERE `users_id` = :uid ORDER BY id ASC');
             $query->bindParam(':uid', $user['id']);
             $query->execute();
             while ($row = $query->fetch()) {
