@@ -377,7 +377,7 @@ $router->map('GET', '/getUserFavorites/[:userId]', function ($userId) {
 // addUserFavorite
 $router->map('GET', '/addUserFavorite/[:userId]/[:releaseId]', function ($userId, $releaseId) {
     global $db;
-    $query = $db->prepare('INSERT INTO `users_favorites`  (`id`, `users_id`, `releases_id`, `created_at`, `updated_at`) VALUES (UUID(), :userId, :releaseId, NOW(), NOW())');
+    $query = $db->prepare('INSERT INTO `users_favorites`  (`users_id`, `releases_id`, `created_at`, `updated_at`) VALUES (:userId, :releaseId, NOW(), NOW())');
     return $query->execute(['userId' => $userId, 'releaseId' => $releaseId]);
 });
 

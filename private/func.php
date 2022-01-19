@@ -3214,7 +3214,7 @@ function releaseFavorite() // DONE
         _message('empty', 'error');
     }
     if (!isFavorite($user['id'], $_POST['rid'])) {
-        $query = $db->prepare('INSERT INTO `users_favorites` (`id`, `users_id`, `releases_id`, `created_at`, `updated_at`) VALUES (UUID(), :uid, :rid, NOW(), NOW())');
+        $query = $db->prepare('INSERT INTO `users_favorites` (`users_id`, `releases_id`, `created_at`, `updated_at`) VALUES (:uid, :rid, NOW(), NOW())');
         $query->bindParam(':uid', $user['id']);
         $query->bindParam(':rid', $_POST['rid']);
         $query->execute();
