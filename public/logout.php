@@ -9,4 +9,5 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/auth.php');
 
 _exit();
 
-header("Location: " . ($_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? 'https://anilibria.tv'));
+header("Location: /");
+die();
