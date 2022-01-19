@@ -31,7 +31,40 @@ $router->map('GET', '/getTitleByCode/[:releaseAlias]', function ($releaseAlias) 
 
 // getTitleEpisodesById
 $router->map('GET', '/getTitleEpisodesById/[:releaseId]', function ($releaseId) {
-    return json_decode(getApiPlaylist($releaseId) ?? null);
+
+    $response = [
+        'series' => [],
+        'playlist' => [],
+    ];
+
+    $releaseEpisodes = json_decode(getApiPlaylist($releaseId) ?? [], true);
+
+    usort($releaseEpisodes, function ($a, $b) {
+        return $a['ordinal'] <=> $b['ordinal'];
+    });
+
+    $lastEpisode = $releaseEpisodes && $releaseEpisodes[count($releaseEpisodes) - 1] ? $releaseEpisodes[count($releaseEpisodes) - 1] : null;
+    $firstEpisode = $releaseEpisodes && $releaseEpisodes[0] ? $releaseEpisodes[0] : null;
+
+    $response['series']['first'] = $firstEpisode ? $firstEpisode['ordinal'] ?? null : null;
+    $response['series']['last'] = $lastEpisode ? $lastEpisode['ordinal'] ?? null : null;
+    $response['series']['string'] = $firstEpisode && $lastEpisode ? sprintf('%s-%s', $firstEpisode['ordinal'] ?? 0, $lastEpisode['ordinal'] ?? 0) : null;
+
+    foreach ($releaseEpisodes as $episode) {
+        $response['playlist'][] = [
+            'id' => $episode['id'],
+            '480' => $episode['sd'] ? sprintf('/ts/%s', (explode('/ts/', $episode['sd']))[1]) : null,
+            '720' => $episode['hd'] ? sprintf('/ts/%s', (explode('/ts/', $episode['hd']))[1]) : null,
+            '1080' => $episode['fullhd'] ? sprintf('/ts/%s', (explode('/ts/', $episode['fullhd']))[1]) : null,
+            'mp4' => null,
+            'poster' => $episode['poster'] ?? null,
+            'created_time' => $episode['updated_at'] ?? null,
+        ];
+    }
+
+
+    return $response;
+
 });
 
 // getTitleByTorrentID
