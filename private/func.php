@@ -111,6 +111,7 @@ function _exit() // DONE
 
     header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/;", false);
     header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/; domain=.anilibria.tv", false);
+    header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/; domain=.www.anilibria.tv", false);
 
     //if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
     //header("Location: //" . $redirectURL);
