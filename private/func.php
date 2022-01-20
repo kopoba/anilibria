@@ -61,10 +61,11 @@ function _mail($email, $subject, $message) // DONE
     }
 }
 
-function _message($key, $err = 'ok') // DONE
+function _message($key, $err = 'ok', array $payload = []) // DONE
 {
     global $var;
-    die(json_encode(['err' => $err, 'mes' => $var['error'][$key], 'key' => $key]));
+    $response = array_merge(['err' => $err, 'mes' => $var['error'][$key], 'key' => $key], $payload);
+    die(json_encode($response));
 }
 
 function _message2($mes) // DONE
@@ -472,8 +473,10 @@ function login() // DONE
     }
 
     enableCSRF();
-    startSession($row);
-    _message('success');
+
+    $hash = startSession($row);
+
+    _message('success', 'ok', ['sessionId' => $hash]);
 
 }
 
@@ -540,6 +543,7 @@ function startSession($row) // DONE
     header("Set-Cookie: PHPSESSID=" . $hash . "; expires=" . gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) . "; path=/;", false);
     header("Set-Cookie: PHPSESSID=" . $hash . "; expires=" . gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) . "; path=/; domain=.anilibria.tv;", false);
 
+    return $hash;
 }
 
 function moveErrPage($page = 403) // DONE
