@@ -794,8 +794,8 @@ function auth() // DONE
         $query->execute();
         if ($query->rowCount() == 1) {
             $row = $query->fetch();
-            $user['downloaded'] = formatBytes($row['downloaded']);
-            $user['uploaded'] = formatBytes($row['uploaded']);
+            $user['uploaded'] = sprintf('%s%s', $row['uploaded'] >= 0 ? '' : '-', formatBytes(abs($row['uploaded'])));
+            $user['downloaded'] = sprintf('%s%s', $row['downloaded'] >= 0 ? '' : '-', formatBytes(abs($row['downloaded'])));
         }
     }
 }
