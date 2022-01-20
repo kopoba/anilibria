@@ -1853,7 +1853,7 @@ function showRelease() // DONE
         SELECT 
            t.`id` AS `fid`,
            JSON_ARRAY(CONCAT_WS(\' \', t.`type`, t.`quality`, IF(t.`is_hevc` = 1, \'HEVC\', null)),t.`description`, tf.`size`) AS `info`,
-           UNIX_TIMESTAMP(t.`fresh_at`) AS `ctime`,
+           UNIX_TIMESTAMP(t.`updated_at`) AS `ctime`,
            tf.`seeders`,
            tf.`leechers`, 
            t.`completed_times` as `completed` 
@@ -2891,7 +2891,7 @@ function releaseSeriesByID($id) // DONE
 
     global $db, $user;
 
-    $query = $db->prepare('SELECT `description` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `fresh_at` DESC');
+    $query = $db->prepare('SELECT `description` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
@@ -2945,7 +2945,7 @@ function releaseDescriptionByID($id, $SymCount) // DONE
 function getTorrentDownloadLink($id) // DONE
 {
     global $db, $user;
-    $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `fresh_at` DESC LIMIT 1');
+    $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC LIMIT 1');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();

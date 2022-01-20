@@ -1241,7 +1241,7 @@ function updateApiCache() // DONE
         $tmp = $db->prepare('
             SELECT 
                t.`id` AS `fid`, 
-               UNIX_TIMESTAMP(t.`fresh_at`) AS `ctime`, 
+               UNIX_TIMESTAMP(t.`updated_at`) AS `ctime`, 
                tf.`hash` AS `info_hash`, 
                tf.`leechers`,
                tf.`seeders`, 
