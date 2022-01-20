@@ -537,8 +537,8 @@ function startSession($row) // DONE
     $query->bindParam(':info', $var['user_agent']);
     $query->execute();*/
 
-    header("Set-Cookie: PHPSESSID=". $hash . "; expires=". gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) ."; path=/;", false);
-    header("Set-Cookie: PHPSESSID=". $hash . "; expires=". gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) ."; path=/; domain=.anilibria.tv;", false);
+    header("Set-Cookie: PHPSESSID=" . $hash . "; expires=" . gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) . "; path=/;", false);
+    header("Set-Cookie: PHPSESSID=" . $hash . "; expires=" . gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) . "; path=/; domain=.anilibria.tv;", false);
 
 }
 
@@ -3596,9 +3596,9 @@ function showAscReleases() // DONE
 
     $descTPL = '<div class="schedule-anime-desc"><span class="schedule-runame">{runame}</span><span class="schedule-series">Серия: {series}</span><span class="schedule-description">{description}</span></div>';
     $tmpl2 = '<td class="goodcell"><a href="/release/{id}.html">' . $descTPL . '<img width="200" height="280" data-src="{img}" alt="{alt}" class="lazy"></a></td>';
-   // $result = $cache->get('showAscReleases');
-   // if ($result === false) {
-        $query = $db->query('
+    // $result = $cache->get('showAscReleases');
+    // if ($result === false) {
+    $query = $db->query('
             SELECT 
                `id`,
                `name`, `name_english` AS `ename`, 
@@ -3610,58 +3610,58 @@ function showAscReleases() // DONE
             WHERE `is_hidden` = 0 and `deleted_at` IS NULL
             ORDER BY `name` ASC
         ');
-        $query->bindParam(':day', $key);
-        $query->execute();
-        while ($row = $query->fetch()) {
+    $query->bindParam(':day', $key);
+    $query->execute();
+    while ($row = $query->fetch()) {
 
-            /*$img = empty($row['poster_medium'])
-                ? urlCDN('/upload/release/240x350/default.jpg')
-                : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);*/
+        /*$img = empty($row['poster_medium'])
+            ? urlCDN('/upload/release/240x350/default.jpg')
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);*/
 
-            $img = $row['poster_medium'];
+        $img = $row['poster_medium'];
 
-            //$poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
+        //$poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
 
 
-            //if (!file_exists($poster)) {
-            //     $img = urlCDN('/upload/release/200x280/default.jpg');
-            // } else {
-            //     $img = urlCDN(fileTime($poster));
-            // }
+        //if (!file_exists($poster)) {
+        //     $img = urlCDN('/upload/release/200x280/default.jpg');
+        // } else {
+        //     $img = urlCDN(fileTime($poster));
+        // }
 
-            $key = mb_strtoupper(mb_substr($row['name'], 0, 1, "utf-8"));
+        $key = mb_strtoupper(mb_substr($row['name'], 0, 1, "utf-8"));
 
-            if (!in_array($key, $chars)) {
-                $chars[$key] = $key;
-            }
-            $arr["$key"][$i][] = [
-                str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, str_replace('{runame}', "{$row['name']}", str_replace('{series}', releaseSeriesByID($row['id']), str_replace('{description}', releaseDescriptionByID($row['id'], 99), $tmpl2))))))
-            ];
-            if (count($arr["$key"][$i]) == 4) {
-                $i++;
-            }
+        if (!in_array($key, $chars)) {
+            $chars[$key] = $key;
         }
-        uksort($chars, "sortA");
-        uksort($arr, "sortA");
-        foreach ($chars as $val) {
-            $links .= "<a href=\"#$val\">$val</a>";
+        $arr["$key"][$i][] = [
+            str_replace('{alt}', "{$row['name']} / {$row['ename']}", str_replace('{id}', releaseCodeByID($row['id']), str_replace('{img}', $img, str_replace('{runame}', "{$row['name']}", str_replace('{series}', releaseSeriesByID($row['id']), str_replace('{description}', releaseDescriptionByID($row['id'], 99), $tmpl2))))))
+        ];
+        if (count($arr["$key"][$i]) == 4) {
+            $i++;
         }
-        $result .= "<div id=\"alphabet-characters\" style=\"margin-top: 5px\">$links</div>";
-        foreach ($arr as $key => $val) {
-            $result .= "<div class=\"day\"><span id=\"$key\">$key</span> <a class=\"alphabet-up\" href=\"#headercontent\" style=\"margin-top: 5px; margin-right: 5px;\"></a></div>";
-            foreach ($val as $v) {
-                $result .= '<table class="test"><tbody>';
-                $result .= '<tr>';
-                foreach ($v as $item) {
-                    $result .= $item['0'];
-                }
-                $result .= '</tr>';
-                $result .= '</tbody></table>';
+    }
+    uksort($chars, "sortA");
+    uksort($arr, "sortA");
+    foreach ($chars as $val) {
+        $links .= "<a href=\"#$val\">$val</a>";
+    }
+    $result .= "<div id=\"alphabet-characters\" style=\"margin-top: 5px\">$links</div>";
+    foreach ($arr as $key => $val) {
+        $result .= "<div class=\"day\"><span id=\"$key\">$key</span> <a class=\"alphabet-up\" href=\"#headercontent\" style=\"margin-top: 5px; margin-right: 5px;\"></a></div>";
+        foreach ($val as $v) {
+            $result .= '<table class="test"><tbody>';
+            $result .= '<tr>';
+            foreach ($v as $item) {
+                $result .= $item['0'];
             }
+            $result .= '</tr>';
+            $result .= '</tbody></table>';
         }
+    }
 
-     //   $cache->set('showAscReleases', $result, 86400);
-   // }
+    //   $cache->set('showAscReleases', $result, 86400);
+    // }
 
     return $result;
 }
@@ -3811,10 +3811,11 @@ function showNewSeason() // DONE
         }*/
 
 
-        $img = empty($row['poster_medium'])
+        /*$img = empty($row['poster_medium'])
             ? urlCDN('/upload/release/270x390/default.jpg')
-            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);*/
 
+        $img = $row['poster_medium'];
 
         $tmp = getTemplate('season-vote');
         $tmp = str_replace('{id}', $row['id'], $tmp);
