@@ -91,9 +91,7 @@ function _exit() // DONE
 {
     global $db, $var;
 
-
-    $redirectURL = $_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? null;
-
+    // $redirectURL = $_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? null;
     /*if (session_status() != PHP_SESSION_NONE) {
         if (!empty($_SESSION['sess'])) {
             $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :hash');
@@ -110,7 +108,9 @@ function _exit() // DONE
         }
     }*/
 
-    setcookie('PHPSESSID', null, time() - 42000, '/', null, false, true);
+
+    header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/;", false);
+    header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/; domain=.anilibria.tv", false);
 
     //if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
     //header("Location: //" . $redirectURL);
@@ -536,7 +536,8 @@ function startSession($row) // DONE
     $query->bindParam(':info', $var['user_agent']);
     $query->execute();*/
 
-    setcookie('PHPSESSID', $hash, time() + 60 * 60 * 24 * 30, '/', null, false, true);
+    header("Set-Cookie: PHPSESSID=". $hash . "; expires=". gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) ."; path=/;", false);
+    header("Set-Cookie: PHPSESSID=". $hash . "; expires=". gmdate("D, d M Y H:i:s", time() + 60 * 60 * 24 * 30 * 2) ."; path=/; domain=.anilibria.tv;", false);
 
 }
 
