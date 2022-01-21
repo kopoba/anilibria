@@ -182,7 +182,8 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
              0 AS `flags`,
              UNIX_TIMESTAMP(t.`updated_at`) AS `mtime`,
              UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
-             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, tf.`size`) as `info`
+             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, tf.`size`) as `info`,
+             tf.`hash`
           
           FROM `torrents` AS t
           INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
@@ -203,6 +204,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
             'seeders' => (int)$torrent['seeders'],
             'leechers' => (int)$torrent['leechers'],
             'completed' => (int)$torrent['completed'],
+            'hash' => $torrent['hash'] ?? null,
             'flags' => (int)$torrent['flags'],
             'mtime' => (int)$torrent['mtime'],
             'ctime' => (int)$torrent['ctime'],
