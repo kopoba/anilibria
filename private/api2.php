@@ -318,6 +318,8 @@ $router->map('GET', '/getTorrentSeedStats/[i:limit]', function ($limit) {
 
     $limit = $limit && (int)$limit > 0 ? (int)$limit : 999999999999;
 
+    ini_set('memory_limit', -1);
+
     global $db;
     $query = $db->prepare(
         sprintf('
