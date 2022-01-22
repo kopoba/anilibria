@@ -328,7 +328,7 @@ $router->map('GET', '/getTorrentSeedStats/[i:limit]', function ($limit) {
                `torrents_uploaded` as `uploaded`,
                `login` 
             FROM `users`
-            WHERE `torrents_uploaded` IS NOT NULL
+            WHERE `torrents_uploaded` > 0
             ORDER BY `torrents_uploaded` DESC
             %s',
             "LIMIT " . $limit
