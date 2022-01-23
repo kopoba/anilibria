@@ -1236,19 +1236,22 @@ function downloadTorrent() // DONE
 
     if (!empty($_GET['psid'])) {
 
-        $query = $db->prepare('SELECT `users_id` AS `uid` FROM `users_sessions` WHERE `id` = :hash');
+        $query = $db->prepare('SELECT `users_id` AS `id` FROM `users_sessions` WHERE `id` = :hash');
         $query->bindParam(':hash', $_GET['psid']);
         $query->execute();
         if ($query->rowCount() == 0) _message('wrong', 'error');
-        $user = $query->fetch();
+
+        $userId = $query->fetch();
+        $userId = $userId['id'] ?? null;
     }
 
+    if ($user || $userId) {
 
-    if ($user) {
+        $properUserId = $userId ?? $user['id'] ?? -1;
 
         // Get torrent passkey
         $query = $db->prepare('SELECT `id` AS `uid`, `torrents_passkey` FROM `users` WHERE `id` = :id');
-        $query->bindParam(':id', $user['id']);
+        $query->bindParam(':id', $properUserId);
         $query->execute();
         $user = $query->fetch();
         $torrentsPasskey = $user['torrents_passkey'] ?? null;
