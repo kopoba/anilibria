@@ -1234,10 +1234,12 @@ function downloadTorrent() // DONE
     $torrent = new Torrent(base64_decode($file));
     $torrent->announce(false);
 
-    if (!empty($_GET['psid'])) {
+    if (!empty($_GET['session']) || !empty($_GET['psid'])) {
+
+        $properSessionId = $_GET['session'] ?? $_GET['psid'] ?? -1;
 
         $query = $db->prepare('SELECT `users_id` AS `id` FROM `users_sessions` WHERE `id` = :hash');
-        $query->bindParam(':hash', $_GET['psid']);
+        $query->bindParam(':hash', $properSessionId);
         $query->execute();
         if ($query->rowCount() == 0) _message('wrong', 'error');
 
