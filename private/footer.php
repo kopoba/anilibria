@@ -90,7 +90,13 @@
 		-->
 		<?php if(checkADS()):?>
 		<script type="text/javascript">
-
+			var utarget_rand = Math.floor(Math.random()*10000);
+			var utarget_cookie = document.cookie.indexOf("u_76f475ff0b=")+1;
+			var utarget_script = document.createElement("script");
+			utarget_script.type = 'text/javascript';
+			utarget_script.async = true;
+			utarget_script.src = "https://utarget.ru/ranging/76f475ff0b/js/?rand="+utarget_rand+"&cookie="+utarget_cookie;
+			document.body.appendChild(utarget_script);
 		</script>
 		<?php endif;?>
 	</body>
