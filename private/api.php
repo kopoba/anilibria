@@ -1314,7 +1314,10 @@ function getApiPlaylist($id) // DONE
         SELECT re.* 
             from `releases_episodes` as re 
             inner join `releases` as r on re.releases_id = r.id
-            where re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL AND r.`is_hidden` = 0  AND r.`deleted_at` IS NULL
+            where 
+                re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL AND
+                r.`is_hidden` = 0  AND r.`deleted_at` IS NULL AND
+                (re.`hls_480` IS NOT NULL OR re.`hls_720` IS NOT NULL OR re.`hls_1080` IS NOT NULL)  
             ORDER BY re.`sort_order` DESC
         ');
 
