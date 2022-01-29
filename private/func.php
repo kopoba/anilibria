@@ -3976,7 +3976,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             r.`year`,
             r.`season`,
             CASE r.`season` WHEN "winter" THEN "зима" WHEN "spring" THEN "весна" WHEN "summer" THEN "лето" WHEN "autumn" THEN "осень" END AS `season`,
-            CONCAT(r.`type`, " (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.), ", r.duration, " мин.") AS `type`,
+            CONCAT(r.type, IF(r.episodes_total, CONCAT(" (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.)"), ""), IF(r.duration, CONCAT(", ", r.duration, " мин."), "")) as `type`,
             GROUP_CONCAT(DISTINCT TRIM(g.`name`) ORDER BY g.`name` SEPARATOR ", " ) AS `genre`,
             GROUP_CONCAT(DISTINCT IF(rm.`role` = "voicing", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `voice`,
             GROUP_CONCAT(DISTINCT IF(rm.`role` = "translating", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `translator`,
@@ -4089,11 +4089,5 @@ function _getReleaseByColumn(string $column, $value = null): ?array
     $hasRelease = isset($release['id']);
 
     return $hasRelease ? _getFullReleasesDataInLegacyStructure([$release['id']]) : null;
-
-}
-
-
-function _getReleaseEpisodesById()
-{
 
 }
