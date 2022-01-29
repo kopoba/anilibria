@@ -2306,10 +2306,23 @@ function getReleaseVideo($id) // DONE
         if (empty($episode['hls_720']) === false) $qualities[] = sprintf('[720p]%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
         if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
 
+
+        $endingSkip = null; // future
+        $openingSkip = array_filter([$episode['opening_starts_at'] ?? null, $episode['opening_ends_at'] ?? null]);
+
+        // Get skips
+        $skips = array_filter(
+            [
+                empty($openingSkip) === false ? implode('-', $openingSkip) : null, // opening
+                empty($endingSkip) === false ? implode('-', $endingSkip) : null, // ending
+            ]
+        );
+
         $playlist[] = [
             'id' => "s{$episode['ordinal']}",
-            'title' => sprintf('Серия %s', $episode['ordinal']),
+            'skip' => empty($skips) === false ? implode($skips, ',') : null,
             'file' => implode(',', $qualities),
+            'title' => sprintf('Серия %s', $episode['ordinal']),
             'poster' => implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]),
             'download' => null,
         ];
