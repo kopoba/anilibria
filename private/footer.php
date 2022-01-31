@@ -27,12 +27,23 @@
 				<div class="clear"></div>
 				<?php echo showPosters(); ?>
 				<?php if(checkADS()): ?>
-				<div id=""></div>
+				<div id="adfox_162064825798024098"></div>
 				<script>
-
+					window.yaContextCb.push(()=>{
+						Ya.adfoxCode.create({
+						ownerId: 332443,
+						containerId: 'adfox_162064825798024098',
+						params: {
+							p1: 'cpapg',
+							p2: 'gxmx'
+						}
+						})
+					})
 				</script>
 				<script>
-
+				setInterval(function(){            
+				window.Ya.adfoxCode.reload('adfox_162064825798024098')
+				}, 30000);
 				</script>
 				<?php endif; ?>
 			</div>
