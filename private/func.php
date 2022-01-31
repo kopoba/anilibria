@@ -1203,7 +1203,7 @@ function downloadTorrent() // DONE
     // Get torrent
     $query = $db->prepare('
         SELECT 
-            tf.`file`,
+            t.`file`,
             t.`type`,
             r.`name_english`,
             t.`quality`,
@@ -1211,8 +1211,7 @@ function downloadTorrent() // DONE
             t.`is_hevc`
         FROM `torrents` as t
         INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
-        INNER JOIN `torrents_files` as tf on tf.id = (select id from `torrents_files` where torrents_id = t.id and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
-        WHERE t.`id` = :id
+        WHERE t.`id` = :id and t.`deleted_at` IS NULL
         GROUP by t.id
     ');
 
@@ -1857,14 +1856,13 @@ function showRelease() // DONE
     $query = $db->prepare('
         SELECT 
            t.`id` AS `fid`,
-           JSON_ARRAY(CONCAT_WS(\' \', t.`type`, t.`quality`, IF(t.`is_hevc` = 1, \'HEVC\', null)),t.`description`, tf.`size`) AS `info`,
+           JSON_ARRAY(CONCAT_WS(\' \', t.`type`, t.`quality`, IF(t.`is_hevc` = 1, \'HEVC\', null)),t.`description`, t.`size`) AS `info`,
            UNIX_TIMESTAMP(t.`updated_at`) AS `ctime`,
-           tf.`seeders`,
-           tf.`leechers`, 
+           t.`seeders`,
+           t.`leechers`, 
            t.`completed_times` as `completed` 
         FROM `torrents` as t
         INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
-        INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
         WHERE t.`releases_id` = :id AND t.`deleted_at` IS NULL
         GROUP BY t.id
         ORDER BY t.`created_at` ASC
