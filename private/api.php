@@ -1242,13 +1242,12 @@ function updateApiCache() // DONE
             SELECT 
                t.`id` AS `fid`, 
                UNIX_TIMESTAMP(t.`updated_at`) AS `ctime`, 
-               tf.`hash` AS `info_hash`, 
-               tf.`leechers`,
-               tf.`seeders`, 
+               t.`hash` AS `info_hash`, 
+               t.`leechers`,
+               t.`seeders`, 
                t.`completed_times` as `completed`,
-               JSON_ARRAY(CONCAT_WS(\' \', t.`type`, t.`quality`, IF(t.`is_hevc` = 1, \'HEVC\', null)), t.`description`, tf.`size`) AS `info`
+               JSON_ARRAY(CONCAT_WS(\' \', t.`type`, t.`quality`, IF(t.`is_hevc` = 1, \'HEVC\', null)), t.`description`, t.`size`) AS `info`
             FROM `torrents` as t
-            INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
             WHERE t.`releases_id` = :rid AND t.`deleted_at` IS NULL
             GROUP BY t.id
             ORDER BY t.`created_at` ASC

@@ -176,19 +176,18 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     $query = $db->prepare('
           SELECT 
              t.`id` AS `fid`,
-             tf.`leechers`, 
-             tf.`seeders`,
+             t.`leechers`, 
+             t.`seeders`,
              t.`completed_times` as `completed`,
              0 AS `flags`,
              UNIX_TIMESTAMP(t.`updated_at`) AS `mtime`,
              UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
-             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, tf.`size`) as `info`,
-             tf.`hash`
+             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, t.`size`) as `info`,
+             t.`hash`
           
           FROM `torrents` AS t
           INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
-          INNER JOIN `torrents_files` as tf on tf.id = (select `id` from `torrents_files` where `torrents_id` = t.`id` and `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT 1)
-          WHERE r.`id` = :releaseId
+          WHERE r.`id` = :releaseId and t.`deleted_at` IS NULL
           GROUP BY t.`id`
           ORDER BY t.`created_at` ASC
     ');
