@@ -62,6 +62,7 @@ $router->map('GET', '/getTitleEpisodesById/[:releaseId]', function ($releaseId) 
             '720' => $episode['hd'] ? $url720['path'] ?? null : null,
             '1080' => $episode['fullhd'] ? $url1080['path'] ?? null : null,
             'poster' => $episode['poster'] ?? null,
+            'skips' => $episode['skips'] ?? null,
             'created_time' => $episode['updated_at'] ?? null,
         ];
     }
