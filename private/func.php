@@ -4019,7 +4019,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         LEFT JOIN `genres` AS g ON g.`id` = rg.`genres_id`
         
         -- Members
-        LEFT JOIN `releases_members` AS rm ON rm.`releases_id` = r.`id`
+        LEFT JOIN `releases_members` AS rm ON rm.`releases_id` = r.`id` AND rm.`deleted_at` IS NULL
         LEFT JOIN `users` AS rmu ON rmu.`id` = rm.`users_id`
         
         -- Episodes
