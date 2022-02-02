@@ -1345,9 +1345,9 @@ function getApiPlaylist($id) // DONE
             'srcSd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
             'skips' => [ 
-				'opening' => $openingSkip,
-				'ending' => $endingSkip
-			],
+                'opening' => $openingSkip,
+                'ending' => $endingSkip
+            ],
             'poster' => $episode['preview_original']
                 ? implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']])
                 : null,
