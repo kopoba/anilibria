@@ -97,10 +97,10 @@ $xcss = headerAds();
 		   });
 		</script>
 
-		<script async src="https://"></script>
-		<script type="text/javascript" src="https://"></script>
+		<script async src="https://yandex.ru/ads/system/header-bidding.js"></script>
+		<script type="text/javascript" src="https://ads.digitalcaramel.com/js/anilibria.tv.js"></script>
 		<script>window.yaContextCb = window.yaContextCb || []</script>
-		<script src="https://" async></script>
+		<script src="https://yandex.ru/ads/system/context.js" async></script>
 
 		<noscript><div><img src="https://" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 		<!-- /Yandex.Metrika counter -->
