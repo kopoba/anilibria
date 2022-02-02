@@ -1339,21 +1339,15 @@ function getApiPlaylist($id) // DONE
         $endingSkip = null; // future
         $openingSkip = array_filter([$episode['opening_starts_at'] ?? null, $episode['opening_ends_at'] ?? null]);
 
-        // Get skips
-        $skips = array_filter(
-            [
-                empty($openingSkip) === false ? implode('-', $openingSkip) : null, // opening
-                empty($endingSkip) === false ? implode('-', $endingSkip) : null, // ending
-            ]
-        );
-
         $item = [
             'id' => (float)$episode['ordinal'],
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'srcSd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
-            'skip' => empty($skips) === false ? implode($skips, ',') : null,
-            'skips' => empty($skips) === false ? $skips : null,
+            'skips' => [ 
+				'opening' => $openingSkip,
+				'ending' => $endingSkip
+			],
             'poster' => $episode['preview_original']
                 ? implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']])
                 : null,
