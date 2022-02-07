@@ -4067,6 +4067,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             'rating' => (int)$release['rating'],
             'bakanim' => (int)$release['bakanim'],
             'duration' => (float)$release['duration'],
+            'type_value' =>  $release['type'] ?? null,
             'last_change' => (int)$release['last_change'],
             'has_episodes' => (int)$release['has_episodes'],
             'episodes_total' => $release['episodes_total'] ? (int)$release['episodes_total'] : null,
