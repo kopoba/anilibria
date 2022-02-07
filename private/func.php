@@ -90,33 +90,19 @@ function session_hash($login, $passwd, $access, $rand = '') // DONE
 
 function _exit() // DONE
 {
-    global $db, $var;
+    global $db, $var, $user;
 
-    // $redirectURL = $_SERVER['HTTP_HOST'] ?? $var['origin_url'] ?? null;
-    /*if (session_status() != PHP_SESSION_NONE) {
-        if (!empty($_SESSION['sess'])) {
-            $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :hash');
-            $query->bindParam(':hash', $_SESSION["sess"]);
-            $query->execute();
-        }
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', $var['time'] - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
-        session_unset();
-        session_destroy();
+    $cookieSession = $_COOKIE['PHPSESSID'] ?? null;
 
-        if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
-            header("Location: //" . $redirectURL);
-        }
-    }*/
-
+    if(empty($cookieSession) === false) {
+        $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :session');
+        $query->bindParam(':session', $cookieSession);
+        $query->execute();
+    }
 
     header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/;", false);
     header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/; domain=.anilibria.tv", false);
     header("Set-Cookie: PHPSESSID=deleted; expires=Tue, 06-May-2000 20:40:00 GMT; path=/; domain=.www.anilibria.tv", false);
-
-    //if ($redirectURL !== null && strpos($var['user_agent'], 'mobileApp') === false) {
-    //header("Location: //" . $redirectURL);
-    // }
 
 }
 
