@@ -94,7 +94,7 @@ function _exit() // DONE
 
     $cookieSession = $_COOKIE['PHPSESSID'] ?? null;
 
-    if(empty($cookieSession) === false) {
+    if (empty($cookieSession) === false) {
         $query = $db->prepare('DELETE FROM `users_sessions` WHERE `id` = :session');
         $query->bindParam(':session', $cookieSession);
         $query->execute();
@@ -3964,7 +3964,7 @@ function _getLatestUpdatedReleases(int $secondsOffset = 0): array
  */
 function _getFullReleasesDataInLegacyStructure($releasesId = null): array
 {
-    global $db, $conf, $user;
+    global $db, $conf, $user, $var;
 
     $sql = '
         SELECT 
@@ -3975,7 +3975,11 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             r.`year`,
             r.`season`,
             CASE r.`season` WHEN "winter" THEN "зима" WHEN "spring" THEN "весна" WHEN "summer" THEN "лето" WHEN "autumn" THEN "осень" END AS `season`,
-            CONCAT(r.type, IF(r.episodes_total, CONCAT(" (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.)"), ""), IF(r.duration, CONCAT(", ", r.duration, " мин."), "")) as `type`,
+            r.`type`,
+            r.`episodes_total`,
+            r.`episodes_are_unknown`,
+            r.`duration`,
+            -- CONCAT(r.type, IF(r.episodes_total, CONCAT(" (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.)"), ""), IF(r.duration, CONCAT(", ", r.duration, " мин."), "")) as `type`,
             GROUP_CONCAT(DISTINCT TRIM(g.`name`) ORDER BY g.`name` SEPARATOR ", " ) AS `genre`,
             GROUP_CONCAT(DISTINCT IF(rm.`role` = "voicing", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `voice`,
             GROUP_CONCAT(DISTINCT IF(rm.`role` = "translating", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `translator`,
@@ -4044,16 +4048,29 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         : $query->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($releases as $index => $release) {
+
+        $type = $release['type'] ?? null;
+        $type = $type ? ($var['types'][$type] ?? null) : null;
+
+        $typeHuman = "";
+        if ($type) $typeHuman .= sprintf('%s', $type);
+        if ($release['episodes_total']) $typeHuman .= sprintf(' (%s%s эп.)', $release['episodes_are_unknown'] ? '>' : '', $release['episodes_total']);
+        if ($release['duration']) $typeHuman .= sprintf(', %s мин.', $release['duration']);
+
         $releases[$index] = array_merge($release, [
             'id' => (int)$release['id'],
             'day' => (int)$release['day'],
             'year' => (int)$release['year'],
+            'type' => empty(trim($typeHuman)) === false ? trim($typeHuman) : null,
             'last' => (int)$release['last'],
             'status' => (int)$release['status'],
             'rating' => (int)$release['rating'],
             'bakanim' => (int)$release['bakanim'],
+            'duration' => (float)$release['duration'],
             'last_change' => (int)$release['last_change'],
             'has_episodes' => (int)$release['has_episodes'],
+            'episodes_total' => $release['episodes_total'] ? (int)$release['episodes_total'] : null,
+            'episodes_are_unknown' => (int)$release['episodes_are_unknown'] === 1,
         ]);
     }
 
