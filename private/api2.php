@@ -222,14 +222,17 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     global $db;
     $query = $db->prepare('
           SELECT 
-             t.`id` AS `fid`,
+             t.`id` AS `torrent_id`,
              t.`leechers`, 
              t.`seeders`,
              t.`completed_times` as `completed`,
-             0 AS `flags`,
              UNIX_TIMESTAMP(t.`updated_at`) AS `mtime`,
              UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
-             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, t.`size`) as `info`,
+             t.`type`,
+             t.`quality`,
+             t.`is_hevc`
+             t.`description`,
+             t.`size,
              t.`hash`
           
           FROM `torrents` AS t
@@ -246,14 +249,15 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
 
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = array_merge($torrent, [
-            'fid' => (int)$torrent['fid'],
+            'torrent_id' => (int)$torrent['fid'],
             'seeders' => (int)$torrent['seeders'],
             'leechers' => (int)$torrent['leechers'],
             'completed' => (int)$torrent['completed'],
             'hash' => $torrent['hash'] ?? null,
-            'flags' => (int)$torrent['flags'],
+            'is_hevc' => (bool)$torrent['is_hevc'],
             'mtime' => (int)$torrent['mtime'],
             'ctime' => (int)$torrent['ctime'],
+            'size' => (int)$torrent['size'],
         ]);
     }
 
