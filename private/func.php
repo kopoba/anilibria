@@ -664,7 +664,7 @@ function registration() // DONE
         _message('registered', 'error');
     }
     $passwd = createPasswd($_POST['passwd']);
-    $query = $db->prepare('INSERT INTO `users` (`login`, `email`, `password`, `created_at`, `updated_at`) VALUES (:login, :mail, :passwd, NOW(), NOW())');
+    $query = $db->prepare('INSERT INTO `users` (`login`, `email`, `password`, `created_at`, `updated_at`, `torrents_passkey`) VALUES (:login, :mail, :passwd, NOW(), NOW(), LPAD(LEFT(REPLACE(REPLACE(REPLACE(TO_BASE64(UNHEX(MD5(:login))), "/", ""), "+", ""), "=", ""), 16), 16, 0))');
     $query->bindValue(':login', $_POST['login']);
     $query->bindParam(':mail', $_POST['mail']);
     $query->bindParam(':passwd', $passwd['1']);
