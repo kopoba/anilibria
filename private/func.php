@@ -409,8 +409,11 @@ function loginByOtpCode() // DONE
 
 function login() // DONE
 {
-
     global $db, $var, $user;
+
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+
     if ($user) {
         _message('authorized', 'error');
     }
@@ -462,10 +465,7 @@ function login() // DONE
 
     $hash = startSession($row);
 
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: POST');
     _message('success', 'ok', ['sessionId' => $hash]);
-
 }
 
 /*function startSession($row){
