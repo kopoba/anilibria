@@ -411,6 +411,28 @@ $router->map('GET', '/getUserIdBySession/[:sessionId]', function ($sessionId) {
 
 });
 
+// getUser
+$router->map('GET', '/getUser/[:userId]', function ($userId) {
+    global $db;
+    $query = $db->prepare('
+        SELECT 
+            `login`,
+            `nickname`,
+            `email`,
+            `avatar_original`,
+            `avatar_thumbnail`,
+            `vk_id`,
+            `patreon_id`
+        FROM `users` 
+        WHERE `id` = :userId
+    ');
+    $query->bindParam('userId', $userId);
+    $query->execute();
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $user ?? null;
+});
+
 // getUserFavorites
 $router->map('GET', '/getUserFavorites/[:userId]', function ($userId) {
     global $db;
