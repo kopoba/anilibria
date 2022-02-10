@@ -180,8 +180,15 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
     $query = $db->prepare(
         sprintf("
             SELECT 
-                `id`, 
-                UNIX_TIMESTAMP(updated_at) as `last_change`
+                `id` AS `torrent_id`, 
+                `releases_id`,
+                UNIX_TIMESTAMP(updated_at) as `last_change`,
+                `type`, 
+                `quality`,
+                `is_hevc`
+                `description`, 
+                `size`,
+                `hash`
             FROM `torrents` 
             WHERE `deleted_at` IS NULL
             ORDER BY `updated_at` DESC
@@ -194,8 +201,13 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
 
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = [
-            'id' => (int)$torrent['id'],
+            'torrent_id' => (int)$torrent['torrent_id'],
+            'releases_id' => (int)$torrent['releases_id']
             'last_change' => (int)$torrent['last_change'],
+            'is_hevc' => (bool)$torrent['is_hevc'],
+            'mtime' => (int)$torrent['mtime'],
+            'ctime' => (int)$torrent['ctime'],
+            'size' => (int)$torrent['size'],
         ];
     }
 
