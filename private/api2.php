@@ -171,6 +171,40 @@ $router->map('GET', '/getTitlesByLastChange/[i:limit]', function ($limit) {
 
 });
 
+
+// getTorrentsByLastChange
+$router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
+
+    global $db;
+
+    $query = $db->prepare(
+        sprintf("
+            SELECT 
+                `id`, 
+                UNIX_TIMESTAMP(updated_at) as `last_change`
+            FROM `torrents` 
+            WHERE `deleted_at` IS NULL
+            ORDER BY `updated_at` DESC
+            LIMIT %s
+        ", $limit && (int)$limit > 0 ? (int)$limit : 999999999999)
+    );
+
+    $query->execute();
+    $torrents = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($torrents as $index => $torrent) {
+        $torrents[$index] = [
+            'id' => (int)$torrent['id'],
+            'last_change' => (int)$torrent['last_change'],
+        ];
+    }
+
+    return $torrents;
+
+});
+
+
+
 // getTorrents
 $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     global $db;
