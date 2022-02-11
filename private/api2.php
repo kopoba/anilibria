@@ -180,8 +180,15 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
     $query = $db->prepare(
         sprintf("
             SELECT 
-                `id`, 
-                UNIX_TIMESTAMP(updated_at) as `last_change`
+                `id` AS `torrent_id`, 
+                `releases_id`,
+                UNIX_TIMESTAMP(updated_at) as `last_change`,
+                `type`, 
+                `quality`,
+                `is_hevc`
+                `description`, 
+                `size`,
+                `hash`
             FROM `torrents` 
             WHERE `deleted_at` IS NULL
             ORDER BY `updated_at` DESC
@@ -194,8 +201,13 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
 
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = [
-            'id' => (int)$torrent['id'],
+            'torrent_id' => (int)$torrent['torrent_id'],
+            'releases_id' => (int)$torrent['releases_id']
             'last_change' => (int)$torrent['last_change'],
+            'is_hevc' => (bool)$torrent['is_hevc'],
+            'mtime' => (int)$torrent['mtime'],
+            'ctime' => (int)$torrent['ctime'],
+            'size' => (int)$torrent['size'],
         ];
     }
 
@@ -210,14 +222,17 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
     global $db;
     $query = $db->prepare('
           SELECT 
-             t.`id` AS `fid`,
+             t.`id` AS `torrent_id`,
              t.`leechers`, 
              t.`seeders`,
              t.`completed_times` as `completed`,
-             0 AS `flags`,
              UNIX_TIMESTAMP(t.`updated_at`) AS `mtime`,
              UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
-             JSON_ARRAY(CONCAT_WS(" ", t.`type`, t.`quality`, IF(t.`is_hevc` = 1, "HEVC", null)), t.`description`, t.`size`) as `info`,
+             t.`type`,
+             t.`quality`,
+             t.`is_hevc`
+             t.`description`,
+             t.`size,
              t.`hash`
           
           FROM `torrents` AS t
@@ -234,14 +249,15 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
 
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = array_merge($torrent, [
-            'fid' => (int)$torrent['fid'],
+            'torrent_id' => (int)$torrent['fid'],
             'seeders' => (int)$torrent['seeders'],
             'leechers' => (int)$torrent['leechers'],
             'completed' => (int)$torrent['completed'],
             'hash' => $torrent['hash'] ?? null,
-            'flags' => (int)$torrent['flags'],
+            'is_hevc' => (bool)$torrent['is_hevc'],
             'mtime' => (int)$torrent['mtime'],
             'ctime' => (int)$torrent['ctime'],
+            'size' => (int)$torrent['size'],
         ]);
     }
 
@@ -393,6 +409,28 @@ $router->map('GET', '/getUserIdBySession/[:sessionId]', function ($sessionId) {
 
     return $session ? ['uid' => (int)$session['uid']] : null;
 
+});
+
+// getUser
+$router->map('GET', '/getUser/[:userId]', function ($userId) {
+    global $db;
+    $query = $db->prepare('
+        SELECT 
+            `login`,
+            `nickname`,
+            `email`,
+            `avatar_original`,
+            `avatar_thumbnail`,
+            `vk_id`,
+            `patreon_id`
+        FROM `users` 
+        WHERE `id` = :userId
+    ');
+    $query->bindParam('userId', $userId);
+    $query->execute();
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+
+    return $user ?? null;
 });
 
 // getUserFavorites
