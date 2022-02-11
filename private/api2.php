@@ -232,7 +232,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
              t.`quality`,
              t.`is_hevc`,
              t.`description`,
-             t.`size,
+             t.`size`,
              t.`hash`
           
           FROM `torrents` AS t
