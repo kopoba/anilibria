@@ -249,7 +249,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
 
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = array_merge($torrent, [
-            'torrent_id' => (int)$torrent['fid'],
+            'torrent_id' => (int)$torrent['torrent_id'],
             'seeders' => (int)$torrent['seeders'],
             'leechers' => (int)$torrent['leechers'],
             'completed' => (int)$torrent['completed'],
