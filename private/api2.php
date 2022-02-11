@@ -185,7 +185,7 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
                 UNIX_TIMESTAMP(updated_at) as `last_change`,
                 `type`, 
                 `quality`,
-                `is_hevc`
+                `is_hevc`,
                 `description`, 
                 `size`,
                 `hash`
@@ -202,7 +202,7 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = [
             'torrent_id' => (int)$torrent['torrent_id'],
-            'releases_id' => (int)$torrent['releases_id']
+            'releases_id' => (int)$torrent['releases_id'],
             'last_change' => (int)$torrent['last_change'],
             'is_hevc' => (bool)$torrent['is_hevc'],
             'mtime' => (int)$torrent['mtime'],
@@ -230,7 +230,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
              UNIX_TIMESTAMP(t.`created_at`) AS `ctime`,
              t.`type`,
              t.`quality`,
-             t.`is_hevc`
+             t.`is_hevc`,
              t.`description`,
              t.`size,
              t.`hash`
@@ -249,7 +249,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
 
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = array_merge($torrent, [
-            'torrent_id' => (int)$torrent['fid'],
+            'torrent_id' => (int)$torrent['torrent_id'],
             'seeders' => (int)$torrent['seeders'],
             'leechers' => (int)$torrent['leechers'],
             'completed' => (int)$torrent['completed'],
