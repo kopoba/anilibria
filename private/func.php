@@ -4108,3 +4108,8 @@ function _getReleaseByColumn(string $column, $value = null): ?array
     return $hasRelease ? _getFullReleasesDataInLegacyStructure([$release['id']]) : null;
 
 }
+
+function getUserAvatarUrl($user_id, $filename) {
+    global $conf;
+    return sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user_id / 100), $user_id, $filename);
+}

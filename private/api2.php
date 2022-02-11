@@ -200,15 +200,13 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
     $torrents = $query->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($torrents as $index => $torrent) {
-        $torrents[$index] = [
+        $torrents[$index] = array_merge($torrent, [
             'torrent_id' => (int)$torrent['torrent_id'],
             'releases_id' => (int)$torrent['releases_id'],
             'last_change' => (int)$torrent['last_change'],
             'is_hevc' => (bool)$torrent['is_hevc'],
-            'mtime' => (int)$torrent['mtime'],
-            'ctime' => (int)$torrent['ctime'],
             'size' => (int)$torrent['size'],
-        ];
+        ]);
     }
 
     return $torrents;
@@ -430,7 +428,10 @@ $router->map('GET', '/getUser/[:userId]', function ($userId) {
     $query->execute();
     $user = $query->fetch(PDO::FETCH_ASSOC);
 
-    return $user ?? null;
+    return array_merge($user, [
+        'avatar_original' => getUserAvatarUrl($userId, $user['avatar_original']),
+        'avatar_thumbnail' => getUserAvatarUrl($userId, $user['avatar_thumbnail'])
+    ]);
 });
 
 // getUserFavorites
