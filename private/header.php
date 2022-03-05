@@ -11,8 +11,7 @@ function headerAds(){
 	$result['ads'] = false;
 
 	$data[] = ['img' => 'DG.png', 'left' => '720px', 'top' => '70px', 'height' => '70px', 'width' => '260px', 'url' => '/dg'];
-	$data[] = ['img' => 'bok.png', 'left' => '300px', 'top' => '138px', 'height' => '70px', 'width' => '240px', 'url' => '/bok'];
-	$data[] = ['img' => 'DG.png', 'left' => '720px', 'top' => '70px', 'height' => '70px', 'width' => '260px', 'url' => '/dg'];
+	$data[] = ['img' => 'dc.png', 'left' => '887px', 'top' => '70px', 'height' => '75px', 'width' => '225px', 'url' => '/dc'];
 
 	if(checkADS()){
 		$cHour = date('G', $var['time']);
