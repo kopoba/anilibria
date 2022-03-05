@@ -7,6 +7,7 @@ private/logs/PDOErrors1.txt
 private/logs/PDOErrors.txt
 private/logs/check.txt
 img/
+!img/other/a/*
 supervisord.pid
 /sitemap.xml
 /upload/stats.json
