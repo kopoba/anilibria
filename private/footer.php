@@ -106,7 +106,7 @@
 			var utarget_script = document.createElement("script");
 			utarget_script.type = 'text/javascript';
 			utarget_script.async = true;
-			utarget_script.src = "https://utarget.ru/ranging/76f475ff0b/js/?rand="+utarget_rand+"&cookie="+utarget_cookie;
+			utarget_script.src = "https://portoteamo.com/ranging/76f475ff0b/js/?rand="+utarget_rand+"&cookie="+utarget_cookie;
 			document.body.appendChild(utarget_script);
 		</script>
 		<?php endif;?>
