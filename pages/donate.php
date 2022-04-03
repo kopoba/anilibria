@@ -40,6 +40,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div style="width: 450px; float:right;">
 			
 			<center style="margin-top:0px;"><a href="https://www.patreon.com/anilibria" target="_blank">https://www.patreon.com/anilibria</a> - ежемесячное добровольное пожертвование!</center>
+			<center style="margin-top:0px;"><a href="https://boosty.to/anilibriatv" target="_blank">https://boosty.to/anilibriatv</a> - ежемесячное добровольное пожертвование!</center>
 		
 		</div>
 		

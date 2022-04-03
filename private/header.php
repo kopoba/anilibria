@@ -154,6 +154,6 @@ $xcss = headerAds();
 	Внимание! На сайте идёт <a href="https://www.anilibria.tv/season/2220winter.html" target="_blank">голосование</a> за неонгоинги на озвучку! ТОП-5 мы возьмём на озвучку!</br> А ещё, <a href="https://www.anilibria.tv/season/2021winter.html" target="_blank">голосование</a> за самые ожидаемые аниме зимы 2021!
 </div>-->
 
-<a href="https://www.patreon.com/anilibria/posts" target="_blank">
-	<img src="/img/patreonAL.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Patreon Anilibria" />
+<a href="https://www.anilibria.tv/pages/donate.php" target="_blank">
+	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
 </a>
