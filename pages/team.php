@@ -101,6 +101,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #800000;">Hidan</span> - технарь</li>
                 <li><span style="color: #800000;">im4x</span> - технарь, куратор академии таймеров</li>
                 <li><span style="color: #800000;">Pomidorchik</span> - технарь</li>
+				<li><span style="color: #800000;">Den Sato</span> - технарь, дизайнер</li>
 				<li><span style="color: #800000;">Kuper</span> - технарь</li>
                 <li><span style="color: #800000;">StuffyHarbor</span> - технарь</li>
 
@@ -134,7 +135,6 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 				
 
 				<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
-				<li><span style="color: #800000;">Den Sato</span> - технарь, дизайнер</li>
                 <li><span style="color: #800000;">ito</span> - технарь</li>
                 <li><span style="color: #800000;">N47</span> - технарь</li>
                 <li><span style="color: #800000;">Shiro</span> - технарь</li>
