@@ -71,7 +71,6 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #00a650;">Silv</span> - войсер</li>
                 <li><span style="color: #00a650;">Itashi</span> - войсер</li>
                 <li><span style="color: #00a650;">Кирито-кун</span> - руководитель войсеров, войсер</li>
-                <li><span style="color: #339966;">Dejz</span> - руководитель академии войсеров, войсер</li>
                 <li><span style="color: #339966;">Amikiri</span> - войсер, руководитель переводчиков</li>
             </ul>
             <div class="day">
@@ -144,8 +143,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #800000;">Ninja-san</span> - технарь</li>
                 <li><span style="color: #800000;">ZencorZ</span> - технарь</li>
 				<li><span style="color: #800000;">Dr.One</span> - технарь</li>
-                <li><span style="color: #800000;">Luchano</span> - технарь</li>
-				<li><span style="color: #800000;">Oishi Inu</span> - таймер</li>
+				<li><span style="color: #800000;">Oishi Inu</span> - технарь</li>
 
 
                 <li><span style="color: #ebd800;">Initrd</span> - переводчик</li>
@@ -213,6 +211,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #800000;">Ghost</span> - технарь (в отпуске)</li>
 				<li><span style="color: #800000;">MaxVold</span> - технарь (в отпуске)</li>
 				<li><span style="color: #800000;">Chewy</span> - технарь (в отпуске)</li>
+				<li><span style="color: #800000;">Luchano</span> - технарь (в отпуске)</li>
 
                 <li><span style="color: #000080;">Aurenmaru</span> - сидер (в отпуске)</li>
                 <li><span style="color: #000080;">zlo</span> - сидер (в отпуске)</li>
