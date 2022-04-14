@@ -274,7 +274,7 @@ function deleteExpiredOtpCodes() // DONE
 {
     global $db, $var, $user, $conf;
 
-    $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `expired_at` < NOW()');
+    $otpDeleteQuery = $db->prepare('DELETE FROM `otp` WHERE `expired_at` < NOW()');
     $otpDeleteQuery->execute();
 }
 
@@ -292,21 +292,21 @@ function getOtpCode() // DONE
 
     deleteExpiredOtpCodes();
 
-    $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > NOW()');
+    $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp` WHERE `device_id` = :deviceId AND `expired_at` > NOW()');
     $otpQuery->bindValue(':deviceId', $argDeviceId);
     $otpQuery->execute();
     if ($otpQuery->rowCount() == 0) {
         $code = generateOtpCode(6);
         $expiredAt = date('Y-m-d H:i:s', $var['time'] + 120);
 
-        $insertOtpQuery = $db->prepare('INSERT INTO `otp_codes` (`code`, `expired_at`, `device_id`, `created_at`, `updated_at`) VALUES (:code, :expired_at, :device_id, NOW(), NOW())');
+        $insertOtpQuery = $db->prepare('INSERT INTO `otp` (`code`, `expired_at`, `device_id`, `created_at`, `updated_at`) VALUES (:code, :expired_at, :device_id, NOW(), NOW())');
         $insertOtpQuery->bindParam(':code', $code);
         $insertOtpQuery->bindParam(':expired_at', $expiredAt);
         $insertOtpQuery->bindParam(':device_id', $argDeviceId);
         $insertOtpQuery->execute();
         $otpId = $db->lastInsertId();
 
-        $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp_codes` WHERE `device_id` = :deviceId AND `expired_at` > :time');
+        $otpQuery = $db->prepare('SELECT `code`, `expired_at` FROM `otp` WHERE `device_id` = :deviceId AND `expired_at` > :time');
         $otpQuery->bindValue(':deviceId', $argDeviceId);
         $otpQuery->bindValue(':time', $var['time']);
         $otpQuery->execute();
@@ -334,7 +334,7 @@ function acceptOtpCode() // DONE
 
     deleteExpiredOtpCodes();
 
-    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid`, `expired_at` FROM `otp_codes` WHERE `code` = :code AND `expired_at` > NOW()');
+    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid`, `expired_at` FROM `otp` WHERE `code` = :code AND `expired_at` > NOW()');
     $otpQuery->bindValue(':code', $argCode);
     //$otpQuery->bindValue(':time', $var['time']);
     $otpQuery->execute();
@@ -348,7 +348,7 @@ function acceptOtpCode() // DONE
         _message('otpAccepted', 'error');
     }
 
-    $updateOtpQuery = $db->prepare('UPDATE `otp_codes` SET `users_id` = :uid WHERE `id` = :id');
+    $updateOtpQuery = $db->prepare('UPDATE `otp` SET `users_id` = :uid WHERE `id` = :id');
     $updateOtpQuery->bindValue(':id', $otpRow['id']);
     $updateOtpQuery->bindParam(':uid', $user['id']);
     $updateOtpQuery->execute();
@@ -374,7 +374,7 @@ function loginByOtpCode() // DONE
 
     deleteExpiredOtpCodes();
 
-    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid` FROM `otp_codes` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > NOW()');
+    $otpQuery = $db->prepare('SELECT `id`, `users_id` as `uid` FROM `otp` WHERE `code` = :code AND `device_id` = :deviceId AND `expired_at` > NOW()');
     $otpQuery->bindValue(':code', $argCode);
     $otpQuery->bindValue(':deviceId', $argDeviceId);
     //$otpQuery->bindValue(':time', $var['time']);
@@ -397,7 +397,7 @@ function loginByOtpCode() // DONE
 
     $userRow = $userQuery->fetch();
 
-    $otpDeleteQuery = $db->prepare('DELETE FROM `otp_codes` WHERE `id` = :id');
+    $otpDeleteQuery = $db->prepare('DELETE FROM `otp` WHERE `id` = :id');
     $otpDeleteQuery->bindParam(':id', $otpRow['id']);
     $otpDeleteQuery->execute();
 
