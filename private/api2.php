@@ -276,11 +276,11 @@ $router->map('GET', '/getYouTube/[i:limit]', function ($limit) {
         SELECT 
             `id`, 
            `title`,
-           `youtube_id` as `vid`,
+           `video_id` as `vid`,
            UNIX_TIMESTAMP(`created_at`) as `time`,
            `views` as `view`,
            `comments` as `comment`
-        FROM `youtube`
+        FROM `videos`
         WHERE `deleted_at` IS NULL
         ORDER BY `created_at` DESC
         LIMIT ' . $limit);
@@ -417,8 +417,7 @@ $router->map('GET', '/getUser/[:userId]', function ($userId) {
             `login`,
             `nickname`,
             `email`,
-            `avatar_original`,
-            `avatar_thumbnail`,
+            `avatar`,
             `vk_id`,
             `patreon_id`
         FROM `users` 
@@ -429,8 +428,8 @@ $router->map('GET', '/getUser/[:userId]', function ($userId) {
     $user = $query->fetch(PDO::FETCH_ASSOC);
 
     return array_merge($user, [
-        'avatar_original' => getUserAvatarUrl($userId, $user['avatar_original']),
-        'avatar_thumbnail' => getUserAvatarUrl($userId, $user['avatar_thumbnail'])
+        'avatar_original' => getUserAvatarUrl($userId, $user['avatar']),
+        'avatar_thumbnail' => getUserAvatarUrl($userId, $user['avatar'])
     ]);
 });
 

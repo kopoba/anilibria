@@ -716,7 +716,7 @@ function auth() // DONE
                 u.`id`, 
                 u.`login`, 
                 u.`vk_id` AS `vk`, 
-                u.`avatar_original` AS `avatar`,
+                u.`avatar`,
                 u.`password` AS `passwd`,
                 u.`email` AS `mail`,
                 NULL AS `2fa`, 
@@ -1321,7 +1321,7 @@ function upload_avatar() // DONE
 
     // if (!empty($user['avatar']) && $user['avatar'] != $filename) deleteFile($filepath);
 
-    $query = $db->prepare('UPDATE `users` SET `avatar_original` = :avatar, `avatar_thumbnail` = :avatar WHERE `id` = :id');
+    $query = $db->prepare('UPDATE `users` SET `avatar` = :avatar WHERE `id` = :id');
     $query->bindParam(':avatar', $filename);
     $query->bindParam(':id', $user['id']);
     $query->execute();
@@ -2322,7 +2322,7 @@ function getReleaseVideo($id) // DONE
     global $db;
     $x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
     if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized'){
-        $query = $db->prepare('DELETE FROM `youtube` WHERE `vid` = :vid');
+        $query = $db->prepare('DELETE FROM `videos` WHERE `vid` = :vid');
         $query->bindParam(':vid', $id);
         $query->execute();
         deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg');
@@ -2334,7 +2334,7 @@ function getReleaseVideo($id) // DONE
 /*function updateYoutubeStat()
 {
     global $db;
-    $query = $db->query('SELECT `id`, `vid` FROM `youtube`');
+    $query = $db->query('SELECT `id`, `vid` FROM `videos`');
     $query->execute();
     while($row = $query->fetch()){
         $stat = youtubeStat($row['vid']);
@@ -2473,16 +2473,16 @@ function youtubeShow() // DONE
     $data = [];
     $result = '';
     $tmpl = '<td><a href="{url}" target="_blank"><img src="{img}" alt="{alt}" height="245"></a></td>';
-    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 0 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
+    $query = $db->query('SELECT `id`, `video_id` AS `vid`, `title`, `preview` FROM `videos` WHERE `is_announce` = 0 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
     $query->execute();
     while ($row = $query->fetch()) {
-        $arr1[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview_original' => $row['preview_original']];
+        $arr1[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview' => $row['preview']];
     }
 
-    $query = $db->query('SELECT `id`, `youtube_id` AS `vid`, `title`, `preview_original` FROM `youtube` WHERE `is_announce` = 1 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
+    $query = $db->query('SELECT `id`, `video_id` AS `vid`, `title`, `preview` FROM `videos` WHERE `is_announce` = 1 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
     $query->execute();
     while ($row = $query->fetch()) {
-        $arr2[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview_original' => $row['preview_original']];
+        $arr2[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview' => $row['preview']];
     }
     $arr1 = array_slice($arr1, 0, count($arr2));
     foreach ($arr1 as $k => $v) {
@@ -2496,7 +2496,7 @@ function youtubeShow() // DONE
     foreach ($data as $v) {
         $youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$v['vid']}", $tmpl);
         //$youtube = str_replace('{img}', urlCDN(fileTime('/upload/youtube/'.hash('crc32', $v['vid']).'.jpg')), $youtube);
-        $youtube = str_replace('{img}', sprintf('%s/%s/%s', $conf['youtube_poster_host'], $v['id'], $v['preview_original']), $youtube);
+        $youtube = str_replace('{img}', sprintf('%s/%s/%s', $conf['youtube_poster_host'], $v['id'], $v['preview']), $youtube);
         $youtube = str_replace('{alt}', $v['title'], $youtube);
         $arr["$i"][] = $youtube;
         if (count($arr[$i]) == 2) {

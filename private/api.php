@@ -235,15 +235,18 @@ function apiList()
         return $info === null || $torrent === null || $info === false || $torrent === false;
     }
 
-    fetchNormalCache(); // DONE
 
-    if (checkApiRelaxing()) { // DONE
-
-        fetchInfiniteCache();
-        if (checkApiRelaxing()) {
-            throw new ApiException('API is not ready', 400);
+    ////////////////////// HOTFIX
+    if(isset($_POST['query']) && in_array($_POST['query'], ['random_release']) === false) {
+        fetchNormalCache(); // DONE
+        if (checkApiRelaxing()) { // DONE
+            fetchInfiniteCache();
+            if (checkApiRelaxing()) {
+                throw new ApiException('API is not ready', 400);
+            }
         }
     }
+
 
     /* Main api methods */
     function apiGetTorrentsMap($torrents, $idsString) // DONE
@@ -691,7 +694,7 @@ function apiList()
             SELECT `type`, `id`, `timestamp` FROM (
               SELECT 'release' as `type`, `id` as id, UNIX_TIMESTAMP(`fresh_at`) as `timestamp` FROM `releases` WHERE `is_hidden` = 0 and `deleted_at` IS NULL
               UNION
-              SELECT 'youtube' as `type`, `id` as id, UNIX_TIMESTAMP(`created_at`) as `timestamp` FROM `youtube` WHERE `deleted_at` IS NULL                                   
+              SELECT 'youtube' as `type`, `id` as id, UNIX_TIMESTAMP(`created_at`) as `timestamp` FROM `videos` WHERE `deleted_at` IS NULL                                   
             )
             AS feed
             ORDER BY `timestamp` DESC 
@@ -738,7 +741,7 @@ function apiList()
                     break;
 
                 case 'youtube':
-                    $query = $db->prepare('SELECT *, UNIX_TIMESTAMP(`created_at`) as `created_at` FROM `youtube` WHERE `id` = :id');
+                    $query = $db->prepare('SELECT *, UNIX_TIMESTAMP(`created_at`) as `created_at` FROM `videos` WHERE `id` = :id');
                     $query->bindParam(':id', $feedItem['id']);
                     $query->execute();
                     if ($row = $query->fetch()) {
@@ -757,8 +760,8 @@ function apiList()
         return [
             'id' => intval($row['id']),
             'title' => html_entity_decode(html_entity_decode(trim($row['title']))),
-            'image' => sprintf('%s/%s/%s', $conf['youtube_poster_host'], $row['id'], $row['preview_original']),
-            'vid' => $row['youtube_id'],
+            'image' => sprintf('%s/%s/%s', $conf['youtube_poster_host'], $row['id'], $row['preview']),
+            'vid' => $row['video_id'],
             'views' => intval($row['views']),
             'comments' => intval($row['comments']),
             'timestamp' => intval($row['created_at'])
@@ -768,7 +771,7 @@ function apiList()
     function apiGetYoutube() // DONE
     {
         global $db;
-        $countQuery = $db->query('SELECT COUNT(*) FROM `youtube` WHERE `deleted_at` IS NULL');
+        $countQuery = $db->query('SELECT COUNT(*) FROM `videos` WHERE `deleted_at` IS NULL');
         $count = intval($countQuery->fetch()[0]);
 
         $pagination = createPagination($count);
@@ -776,7 +779,7 @@ function apiList()
         $perPage = (int)$pagination['perPage'];
 
         $result = [];
-        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `youtube` WHERE `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
+        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `videos` WHERE `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
         $query->bindParam(":start_index", $startIndex, \PDO::PARAM_INT);
         $query->bindParam(":per_page", $perPage, \PDO::PARAM_INT);
         $query->execute();
@@ -870,9 +873,9 @@ function apiList()
 
     function apiGetRandomRelease() // DONE
     {
-        $randomCode = randomRelease();
+        //$randomCode = randomRelease();
         return [
-            'code' => $randomCode
+            'code' => null, // $randomCode
         ];
     }
 
