@@ -873,9 +873,9 @@ function apiList()
 
     function apiGetRandomRelease() // DONE
     {
-        //$randomCode = randomRelease();
+        $randomCode = randomRelease();
         return [
-            'code' => null, // $randomCode
+            'code' => $randomCode
         ];
     }
 
