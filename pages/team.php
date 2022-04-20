@@ -80,7 +80,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
             <ul>
                 <li><span style="color: #800000;">Caxaro4ek </span> - руководитель команды технарей</li>
                 <li><span style="color: #b523c5;">Rossik666</span> - руководитель команд: релизёров, сидеров; оформитель (четвёртая лига)</li>
-                <li><span style="color: #f7941d;">Sekai</span> - руководитель команды оформителей</li>
+                <li><span style="color: #f7941d;">ElViS</span> - руководитель команды оформителей, релизёр</li>
             </ul>
             <div class="day">
                 <div class="teamleft">&#8546; лига</div>
@@ -109,9 +109,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #ebd800;">Flames</span> - переводчик</li>
                 <li><span style="color: #ebd800;">Timur_kun</span> - переводчик</li>
 				
-                <li><span style="color: #f7941d;">ElViS</span> - оформитель, релизёр</li>
+                <li><span style="color: #f7941d;">Evrey or zizika</span> - оформитель</li>
 
-                <li><span style="color: #33cccc;">Spiny</span> - дизайнер</li>
                 <li><span style="color: #33cccc;">Kell</span> - дизайнер</li>
                 <li><span style="color: #33cccc;">Yukki</span> - дизайнер</li>
 
@@ -160,11 +159,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #ebd800;">Mr Fantasm</span> - переводчик стажер</li>
 
 
-                <li><span style="color: #f7941d;">Evrey or zizika</span> - оформитель</li>
-                <li><span style="color: #f7941d;">Diabl</span> - оформитель</li>
                 <li><span style="color: #f7941d;">JoyMaloy</span> - оформитель</li>
                 <li><span style="color: #f7941d;">Neri</span> - оформитель</li>
-                <li><span style="color: #f7941d;">ITWolf</span> - оформитель</li>
                 <li><span style="color: #f7941d;">AFFO</span> - оформитель</li>
 
 
@@ -202,6 +198,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #f7941d;">Waspil</span> - оформитель (в отпуске)</li>
                 <li><span style="color: #f7941d;">Akeno102</span> - оформитель (в отпуске)</li>
+				<li><span style="color: #f7941d;">Diabl</span> - оформитель (в отпуске)</li>
 
                 <li><span style="color: #800000;">Psychosocial76</span> - технарь (в отпуске)</li>
                 <li><span style="color: #800000;">Blaze</span> - технарь (в отпуске)</li>
@@ -215,6 +212,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #000080;">Aurenmaru</span> - сидер (в отпуске)</li>
                 <li><span style="color: #000080;">zlo</span> - сидер (в отпуске)</li>
 
+				<li><span style="color: #33cccc;">Spiny</span> - дизайнер (в отпуске)</li>
                 <li><span style="color: #33cccc;">Sebastian Wilde</span> - дизайнер (в отпуске)</li>
 
                 <li>Hant</span> - PR-команда (в отпуске)</li>
@@ -225,20 +223,19 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <div class="teamright">АКАДЕМИЯ</div>
             </div>
             <ul>
-                <li><span style="color: #339966;">Frederica Izzard</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Slava</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Myuk</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Zayka</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Fellandaris</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Huskycat</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Jaily</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Vulpis</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">Kaize</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Vodyanoy</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Balmonte</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">MefistoO</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Norma</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Zaika</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Frederica Izzard</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Fellandaris</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Night shift</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Huskycat</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">NeoNoir</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Mortemiya</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Jaily</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Водяной</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Chaika</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Buzya</span> - войсер стажёр</li>
 
                 <li><span style="color: #800000;">Plastinka</span> - таймер стажёр</li>
 
