@@ -2133,7 +2133,17 @@ function footerJS() // DONE
         case 'donate':
             $result .= str_replace('{page}', '', $vk);
             $result .= '
-				<iframe src="https://yoomoney.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&default-sum=200&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&successURL=https%3A%2F%2Fwww.anilibria.tv%2Fpages%2Fdonate.php&quickpay=shop&account=4100115839344905&" width="100%" height="222" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+				<script type="text/javascript">
+					
+					setTimeout(function(){
+					f = document.createElement("iframe");
+					f.frameBorder = 0;
+					f.src = "https://yoomoney.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&default-sum=200&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&successURL=https%3A%2F%2Fwww.anilibria.tv%2Fpages%2Fdonate.php&quickpay=shop&account=4100115839344905&"; 
+					f.width = 360; 
+					f.height = 220;
+					$("#yandexMoney").append(f);
+				  }, 75);
+				</script>
 			';
             //$result .= '<script src="'.fileTime('/js/player.js').'" type="text/javascript"></script>';
             //$result .= '<script>var player = new Playerjs({ id:"anilibriaPlayer", "title":"&nbsp;", "file":"'.fileTime('/upload/donate/1.mp4').'", poster:"'.fileTime('/upload/donate/1.jpg').'", preroll_deny:"vast2427,vast2585"});</script>';
