@@ -2065,46 +2065,46 @@ function footerJS() // DONE
             $result .= str_replace('{page}', '', $vk);
             break;
         case 'cp':
-            $result .= str_replace('{url}', fileTime('/js/jquery.Jcrop.min.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/css/jquery.Jcrop.min.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/js/uploadAvatar.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/jquery.Jcrop.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/css/jquery.Jcrop.min.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/js/uploadAvatar.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/css/dataTables.bootstrap.min.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/js/jquery.dataTables.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/dataTables.bootstrap.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/tables.js'), $tmplJS);
             break;
         case 'new':
-            $result .= str_replace('{url}', fileTime('/css/dataTables.bootstrap.min.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/js/jquery.dataTables.min.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/js/dataTables.bootstrap.min.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/js/tables.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/css/dataTables.bootstrap.min.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/js/jquery.dataTables.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/dataTables.bootstrap.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/tables.js'), $tmplJS);
             $result .= str_replace('{page}', '', $vk);
         case 'catalog':
-            $result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/css/simplePagination.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/css/bootstrap-toggle.min.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
-            $result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/js/jquery.simplePagination.js'), $tmplJS);
-            $result .= str_replace('{url}', fileTime('/js/bootstrap-toggle.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/css/chosen.min.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/css/simplePagination.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/css/bootstrap-toggle.min.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/css/chosen-bootstrap-theme.css'), $tmplCSS);
+            $result .= str_replace('{url}', fileHash('/js/chosen.jquery.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/jquery.simplePagination.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/bootstrap-toggle.min.js'), $tmplJS);
             $result .= '<script>$(".chosen").chosen();</script>';
-            $result .= str_replace('{url}', fileTime('/js/catalog.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/catalog.js'), $tmplJS);
             break;
         case 'alphabet':
-            $result .= str_replace('{url}', fileTime('/js/jquery.lazy.min.js'), $tmplJS);
+            $result .= str_replace('{url}', fileHash('/js/jquery.lazy.min.js'), $tmplJS);
             $result .= '<script>$(function(){$(".lazy").lazy();});</script>';
             break;
         case 'release':
             if ($user && $user['access'] >= 2) {
-                $result .= str_replace('{url}', fileTime('/css/chosen.min.css'), $tmplCSS);
-                $result .= str_replace('{url}', fileTime('/css/chosen-bootstrap-theme.css'), $tmplCSS);
-                $result .= str_replace('{url}', fileTime('/js/chosen.jquery.min.js'), $tmplJS);
+                $result .= str_replace('{url}', fileHash('/css/chosen.min.css'), $tmplCSS);
+                $result .= str_replace('{url}', fileHash('/css/chosen-bootstrap-theme.css'), $tmplCSS);
+                $result .= str_replace('{url}', fileHash('/js/chosen.jquery.min.js'), $tmplJS);
                 $result .= '<script>$(".chosen").chosen();</script>';
                 $result .= '<style>.chosen-container { min-width:100%; }</style>';
             }
             $tmp = getReleaseVideo($var['release']['id']);
             if (!empty($tmp) && !$var['release']['block']) {
-                $tmpPlayer = str_replace('{playerjs}', urlCDN(fileTime('/js/player.js')), getTemplate('playerjs'));
+                $tmpPlayer = str_replace('{playerjs}', urlCDN(fileHash('/js/player.js')), getTemplate('playerjs'));
                 $tmpPlayer = str_replace('{deny}', adsUrl(), $tmpPlayer);
                 $result .= str_replace('{playlist}', $tmp, $tmpPlayer);
             }
@@ -2677,6 +2677,24 @@ function deleteFile($f) // DONE
     }
     return ['draw' => $row['draw'], 'start' => $row['start'], 'length' => $row['length'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data];
 }*/
+
+
+
+function fileHash($file) { // DONE
+
+    if (!file_exists($file)) {
+        $file = $_SERVER['DOCUMENT_ROOT'] . $file;
+        if (!file_exists($file)) {
+            return false;
+        }
+    }
+
+    $content = file_get_contents($file);
+    $hashOfContent = md5($content);
+
+    return str_replace($_SERVER['DOCUMENT_ROOT'], '', $file) . '?' . $hashOfContent;
+
+}
 
 function fileTime($file) // DONE
 {
