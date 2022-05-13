@@ -2139,7 +2139,7 @@ function footerJS() // DONE
 					setTimeout(function(){
 					f = document.createElement("iframe");
 					f.frameBorder = 0;
-					f.src = "https://yoomoney.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&targets-hint=&default-sum=100&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&hint=&successURL=&quickpay=shop&account=4100115839344905"; 
+					f.src = "https://yoomoney.ru/quickpay/shop-widget?writer=seller&targets=%D0%94%D0%BE%D0%B1%D1%80%D0%BE%D0%B2%D0%BE%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BF%D0%BE%D0%B6%D0%B5%D1%80%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&default-sum=200&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&successURL=https%3A%2F%2Fwww.anilibria.tv%2Fpages%2Fdonate.php&quickpay=shop&account=4100115839344905&"; 
 					f.width = 360; 
 					f.height = 220;
 					$("#yandexMoney").append(f);
