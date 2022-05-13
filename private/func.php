@@ -1870,6 +1870,7 @@ function showRelease() // DONE
             $torrent .= getTemplate('torrent');
             $tmp = json_decode($row['info'], true);
             $torrent = str_replace('{ctime}', date('d.m.Y H:i', $row['ctime']), $torrent);
+            $torrent = str_replace('{utctime}', date('c', $row['ctime']), $torrent);
             $torrent = str_replace('{seeders}', $row['seeders'], $torrent);
             $torrent = str_replace('{leechers}', $row['leechers'], $torrent);
             $torrent = str_replace('{completed}', $row['completed'], $torrent);
