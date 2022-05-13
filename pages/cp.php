@@ -286,7 +286,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="avatarInfo">Загрузка аватара</h4>
+				<h4 class="modal-title" id="avatarInfo">User-Agent</h4>
 			</div>
 			<div  class="modal-body">
 			<pre id="showHeader">
