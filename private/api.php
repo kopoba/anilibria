@@ -237,7 +237,7 @@ function apiList()
 
 
     ////////////////////// HOTFIX
-    if(isset($_POST['query']) && in_array($_POST['query'], ['random_release']) === false) {
+    if (isset($_POST['query']) && in_array($_POST['query'], ['random_release']) === false) {
         fetchNormalCache(); // DONE
         if (checkApiRelaxing()) { // DONE
             fetchInfiniteCache();
@@ -1339,22 +1339,17 @@ function getApiPlaylist($id) // DONE
 
         $server = $servers[array_rand($servers, 1)];
 
-        $endingSkip = null; // future
-
-        $openingSkip = [
-            $episode['opening_starts_at'] !== null ? (float) $episode['opening_starts_at'] : null,
-            $episode['opening_ends_at'] !== null ? (float)  $episode['opening_ends_at'] : null,
-        ];
-
+        $endingSkip = []; // future
+        $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
 
         $item = [
             'id' => (float)$episode['ordinal'],
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'srcSd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
-            'skips' => [ 
+            'skips' => [
                 'ending' => $endingSkip,
-                'opening' => $openingSkip,
+                'opening' => count(array_filter($openingSkip, 'strlen')) === 2 ? $openingSkip : [],
             ],
             'poster' => $episode['preview_original']
                 ? implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']])
