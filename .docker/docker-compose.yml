@@ -6,7 +6,7 @@ services:
     image: anilibria.legacy:$APP_VERSION
     restart: always
     volumes:
-      - ./../../storage/media:/var/www/media/
+      - ./../../storage/static:/var/www/storage/
     networks:
       - anilibria
     ports:
@@ -16,4 +16,4 @@ services:
 
 networks:
   anilibria:
-    name: anilibria
+    external: true
