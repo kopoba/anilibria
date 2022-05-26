@@ -107,7 +107,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #ebd800;">Teriliva</span> - переводчик, редактор</li>
                 <li><span style="color: #ebd800;">Flames</span> - переводчик</li>
-                <li><span style="color: #ebd800;">Timur_kun</span> - переводчик</li>
+                <li><span style="color: #ebd800;">Timur_kun</span> - переводчик, редактор</li>
 				
                 <li><span style="color: #f7941d;">Evrey or zizika</span> - оформитель</li>
 
@@ -147,10 +147,9 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #ebd800;">Initrd</span> - переводчик</li>
                 <li><span style="color: #ebd800;">DeerGfonis</span> - переводчик</li>
+                <li><span style="color: #ebd800;">SwiXit</span> - переводчик, редактор</li>
                 <li><span style="color: #ebd800;">Artairo</span> - переводчик</li>
-                <li><span style="color: #ebd800;">chibikTLT</span> - переводчик</li>
                 <li><span style="color: #ebd800;">rokettu</span> - переводчик</li>
-                <li><span style="color: #ebd800;">SwiXit</span> - переводчик</li>
                 <li><span style="color: #ebd800;">Fenix Main</span> - переводчик</li>
                 <li><span style="color: #ebd800;">Leyla</span> - переводчик</li>
                 <li><span style="color: #ebd800;">AKi99</span> - переводчик</li>
@@ -190,11 +189,11 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #ebd800;">Iron_me</span> - переводчик (в отпуске)</li>
                 <li><span style="color: #ebd800;">Ph0enix</span> - переводчик, сидер (в отпуске)</li>
-                <li><span style="color: #ebd800;">Annatar</span> - переводчик (в отпуске)</li>
                 <li><span style="color: #ebd800;">Sinaka</span> - переводчик (в отпуске)</li>
                 <li><span style="color: #ebd800;">Nasty Lupus</span> - переводчик (в отпуске)</li>
                 <li><span style="color: #ebd800;">SmithTheHero</span> - переводчик (в отпуске)</li>
                 <li><span style="color: #ebd800;">Yumiya</span> - переводчик (в отпуске)</li>
+                <li><span style="color: #ebd800;">chibikTLT</span> - переводчик (в отпуске)</li>
 
                 <li><span style="color: #f7941d;">Waspil</span> - оформитель (в отпуске)</li>
                 <li><span style="color: #f7941d;">Akeno102</span> - оформитель (в отпуске)</li>
