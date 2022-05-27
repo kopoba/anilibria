@@ -3873,7 +3873,7 @@ function urlCDN($url) // DONE
 {
     global $conf;
     if ($conf['cdn']) {
-        return 'https://static.anilibria.tv' . $url;
+        return 'https://anilibria.tv' . $url;
     }
     return $url;
 }
