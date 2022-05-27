@@ -100,7 +100,7 @@
             itemsOnPage: 12,
             cssStyle: 'light-theme',
             currentPage: getCurrentPage(),
-            onPageClick: function(page) {
+            onPageClick: function (page) {
                 setLocationHashOfPage(page)
             }
         });
@@ -171,11 +171,14 @@
         setLocationHashOfPage(getCurrentPage());
     }
 
-
+    /**
+     *
+     * Set location hash of provided page
+     *
+     * @param page
+     */
     function setLocationHashOfPage(page = 1) {
-
-        // Update hash
-        location.hash = location.hash.replace('page-' + getCurrentPage(), 'page-' + page);
+        location.hash = 'page-' + page;
     }
 
 
