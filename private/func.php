@@ -1779,9 +1779,9 @@ function showRelease() // DONE
     $page = str_replace('{description}', $release['description'], $page);
 
     //$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
-    // $poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster_medium']);
+    // $poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster']);
 
-    $tmpImg = $release['poster_medium'];
+    $tmpImg = $release['poster'];
 
     $page = str_replace('{img}', $tmpImg, $page);
     $var['og'] .= "<meta property='og:image' content='$tmpImg' />";
@@ -2832,7 +2832,7 @@ function showPosters() // DONE
            `name_english` AS `ename`, 
            `alias` AS `code`, 
            `description`, 
-           IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium`, 
+           IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/240x350/default.jpg") as `poster`, 
            `is_wakanim` AS `bakanim`
             
         FROM `releases`
@@ -2841,7 +2841,7 @@ function showPosters() // DONE
     );
     while ($row = $query->fetch()) {
 
-        $img = $row['poster_medium'];
+        $img = $row['poster'];
 
         $tmp = getTemplate('torrent-block');
         $tmp = str_replace('{id}', $row['code'], $tmp);
@@ -3127,9 +3127,9 @@ function showCatalog() // DONE
 
             if ($release) {
 
-                $img = empty($release['poster_medium'])
+                $img = empty($release['poster'])
                     ? urlCDN('/upload/release/270x390/default.jpg')
-                    : sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster_medium']);
+                    : sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster']);
 
                 $item = $tmplTD;
                 $item = str_replace('{img}', $img, $item);
@@ -3302,7 +3302,7 @@ function showSchedule() // DONE
                `id`, 
                `name`, 
                `name_english` AS `ename`, 
-               IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium` 
+               IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/240x350/default.jpg") as `poster` 
             FROM `releases` 
             WHERE `publish_day` = :day AND `is_ongoing` = 1 AND `is_hidden` = 0 AND `deleted_at` IS NULL
         ');
@@ -3313,9 +3313,9 @@ function showSchedule() // DONE
         while ($row = $query->fetch()) {
 
             //$poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
-            //$poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);
+            //$poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster']);
 
-            $img = $row['poster_medium'];
+            $img = $row['poster'];
 
             $arr["$key"][$i][] = [
                 str_replace('{alt}', "{$row['name']} / {$row['ename']}",
@@ -3634,7 +3634,7 @@ function showAscReleases() // DONE
                `name`, `name_english` AS `ename`, 
                NULL AS `voice`, 
                `alias` AS `code`, 
-               IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium`
+               IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/240x350/default.jpg") as `poster`
                
             FROM `releases` 
             WHERE `is_hidden` = 0 and `deleted_at` IS NULL
@@ -3644,11 +3644,11 @@ function showAscReleases() // DONE
     $query->execute();
     while ($row = $query->fetch()) {
 
-        /*$img = empty($row['poster_medium'])
+        /*$img = empty($row['poster'])
             ? urlCDN('/upload/release/240x350/default.jpg')
-            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);*/
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster']);*/
 
-        $img = $row['poster_medium'];
+        $img = $row['poster'];
 
         //$poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
 
@@ -3820,7 +3820,7 @@ function showNewSeason() // DONE
        `description`, 
        `rating_by_favorites` AS `rating`, 
        `alias` AS `code`,
-        IF(`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster_medium`), "/upload/release/270x390/default.jpg") as `poster_medium`
+        IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/270x390/default.jpg") as `poster`
        
         FROM `releases` 
         WHERE `year` = :year AND `season` = :season AND `is_hidden` = 0 AND `deleted_at` IS NULL 
@@ -3841,11 +3841,11 @@ function showNewSeason() // DONE
         }*/
 
 
-        /*$img = empty($row['poster_medium'])
+        /*$img = empty($row['poster'])
             ? urlCDN('/upload/release/270x390/default.jpg')
-            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster_medium']);*/
+            : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster']);*/
 
-        $img = $row['poster_medium'];
+        $img = $row['poster'];
 
         $tmp = getTemplate('season-vote');
         $tmp = str_replace('{id}', $row['id'], $tmp);
@@ -4020,9 +4020,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             r.`alias` AS `code`,
             NULL AS `block`,
             r.`is_wakanim` AS `bakanim`,
-            IF(r.`poster_small` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster_small`), "/upload/release/240x350/default.jpg") as `poster_small`,
-            IF(r.`poster_medium` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster_medium`), "/upload/release/240x350/default.jpg") as `poster_medium`,
-            IF(r.`poster_original` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster_original`), "/upload/release/350x500/default.jpg") as `poster_original`,
+            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster`,
             IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`
                
             

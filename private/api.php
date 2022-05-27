@@ -1129,7 +1129,7 @@ function updateApiCache() // DONE
             $names[] = $secondName;
         }
 
-        $poster = $row['poster_medium'];
+        $poster = $row['poster'];
 
         $genres = [];
         $genresTmp = array_unique(explode(',', $row['genre']));
