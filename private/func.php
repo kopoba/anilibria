@@ -3871,11 +3871,14 @@ function showNewSeason() // DONE
 
 function urlCDN($url) // DONE
 {
-    global $conf;
+    return $url;
+
+    /*global $conf;
     if ($conf['cdn']) {
         return 'https://anilibria.tv' . $url;
     }
-    return $url;
+    return $url;*/
+
 }
 
 function sendReleaseReport() // DONE
