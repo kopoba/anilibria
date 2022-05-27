@@ -100,6 +100,9 @@
             itemsOnPage: 12,
             cssStyle: 'light-theme',
             currentPage: getCurrentPage(),
+            onPageClick: function(page) {
+                setLocationHashOfPage(page)
+            }
         });
     }
 
@@ -163,6 +166,13 @@
 
         // Select new page in pagination
         $("#xpagination").pagination('selectPage', page);
+
+        // Update hash
+        setLocationHashOfPage(getCurrentPage());
+    }
+
+
+    function setLocationHashOfPage(page = 1) {
 
         // Update hash
         location.hash = location.hash.replace('page-' + getCurrentPage(), 'page-' + page);
