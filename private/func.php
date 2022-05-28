@@ -3903,7 +3903,7 @@ function iframePlayer() // DONE
     }
     $playList = getReleaseVideo($_GET['id']);
     if ($playList) {
-        $result = str_replace('{playerjs}', urlCDN(fileTime('/js/player.js')), getTemplate('playerjs'));
+        $result = str_replace('{playerjs}', urlCDN(fileHash('/js/player.js')), getTemplate('playerjs'));
         $result = str_replace('{deny}', adsUrl(), $result);
         $result = str_replace('{playlist}', $playList, $result);
         return ['id' => $_GET['id'], 'result' => $result];
@@ -4021,6 +4021,9 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             NULL AS `block`,
             r.`is_wakanim` AS `bakanim`,
             IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster`,
+            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster_small`,
+            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster_medium`,
+            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster_original`,
             IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`
                
             
