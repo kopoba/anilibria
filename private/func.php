@@ -4021,9 +4021,6 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             NULL AS `block`,
             r.`is_wakanim` AS `bakanim`,
             IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster`,
-            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster_small`,
-            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster_medium`,
-            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster_original`,
             IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`
                
             
