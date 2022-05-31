@@ -100,15 +100,19 @@
 			The source code is available from https://github.com/anilibria/
 		-->
 		<?php if(checkADS()):?>
-		<script type="text/javascript">
-			var utarget_rand = Math.floor(Math.random()*10000);
-			var utarget_cookie = document.cookie.indexOf("u_76f475ff0b=")+1;
-			var utarget_script = document.createElement("script");
-			utarget_script.type = 'text/javascript';
-			utarget_script.async = true;
-			utarget_script.src = "https://portoteamo.com/ranging/76f475ff0b/js/?rand="+utarget_rand+"&cookie="+utarget_cookie;
-			document.body.appendChild(utarget_script);
-		</script>
+            <script type='text/javascript' data-cfasync='false'>
+                (function(){
+                    var ud;
+                    try { ud = localStorage.getItem('e795110e33_uid'); } catch (e) { }
+
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.charset = 'utf-8';
+                    script.async = 'true';
+                    script.src = 'https://absoluteroute.com/bens/vinos.js?23489&u=' + ud + '&a=' + Math.random();
+                    document.body.appendChild(script);
+                })();
+            </script>
 		<?php endif;?>
 	</body>
 </html>

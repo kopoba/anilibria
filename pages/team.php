@@ -131,6 +131,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 				<li><span style="color: #339966;">Renie</span> - войсер</li>
 				<li><span style="color: #339966;">SlivciS</span> - войсер, дизайнер</li>
 				<li><span style="color: #339966;">Nuts</span> - войсер, дизайнер</li>
+				<li><span style="color: #339966;">NeoNoir</span> - войсер</li>
+
 				
 
 				<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
@@ -230,9 +232,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #339966;">Fellandaris</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">Night shift</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">Huskycat</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">NeoNoir</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">Jaily</span> - войсер стажёр</li>
-                <li><span style="color: #339966;">Водяной</span> - войсер стажёр</li>
+                <li><span style="color: #339966;">Vodyanoy</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">Chaika</span> - войсер стажёр</li>
                 <li><span style="color: #339966;">Buzya</span> - войсер стажёр</li>
 
