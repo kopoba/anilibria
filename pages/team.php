@@ -81,6 +81,12 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li><span style="color: #800000;">Caxaro4ek </span> - руководитель команды технарей</li>
                 <li><span style="color: #b523c5;">Rossik666</span> - руководитель команд: релизёров, сидеров; оформитель (четвёртая лига)</li>
                 <li><span style="color: #f7941d;">ElViS</span> - руководитель команды оформителей, релизёр</li>
+                <li><span style="color: #339966;">OkanaTsoy</span> - руководитель академии войсеров, войсер</li>
+
+                <li><span style="color: #339966;">Kroxxa</span> - войсер</li>
+                <li><span style="color: #339966;">Renie</span> - войсер</li>
+                <li><span style="color: #339966;">MyAska</span> - войсер</li>
+                <li><span style="color: #339966;">Gomer</span> - войсер</li>
             </ul>
             <div class="day">
                 <div class="teamleft">&#8546; лига</div>
@@ -88,13 +94,11 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
             </div>
             <ul>
 				<li><span style="color: #339966;">Crowley</span> - войсер</li>
-                <li><span style="color: #339966;">Derenn</span> - войсер</li>
-                <li><span style="color: #339966;">Gomer</span> - войсер</li>
-				<li><span style="color: #339966;">MyAska</span> - войсер</li>
-				<li><span style="color: #339966;">JazzJack</span> - войсер</li>
+                <li><span style="color: #339966;">NeoNoir</span> - войсер</li>
 				<li><span style="color: #339966;">Anzen</span> - войсер, дизайнер</li>
+                <li><span style="color: #339966;">HectoR</span> - войсер</li>
                 <li><span style="color: #339966;">Zozya</span> - войсер</li>
-				<li><span style="color: #339966;">OkanaTsoy</span> - войсер</li>
+                <li><span style="color: #339966;">Hekomi</span> - войсер</li>
 
                 <li><span style="color: #800000;">Quin</span> - технарь, дизайнер</li>
                 <li><span style="color: #800000;">WhiteCat</span> - технарь</li>
@@ -124,15 +128,13 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <div class="teamright">ОСНОВА</div>
             </div>
             <ul>
-				<li><span style="color: #339966;">Kroxxa</span> - войсер стажёр</li>
-				<li><span style="color: #339966;">Hekomi</span> - войсер</li>
-				<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
+                <li><span style="color: #339966;">JazzJack</span> - войсер</li>
+                <li><span style="color: #339966;">Derenn</span> - войсер</li
 				<li><span style="color: #339966;">Cleo-chan</span> - войсер</li>
-				<li><span style="color: #339966;">Renie</span> - войсер</li>
+				<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
 				<li><span style="color: #339966;">SlivciS</span> - войсер, дизайнер</li>
 				<li><span style="color: #339966;">Nuts</span> - войсер, дизайнер</li>
-				<li><span style="color: #339966;">NeoNoir</span> - войсер</li>
-
+                <li><span style="color: #339966;">Hoopoe</span> - войсер (в отпуске)</li>
 				
 
 				<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
@@ -184,10 +186,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
             </div>
             <ul>
                 <li><span style="color: #339966;">Arato</span> - войсер (в отпуске)</li>
-                <li><span style="color: #339966;">Kari</span> - войсер (в отпуске)</li>
-                <li><span style="color: #339966;">HectoR</span> - войсер (в отпуске)</li>
 				<li><span style="color: #339966;">Ados</span> - войсер (в отпуске)</li>
-                <li><span style="color: #339966;">Hoopoe</span> - войсер (в отпуске)</li>
+                <li><span style="color: #339966;">Kari</span> - войсер (в отпуске)</li>
 
                 <li><span style="color: #ebd800;">Iron_me</span> - переводчик (в отпуске)</li>
                 <li><span style="color: #ebd800;">Ph0enix</span> - переводчик, сидер (в отпуске)</li>
