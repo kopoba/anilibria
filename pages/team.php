@@ -129,7 +129,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
             </div>
             <ul>
                 <li><span style="color: #339966;">JazzJack</span> - войсер</li>
-                <li><span style="color: #339966;">Derenn</span> - войсер</li
+                <li><span style="color: #339966;">Derenn</span> - войсер</li>
 				<li><span style="color: #339966;">Cleo-chan</span> - войсер</li>
 				<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
 				<li><span style="color: #339966;">SlivciS</span> - войсер, дизайнер</li>
