@@ -10,7 +10,7 @@ function headerAds(){
 	$img = urlCDN('/img/29.png');
 	$result['ads'] = false;
 
-	$data[] = ['img' => 'fox_legends.jpg', 'left' => '795px', 'top' => '77px', 'height' => '75px', 'width' => '270px', 'url' => '/dg'];
+	$data[] = ['img' => 'fox_legends.jpg', 'left' => '795px', 'top' => '77px', 'height' => '75px', 'width' => '270px', 'url' => '/fox'];
 	$data[] = ['img' => 'DG.png', 'left' => '720px', 'top' => '70px', 'height' => '70px', 'width' => '260px', 'url' => '/dg'];
 	$data[] = ['img' => 'dc.png', 'left' => '887px', 'top' => '70px', 'height' => '75px', 'width' => '225px', 'url' => '/dc'];
 
