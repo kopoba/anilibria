@@ -79,7 +79,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
             </div>
             <ul>
                 <li><span style="color: #800000;">Caxaro4ek </span> - руководитель команды технарей</li>
-                <li><span style="color: #b523c5;">Rossik666</span> - руководитель команд: релизёров, сидеров; оформитель (четвёртая лига)</li>
+                <li><span style="color: #b523c5;">Rossik666</span> - руководитель команд: релизёров, сидеров; оформитель</li>
                 <li><span style="color: #f7941d;">ElViS</span> - руководитель команды оформителей, релизёр</li>
                 <li><span style="color: #339966;">OkanaTsoy</span> - руководитель академии войсеров, войсер</li>
 
@@ -137,7 +137,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 				<li><span style="color: #339966;">WhiteCroW</span> - войсер</li>
 				<li><span style="color: #339966;">SlivciS</span> - войсер, дизайнер</li>
 				<li><span style="color: #339966;">Nuts</span> - войсер, дизайнер</li>
-                <li><span style="color: #339966;">Hoopoe</span> - войсер (в отпуске)</li>
+                <li><span style="color: #339966;">Hoopoe</span> - войсер</li>
 				
 
 				<li><span style="color: #800000;">Ninja-san</span> - технарь</li>
@@ -166,7 +166,11 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #f7941d;">JoyMaloy</span> - оформитель</li>
                 <li><span style="color: #f7941d;">Neri</span> - оформитель</li>
-                <li><span style="color: #f7941d;">AFFO</span> - оформитель</li>
+                <li><span style="color: #f7941d;">Diabl</span> - оформитель</li>
+                <li><span style="color: #f7941d;">NekoNis</span> - оформитель</li>
+                <li><span style="color: #f7941d;">Lblzhnik</span> - оформитель</li>
+                <li><span style="color: #f7941d;">YoLoFox</span> - оформитель</li>
+                <li><span style="color: #f7941d;">nev32mind</span> - оформитель</li>
 
 
                 <li><span style="color: #33cccc;">LanKett</span> - дизайнер</li>
@@ -204,7 +208,6 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #f7941d;">Waspil</span> - оформитель (в отпуске)</li>
                 <li><span style="color: #f7941d;">Akeno102</span> - оформитель (в отпуске)</li>
-				<li><span style="color: #f7941d;">Diabl</span> - оформитель (в отпуске)</li>
 
                 <li><span style="color: #800000;">Blaze</span> - технарь (в отпуске)</li>
                 <li><span style="color: #800000;">H3O</span> - технарь (в отпуске)</li>
@@ -258,6 +261,8 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
                 <li>Инквизитор - администратор discord-сервера</li>
                 <li>SineD - Работа с группой ВК</li>
                 <li>Maximka - Организатор мероприятий проекта</li>
+                <li>Kemsune - смм-щик</li>
+                <li>FranxxFun - смм-щик</li>
             </ul>
         </div>
         <div class="clear"></div>
