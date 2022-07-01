@@ -1309,7 +1309,7 @@ function upload_avatar() // DONE
     $dir = $_SERVER['DOCUMENT_ROOT'] . $dir;
     $file = "$dir/$name.jpg";*/
 
-    $dir = sprintf('%s/%s/%s', '/var/www/media/users/avatars', floor($user['id'] / 100), $user['id']);
+    $dir = sprintf('%s/%s/%s', '/var/www/storage/users/avatars', floor($user['id'] / 100), $user['id']);
     $name = genRandStr(10, 1);
     $filename = $name . '.jpg';
 
