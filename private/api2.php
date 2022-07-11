@@ -231,13 +231,14 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
              t.`is_hevc`,
              t.`description`,
              t.`size`,
-             t.`hash`
+             t.`hash`,
+             t.`sort_order`
           
           FROM `torrents` AS t
           INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
           WHERE r.`id` = :releaseId and t.`deleted_at` IS NULL
           GROUP BY t.`id`
-          ORDER BY t.`created_at` ASC
+          ORDER BY t.`sort_order` ASC, t.`created_at` ASC
     ');
 
     $query->bindParam('releaseId', $releaseId);

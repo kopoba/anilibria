@@ -1253,7 +1253,7 @@ function updateApiCache() // DONE
             FROM `torrents` as t
             WHERE t.`releases_id` = :rid AND t.`deleted_at` IS NULL
             GROUP BY t.id
-            ORDER BY t.`created_at` ASC
+            ORDER BY t.`sort_order` ASC, t.`created_at` ASC
         ');
 
         $rowId = $row['id'];

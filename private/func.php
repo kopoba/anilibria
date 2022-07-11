@@ -1853,7 +1853,7 @@ function showRelease() // DONE
         INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
         WHERE t.`releases_id` = :id AND t.`deleted_at` IS NULL
         GROUP BY t.id
-        ORDER BY t.`created_at` ASC
+        ORDER BY t.`sort_order` ASC, t.`created_at` ASC
     ');
 
     $userHasRoles = $user && $user['has_roles'] === true ? 1 : 0;
