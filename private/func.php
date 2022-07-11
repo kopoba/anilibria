@@ -1198,7 +1198,7 @@ function downloadTorrent() // DONE
             t.`description`,
             t.`is_hevc`
         FROM `torrents` as t
-        INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
+        INNER JOIN `releases` AS r ON r.`id` = t.`release_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
         WHERE t.`id` = :id and t.`deleted_at` IS NULL
         GROUP by t.id
     ');
@@ -1850,8 +1850,8 @@ function showRelease() // DONE
            t.`leechers`, 
            t.`completed_times` as `completed` 
         FROM `torrents` as t
-        INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
-        WHERE t.`releases_id` = :id AND t.`deleted_at` IS NULL
+        INNER JOIN `releases` AS r ON r.`id` = t.`release_id` AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL
+        WHERE t.`release_id` = :id AND t.`deleted_at` IS NULL
         GROUP BY t.id
         ORDER BY t.`sort_order` ASC, t.`created_at` ASC
     ');
@@ -2914,7 +2914,7 @@ function releaseSeriesByID($id) // DONE
 
     global $db, $user;
 
-    $query = $db->prepare('SELECT `description` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC');
+    $query = $db->prepare('SELECT `description` FROM `torrents` WHERE `release_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();
@@ -2971,7 +2971,7 @@ function releaseDescriptionByID($id, $SymCount) // DONE
 function getTorrentDownloadLink($id) // DONE
 {
     global $db, $user;
-    $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `releases_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC LIMIT 1');
+    $query = $db->prepare('SELECT `id` AS `fid` FROM `torrents` WHERE `release_id` = :id and `deleted_at` IS NULL ORDER BY `updated_at` DESC LIMIT 1');
     $query->bindParam(':id', $id);
     $query->execute();
     $row = $query->fetch();

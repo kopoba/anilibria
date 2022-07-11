@@ -77,9 +77,9 @@ $router->map('GET', '/getTitleByTorrentID/[:torrentId]', function ($torrentId) {
     global $db;
     $query = $db->prepare('
         SELECT
-           t.`releases_id` as `rid` 
+           t.`release_id` as `rid` 
         FROM `torrents` as t
-        INNER JOIN `releases` as r ON r.id = t.releases_id 
+        INNER JOIN `releases` as r ON r.id = t.release_id 
         WHERE r.`is_hidden` = 0 AND r.`deleted_at` IS NULL AND t.`deleted_at` IS NULL AND t.`id` = :torrentId
     ');
     $query->bindParam('torrentId', $torrentId);
@@ -181,7 +181,7 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
         sprintf("
             SELECT 
                 `id` AS `torrent_id`, 
-                `releases_id`,
+                `release_id`,
                 UNIX_TIMESTAMP(updated_at) as `last_change`,
                 `type`, 
                 `quality`,
@@ -202,7 +202,7 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
     foreach ($torrents as $index => $torrent) {
         $torrents[$index] = array_merge($torrent, [
             'torrent_id' => (int)$torrent['torrent_id'],
-            'releases_id' => (int)$torrent['releases_id'],
+            'releases_id' => (int)$torrent['release_id'],
             'last_change' => (int)$torrent['last_change'],
             'is_hevc' => (bool)$torrent['is_hevc'],
             'size' => (int)$torrent['size'],
@@ -235,7 +235,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
              t.`sort_order`
           
           FROM `torrents` AS t
-          INNER JOIN `releases` AS r ON r.`id` = t.`releases_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
+          INNER JOIN `releases` AS r ON r.`id` = t.`release_id` AND r.`is_hidden` = 0 AND r.`deleted_at` IS NULL
           WHERE r.`id` = :releaseId and t.`deleted_at` IS NULL
           GROUP BY t.`id`
           ORDER BY t.`sort_order` ASC, t.`created_at` ASC
