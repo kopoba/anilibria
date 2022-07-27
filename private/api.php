@@ -694,7 +694,7 @@ function apiList()
             SELECT `type`, `id`, `timestamp` FROM (
               SELECT 'release' as `type`, `id` as id, UNIX_TIMESTAMP(`fresh_at`) as `timestamp` FROM `releases` WHERE `is_hidden` = 0 and `deleted_at` IS NULL
               UNION
-              SELECT 'youtube' as `type`, `id` as id, UNIX_TIMESTAMP(`created_at`) as `timestamp` FROM `videos` WHERE `deleted_at` IS NULL                                   
+              SELECT 'youtube' as `type`, `id` as id, UNIX_TIMESTAMP(`created_at`) as `timestamp` FROM `video_contents` WHERE `deleted_at` IS NULL                                   
             )
             AS feed
             ORDER BY `timestamp` DESC 
@@ -741,7 +741,7 @@ function apiList()
                     break;
 
                 case 'youtube':
-                    $query = $db->prepare('SELECT *, UNIX_TIMESTAMP(`created_at`) as `created_at` FROM `videos` WHERE `id` = :id');
+                    $query = $db->prepare('SELECT *, UNIX_TIMESTAMP(`created_at`) as `created_at` FROM `video_contents` WHERE `id` = :id');
                     $query->bindParam(':id', $feedItem['id']);
                     $query->execute();
                     if ($row = $query->fetch()) {
@@ -771,7 +771,7 @@ function apiList()
     function apiGetYoutube() // DONE
     {
         global $db;
-        $countQuery = $db->query('SELECT COUNT(*) FROM `videos` WHERE `deleted_at` IS NULL');
+        $countQuery = $db->query('SELECT COUNT(*) FROM `video_contents` WHERE `deleted_at` IS NULL');
         $count = intval($countQuery->fetch()[0]);
 
         $pagination = createPagination($count);
@@ -779,7 +779,7 @@ function apiList()
         $perPage = (int)$pagination['perPage'];
 
         $result = [];
-        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `videos` WHERE `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
+        $query = $db->prepare("SELECT *, UNIX_TIMESTAMP(created_at) as created_at FROM `video_contents` WHERE `deleted_at` IS NULL ORDER BY `created_at` DESC LIMIT :start_index, :per_page");
         $query->bindParam(":start_index", $startIndex, \PDO::PARAM_INT);
         $query->bindParam(":per_page", $perPage, \PDO::PARAM_INT);
         $query->execute();

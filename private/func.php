@@ -2323,7 +2323,7 @@ function getReleaseVideo($id) // DONE
     global $db;
     $x = get_headers("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$id&format=json")[0];
     if($x == 'HTTP/1.0 404 Not Found' || $x == 'HTTP/1.0 401 Unauthorized'){
-        $query = $db->prepare('DELETE FROM `videos` WHERE `vid` = :vid');
+        $query = $db->prepare('DELETE FROM `video_contents` WHERE `vid` = :vid');
         $query->bindParam(':vid', $id);
         $query->execute();
         deleteFile($_SERVER['DOCUMENT_ROOT'].'/upload/youtube/'.hash('crc32', $id).'.jpg');
@@ -2335,7 +2335,7 @@ function getReleaseVideo($id) // DONE
 /*function updateYoutubeStat()
 {
     global $db;
-    $query = $db->query('SELECT `id`, `vid` FROM `videos`');
+    $query = $db->query('SELECT `id`, `vid` FROM `video_contents`');
     $query->execute();
     while($row = $query->fetch()){
         $stat = youtubeStat($row['vid']);
@@ -2474,13 +2474,33 @@ function youtubeShow() // DONE
     $data = [];
     $result = '';
     $tmpl = '<td><a href="{url}" target="_blank"><img src="{img}" alt="{alt}" height="245"></a></td>';
-    $query = $db->query('SELECT `id`, `video_id` AS `vid`, `title`, `preview` FROM `videos` WHERE `is_announce` = 0 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
+    $query = $db->query('
+        SELECT 
+            `vc`.`id`, 
+            `vc`.`video_id` AS `vid`, 
+            `vc`.`title`, 
+            `vc`.`preview` 
+        FROM `video_contents` as `vc`
+        INNER JOIN `video_origins` as `vo` on `vo`.`id` = `vc`.`video_origin_id` 
+        WHERE `vo`.`is_announce` = 0 AND `vc`.`deleted_at` IS NULL
+        ORDER BY `vc`.`created_at` DESC  LIMIT 6');
+
     $query->execute();
     while ($row = $query->fetch()) {
         $arr1[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview' => $row['preview']];
     }
 
-    $query = $db->query('SELECT `id`, `video_id` AS `vid`, `title`, `preview` FROM `videos` WHERE `is_announce` = 1 AND `deleted_at` IS NULL ORDER BY `created_at` DESC  LIMIT 6');
+    $query = $db->query('
+         SELECT 
+            `vc`.`id`, 
+            `vc`.`video_id` AS `vid`, 
+            `vc`.`title`, 
+            `vc`.`preview` 
+        FROM `video_contents` as `vc`
+        INNER JOIN `video_origins` as `vo` on `vo`.`id` = `vc`.`video_origin_id` 
+        WHERE `vo`.`is_announce` = 1 AND `vc`.`deleted_at` IS NULL
+        ORDER BY `vc`.`created_at` DESC  LIMIT 6');
+
     $query->execute();
     while ($row = $query->fetch()) {
         $arr2[] = ['id' => $row['id'], 'vid' => $row['vid'], 'title' => $row['title'], 'preview' => $row['preview']];
