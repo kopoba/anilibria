@@ -61,10 +61,11 @@ function _mail($email, $subject, $message) // DONE
     }
 }
 
-function _message($key, $err = 'ok', array $payload = []) // DONE
+function _message($key, $err = 'ok', array $payload = [], int $statusCode = 200) // DONE
 {
     global $var;
     $response = array_merge(['err' => $err, 'mes' => $var['error'][$key], 'key' => $key], $payload);
+    http_response_code($statusCode);
     die(json_encode($response));
 }
 
@@ -1185,7 +1186,7 @@ function downloadTorrent() // DONE
     global $db, $user, $conf;
 
     if (empty($_GET['id'])) {
-        _message('empty', 'error');
+        _message('empty', 'error', [], 404);
     }
 
     // Get torrent
@@ -1206,7 +1207,7 @@ function downloadTorrent() // DONE
     $query->bindParam(':id', $_GET['id']);
     $query->execute();
 
-    if ($query->rowCount() == 0) _message('wrong', 'error');
+    if ($query->rowCount() == 0) _message('wrong', 'error', [], 404);
 
     $item = $query->fetch();
     $file = $item['file'] ?? null;
@@ -1228,7 +1229,7 @@ function downloadTorrent() // DONE
         $query = $db->prepare('SELECT `users_id` AS `id` FROM `users_sessions` WHERE `id` = :hash');
         $query->bindParam(':hash', $properSessionId);
         $query->execute();
-        if ($query->rowCount() == 0) _message('wrong', 'error');
+        if ($query->rowCount() == 0) _message('wrong', 'error', [], 404);
 
         $userId = $query->fetch();
         $userId = $userId['id'] ?? null;

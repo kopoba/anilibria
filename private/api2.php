@@ -275,15 +275,15 @@ $router->map('GET', '/getYouTube/[i:limit]', function ($limit) {
 
     $query = $db->prepare('
         SELECT 
-            `vc`.`id`, 
-           `vc`.`title`,
-           `vc`.`video_id` as `vid`,
-           UNIX_TIMESTAMP(`vc`.`created_at`) as `time`,
-           `vc`.`views` as `view`,
-           `vc`.`comments` as `comment`
-        FROM `video_content` as `vc`
-        WHERE `vc`.`deleted_at` IS NULL
-        ORDER BY `vc`.`created_at` DESC
+           `id`, 
+           `title`,
+           `video_id` as `vid`,
+           UNIX_TIMESTAMP(`created_at`) as `time`,
+           `views` as `view`,
+           `comments` as `comment`
+        FROM `video_contents`
+        WHERE `deleted_at` IS NULL
+        ORDER BY `created_at` DESC
         LIMIT ' . $limit);
 
     $query->execute();
