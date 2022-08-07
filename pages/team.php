@@ -181,7 +181,6 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
                 <li><span style="color: #000080;">iDDQD79</span> - сидер</li>
                 <li><span style="color: #000080;">btc8190</span> - сидер</li>
-                <li><span style="color: #000080;">xJesus</span> - сидер</li>
                 <li><span style="color: #000080;">Falciloid</span> - сидер</li>
                 <li><span style="color: #000080;">XaviER</span> - сидер, релизёр</li>
                 <li><span style="color: #000080;">Aurenmaru</span> - сидер</li>
