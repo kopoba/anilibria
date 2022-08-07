@@ -642,9 +642,9 @@ function registration() // DONE
     if (empty($_POST['login']) || empty($_POST['mail']) || empty($_POST['passwd'])) {
         _message('empty', 'error');
     }
-    if (strlen($_POST['login']) > 20 || strlen($_POST['mail']) > 254) {
-        _message('long', 'error');
-    }
+    if(strlen($_POST['login']) > 20) _message('longLogin', 'error');
+    if(strlen($_POST['mail']) > 254) _message('longEmail', 'error');
+
     if (preg_match('/[^0-9A-Za-z]/', $_POST['login'])) {
         _message('wrongLogin', 'error');
     }
@@ -656,13 +656,13 @@ function registration() // DONE
     $query->bindValue(':login', $_POST['login']);
     $query->execute();
     if ($query->rowCount() > 0) {
-        _message('registered', 'error');
+        _message('registeredLogin', 'error');
     }
     $query = $db->prepare('SELECT `id` FROM `users` WHERE `email`= :mail');
     $query->bindParam(':mail', $_POST['mail']);
     $query->execute();
     if ($query->rowCount() > 0) {
-        _message('registered', 'error');
+        _message('registeredEmail', 'error');
     }
     $passwd = createPasswd($_POST['passwd']);
     $query = $db->prepare('INSERT INTO `users` (`login`, `email`, `password`, `created_at`, `updated_at`, `torrents_passkey`) VALUES (:login, :mail, :passwd, NOW(), NOW(), LPAD(LEFT(REPLACE(REPLACE(REPLACE(TO_BASE64(UNHEX(MD5(:login))), "/", ""), "+", ""), "=", ""), 16), 16, 0))');
