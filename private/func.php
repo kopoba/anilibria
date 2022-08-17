@@ -1,6 +1,5 @@
 <?php
 
-
 function createPasswd($passwd = '') // DONE
 {
     if (empty($passwd)) {
@@ -1780,7 +1779,6 @@ function showRelease() // DONE
     $page = str_replace('{description}', $release['description'], $page);
 
     //$poster = $_SERVER['DOCUMENT_ROOT'].'/upload/release/350x500/'.$release['id'].'.jpg';
-    // $poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster']);
 
     $tmpImg = $release['poster'];
 
@@ -2311,7 +2309,9 @@ function getReleaseVideo($id) // DONE
             'skip' => empty($skips) === false ? implode($skips, ',') : null,
             'file' => implode(',', $qualities),
             'title' => sprintf('Серия %s', $episode['ordinal']),
-            'poster' => implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]),
+            'poster' => !empty($episode['preview_original'])
+                ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]))->getThumbnail(720, null, 80)
+                : null,
             'download' => null,
         ];
     }
@@ -2516,9 +2516,16 @@ function youtubeShow() // DONE
     }
     $i = 0;
     foreach ($data as $v) {
-        $youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$v['vid']}", $tmpl);
+
         //$youtube = str_replace('{img}', urlCDN(fileTime('/upload/youtube/'.hash('crc32', $v['vid']).'.jpg')), $youtube);
-        $youtube = str_replace('{img}', sprintf('%s/%s/%s', $conf['youtube_poster_host'], $v['id'], $v['preview']), $youtube);
+
+        $videoPreview = !empty($v['preview']) ? sprintf('%s/%s/%s', $conf['youtube_poster_host'], $v['id'], $v['preview']) : null;
+        $videoThumbnail = $videoPreview ? ImageThumbnail::make($videoPreview)->getThumbnail(400) : null;
+
+        $youtube = str_replace('{url}', "https://www.youtube.com/watch?v={$v['vid']}", $tmpl);
+        $youtube = str_replace('{img}', $videoThumbnail, $youtube);
+
+
         $youtube = str_replace('{alt}', $v['title'], $youtube);
         $arr["$i"][] = $youtube;
         if (count($arr[$i]) == 2) {
@@ -2700,8 +2707,8 @@ function deleteFile($f) // DONE
 }*/
 
 
-
-function fileHash($file) { // DONE
+function fileHash($file)
+{ // DONE
 
     if (!file_exists($file)) {
         $file = $_SERVER['DOCUMENT_ROOT'] . $file;
@@ -2853,7 +2860,7 @@ function showPosters() // DONE
            `name_english` AS `ename`, 
            `alias` AS `code`, 
            `description`, 
-           IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/240x350/default.jpg") as `poster`, 
+           IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), NULL) as `poster`, 
            `is_wakanim` AS `bakanim`
             
         FROM `releases`
@@ -2862,7 +2869,9 @@ function showPosters() // DONE
     );
     while ($row = $query->fetch()) {
 
-        $img = $row['poster'];
+        $img = !empty($row['poster'])
+            ? ImageThumbnail::make($row['poster'])->getThumbnail(240, 350)
+            : '/upload/release/240x350/default.jpg';
 
         $tmp = getTemplate('torrent-block');
         $tmp = str_replace('{id}', $row['code'], $tmp);
@@ -3148,9 +3157,9 @@ function showCatalog() // DONE
 
             if ($release) {
 
-                $img = empty($release['poster'])
-                    ? urlCDN('/upload/release/270x390/default.jpg')
-                    : sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster']);
+                $img = !empty($release['poster'])
+                    ? ImageThumbnail::make(sprintf('%s/%s/%s', $conf['release_poster_host'], $release['id'], $release['poster']))->getThumbnail(270, 390)
+                    : '/upload/release/270x390/default.jpg';
 
                 $item = $tmplTD;
                 $item = str_replace('{img}', $img, $item);
@@ -3323,7 +3332,7 @@ function showSchedule() // DONE
                `id`, 
                `name`, 
                `name_english` AS `ename`, 
-               IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/240x350/default.jpg") as `poster` 
+               IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), NULL) as `poster` 
             FROM `releases` 
             WHERE `publish_day` = :day AND `is_ongoing` = 1 AND `is_hidden` = 0 AND `deleted_at` IS NULL
         ');
@@ -3336,7 +3345,9 @@ function showSchedule() // DONE
             //$poster = $_SERVER['DOCUMENT_ROOT']."/upload/release/200x280/{$row['id']}.jpg";
             //$poster = sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster']);
 
-            $img = $row['poster'];
+            $img = !empty($row['poster'])
+                ? ImageThumbnail::make($row['poster'])->getThumbnail(200, 280)
+                : '/upload/release/240x350/default.jpg';
 
             $arr["$key"][$i][] = [
                 str_replace('{alt}', "{$row['name']} / {$row['ename']}",
@@ -3655,7 +3666,7 @@ function showAscReleases() // DONE
                `name`, `name_english` AS `ename`, 
                NULL AS `voice`, 
                `alias` AS `code`, 
-               IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/240x350/default.jpg") as `poster`
+               IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), NULL) as `poster`
                
             FROM `releases` 
             WHERE `is_hidden` = 0 and `deleted_at` IS NULL
@@ -3669,7 +3680,9 @@ function showAscReleases() // DONE
             ? urlCDN('/upload/release/240x350/default.jpg')
             : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster']);*/
 
-        $img = $row['poster'];
+        $img = !empty($row['poster'])
+            ? ImageThumbnail::make($row['poster'])->getThumbnail(240, 350)
+            : '/upload/release/240x350/default.jpg';
 
         //$poster = $_SERVER['DOCUMENT_ROOT'] . "/upload/release/200x280/{$row['id']}.jpg";
 
@@ -3841,7 +3854,7 @@ function showNewSeason() // DONE
        `description`, 
        `rating_by_favorites` AS `rating`, 
        `alias` AS `code`,
-        IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), "/upload/release/270x390/default.jpg") as `poster`
+        IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), NULL) as `poster`
        
         FROM `releases` 
         WHERE `year` = :year AND `season` = :season AND `is_hidden` = 0 AND `deleted_at` IS NULL 
@@ -3856,17 +3869,13 @@ function showNewSeason() // DONE
     lowerMove();
     while ($row = $query->fetch()) {
 
-        /*$img = fileTime('/upload/release/270x390/' . $row['id'] . '.jpg');
-        if (!$img) {
-            $img = '/upload/release/270x390/default.jpg';
-        }*/
-
-
         /*$img = empty($row['poster'])
             ? urlCDN('/upload/release/270x390/default.jpg')
             : sprintf('%s/%s/%s', $conf['release_poster_host'], $row['id'], $row['poster']);*/
 
-        $img = $row['poster'];
+        $img = !empty($row['poster'])
+            ? ImageThumbnail::make($row['poster'])->getThumbnail(270, 390)
+            : '/upload/release/270x390/default.jpg';
 
         $tmp = getTemplate('season-vote');
         $tmp = str_replace('{id}', $row['id'], $tmp);
@@ -4041,7 +4050,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             r.`alias` AS `code`,
             NULL AS `block`,
             r.`is_wakanim` AS `bakanim`,
-            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), "/upload/release/240x350/default.jpg") as `poster`,
+            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), NULL) as `poster`,
             IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`
                
             
@@ -4106,9 +4115,10 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             'last' => (int)$release['last'],
             'status' => (int)$release['status'],
             'rating' => (int)$release['rating'],
+            'poster' => !empty($release['poster']) ? ImageThumbnail::make($release['poster'])->getThumbnail(350, 500) : '/upload/release/350x500/default.jpg',
             'bakanim' => (int)$release['bakanim'],
             'duration' => (float)$release['duration'],
-            'type_value' =>  $release['type'] ?? null,
+            'type_value' => $release['type'] ?? null,
             'last_change' => (int)$release['last_change'],
             'has_episodes' => (int)$release['has_episodes'],
             'episodes_total' => $release['episodes_total'] ? (int)$release['episodes_total'] : null,
@@ -4150,7 +4160,8 @@ function _getReleaseByColumn(string $column, $value = null): ?array
 
 }
 
-function getUserAvatarUrl($user_id, $filename) {
+function getUserAvatarUrl($user_id, $filename)
+{
     global $conf;
     return sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user_id / 100), $user_id, $filename);
 }

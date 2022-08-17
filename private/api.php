@@ -760,7 +760,9 @@ function apiList()
         return [
             'id' => intval($row['id']),
             'title' => html_entity_decode(html_entity_decode(trim($row['title']))),
-            'image' => sprintf('%s/%s/%s', $conf['youtube_poster_host'], $row['id'], $row['preview']),
+            'image' => !empty($row['preview'])
+                ? ImageThumbnail::make(sprintf('%s/%s/%s', $conf['youtube_poster_host'], $row['id'], $row['preview']))->getThumbnail(400)
+                : null,
             'vid' => $row['video_id'],
             'views' => intval($row['views']),
             'comments' => intval($row['comments']),
@@ -1351,8 +1353,8 @@ function getApiPlaylist($id) // DONE
                 'ending' => $endingSkip,
                 'opening' => count(array_filter($openingSkip, 'strlen')) === 2 ? $openingSkip : [],
             ],
-            'poster' => $episode['preview_original']
-                ? implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']])
+            'poster' => !empty($episode['preview_original'])
+                ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]))->getThumbnail(720, null, 80)
                 : null,
             'ordinal' => (float)$episode['ordinal'],
             'updated_at' => strtotime($episode['updated_at'] ?? null),

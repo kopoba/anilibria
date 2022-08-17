@@ -54,11 +54,10 @@ $conf['cdn'] = true;
 $conf['api_v2'] = getenv('API_V2_HOST') ?? 'api v2 host';
 
 // NEXT
-$conf['users_avatars_host'] = getenv('USERS_AVATARS_HOST') ?? '/';
-$conf['release_poster_host'] = getenv('RELEASE_POSTER_HOST') ?? '/';
-$conf['youtube_poster_host'] = getenv('YOUTUBE_POSTER_HOST') ?? '/';
-$conf['release_episode_poster_host'] = getenv('RELEASE_EPISODE_POSTER_HOST') ?? '/';
-
+$conf['users_avatars_host'] = getenv('USERS_AVATARS_HOST') ? sprintf('/storage/%s', ltrim(getenv('USERS_AVATARS_HOST'), '/')) : '/';
+$conf['release_poster_host'] = getenv('RELEASE_POSTER_HOST') ? sprintf('/storage/%s', ltrim(getenv('RELEASE_POSTER_HOST'), '/')) : '/';
+$conf['youtube_poster_host'] = getenv('YOUTUBE_POSTER_HOST') ? sprintf('/storage/%s', ltrim(getenv('YOUTUBE_POSTER_HOST'), '/')) : '/';
+$conf['release_episode_poster_host'] = getenv('RELEASE_EPISODE_POSTER_HOST') ? sprintf('/storage/%s', ltrim(getenv('RELEASE_EPISODE_POSTER_HOST'), '/')) : '/';
 
 // Analytics
 $conf['yandex_metrika_id'] = getenv('YANDEX_METRIKA_ID') ?? '';
