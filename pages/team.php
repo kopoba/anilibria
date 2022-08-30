@@ -101,7 +101,7 @@ $teams = getTeams();
 
                     // Check if user IS NOT on vacation
                     if ($isVacation === false) {
-                        echo sprintf('<li><div class="teamuser"><span style="color: %s;">%s</span>: %s%s</div></li>', $color ?? 'black', $user['nickname'], $userRoles, $isIntern ? '<span class="intern">стажер</span>' : '');
+                        echo sprintf('<li><div class="teamuser"><span style="color: %s;">%s</span>&nbsp;— %s%s</div></li>', $color ?? 'black', $user['nickname'], $userRoles, $isIntern ? '<span class="intern">стажер</span>' : '');
                     }
                 }
 
@@ -128,7 +128,7 @@ $teams = getTeams();
 
                     // Check if user IS on vacation
                     if ($isVacation === true) {
-                        echo sprintf('<li style="color:#a8a8a8;"><div class="teamuser"><span>%s</span>: %s%s</div></li>', $user['nickname'], $userRoles, $isIntern ? '<span class="intern">стажер</span>' : '');
+                        echo sprintf('<li style="color:#a8a8a8;"><div class="teamuser"><span>%s</span>&nbsp;— %s%s</div></li>', $user['nickname'], $userRoles, $isIntern ? '<span class="intern">стажер</span>' : '');
                     }
                 }
             }
