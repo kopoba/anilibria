@@ -115,10 +115,8 @@ $teams = getTeams();
             </div>
 
             <?php
+            echo '<ul>';
             foreach ($teams as $team) {
-
-                // Users
-                echo '<ul>';
                 foreach ($team['users'] ?? [] as $user) {
 
                     $roles = $user['roles'] ?? [];
@@ -133,8 +131,8 @@ $teams = getTeams();
                         echo sprintf('<li style="color:#a8a8a8;"><div class="teamuser"><span>%s</span>: %s%s</div></li>', $user['nickname'], $userRoles, $isIntern ? '<span class="intern">стажер</span>' : '');
                     }
                 }
-                echo '</ul>';
             }
+            echo '</ul>';
             ?>
 
         </div>
