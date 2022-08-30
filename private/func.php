@@ -641,8 +641,8 @@ function registration() // DONE
     if (empty($_POST['login']) || empty($_POST['mail']) || empty($_POST['passwd'])) {
         _message('empty', 'error');
     }
-    if(strlen($_POST['login']) > 20) _message('longLogin', 'error');
-    if(strlen($_POST['mail']) > 254) _message('longEmail', 'error');
+    if (strlen($_POST['login']) > 20) _message('longLogin', 'error');
+    if (strlen($_POST['mail']) > 254) _message('longEmail', 'error');
 
     if (preg_match('/[^0-9A-Za-z]/', $_POST['login'])) {
         _message('wrongLogin', 'error');
@@ -2318,6 +2318,94 @@ function getReleaseVideo($id) // DONE
 
     return json_encode($playlist);
 }
+
+
+function getTeams(): array
+{
+
+    global $db;
+
+    $query = $db->query('
+        SELECT 
+            `tu`.`id`,
+            IF(`tu`.`nickname` IS NOT NULL, `tu`.`nickname`, `u`.`nickname`) AS `nickname`,
+            `tu`.`sort_order` AS `user_sort_order`,
+            `tu`.`is_intern` AS `is_intern`,
+            `tu`.`is_vacation` AS `is_vacation`,
+            `t`.`id` AS `team_id`,
+            `t`.`title` AS `team_title`,
+            `t`.`description` AS `team_description`,
+            `t`.`sort_order` AS `team_sort_order`,
+            GROUP_CONCAT(`tr`.`title` ORDER BY `tr`.`sort_order` ASC SEPARATOR "," ) AS `roles`,
+            GROUP_CONCAT(`tr`.`color` ORDER BY `tr`.`sort_order` ASC SEPARATOR ",") AS `colors`
+             
+        FROM `teams_users` AS `tu`
+        LEFT JOIN `users` AS `u` ON `u`.`id` = `tu`.`user_id`
+        INNER JOIN `teams` AS `t` ON `t`.`id` = `tu`.`team_id` AND `t`.`deleted_at` IS NULL
+        LEFT JOIN `teams_users_roles` AS `tur` ON `tur`.`team_user_id` = `tu`.`id`
+        LEFT JOIN `teams_roles` AS `tr` ON `tr`.id = `tur`.`team_role_id` 
+
+        WHERE `tu`.`deleted_at` IS NULL
+        GROUP BY `tu`.`id`
+
+    ');
+
+    $teams = [];
+    $users = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($users as $user) {
+
+        // Team
+        $teams[$user['team_id']]['title'] = $user['team_title'] ?? null;
+        $teams[$user['team_id']]['users'] = $teams[$user['team_id']]['users'] ?? [];
+        $teams[$user['team_id']]['sort_order'] = $user['team_sort_order'] ?? 0;
+        $teams[$user['team_id']]['description'] = $user['team_description'] ?? null;
+
+        // Index
+        $index = count($teams[$user['team_id']]['users']);
+
+        // Roles + Colors
+        $roles = explode(',', $user['roles'] ?? '');
+        $colors = explode(',', $user['colors'] ?? '');
+        $userRoles = [];
+
+        foreach ($roles as $i => $value) {
+            $userRoles[] = [
+                'title' => $value,
+                'color' => $colors[$i] ?? null,
+            ];
+        }
+
+        // User
+        $teams[$user['team_id']]['users'][$index] = [
+            'id' => $user['id'] ?? null,
+            'roles' => $userRoles,
+            'nickname' => $user['nickname'] ?? null,
+            'is_intern' => $user['is_intern'] == 1,
+            'sort_order' => $user['user_sort_order'] ?? 0,
+            'is_vacation' => $user['is_vacation'] == 1,
+        ];
+
+    }
+
+
+    // Sort users inside each team
+    // Sort ASC
+    foreach ($teams as $key => $team) {
+        usort($teams[$key]['users'], function ($user1, $user2) {
+            return $user1['sort_order'] <=> $user2['sort_order'];
+        });
+    }
+
+    // Sort teams
+    // Sort ASC
+    usort($teams, function ($team1, $team2) {
+        return $team1['sort_order'] <=> $team2['sort_order'];
+    });
+
+    return array_values($teams);
+}
+
 
 /*function youtubeVideoExists($id)
 {
