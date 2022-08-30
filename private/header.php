@@ -11,6 +11,7 @@ function headerAds(){
 	$result['ads'] = false;
 
 	$data[] = ['img' => 'fox_legends.jpg', 'left' => '795px', 'top' => '77px', 'height' => '75px', 'width' => '270px', 'url' => '/fox'];
+	$data[] = ['img' => 'hero.jpg', 'left' => '26px', 'top' => '150px', 'height' => '62px', 'width' => '200px', 'url' => '/hero'];
 	$data[] = ['img' => 'DG.png', 'left' => '720px', 'top' => '70px', 'height' => '70px', 'width' => '260px', 'url' => '/dg'];
 	$data[] = ['img' => 'dc.png', 'left' => '887px', 'top' => '70px', 'height' => '75px', 'width' => '225px', 'url' => '/dc'];
 
@@ -32,7 +33,7 @@ function headerAds(){
 			$cache->set('adsCurrentHour', $cHour, 3600);
 		}
 
-		//$key = 0;
+		$key = 1;
 		$ads = $data["$key"];
 
 		//$img = '/img/other/a/'.$ads['img'];
@@ -157,4 +158,8 @@ $xcss = headerAds();
 
 <a href="https://www.anilibria.tv/pages/donate.php" target="_blank">
 	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
+</a>
+
+<a href="/season/2022autumn.html" target="_blank">
+    <img src="/img/season/autumn2022.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season autumn 2022 AniLibria" />
 </a>
