@@ -1887,7 +1887,7 @@ function showRelease() // DONE
     }
 
     // Rutube
-    if ($release['has_rutube_episodes'] === 1) {
+    if ($release['has_rutube_episodes'] == 1) {
 
         $episodes = [];
         $rutubeEpisodes = _getReleaseEpisodesFromRutube($release['id'] ?? null);
@@ -2967,15 +2967,16 @@ function showPosters() // DONE
            r.`description`, 
            IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), NULL) as `poster`, 
            r.`is_wakanim` AS `bakanim`,
-           IF(COUNT(t.`id`) > 0, 1, 0) as has_torrents
+           EXISTS(SELECT * FROM `torrents` WHERE `release_id` = r.`id` AND `deleted_at` IS NULL) AS `has_torrents`
             
         FROM `releases` as r
-        LEFT JOIN `torrents` AS t ON t.`release_id` = r.`id`
         WHERE r.`is_hidden` = 0 and r.`deleted_at` IS NULL
         GROUP BY r.`id`
         ORDER BY r.`fresh_at` DESC 
         LIMIT ' . $limit
     );
+
+
     while ($row = $query->fetch()) {
 
         $img = !empty($row['poster'])
@@ -4160,7 +4161,6 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             r.`episodes_total`,
             r.`episodes_are_unknown`,
             r.`duration`,
-            -- CONCAT(r.type, IF(r.episodes_total, CONCAT(" (", IF(r.episodes_are_unknown, ">", ""), r.episodes_total, " эп.)"), ""), IF(r.duration, CONCAT(", ", r.duration, " мин."), "")) as `type`,
             GROUP_CONCAT(DISTINCT TRIM(g.`name`) ORDER BY g.`name` SEPARATOR ", " ) AS `genre`,
             GROUP_CONCAT(DISTINCT IF(rm.`role` = "voicing", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `voice`,
             GROUP_CONCAT(DISTINCT IF(rm.`role` = "translating", TRIM(IF(rm.nickname IS NOT NULL, rm.nickname, rmu.nickname)), NULL) SEPARATOR ", ")  as `translator`,
@@ -4180,27 +4180,17 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             NULL AS `block`,
             r.`is_wakanim` AS `bakanim`,
             IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), NULL) as `poster`,
-            IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`,
-            IF(COUNT(re2.`id`) > 0, 1, 0) as `has_rutube_episodes`
+            EXISTS(SELECT id FROM `releases_episodes` WHERE  `releases_id` = r.`id` AND `deleted_at` IS NULL AND `is_visible` = 1 AND COALESCE(`hls_480`, `hls_720`, `hls_1080`) IS NOT NULL) as `has_episodes`,
+            EXISTS(SELECT id FROM `releases_episodes` WHERE `releases_id` = r.`id` AND `deleted_at` IS NULL AND `is_visible` = 1 AND `rutube_id` IS NOT NULL ) as `has_rutube_episodes`
                
             
         FROM `releases` AS r
-        
-        -- Genres
+       
         LEFT JOIN `releases_genres` AS rg ON rg.`releases_id` = r.`id`
         LEFT JOIN `genres` AS g ON g.`id` = rg.`genres_id`
         
-        -- Members
         LEFT JOIN `releases_members` AS rm ON rm.`releases_id` = r.`id` AND rm.`deleted_at` IS NULL
         LEFT JOIN `users` AS rmu ON rmu.`id` = rm.`users_id`
-        
-        -- Episodes
-        LEFT JOIN `releases_episodes` AS re ON
-            re.`releases_id` = r.`id` AND re.`deleted_at` IS NULL and re.`is_visible` = 1 AND 
-            (re.`hls_480` IS NOT NULL OR re.`hls_720` IS NOT NULL OR re.`hls_1080` IS NOT NULL)
-            
-        -- Episodes from Rutube  
-        LEFT JOIN `releases_episodes` AS re2 ON re2.`releases_id` = r.`id` AND re2.`deleted_at` IS NULL and re2.`is_visible` = 1 AND re2.`rutube_id` IS NOT NULL 
         
         WHERE (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL :releasesPlaceholders
         
@@ -4255,7 +4245,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             'last_change' => (int)$release['last_change'],
             'has_episodes' => (int)$release['has_episodes'],
             'episodes_total' => $release['episodes_total'] ? (int)$release['episodes_total'] : null,
-            'has_rutube_episodes' => (int)$release['has_rutube_episodes'],
+            'has_rutube_episodes' => (int)$release['has_rutube_episodes'] === 1,
             'episodes_are_unknown' => (int)$release['episodes_are_unknown'] === 1,
         ]);
     }

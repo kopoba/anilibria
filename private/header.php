@@ -33,7 +33,7 @@ function headerAds(){
 			$cache->set('adsCurrentHour', $cHour, 3600);
 		}
 
-		$key = 1;
+		//$key = 1;
 		$ads = $data["$key"];
 
 		//$img = '/img/other/a/'.$ads['img'];
