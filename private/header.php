@@ -116,7 +116,7 @@ $xcss = headerAds();
         <meta name="recaptcha3_site_key" content="<?php echo $conf['recaptcha_public']; ?>" />
 
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
-		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/main.css'));?>" />
+		<link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/main.css');?>" />
 		<style><?php echo $xcss['css']; ?></style>
 	</head>
 	<body>
