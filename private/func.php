@@ -1715,7 +1715,9 @@ function showRelease() // DONE
     $page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
     $page = str_replace('{block}', $release['block'], $page);
     $page = str_replace('{bakanim}', $release['bakanim'], $page);
+    $page = str_replace('{hasMoonPlayer}', !empty($release['moonplayer']) ? '' : 'display: none', $page);
     $page = str_replace('{hasEpisodesVisibility}', $release['has_episodes'] ? '' : 'display: none', $page);
+    $page = str_replace('{hasRutubeEpisodesVisibility}', $release['has_rutube_episodes'] ? '' : 'display: none', $page);
 
     $xtmp = explode(',', $release['genre']);
     $str = '';
@@ -1883,6 +1885,21 @@ function showRelease() // DONE
         }
         $page = str_replace('{torrent}', $torrent, $page);
     }
+
+    // Rutube
+    if ($release['has_rutube_episodes'] === 1) {
+
+        $episodes = [];
+        $rutubeEpisodes = _getReleaseEpisodesFromRutube($release['id'] ?? null);
+
+
+        foreach ($rutubeEpisodes as $episode) $episodes[] = ['id' => $episode['id'], 'ordinal' => $episode['ordinal'], 'rutube_id' => $episode['rutube_id']];
+
+        $page = str_replace('{rutubeEpisodes}', json_encode($episodes), $page);
+
+
+    }
+
     return $page;
 }
 
@@ -2943,17 +2960,21 @@ function showPosters() // DONE
 
     $query = $db->query('
         SELECT 
-           `id`, 
-           `name`, 
-           `name_english` AS `ename`, 
-           `alias` AS `code`, 
-           `description`, 
-           IF(`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", `id`, "/", `poster`), NULL) as `poster`, 
-           `is_wakanim` AS `bakanim`
+           r.`id`, 
+           r.`name`, 
+           r.`name_english` AS `ename`, 
+           r.`alias` AS `code`, 
+           r.`description`, 
+           IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), NULL) as `poster`, 
+           r.`is_wakanim` AS `bakanim`,
+           IF(COUNT(t.`id`) > 0, 1, 0) as has_torrents
             
-        FROM `releases`
-        where `is_hidden` = 0 and `deleted_at` IS NULL
-        ORDER BY `fresh_at` DESC LIMIT ' . $limit
+        FROM `releases` as r
+        LEFT JOIN `torrents` AS t ON t.`release_id` = r.`id`
+        WHERE r.`is_hidden` = 0 and r.`deleted_at` IS NULL
+        GROUP BY r.`id`
+        ORDER BY r.`fresh_at` DESC 
+        LIMIT ' . $limit
     );
     while ($row = $query->fetch()) {
 
@@ -2970,12 +2991,14 @@ function showPosters() // DONE
         $tmp = str_replace('{series}', releaseSeriesByID($row['id']), $tmp);
         //$tmp = str_replace('{torlink}', getTorrentDownloadLink($row['id']), $tmp);
 
-        $torbtn = "<a href='" . getTorrentDownloadLink($row['id']) . "' class='last_tor_button'>СКАЧАТЬ</a>";
-        if ($row['bakanim'] == 0) {
-            $tmp = str_replace('{torlink}', $torbtn, $tmp);
-        } else {
-            $tmp = str_replace('{torlink}', "", $tmp);
+        if ($row['has_torrents'] == 1 && $row['bakanim'] == 0) {
+            $link = getTorrentDownloadLink($row['id']);
+            if ($link) {
+                $tmp = str_replace('{torlink}', "<a href='" . $link . "' class='last_tor_button'>СКАЧАТЬ</a>", $tmp);
+            }
         }
+
+        $tmp = str_replace('{torlink}', "", $tmp);
         $result .= $tmp;
     }
 
@@ -3045,7 +3068,7 @@ function releaseSeriesByID($id) // DONE
         WHERE 
             r.`id` = :id AND (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL AND  
             re.`is_visible` = 1 and re.`deleted_at` IS NULL AND 
-            (re.`hls_480` IS NOT NULL OR re.`hls_720` IS NOT NULL OR re.`hls_1080` IS NOT NULL) 
+            (re.`hls_480` IS NOT NULL OR re.`hls_720` IS NOT NULL OR re.`hls_1080` IS NOT NULL OR re.`rutube_id` IS NOT NULL) 
         ORDER BY re.`ordinal` ASC
     ');
 
@@ -3057,10 +3080,10 @@ function releaseSeriesByID($id) // DONE
     $query->execute();
     $seriesOrdinals = $query->fetchAll(PDO::FETCH_ASSOC);
 
-
     $seriesOrdinals = array_map(function (array $episode) {
         return (float)$episode['ordinal'] ?? 0;
     }, $seriesOrdinals);
+
 
     $seriesFromEpisodes = count($seriesOrdinals) > 0 ? (min($seriesOrdinals) . " — " . max($seriesOrdinals)) : null;
 
@@ -3094,7 +3117,7 @@ function getTorrentDownloadLink($id) // DONE
     $query->execute();
     $row = $query->fetch();
 
-    return "/public/torrent/download.php?id={$row['fid']}";
+    return !empty($row['fid']) ? "/public/torrent/download.php?id={$row['fid']}" : "";
 
     /*if ($user) {
         $link = "/public/torrent/download.php?id={$row['fid']}";
@@ -4073,6 +4096,24 @@ function _getReleaseEpisodes($releaseId) // DONE
     return $query->fetchAll();
 }
 
+
+function _getReleaseEpisodesFromRutube($releaseId = null): array
+{
+    if ($releaseId) {
+
+        global $db;
+
+        $query = $db->prepare('SELECT * from `releases_episodes` where `releases_id` = :id and `is_visible` = 1 and `deleted_at` IS NULL AND `rutube_id` IS NOT NULL ORDER BY `sort_order` ASC');
+        $query->bindValue(':id', $releaseId);
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    return [];
+}
+
+
 function _getHostname(): string // DONE
 {
     $host = $_SERVER['HTTP_HOST'];
@@ -4139,7 +4180,8 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             NULL AS `block`,
             r.`is_wakanim` AS `bakanim`,
             IF(r.`poster` IS NOT NULL, CONCAT("' . $conf['release_poster_host'] . '/", r.`id`, "/", r.`poster`), NULL) as `poster`,
-            IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`
+            IF(COUNT(re.`id`) > 0, 1, 0) as `has_episodes`,
+            IF(COUNT(re2.`id`) > 0, 1, 0) as `has_rutube_episodes`
                
             
         FROM `releases` AS r
@@ -4156,6 +4198,9 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         LEFT JOIN `releases_episodes` AS re ON
             re.`releases_id` = r.`id` AND re.`deleted_at` IS NULL and re.`is_visible` = 1 AND 
             (re.`hls_480` IS NOT NULL OR re.`hls_720` IS NOT NULL OR re.`hls_1080` IS NOT NULL)
+            
+        -- Episodes from Rutube  
+        LEFT JOIN `releases_episodes` AS re2 ON re2.`releases_id` = r.`id` AND re2.`deleted_at` IS NULL and re2.`is_visible` = 1 AND re2.`rutube_id` IS NOT NULL 
         
         WHERE (r.`is_hidden` = 0 OR :userHasRoles) AND r.`deleted_at` IS NULL :releasesPlaceholders
         
@@ -4210,6 +4255,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             'last_change' => (int)$release['last_change'],
             'has_episodes' => (int)$release['has_episodes'],
             'episodes_total' => $release['episodes_total'] ? (int)$release['episodes_total'] : null,
+            'has_rutube_episodes' => (int)$release['has_rutube_episodes'],
             'episodes_are_unknown' => (int)$release['episodes_are_unknown'] === 1,
         ]);
     }

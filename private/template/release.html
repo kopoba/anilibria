@@ -1,158 +1,196 @@
 <div class="news-block">
 
-	<div id="emptyHeader" class="news-header"></div>
-	
-	<div id="editHeader" class="news-header" style="display: none;">
-			<h2 class="news-name" style="float:left;">
-				Редактировать <a href=""><span class="glyphicon glyphicon-paperclip" style="font-size: 17px;" data-release-tags></span></a>
-			</h2>
-		<button data-release-update type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; ">Save</button>
-		<label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Upload <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
-		<button data-release-delete type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Delete</button>
-		<button data-release-last type="button" class="btn btn-default" style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Update</button>
-		<div class="clear"></div>	
-	</div>
-	
-	<script> var chosenGenre = [{chosen-genre}];</script>
+    <div id="emptyHeader" class="news-header"></div>
 
-<div id="xreleaseEdit" class="detail_torrent_info" style="display: none; height: auto; overflow: hidden;">
-			<input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь" value="{name}" required="">
-			<input id="nEname" class="form-control" style="margin-top: 8px;" type="text" placeholder="Английское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
-			<input id="nAname" class="form-control" style="margin-top: 8px;" type="text" placeholder="Альтернативное название: Вторжение титанов" value="{aname}" required="">
-			<div style="margin-top: 8px;">
-				<input id="nYear" class="form-control" style="width: 33%; display: inline-block;" type="text" placeholder="Год выхода: 2018" value="{edityear}" required="">
-				<select id="nSeason" class="form-control" style="width: 32%; display: inline-block;">
-					<option value="" disabled="" selected="">Сезон</option>
-					<option value="зима">Зима</option>
-					<option value="весна">Весна</option>
-					<option value="лето">Лето</option>
-					<option value="осень">Осень</option>
-				</select>
-				<input id="nType" class="form-control" style="width: 33%; display: inline-block;" type="text" placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
-			</div>
-			
-			<select id="nDay" class="form-control" style="margin-top: 8px;">
-				<option value="" disabled selected>Серия выходит</option>
-				<option value="1">Понедельник</option>
-				<option value="2">Вторник</option>
-				<option value="3">Среда</option>
-				<option value="4">Четверг</option>
-				<option value="5">Пятница</option>
-				<option value="6">Суббота</option>
-				<option value="7">Воскресенье</option>
-			</select>
-			
-			<div style="margin-top: 8px;">
-				<select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]" multiple style="">
-					{chosen}
-				</select>
-			</div>
-			<input id="nVoice" class="form-control" style="margin-top: 8px;" type="text" placeholder="Озвучка: Silv, Hekomi, Malevich, December" value="{voice}" required="">
-			<div style="margin-top: 8px;">
-				<input id="nTranslator" title="Перевод" class="form-control" style="width: 50%; display: inline-block;" type="text" placeholder="Перевод" value="{translator}" required="">
-				<input id="nEditing" title="Редактура" class="form-control" style="width: 49%; display: inline-block;" type="text" placeholder="Редактура" value="{editing}" required="">
-			</div>
+    <div id="editHeader" class="news-header" style="display: none;">
+        <h2 class="news-name" style="float:left;">
+            Редактировать <a href=""><span class="glyphicon glyphicon-paperclip" style="font-size: 17px;"
+                                           data-release-tags></span></a>
+        </h2>
+        <button data-release-update type="button" class="btn btn-default"
+                style="float: right; height: 30px; padding: 0px 12px; ">Save
+        </button>
+        <label class="btn btn-default" style="float: right; height: 30px; padding: 4px 12px; margin-right: 7px;">Upload
+            <input id="uploadPosterAdmin" type="file" name="test" style="display: none;"></label>
+        <button data-release-delete type="button" class="btn btn-default"
+                style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Delete
+        </button>
+        <button data-release-last type="button" class="btn btn-default"
+                style="float: right; height: 30px; padding: 0px 12px; margin-right: 7px; ">Update
+        </button>
+        <div class="clear"></div>
+    </div>
 
-			<div style="margin-top: 8px;">
-				<input id="nDecor" title="Оформление" class="form-control" style="width: 50%; display: inline-block;" type="text" placeholder="Оформление" value="{decor}" required="">
-				<input id="nTiming" title="Тайминг" class="form-control" style="width: 49%; display: inline-block;" type="text" placeholder="Тайминг" value="{timing}" required="">
-			</div>
-			
-			<select id="nStatus" class="form-control" style="margin-top: 8px;">
-				<option value="" disabled selected>Состояние релиза</option>
-				<option value="1">В работе</option>
-				<option value="2">Завершен</option>
-				<option value="3">Скрыт</option>
-				<option value="4">Неонгоинг</option>
-			</select>
-			<div style="margin-top: 8px;">
-				<input id="nBlock" title="Блокировка" class="form-control" style="width: 50%; display: inline-block;" type="text" placeholder="Блокировка: RU, DE" value="{block}" required="">
-				<input id="nBakanim" title="Баканим" class="form-control" style="width: 49%; display: inline-block;" type="text" placeholder="Ваканим - 1 / Общий - 0" value="{bakanim}" required="">
-			</div>
-			<input id="nMoon" class="form-control" style="margin-top: 8px;" type="text" placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}" required="">
-		</div>
+    <script> var chosenGenre = [{chosen-genre}];</script>
 
-	<div id="xreleaseInfo" class="detail_torrent_info">
-		{TeamBlockMsg}
-		<h1 class="release-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 0px;">
-			{fullname}
-		</h1>
-		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
-		<b>Сезон:</b> {year}<br/>
-		<b>Тип:</b> {type}<br/>
-		<b>Жанры:</b> {genre}<br/>
-		<b>Озвучка:</b> {voice}<br/>
-		{timingTitle}{timing}<br/>
-		{other}
-		<hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
-		<p class="detail-description" style="font-size: 15.7px;">{description}</p>
-	</div>
-	<div class="detail_torrent_side">
-		<div id="nextserial" {style}>
-			<a href="" id="releaseAnnounce" data-change-announce="{userAccess}" style="color: white; text-decoration: none;">{announce}</a>
-			<input type="hidden" id="releaseID" value="{id}">
-		</div>
-		<div class="detail_pic_corner">
-			<img id="adminPoster" class="detail_torrent_pic" border="0" src="{img}" width="350" height="500" alt="{alt}">
-		</div>
-	</div>
-	<div class="clear"></div>
-	<div id="xreleaseDesc" style="display: none;">
-		<textarea id="nDescription" class="form-control" style="margin-top: 8px; resize: vertical;" rows="10" placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{xdescription}</textarea>
-	</div>
+    <div id="xreleaseEdit" class="detail_torrent_info" style="display: none; height: auto; overflow: hidden;">
+        <input id="nName" class="form-control" type="text" placeholder="Название: О моём перерождении в слизь"
+               value="{name}" required="">
+        <input id="nEname" class="form-control" style="margin-top: 8px;" type="text"
+               placeholder="Английское название: Tensei shitara Slime Datta Ken" value="{ename}" required="">
+        <input id="nAname" class="form-control" style="margin-top: 8px;" type="text"
+               placeholder="Альтернативное название: Вторжение титанов" value="{aname}" required="">
+        <div style="margin-top: 8px;">
+            <input id="nYear" class="form-control" style="width: 33%; display: inline-block;" type="text"
+                   placeholder="Год выхода: 2018" value="{edityear}" required="">
+            <select id="nSeason" class="form-control" style="width: 32%; display: inline-block;">
+                <option value="" disabled="" selected="">Сезон</option>
+                <option value="зима">Зима</option>
+                <option value="весна">Весна</option>
+                <option value="лето">Лето</option>
+                <option value="осень">Осень</option>
+            </select>
+            <input id="nType" class="form-control" style="width: 33%; display: inline-block;" type="text"
+                   placeholder="Тип: ТВ 24 эпизода" value="{type}" required="">
+        </div>
 
-	<div>
+        <select id="nDay" class="form-control" style="margin-top: 8px;">
+            <option value="" disabled selected>Серия выходит</option>
+            <option value="1">Понедельник</option>
+            <option value="2">Вторник</option>
+            <option value="3">Среда</option>
+            <option value="4">Четверг</option>
+            <option value="5">Пятница</option>
+            <option value="6">Суббота</option>
+            <option value="7">Воскресенье</option>
+        </select>
 
-	</div>
-	<div class="tab-switcher">
-		<div class="tab-content">
-			<button id="buttonAni" data-tab="anilibriaPlayer" class="active" style="{hasEpisodesVisibility}">Наш плеер</button>
-			<button id="buttonMoon" data-tab="moonPlayer" style="display: none;">Внешний плеер</button>
-			<button data-light class="xdark z-fix">Свет</button>
-			{button}
-			<a href="{tg_bot_follow}" class="subscribe" title="Подписаться на уведомления о выходе новых серий этого тайтла в телеграм">
-				<svg enable-background="new 0 0 24 24" viewBox="0 0 24 24" width="30" height="30"><rect rx="4" ry="4" fill="#039be5" width="100%" height="100%"></rect>
-				<path d="m5.491 11.74 11.57-4.461c.537-.194 1.006.131.832.943l.001-.001-1.97 9.281c-.146.658-.537.818-1.084.508l-3-2.211-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953z" fill="#fff"></path></svg>
-			</a>
-			<button data-online-table class="presence_online"></button>
-			<div class="block_fix"></div>
-		</div>
-	</div>
-	<div class="z-fix" style="{hasEpisodesVisibility}">
-		<div class="xplayer" id="anilibriaPlayer"></div>
-	</div>
-	<div class="xplayer z-fix" id="moonPlayer">
-		{moon}
-	</div>
-	<div class="download-torrent" style="margin-bottom: 10px;">
-		<table id="publicTorrentTable">
-			{torrent}
-		</table>			
-	</div>
-	<div class="clear"></div>
+        <div style="margin-top: 8px;">
+            <select class="form-control chosen" data-placeholder="Жанры: фэнтези, приключения ..." name="tags[]"
+                    multiple style="">
+                {chosen}
+            </select>
+        </div>
+        <input id="nVoice" class="form-control" style="margin-top: 8px;" type="text"
+               placeholder="Озвучка: Silv, Hekomi, Malevich, December" value="{voice}" required="">
+        <div style="margin-top: 8px;">
+            <input id="nTranslator" title="Перевод" class="form-control" style="width: 50%; display: inline-block;"
+                   type="text" placeholder="Перевод" value="{translator}" required="">
+            <input id="nEditing" title="Редактура" class="form-control" style="width: 49%; display: inline-block;"
+                   type="text" placeholder="Редактура" value="{editing}" required="">
+        </div>
+
+        <div style="margin-top: 8px;">
+            <input id="nDecor" title="Оформление" class="form-control" style="width: 50%; display: inline-block;"
+                   type="text" placeholder="Оформление" value="{decor}" required="">
+            <input id="nTiming" title="Тайминг" class="form-control" style="width: 49%; display: inline-block;"
+                   type="text" placeholder="Тайминг" value="{timing}" required="">
+        </div>
+
+        <select id="nStatus" class="form-control" style="margin-top: 8px;">
+            <option value="" disabled selected>Состояние релиза</option>
+            <option value="1">В работе</option>
+            <option value="2">Завершен</option>
+            <option value="3">Скрыт</option>
+            <option value="4">Неонгоинг</option>
+        </select>
+        <div style="margin-top: 8px;">
+            <input id="nBlock" title="Блокировка" class="form-control" style="width: 50%; display: inline-block;"
+                   type="text" placeholder="Блокировка: RU, DE" value="{block}" required="">
+            <input id="nBakanim" title="Баканим" class="form-control" style="width: 49%; display: inline-block;"
+                   type="text" placeholder="Ваканим - 1 / Общий - 0" value="{bakanim}" required="">
+        </div>
+        <input id="nMoon" class="form-control" style="margin-top: 8px;" type="text"
+               placeholder="moonwalk: https://streamguard.cc/serial/ecd3786bcde7f9b28b4f6..." value="{xmoon}"
+               required="">
+    </div>
+
+    <div id="xreleaseInfo" class="detail_torrent_info">
+        {TeamBlockMsg}
+        <h1 class="release-title"
+            style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin-bottom: 0px;">
+            {fullname}
+        </h1>
+        <hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
+        <b>Сезон:</b> {year}<br/>
+        <b>Тип:</b> {type}<br/>
+        <b>Жанры:</b> {genre}<br/>
+        <b>Озвучка:</b> {voice}<br/>
+        {timingTitle}{timing}<br/>
+        {other}
+        <hr class="poloska-detail" style="margin-top: 7px; margin-bottom: 7px;">
+        <p class="detail-description" style="font-size: 15.7px;">{description}</p>
+    </div>
+    <div class="detail_torrent_side">
+        <div id="nextserial" {style}>
+            <a href="" id="releaseAnnounce" data-change-announce="{userAccess}"
+               style="color: white; text-decoration: none;">{announce}</a>
+            <input type="hidden" id="releaseID" value="{id}">
+        </div>
+        <div class="detail_pic_corner">
+            <img id="adminPoster" class="detail_torrent_pic" border="0" src="{img}" width="350" height="500"
+                 alt="{alt}">
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="xreleaseDesc" style="display: none;">
+        <textarea id="nDescription" class="form-control" style="margin-top: 8px; resize: vertical;" rows="10"
+                  placeholder="Описание: Одинокий тридцатисемилетний Сато́ру Мика́мию ...">{xdescription}</textarea>
+    </div>
+
+    <div>
+
+    </div>
+    <div class="tab-switcher">
+        <div class="tab-content">
+
+            <button id="buttonAni" data-type="player" data-tab="anilibriaPlayer" style="{hasEpisodesVisibility}">Наш плеер</button>
+            <button id="buttonMoon" data-type="player" data-tab="moonPlayer" style="{hasMoonPlayer}">Внешний плеер</button>
+            <button id="buttonRutube" data-type="player" data-tab="rutubePlayer" style="{hasRutubeEpisodesVisibility}">Rutube</button>
+
+            <button data-light class="xdark z-fix">Свет</button>
+            {button}
+            <a href="{tg_bot_follow}" class="subscribe"
+               title="Подписаться на уведомления о выходе новых серий этого тайтла в телеграм">
+                <svg enable-background="new 0 0 24 24" viewBox="0 0 24 24" width="30" height="30">
+                    <rect rx="4" ry="4" fill="#039be5" width="100%" height="100%"></rect>
+                    <path d="m5.491 11.74 11.57-4.461c.537-.194 1.006.131.832.943l.001-.001-1.97 9.281c-.146.658-.537.818-1.084.508l-3-2.211-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953z"
+                          fill="#fff"></path>
+                </svg>
+            </a>
+            <button data-online-table class="presence_online"></button>
+            <div class="block_fix"></div>
+        </div>
+    </div>
+    <div class="z-fix" style="{hasEpisodesVisibility}">
+        <div class="xplayer" id="anilibriaPlayer" style="height: 570px;"></div>
+    </div>
+    <div class="xplayer z-fix" id="moonPlayer">
+        {moon}
+    </div>
+    <div class="xplayer z-fix" id="rutubePlayer">
+        <div id="rutubeEpisodes" class="rutube-episodes" data-episodes='{rutubeEpisodes}'></div>
+        <div id="rutubeVideo"></div>
+    </div>
+    <div class="download-torrent" style="margin-bottom: 10px;">
+        <table id="publicTorrentTable">
+            {torrent}
+        </table>
+    </div>
+    <div class="clear"></div>
 </div>
 
 <div class="modal fade" id="otherModal" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog" style="width: 550px;">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title" id="avatarInfo">Работа над субтитрами [{releaseid}]</h4>
-			</div>
-			<div class="modal-body">
-				<b>Перевод</b>: {translator}<br/>
-				<b>Редактура</b>: {editing}<br/>
-				<b>Оформление</b>: {decor}
-			</div>
-			<div class="modal-footer">
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog" style="width: 550px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="avatarInfo">Работа над субтитрами [{releaseid}]</h4>
+            </div>
+            <div class="modal-body">
+                <b>Перевод</b>: {translator}<br/>
+                <b>Редактура</b>: {editing}<br/>
+                <b>Оформление</b>: {decor}
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="tagsModal" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-body" style="max-height: 500px; max-width:100%; overflow: hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style="max-height: 500px; max-width:100%; overflow: hidden;">
 				<pre style="margin-top: 6px;">[b]жирный шрифт[/b] =&gt; <b>жирный шрифт</b>
 [i]наклонный шрифт[/i] =&gt; <i>наклонный шрифт</i>
 [u]подчеркнутый текст[/u] =&gt; <u>подчеркнутый текст</u>
@@ -162,7 +200,58 @@
 [url=http://google.ru]google[/url] =&gt; <a href="http://google.ru" target="_blank">google</a>
 [url=https://google.ru]google[/url] =&gt; <a href="https://google.ru" target="_blank">google</a>
 </pre>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+<script>
+    (function () {
+        document.addEventListener("DOMContentLoaded", function () {
+
+            let activeEpisode = null;
+            const rutubeVideo = $('#rutubeVideo');
+            const episodesSelector = $('#rutubeEpisodes');
+            const availableEpisodes = episodesSelector.data('episodes') || [];
+
+            var sel = $('<select class="rutube-select">')
+                .change(() => switchEpisodeByOrdinal(sel.val()))
+                .appendTo(episodesSelector);
+
+            // Create buttons
+            availableEpisodes.forEach(item => {
+                sel.append(
+                    $("<option>")
+                        .attr('value', item?.ordinal)
+                        .text(`Эпизод ${item?.ordinal}`)
+                );
+            })
+
+            // Initial switch to first episode
+            if (activeEpisode === null && availableEpisodes.length > 0) switchEpisodeByOrdinal(availableEpisodes[0]?.ordinal);
+
+            //
+            function switchEpisodeByOrdinal(ordinal = null) {
+                const episode = availableEpisodes.find(episode => parseFloat(episode?.ordinal) === parseFloat(ordinal));
+                if (activeEpisode !== ordinal && episode) {
+                    activeEpisode = ordinal;
+
+                    if (episode?.rutube_id) {
+                        const iframe = $('<iframe>', {
+                            src: `https://rutube.ru/play/embed/${episode?.rutube_id}`,
+                            width: '100%',
+                            height: '530',
+                            frameborder: 0,
+                            allowFullscreen: true,
+                        })
+
+                        rutubeVideo.html(iframe);
+                    }
+                }
+            }
+
+
+        });
+    })();
+</script>
