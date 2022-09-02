@@ -1320,8 +1320,7 @@ function getApiPlaylist($id) // DONE
             inner join `releases` as r on re.releases_id = r.id
             where 
                 re.releases_id = :id and re.`is_visible` = 1 AND re.`deleted_at` IS NULL AND
-                r.`is_hidden` = 0  AND r.`deleted_at` IS NULL AND
-                (re.`hls_480` IS NOT NULL OR re.`hls_720` IS NOT NULL OR re.`hls_1080` IS NOT NULL)  
+                r.`is_hidden` = 0  AND r.`deleted_at` IS NULL AND COALESCE(re.`hls_480`, re.`hls_720`, re.`hls_1080`, re.`rutube_id`) IS NOT NULL  
             ORDER BY re.`sort_order` DESC
         ');
 
@@ -1357,6 +1356,11 @@ function getApiPlaylist($id) // DONE
                 ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]))->getThumbnail(720, null, 80)
                 : null,
             'ordinal' => (float)$episode['ordinal'],
+            'sources' => [
+                'is_rutube' => $episode['rutube_id'] !== null,
+                'is_anilibria' => !empty(array_filter([$episode['hls_480'], $episode['hls_720'], $episode['hls_1080']])) === true
+            ],
+            'rutube_id' => $episode['rutube_id'] ?? null,
             'updated_at' => strtotime($episode['updated_at'] ?? null),
         ];
 

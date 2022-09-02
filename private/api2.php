@@ -63,6 +63,8 @@ $router->map('GET', '/getTitleEpisodesById/[:releaseId]', function ($releaseId) 
             '1080' => $episode['fullhd'] ? $url1080['path'] ?? null : null,
             'poster' => $episode['poster'] ?? null,
             'skips' => $episode['skips'],
+            'sources' => $episode['sources'] ?? [],
+            'rutube_id' => $episode['rutube_id'] ?? null,
             'created_time' => $episode['updated_at'] ?? null,
         ];
     }
@@ -212,7 +214,6 @@ $router->map('GET', '/getTorrentsByLastChange/[i:limit]', function ($limit) {
     return $torrents;
 
 });
-
 
 
 // getTorrents
