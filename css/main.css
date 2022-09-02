@@ -963,3 +963,41 @@ button.favorites {
 		text-shadow: 0 0 0 #ffffff;
 	}
 }
+
+
+.team-block .day {
+	background: #4a4a4a;
+	text-align: center;
+	margin: 10px 0 10px 0;
+	height: 30px;
+	font-size: 13pt;
+	line-height: 30px;
+	border-radius: 3px;
+	color: white;
+}
+
+.team-block .teamleft {
+	float: left;
+	margin-left: 6px;
+}
+
+.team-block .teamright {
+	float: right;
+	margin-right: 6px;
+}
+
+.team-block .intern {
+	color: #cacaca;
+	border: 1px solid;
+	padding: 1px 2px;
+	display: inline-block;
+	font-size: 10px;
+	margin-left: 4px;
+	line-height: 1;
+	border-radius: 2px;
+}
+
+.team-block .teamuser {
+	display: flex;
+	align-items: center;
+}

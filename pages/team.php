@@ -13,50 +13,9 @@ $var['page'] = 'app';
 require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
 $teams = getTeams();
-
 ?>
 
-    <style>
-        .day {
-            background: #4a4a4a;
-            text-align: center;
-            margin: 10px 0 10px 0;
-            height: 30px;
-            font-size: 13pt;
-            line-height: 30px;
-            border-radius: 3px;
-            color: white;
-        }
-
-        .teamleft {
-            float: left;
-            margin-left: 6px;
-        }
-
-        .teamright {
-            float: right;
-            margin-right: 6px;
-        }
-
-        .intern {
-            color: #cacaca;
-            border: 1px solid;
-            padding: 1px 2px;
-            display: inline-block;
-            font-size: 10px;
-            margin-left: 4px;
-            line-height: 1;
-            border-radius: 2px;
-        }
-
-        .teamuser {
-            display: flex;
-            align-items: center;
-        }
-
-    </style>
-
-    <div class="news-block">
+    <div class="news-block team-block">
         <div class="news-body">
 
             <p style="text-align: center;">
