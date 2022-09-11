@@ -26,7 +26,7 @@
         "type": "section",
         "section": {
           "title": "Немного о нас",
-          "subtitle": "– Один из самых качественных дубляжей аниме, способный потягаться с платными сервисами<br>– Команда более чем из 100 человек, любящих своё дело<br>– Весь контент доступен абсолютно бесплатно<br>– У нас много классных <a href=\"https://anilibria.app/\">приложений</a><br>– Усть множество <a href=\"https://t.me/TeleAniLibria/4985\">полезных ботов</a> в Telegram<br>– Мы постоянно совершенствуемся"
+          "subtitle": "– Один из самых качественных дубляжей аниме, способный потягаться с платными сервисами<br>– Команда более чем из 100 человек, любящих своё дело<br>– Весь контент доступен абсолютно бесплатно<br>– У нас много классных <a href=\"https://anilibria.app/\">приложений</a><br>– Есть множество <a href=\"https://t.me/TeleAniLibria/4985\">полезных ботов</a> в Telegram<br>– Мы постоянно совершенствуемся"
         }
       },
       {
@@ -121,15 +121,6 @@
           "text": "Вступить в команду AniLibria",
           "brand": "anilibria",
           "icon": "anilibria"
-        }
-      },
-      {
-        "type": "button",
-        "button": {
-          "tag": "infra_dialog",
-          "text": "Предоставить сервер для онлайн плеера",
-          "brand": "anilibria",
-          "icon": "infra"
         }
       },
       {
@@ -240,45 +231,6 @@
             "button": {
               "text": "Подать заявку через Telegram",
               "link": "https://t.me/joinlibria_bot",
-              "brand": "telegram",
-              "icon": "telegram"
-            }
-          }
-        ],
-        "cancel_text": "Отмена"
-      },
-      {
-        "tag": "infra_dialog",
-        "content": [
-          {
-            "type": "section",
-            "section": {
-              "title": "Предоставить сервер для онлайн плеера"
-            }
-          },
-          {
-            "type": "divider",
-            "divider": {
-              "height": 16
-            }
-          },
-          {
-            "type": "section",
-            "section": {
-              "subtitle": "Большая часть расходов проекта связана с затратами на сервера для онлайн плеера. Инфраструктура позволяет расширять количество серверов для плеера. Блаблабла..."
-            }
-          },
-          {
-            "type": "divider",
-            "divider": {
-              "height": 16
-            }
-          },
-          {
-            "type": "button",
-            "button": {
-              "text": "Техподдержка в Telegram",
-              "link": "tg://resolve?domain=Libria911Bot",
               "brand": "telegram",
               "icon": "telegram"
             }
