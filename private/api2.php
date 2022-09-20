@@ -268,7 +268,7 @@ $router->map('GET', '/getTorrents/[:releaseId]', function ($releaseId) {
 // getYouTube
 $router->map('GET', '/getYouTube/[i:limit]', function ($limit) {
 
-    global $db;
+    global $db, $conf;
 
     $limit = $limit && (int)$limit > 0
         ? (int)$limit
@@ -278,6 +278,7 @@ $router->map('GET', '/getYouTube/[i:limit]', function ($limit) {
         SELECT 
            `id`, 
            `title`,
+           `preview`,
            `video_id` as `vid`,
            UNIX_TIMESTAMP(`created_at`) as `time`,
            `views` as `view`,
@@ -291,11 +292,19 @@ $router->map('GET', '/getYouTube/[i:limit]', function ($limit) {
     $youtube = $query->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($youtube as $index => $video) {
+
+        $videoPreview = !empty($video['preview']) ? sprintf('%s/%s/%s', $conf['youtube_poster_host'], $video['id'], $video['preview']) : null;
+        $videoThumbnail = $videoPreview ? ImageThumbnail::make($videoPreview)->getThumbnail(400) : null;
+
         $youtube[$index] = array_merge($video, [
             'id' => (int)$video['id'],
             'time' => (int)$video['time'],
             'view' => (int)$video['view'],
             'comment' => (int)$video['comment'],
+            'preview' => [
+                'src' => $videoPreview,
+                'thumbnail' => $videoThumbnail,
+            ]
         ]);
     }
 

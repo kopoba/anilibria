@@ -4230,6 +4230,9 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
         if ($release['episodes_total']) $typeHuman .= sprintf(' (%s%s эп.)', $release['episodes_are_unknown'] ? '>' : '', $release['episodes_total']);
         if ($release['duration']) $typeHuman .= sprintf(', %s мин.', $release['duration']);
 
+        $posterSrc = !empty($release['poster']) ? ImageThumbnail::make($release['poster'])->getThumbnail(350, 500) : null;
+        $posterThumbnail = $posterSrc ? ImageThumbnail::make($release['poster'])->getThumbnail(null, 150, 50) : null;
+
         $releases[$index] = array_merge($release, [
             'id' => (int)$release['id'],
             'day' => (int)$release['day'],
@@ -4238,8 +4241,12 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             'last' => (int)$release['last'],
             'status' => (int)$release['status'],
             'rating' => (int)$release['rating'],
-            'poster' => !empty($release['poster']) ? ImageThumbnail::make($release['poster'])->getThumbnail(350, 500) : '/upload/release/350x500/default.jpg',
+            'poster' => $posterSrc ?? '/upload/release/350x500/default.jpg',
             'bakanim' => (int)$release['bakanim'],
+            'preview' => [
+                'src' => $posterSrc ?? null,
+                'thumbnail' => $posterThumbnail ?? null,
+            ],
             'duration' => (float)$release['duration'],
             'type_value' => $release['type'] ?? null,
             'last_change' => (int)$release['last_change'],
@@ -4247,6 +4254,7 @@ function _getFullReleasesDataInLegacyStructure($releasesId = null): array
             'episodes_total' => $release['episodes_total'] ? (int)$release['episodes_total'] : null,
             'has_rutube_episodes' => (int)$release['has_rutube_episodes'] === 1,
             'episodes_are_unknown' => (int)$release['episodes_are_unknown'] === 1,
+
         ]);
     }
 
