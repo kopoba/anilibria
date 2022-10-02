@@ -1619,8 +1619,8 @@ function adsUrl() // DONE
 {
     $arr['cli'] = ['id' => 'vast6979'];
     $arr['rey'] = ['id' => 'vast2585'];
-    $arr['zet'] = ['id' => 'zetcat5376'];
     $arr['re2'] = ['id' => 'vast6088'];
+    $arr['wed'] = ['id' => 'vast8417'];
     function prepareAdsUrl($arr)
     {
         foreach ($arr as $key => $val) {
