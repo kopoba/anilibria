@@ -743,7 +743,8 @@ function apiList()
             LinkMenuItem::absoluteLink("Patreon", "https://patreon.com/anilibria", LinkMenuItem::$IC_PATREON),
             LinkMenuItem::absoluteLink("Канал Telegram", "https://t.me/anilibria_tv", LinkMenuItem::$IC_TELEGRAM),
             LinkMenuItem::absoluteLink("Чат Discord", "https://discord.gg/M6yCGeGN9B", LinkMenuItem::$IC_DISCORD),
-            LinkMenuItem::absoluteLink("Сайт AniLibria", "https://www.anilibria.tv/", LinkMenuItem::$IC_ANILIBRIA)
+            LinkMenuItem::absoluteLink("Сайт AniLibria", "https://www.anilibria.tv/", LinkMenuItem::$IC_ANILIBRIA),
+            LinkMenuItem::absoluteLink("Наши приложения", "https://anilibria.app/", LinkMenuItem::$IC_ANILIBRIA),
         ];
     }
 
