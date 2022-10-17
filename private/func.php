@@ -1892,13 +1892,13 @@ function showRelease() // DONE
         $episodes = [];
         $rutubeEpisodes = _getReleaseEpisodesFromRutube($release['id'] ?? null);
 
-
         foreach ($rutubeEpisodes as $episode) $episodes[] = ['id' => $episode['id'], 'ordinal' => $episode['ordinal'], 'rutube_id' => $episode['rutube_id']];
 
         $page = str_replace('{rutubeEpisodes}', json_encode($episodes), $page);
 
-
     }
+
+    $page = str_replace('{rutubeEpisodes}', null, $page);
 
     return $page;
 }
