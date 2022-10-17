@@ -2389,7 +2389,7 @@ function getTeams(): array
         foreach ($roles as $i => $value) {
             $userRoles[] = [
                 'title' => $value,
-                'color' => $colors[$i] ?? null,
+                'color' => $colors[$i] ? trim($colors[$i]) : null,
             ];
         }
 
