@@ -126,6 +126,46 @@ function apiList()
 
 
     /* Main api methods */
+    function apiGetTeams()
+    {
+        $rawTeams = getTeams();
+        $teams = [];
+        foreach ($rawTeams as $rawTeam) {
+            $users = [];
+            foreach ($rawTeam['users'] ?? [] as $rawUser) {
+                $user = [
+                    'nickname' => $rawUser['nickname'],
+                    'roles' => $rawUser['roles'] ?? [],
+                    'is_intern' => $rawUser['is_intern'] === true,
+                    'is_vacation' => $rawUser['is_vacation'] === true
+                ];
+                $users[] = $user;
+            }
+
+            $team = [
+                'title' => $rawTeam['title'],
+                'description' => $rawTeam['description'],
+                'users' => $users
+            ];
+            $teams[] = $team;
+        }
+
+        $headerRoles = [
+            ['title' => 'Войсеры', 'color' => '#339966'],
+            ['title' => 'Технари', 'color' => '#800000'],
+            ['title' => 'Переводчики', 'color' => '#ebd800'],
+            ['title' => 'Оформители', 'color' => '#ff6600'],
+            ['title' => 'Релизёры', 'color' => '#b523c5'],
+            ['title' => 'Сидеры', 'color' => '#000080'],
+            ['title' => 'Дизайнеры', 'color' => '#33cccc']
+        ];
+
+        return [
+            'header_roles' => $headerRoles,
+            'teams' => $teams
+        ];
+    }
+
     function apiGetTorrentsMap($torrents, $idsString) // DONE
     {
         global $db;
@@ -822,6 +862,10 @@ function apiList()
 
     if (isset($_POST['query'])) {
         switch ($_POST['query']) {
+            case 'teams':
+                return apiGetTeams();
+                break;
+
             case 'torrent':  // DONE
                 if (!empty($_POST['id'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');
