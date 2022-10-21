@@ -1244,6 +1244,7 @@ function getApiPlaylist($id) // DONE
         $item = [
             'id' => (float)$episode['ordinal'],
             'uuid' => $episode['id'],
+            'name' => $episode['title'] ?? null,
             'title' => sprintf('Серия %s', $episode['ordinal']),
             'srcSd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
             'srcHd' => 'https://vk.com/anilibria?w=wall-37468416_493445',
