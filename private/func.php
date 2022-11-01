@@ -3880,10 +3880,14 @@ function randomRelease() // DONE
     global $db, $cache;
     $arr = [];
 
-    $query = $db->query('SELECT `alias` AS `code` FROM `releases` WHERE `is_hidden` = 0 and `deleted_at` is null ORDER BY RAND() LIMIT 1');
-    $release = $query->fetch();
 
-    return $release['code'];
+    $numberOfChunks =  $cache->get('infiniteApiInfo');
+    $releasesOfChunk = $cache->get(sprintf('infiniteApiInfo%s', rand(1, $numberOfChunks)));
+    $releasesOfChunk = array_values(json_decode($releasesOfChunk, true));
+
+    $randomRelease = array_values($releasesOfChunk)[rand(0, count($releasesOfChunk) - 1)];
+
+    return $randomRelease['code'] ?? 'tate-no-yuusha-no-nariagari';
 }
 
 /*function updateGenreRating()
