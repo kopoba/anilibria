@@ -2305,7 +2305,7 @@ function getReleaseVideo($id) // DONE
         $server = $servers[array_rand($servers, 1)];
         $qualities = [];
 
-        if($user['id'] == '2' || $user['id'] == '249035' || $user['id'] == '368751') {
+        if(in_array($user['id'], $var['users_cache_tests'] ?? [])) {
             $server = ['url' => 'https://cache.libria.fun/videos/media'];
         }
 
