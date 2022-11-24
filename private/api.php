@@ -354,6 +354,8 @@ function apiList()
 
     function proceedReleases($releases, $torrent) // DONE
     {
+        global $user;
+
         $result = [];
         $filter = [
             'code',
@@ -448,6 +450,10 @@ function apiList()
 
             unset($val['rating']);
             unset($val['playlist']['online']);
+
+            if($user['id'] == '2' || $user['id'] == '249035' || $user['id'] == '368751') {
+                $val['playlist'] = json_decode(getApiPlaylist($val['id']), true);
+            }
 
             $result[] = $val;
         }
