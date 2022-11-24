@@ -1209,7 +1209,7 @@ function saveInfiniteCache($chunk, $torrent) // DONE
 function getApiPlaylist($id) // DONE
 {
 
-    global $conf, $var, $db;
+    global $conf, $var, $db, $user;
 
     // Episodes
     $query = $db->prepare('
@@ -1240,6 +1240,12 @@ function getApiPlaylist($id) // DONE
 
         $endingSkip = []; // future
         $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
+
+
+        if($user['id'] == '2' || $user['id'] == '249035' || $user['id'] == '368751') {
+            $server = ['url' => 'https://cache.libria.fun/videos/media'];
+        }
+
 
         $item = [
             'id' => (float)$episode['ordinal'],
