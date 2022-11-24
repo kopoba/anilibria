@@ -175,3 +175,13 @@ $var['types'] = [
     'DORAMA' => 'Дорама',
     'SPECIAL' => 'Спешл',
 ];
+
+
+$var['users_cache_tests'] = [
+    '2', // Kirja
+    '249035', // pavloniym
+    '368751', // MindHunter
+    '74949', // RadiationX (Android)
+    '232267', // trueromanasylum (QT)
+    '270620', // allui (IOS)
+];

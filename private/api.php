@@ -354,7 +354,7 @@ function apiList()
 
     function proceedReleases($releases, $torrent) // DONE
     {
-        global $user;
+        global $user, $var;
 
         $result = [];
         $filter = [
@@ -451,7 +451,8 @@ function apiList()
             unset($val['rating']);
             unset($val['playlist']['online']);
 
-            if($user['id'] == '2' || $user['id'] == '249035' || $user['id'] == '368751') {
+
+            if(in_array($user['id'], $var['users_cache_tests'] ?? [])) {
                 $val['playlist'] = json_decode(getApiPlaylist($val['id']), true);
             }
 
@@ -1247,11 +1248,9 @@ function getApiPlaylist($id) // DONE
         $endingSkip = []; // future
         $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
 
-
-        if($user['id'] == '2' || $user['id'] == '249035' || $user['id'] == '368751') {
+        if(in_array($user['id'], $var['users_cache_tests'] ?? [])) {
             $server = ['url' => 'https://cache.libria.fun/videos/media'];
         }
-
 
         $item = [
             'id' => (float)$episode['ordinal'],
