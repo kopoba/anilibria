@@ -378,6 +378,8 @@ function apiList()
             'favorite'
         ];
 
+        $userIsCacheTester = _checkUserIsCacheTester();
+
         foreach ($releases as $key => $val) {
             $unsettedFileds = [];
             $names = $val['names'];
@@ -452,7 +454,7 @@ function apiList()
             unset($val['playlist']['online']);
 
 
-            if(in_array($user['id'], $var['users_cache_tests'] ?? [])) {
+            if($userIsCacheTester === true) {
                 $val['playlist'] = json_decode(getApiPlaylist($val['id']), true);
             }
 
@@ -1240,6 +1242,7 @@ function getApiPlaylist($id) // DONE
     $servers = $query->fetchAll();
 
     $playlist = [];
+    $userIsCacheTester = _checkUserIsCacheTester();
 
     foreach ($episodes as $episode) {
 
@@ -1248,9 +1251,7 @@ function getApiPlaylist($id) // DONE
         $endingSkip = []; // future
         $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
 
-        if(in_array($user['id'], $var['users_cache_tests'] ?? [])) {
-            $server = ['url' => 'https://cache.libria.fun/videos/media'];
-        }
+        if($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
         $item = [
             'id' => (float)$episode['ordinal'],

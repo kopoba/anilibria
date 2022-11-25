@@ -2299,15 +2299,14 @@ function getReleaseVideo($id) // DONE
     $servers = $query->fetchAll();
 
     $playlist = [];
+    $userIsCacheTester = _checkUserIsCacheTester();
 
     foreach ($episodes as $episode) {
 
         $server = $servers[array_rand($servers, 1)];
         $qualities = [];
 
-        if(in_array($user['id'], $var['users_cache_tests'] ?? [])) {
-            $server = ['url' => 'https://cache.libria.fun/videos/media'];
-        }
+        if($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
 
         if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
@@ -4305,4 +4304,31 @@ function getUserAvatarUrl($user_id, $filename)
 {
     global $conf;
     return sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user_id / 100), $user_id, $filename);
+}
+
+
+/**
+ * Check user is a cache tester
+ *
+ * @return bool
+ */
+function _checkUserIsCacheTester(): bool
+{
+
+    global $db, $user;
+
+    if($user) {
+
+        $sql = 'SELECT 1 FROM `_users_cache_testers` WHERE `user_id` = :userId';
+        $query = $db->prepare($sql);
+        $query->bindParam('userId', $user['id']);
+        $query->execute();
+        $response = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        return count($response) > 0;
+
+    }
+
+    return false;
+
 }
