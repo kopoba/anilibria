@@ -2299,14 +2299,14 @@ function getReleaseVideo($id) // DONE
     $servers = $query->fetchAll();
 
     $playlist = [];
-    $userIsCacheTester = _checkUserIsCacheTester() || _fireLottery(1);
+    $userIsCacheTester = _checkUserIsCacheTester() || _fireCacheLottery();
 
     foreach ($episodes as $episode) {
 
         $server = $servers[array_rand($servers, 1)];
         $qualities = [];
 
-        if($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
+        if ($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
 
         if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
@@ -4337,17 +4337,20 @@ function _checkUserIsCacheTester(): bool
 /**
  * Fire lottery of percentage
  *
- * @param int $percentage
  * @return bool
  */
-function _fireLottery(int $percentage): bool
+function _fireCacheLottery(): bool
 {
+    global $cache;
+
     try {
 
-        return random_int(0, 100) <= $percentage;
+        $percentage = $cache->get('cacheLottery');
+
+        return random_int(0, 100) <= $percentage ? (int)$percentage : 0;
 
     } catch (\Throwable $exception) {
 
-        return true;
+        return false;
     }
 }
