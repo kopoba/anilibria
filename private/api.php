@@ -378,7 +378,7 @@ function apiList()
             'favorite'
         ];
 
-        $userIsCacheTester = _checkUserIsCacheTester();
+        $userIsCacheTester = _checkUserIsCacheTester() || _fireLottery(1);
 
         foreach ($releases as $key => $val) {
             $unsettedFileds = [];
@@ -1242,7 +1242,7 @@ function getApiPlaylist($id) // DONE
     $servers = $query->fetchAll();
 
     $playlist = [];
-    $userIsCacheTester = _checkUserIsCacheTester();
+    $userIsCacheTester = _checkUserIsCacheTester() || _fireLottery(1);
 
     foreach ($episodes as $episode) {
 

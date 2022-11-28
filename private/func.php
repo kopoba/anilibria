@@ -2299,7 +2299,7 @@ function getReleaseVideo($id) // DONE
     $servers = $query->fetchAll();
 
     $playlist = [];
-    $userIsCacheTester = _checkUserIsCacheTester();
+    $userIsCacheTester = _checkUserIsCacheTester() || _fireLottery(1);
 
     foreach ($episodes as $episode) {
 
@@ -4331,4 +4331,23 @@ function _checkUserIsCacheTester(): bool
 
     return false;
 
+}
+
+
+/**
+ * Fire lottery of percentage
+ *
+ * @param int $percentage
+ * @return bool
+ */
+function _fireLottery(int $percentage): bool
+{
+    try {
+
+        return random_int(0, 100) <= $percentage;
+
+    } catch (\Throwable $exception) {
+
+        return true;
+    }
 }
