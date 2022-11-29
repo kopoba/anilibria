@@ -14,7 +14,12 @@ echo sprintf('Previous value: %s', $cache->get('cacheLottery'));
 echo PHP_EOL;
 
 if (in_array($user['id'], ['2', '368751', '249035'])) {
-    $cache->set('cacheLottery', (int)$_GET['percentage'], 0);
+
+    if(isset($_GET['percentage']) && (int)$_GET['percentage'] == $_GET['percentage']) {
+        $cache->set('cacheLottery', (int)$_GET['percentage'], 0);
+    }
+
+    echo sprintf('Current value: %s', $cache->get('cacheLottery'));
 }
 
-echo sprintf('Current value: %s', $cache->get('cacheLottery'));
+

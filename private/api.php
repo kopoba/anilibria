@@ -454,8 +454,10 @@ function apiList()
             unset($val['playlist']['online']);
 
 
+            // Check if user is cache tester
+            // Fetch fresh list of episodes (not from cache) as cache tester
             if($userIsCacheTester === true) {
-                $val['playlist'] = json_decode(getApiPlaylist($val['id']), true);
+                $val['playlist'] = json_decode(getApiPlaylist($val['id'], true), true);
             }
 
             $result[] = $val;
@@ -1215,7 +1217,7 @@ function saveInfiniteCache($chunk, $torrent) // DONE
     $cache->set('infiniteApiTorrent', json_encode($torrent), 0);
 }
 
-function getApiPlaylist($id) // DONE
+function getApiPlaylist($id, bool $asCacheTester = false) // DONE
 {
 
     global $conf, $var, $db, $user;
@@ -1242,7 +1244,6 @@ function getApiPlaylist($id) // DONE
     $servers = $query->fetchAll();
 
     $playlist = [];
-    $userIsCacheTester = _checkUserIsCacheTester() || _fireCacheLottery();
 
     foreach ($episodes as $episode) {
 
@@ -1251,7 +1252,7 @@ function getApiPlaylist($id) // DONE
         $endingSkip = []; // future
         $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
 
-        if($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
+        if($asCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
         $item = [
             'id' => (float)$episode['ordinal'],
