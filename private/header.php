@@ -160,6 +160,6 @@ $xcss = headerAds();
 	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
 </a>
 
-<a href="/season/2023winter.html" target="_blank">
+<!--<a href="/season/2023winter.html" target="_blank">
     <img src="/img/season/winter2023.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season winter 2023 AniLibria" />
-</a>
+</a>-->
