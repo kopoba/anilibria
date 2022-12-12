@@ -1265,7 +1265,7 @@ function getApiPlaylist($id, bool $asCacheTester = false) // DONE
                 'ending' => $endingSkip,
                 'opening' => count(array_filter($openingSkip, 'strlen')) === 2 ? $openingSkip : [],
             ],
-            'poster' => !empty($episode['preview_original']) ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]))->getThumbnail(720, null, 80) : null,
+            'poster' => !empty($episode['preview']) ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview']]))->getThumbnail(720, null, 80) : null,
             'ordinal' => (float)$episode['ordinal'],
             'sources' => [
                 'is_rutube' => $episode['rutube_id'] !== null,
@@ -1273,7 +1273,7 @@ function getApiPlaylist($id, bool $asCacheTester = false) // DONE
             ],
             'rutube_id' => $episode['rutube_id'] ?? null,
             'updated_at' => strtotime($episode['updated_at'] ?? null),
-            'poster_thumbnail' => !empty($episode['preview_original']) ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]))->getThumbnail(320, null, 40) : null,
+            'poster_thumbnail' => !empty($episode['preview']) ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview']]))->getThumbnail(320, null, 40) : null,
         ];
 
         if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);

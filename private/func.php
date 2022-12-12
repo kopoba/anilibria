@@ -2330,8 +2330,8 @@ function getReleaseVideo($id) // DONE
             'skip' => empty($skips) === false ? implode($skips, ',') : null,
             'file' => implode(',', $qualities),
             'title' => sprintf('Серия %s', $episode['ordinal']),
-            'poster' => !empty($episode['preview_original'])
-                ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview_original']]))->getThumbnail(720, null, 80)
+            'poster' => !empty($episode['preview'])
+                ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview']]))->getThumbnail(720, null, 80)
                 : null,
             'download' => null,
         ];
