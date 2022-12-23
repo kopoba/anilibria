@@ -456,7 +456,7 @@ function apiList()
 
             // Check if user is cache tester
             // Fetch fresh list of episodes (not from cache) as cache tester
-            if($userIsCacheTester === true) {
+            if ($userIsCacheTester === true) {
                 $val['playlist'] = json_decode(getApiPlaylist($val['id'], true), true);
             }
 
@@ -1220,7 +1220,7 @@ function saveInfiniteCache($chunk, $torrent) // DONE
 function getApiPlaylist($id, bool $asCacheTester = false) // DONE
 {
 
-    global $conf, $var, $db, $user;
+    global $conf, $var, $db, $user, $cache;
 
     // Episodes
     $query = $db->prepare('
@@ -1252,7 +1252,7 @@ function getApiPlaylist($id, bool $asCacheTester = false) // DONE
         $endingSkip = []; // future
         $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
 
-        if($asCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
+        if ($asCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
         $item = [
             'id' => (float)$episode['ordinal'],
@@ -1276,9 +1276,18 @@ function getApiPlaylist($id, bool $asCacheTester = false) // DONE
             'poster_thumbnail' => !empty($episode['preview']) ? ImageThumbnail::make(implode(DIRECTORY_SEPARATOR, [$conf['release_episode_poster_host'], $episode['releases_id'], $episode['ordinal'], $episode['preview']]))->getThumbnail(320, null, 40) : null,
         ];
 
-        if (empty($episode['hls_480']) === false) $item['sd'] = sprintf('%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
-        if (empty($episode['hls_720']) === false) $item['hd'] = sprintf('%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
-        if (empty($episode['hls_1080']) === false) $item['fullhd'] = sprintf('%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
+
+        $hls480 = !empty($episode['hls_480']) ? sprintf('480/%s', $episode['hls_480']) : null;
+        $hls720 = !empty($episode['hls_720']) ? sprintf('720/%s', $episode['hls_720']) : null;
+        $hls1080 = !empty($episode['hls_1080']) ? sprintf('1080/%s', $episode['hls_1080']) : null;
+
+        // Check if fhd quality is disabled
+        // Swap 1080 with 720 hash
+        if ($hls720 && $hls1080 && $cache->get('fhdQualityIsDisabled')) $hls1080 = $hls720;
+
+        if ($hls480) $item['sd'] = sprintf('%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls480);
+        if ($hls720) $item['hd'] = sprintf('%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls720);
+        if ($hls1080) $item['fullhd'] = sprintf('%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls1080);
 
         $playlist[] = $item;
     }

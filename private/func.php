@@ -2271,7 +2271,7 @@ function wsInfoShow() // DONE
 
 function getReleaseVideo($id) // DONE
 {
-    global $conf, $var, $db, $user;
+    global $conf, $var, $db, $user, $cache;
 
     // Episodes
     $query = $db->prepare('
@@ -2308,10 +2308,17 @@ function getReleaseVideo($id) // DONE
 
         if ($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
+        $hls480 = !empty($episode['hls_480']) ? sprintf('480/%s', $episode['hls_480']) : null;
+        $hls720 = !empty($episode['hls_720']) ? sprintf('720/%s', $episode['hls_720']) : null;
+        $hls1080 = !empty($episode['hls_1080']) ? sprintf('1080/%s', $episode['hls_1080']) : null;
 
-        if (empty($episode['hls_1080']) === false) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/1080/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_1080']);
-        if (empty($episode['hls_720']) === false) $qualities[] = sprintf('[720p]%s/ts/%s/%s/720/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_720']);
-        if (empty($episode['hls_480']) === false) $qualities[] = sprintf('[480p]%s/ts/%s/%s/480/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $episode['hls_480']);
+        // Check if fhd quality is disabled
+        // Swap 1080 with 720 hash
+        if ($hls720 && $hls1080 && $cache->get('fhdQualityIsDisabled')) $hls1080 = $hls720;
+
+        if ($hls480) $qualities[] = sprintf('[480p]%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls480);
+        if ($hls720) $qualities[] = sprintf('[720p]%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls720);
+        if ($hls1080) $qualities[] = sprintf('[1080p]%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls1080);
 
 
         $endingSkip = null; // future

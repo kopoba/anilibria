@@ -4,7 +4,7 @@ MAILTO=""
 HOME=/
 
 */10 * * * *   php /var/www/html/private/cron/rating.php > /dev/null 2>&1
-*/5 * * * *    php /var/www/html/private/cron/api.php > /dev/null 2>&1
+*/1 * * * *    php /var/www/html/private/cron/api.php > /dev/null 2>&1
 */5 * * * *    php /var/www/html/private/cron/stat.php > /dev/null 2>&1
 */10 * * * *   php /var/www/html/private/cron/player_stat.php > /dev/null 2>&1
 * * * * *      php /var/www/html/private/cron/webhooks.php > /dev/null 2>&1
