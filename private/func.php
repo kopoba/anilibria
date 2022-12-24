@@ -2314,7 +2314,7 @@ function getReleaseVideo($id) // DONE
 
         // Check if fhd quality is disabled
         // Swap 1080 with 720 hash
-        if ($hls720 && $hls1080 && $cache->get('fhdQualityIsDisabled')) $hls1080 = $hls720;
+        if ($hls720 && $hls1080 && isset($cache) && $cache->get('fhdQualityIsDisabled')) $hls1080 = $hls720;
 
         if ($hls480) $qualities[] = sprintf('[480p]%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls480);
         if ($hls720) $qualities[] = sprintf('[720p]%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls720);
