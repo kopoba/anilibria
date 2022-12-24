@@ -454,10 +454,12 @@ function apiList()
             unset($val['playlist']['online']);
 
 
-            // Check if user is cache tester
-            // Fetch fresh list of episodes (not from cache) as cache tester
-            if ($userIsCacheTester === true) {
-                $val['playlist'] = json_decode(getApiPlaylist($val['id'], true), true);
+            if (!in_array('playlist', $unsettedFileds)) {
+                // Check if user is cache tester
+                // Fetch fresh list of episodes (not from cache) as cache tester
+                if ($userIsCacheTester === true) {
+                    $val['playlist'] = json_decode(getApiPlaylist($val['id'], true), true);
+                }
             }
 
             $result[] = $val;
