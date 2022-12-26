@@ -1283,7 +1283,7 @@ function getApiPlaylist($id, bool $asCacheTester = false) // DONE
 
         // Check if fhd quality is disabled
         // Swap 1080 with 720 hash
-        if ($hls720 && $hls1080 && isset($cache) &&  $cache->get('fhdQualityIsDisabled')) $hls1080 = $hls720;
+        if ($hls720 && $hls1080 && isset($cache) && $cache->get('fhdQualityIsDisabled')) $hls1080 = $hls720;
 
         if ($hls480) $item['sd'] = sprintf('%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls480);
         if ($hls720) $item['hd'] = sprintf('%s/ts/%s/%s/%s', $server['url'], $episode['releases_id'], $episode['ordinal'], $hls720);
