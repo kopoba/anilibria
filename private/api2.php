@@ -58,6 +58,7 @@ $router->map('GET', '/getTitleEpisodesById/[:releaseId]', function ($releaseId) 
 
         $response['playlist'][] = [
             'id' => $episode['id'],
+            'uuid' => $episode['uuid'] ?? null,
             '480' => $episode['sd'] ? $url480['path'] ?? null : null,
             '720' => $episode['hd'] ? $url720['path'] ?? null : null,
             '1080' => $episode['fullhd'] ? $url1080['path'] ?? null : null,
