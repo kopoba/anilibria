@@ -1,0 +1,35 @@
+{
+  "update": {
+    "version_code": "62",
+    "version_name": "2.8.0",
+    "version_build": "0",
+    "build_date": "27 декабря 2022 г.",
+    "links": [
+      {
+        "name": "AniLibria App",
+        "url": "https://github.com/anilibria/anilibria-app/releases/download/2.8.0/AniLibria_v2.8.0.apk",
+        "type": "file"
+      },
+      {
+        "name": "AniLibria Lite (Белая иконка)",
+        "url": "https://github.com/anilibria/anilibria-app/releases/download/2.8.0/AniLibria_Lite_v2.8.0.apk",
+        "type": "file"
+      }
+    ],
+    "important": [
+      "Android 5.0 теперь минимальная поддерживаемая версия системы"
+    ],
+    "added": [
+      "Поддержка Android 13"
+    ],
+    "fixed": [
+      "Анимация открытия релиза",
+      "Теперь в истории загружаются актуальные данные о релизах",
+      "Оптимизация производительности"
+    ],
+    "changed": [
+      "Было сделано много изменений \"под капотом\", которые позволяют сделать приложение более стабильным и быстрым",
+      "Подробная информация об изменениях на <a href=\"https://github.com/anilibria/anilibria-app/releases/tag/2.8.0\">GitHub</a>"
+    ]
+  }
+}
