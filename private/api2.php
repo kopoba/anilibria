@@ -500,7 +500,7 @@ $router->map('GET', '/getCacheServers', function () {
             'id' => 1,
             'name' => 'https://cache.libria.fun',
             'url' => 'https://cache.libria.fun/videos/media',
-            'host' => 'https://cache.libria.fun',
+            'host' => 'cache.libria.fun',
             'updated_at' => strtotime('now'),
             'is_in_rotation' => 1,
             'outgoing_traffic' =>  0,
