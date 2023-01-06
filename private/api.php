@@ -378,8 +378,6 @@ function apiList()
             'favorite'
         ];
 
-        $userIsCacheTester = _checkUserIsCacheTester() || _fireCacheLottery();
-
         foreach ($releases as $key => $val) {
             $unsettedFileds = [];
             $names = $val['names'];
@@ -452,15 +450,6 @@ function apiList()
 
             unset($val['rating']);
             unset($val['playlist']['online']);
-
-
-            if (!in_array('playlist', $unsettedFileds)) {
-                // Check if user is cache tester
-                // Fetch fresh list of episodes (not from cache) as cache tester
-                if ($userIsCacheTester === true) {
-                    $val['playlist'] = json_decode(getApiPlaylist($val['id'], true), true);
-                }
-            }
 
             $result[] = $val;
         }
@@ -1240,21 +1229,13 @@ function getApiPlaylist($id, bool $asCacheTester = false) // DONE
     $episodes = $query->fetchAll();
 
     // Cache Servers
-    $query = $db->prepare('SELECT * from `cache_servers` where deleted_at is NULL ORDER BY `response_seconds` ASC, `outgoing_traffic` ASC LIMIT 3');
-    $query->bindValue(':id', $id);
-    $query->execute();
-    $servers = $query->fetchAll();
-
+    $server = ['url' => 'https://cache.libria.fun/videos/media'];
     $playlist = [];
 
     foreach ($episodes as $episode) {
 
-        $server = $servers[array_rand($servers, 1)];
-
         $endingSkip = []; // future
         $openingSkip = [$episode['opening_starts_at'] !== null ? (float)$episode['opening_starts_at'] : null, $episode['opening_ends_at'] !== null ? (float)$episode['opening_ends_at'] : null];
-
-        if ($asCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
         $item = [
             'id' => (float)$episode['ordinal'],

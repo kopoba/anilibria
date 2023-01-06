@@ -2292,21 +2292,12 @@ function getReleaseVideo($id) // DONE
     $query->execute();
     $episodes = $query->fetchAll();
 
-    // Cache Servers
-    $query = $db->prepare('SELECT * from `cache_servers` where `deleted_at` IS NULL ORDER BY `response_seconds` ASC, `outgoing_traffic` ASC LIMIT 3');
-    $query->bindValue(':id', $id);
-    $query->execute();
-    $servers = $query->fetchAll();
-
+    $server = ['url' => 'https://cache.libria.fun/videos/media'];
     $playlist = [];
-    $userIsCacheTester = _checkUserIsCacheTester() || _fireCacheLottery();
 
     foreach ($episodes as $episode) {
 
-        $server = $servers[array_rand($servers, 1)];
         $qualities = [];
-
-        if ($userIsCacheTester === true) $server = ['url' => 'https://cache.libria.fun/videos/media'];
 
         $hls480 = !empty($episode['hls_480']) ? sprintf('480/%s', $episode['hls_480']) : null;
         $hls720 = !empty($episode['hls_720']) ? sprintf('720/%s', $episode['hls_720']) : null;
@@ -4311,53 +4302,4 @@ function getUserAvatarUrl($user_id, $filename)
 {
     global $conf;
     return sprintf('%s/%s/%s/%s', $conf['users_avatars_host'], floor($user_id / 100), $user_id, $filename);
-}
-
-
-/**
- * Check user is a cache tester
- *
- * @return bool
- */
-function _checkUserIsCacheTester(): bool
-{
-
-    global $db, $user;
-
-    if($user) {
-
-        $sql = 'SELECT 1 FROM `_users_cache_testers` WHERE `user_id` = :userId';
-        $query = $db->prepare($sql);
-        $query->bindParam('userId', $user['id']);
-        $query->execute();
-        $response = $query->fetchAll(PDO::FETCH_ASSOC);
-
-        return count($response) > 0;
-
-    }
-
-    return false;
-
-}
-
-
-/**
- * Fire lottery of percentage
- *
- * @return bool
- */
-function _fireCacheLottery(): bool
-{
-    global $cache;
-
-    try {
-
-        $percentage = $cache->get('cacheLottery');
-
-        return random_int(0, 100) <= $percentage ? (int)$percentage : 0;
-
-    } catch (\Throwable $exception) {
-
-        return false;
-    }
 }

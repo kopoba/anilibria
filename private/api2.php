@@ -495,29 +495,18 @@ $router->map('GET', '/buildSearchCache', function () {
 
 // Get cache servers
 $router->map('GET', '/getCacheServers', function () {
-
-    global $db;
-    $query = $db->prepare('SELECT * FROM `cache_servers` where `deleted_at` IS NULL ORDER BY `response_seconds` ASC, `outgoing_traffic` ASC');
-    $query->execute();
-
-    $response = $query->fetchAll(PDO::FETCH_ASSOC);
-    $cacheServers = [];
-
-    foreach ($response as $index => $server) {
-        $cacheServers[] = [
-            'id' => (int)$server['id'],
-            'name' => $server['name'],
-            'url' => $server['url'],
-            'host' => parse_url($server['url'])['host'] ?? null,
-            'updated_at' => strtotime($server['updated_at']),
-            'is_in_rotation' => $index <= 2,
-            'outgoing_traffic' => $server['outgoing_traffic'] ? (float)$server['outgoing_traffic'] : 0,
-            'response_seconds' => $server['response_seconds'] ? (float)$server['response_seconds'] : null,
-        ];
-    }
-
-
-    return $cacheServers;
+    return [
+        [
+            'id' => 1,
+            'name' => 'https://cache.libria.fun',
+            'url' => 'https://cache.libria.fun/videos/media',
+            'host' => 'https://cache.libria.fun',
+            'updated_at' => strtotime('now'),
+            'is_in_rotation' => 1,
+            'outgoing_traffic' =>  0,
+            'response_seconds' => 0,
+        ]
+    ];
 
 });
 
