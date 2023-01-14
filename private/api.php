@@ -1208,7 +1208,7 @@ function saveInfiniteCache($chunk, $torrent) // DONE
     $cache->set('infiniteApiTorrent', json_encode($torrent), 0);
 }
 
-function getApiPlaylist($id, bool $asCacheTester = false) // DONE
+function getApiPlaylist($id) // DONE
 {
 
     global $conf, $var, $db, $user, $cache;
