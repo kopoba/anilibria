@@ -2888,10 +2888,14 @@ function xSearch() // DONE
     $result = '';
     $releases = $query->fetchAll();
 
-    foreach ($releases as $release) {
-        $code = $release['alias'];
-        $json[] = ['id' => $release['id'], 'name' => base64_encode($release['name']), 'ename' => $release['name_english'], 'code' => $code];
-        $result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px;'>{$release['name']}</span></a></td></tr>";
+    if (empty($releases)) {
+        $result .= "<tr><td><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px; cursor: not-allowed;'>Что-то нету тут...</span></td></tr>";
+    }else {
+        foreach ($releases as $release) {
+            $code = $release['alias'];
+            $json[] = ['id' => $release['id'], 'name' => base64_encode($release['name']), 'ename' => $release['name_english'], 'code' => $code];
+            $result .= "<tr><td><a href='/release/$code.html'><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px;'>{$release['name']}</span></a></td></tr>";
+        }
     }
 
     if (isset($_POST['json'])) $result = $json;
