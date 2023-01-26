@@ -2892,7 +2892,7 @@ function xSearch() // DONE
     $releases = $query->fetchAll();
 
     if (empty($releases)) {
-        $result .= "<tr><td><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px; cursor: not-allowed;'>Что-то нету тут...</span></td></tr>";
+        $result .= "<tr><td><span style='display: block; width: 247px; margin-left: 13px; padding-top: 7px; padding-bottom: 7px; cursor: not-allowed;'>Ничего не найдено...</span></td></tr>";
     }else {
         foreach ($releases as $release) {
             $code = $release['alias'];
