@@ -34,6 +34,9 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
             border-radius: 4px;
         }
 		.youtubeTable img:hover { opacity:1; }
+
+
+
 	</style>
 	<table class="youtubeTable">
 		<tbody>

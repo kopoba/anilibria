@@ -1665,6 +1665,8 @@ function showRelease() // DONE
         return release404();
     }
 
+    $franchises = _getReleaseFranchises($release['id']);
+
     lowerMove();
 
     $var['release']['block'] = false;
@@ -1711,6 +1713,7 @@ function showRelease() // DONE
 
     $page = str_replace('{ename}', $release['ename'], $page);
     $page = str_replace('{aname}', $release['aname'], $page);
+    $page = str_replace('{franchises}', _getReleasesFranchisesAsHtml($franchises ?? [], $release['id']), $page);
     $page = str_replace('{fullname}', $name, $page);
     $page = str_replace('{alt}', "{$release['name']} / {$release['ename']}", $page);
     $page = str_replace('{block}', $release['block'], $page);
@@ -3883,7 +3886,7 @@ function randomRelease() // DONE
     $arr = [];
 
 
-    $numberOfChunks =  $cache->get('infiniteApiInfo');
+    $numberOfChunks = $cache->get('infiniteApiInfo');
     $releasesOfChunk = $cache->get(sprintf('infiniteApiInfo%s', rand(1, $numberOfChunks)));
     $releasesOfChunk = array_values(json_decode($releasesOfChunk, true));
 
@@ -4297,6 +4300,90 @@ function _getReleaseByColumn(string $column, $value = null): ?array
     return $hasRelease ? _getFullReleasesDataInLegacyStructure([$release['id']]) : null;
 
 }
+
+/**
+ * Get release franchises
+ *
+ * @param $releaseId
+ * @return array
+ */
+function _getReleaseFranchises($releaseId): array
+{
+    if ($releaseId) {
+
+        global $db;
+
+        $sql = 'SELECT
+        
+            `r`.`id` as `release_id`,
+            `f`.`id` AS `franchise_id`,
+            `r`.`name` AS `release_name`,
+            `f`.`name` AS `franchise_name`,
+            `r`.`alias` AS `release_alias`,
+            `fr2`.`sort_order` AS `release_ordinal`
+    
+            FROM `franchises_releases` AS `fr1`
+            INNER JOIN `franchises` AS `f` ON `f`.`id` = `fr1`.`franchise_id`
+            INNER JOIN `franchises_releases` AS `fr2` ON `fr2`.`franchise_id` = `f`.`id`
+            INNER JOIN `releases` AS `r` ON `r`.`id` = `fr2`.`release_id`
+            WHERE `fr1`.`release_id` = :releaseId
+            ORDER BY `fr2`.`sort_order` ASC
+        ';
+
+        $query = $db->prepare($sql);
+        $query->bindParam('releaseId', $releaseId);
+        $query->execute();
+
+        $response = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $franchises = [];
+
+        foreach ($response as $franchiseRelease) {
+            $franchises[$franchiseRelease['franchise_id']][] = [
+                'franchise' => [
+                    'id' => $franchiseRelease['franchise_id'],
+                    'name' => $franchiseRelease['franchise_name']
+                ],
+                'release' => [
+                    'id' => $franchiseRelease['release_id'],
+                    'name' => $franchiseRelease['release_name'],
+                    'alias' => $franchiseRelease['release_alias'],
+                    'ordinal' => $franchiseRelease['release_ordinal'],
+                ]
+            ];
+        }
+
+        return array_values($franchises);
+    }
+
+    return [];
+}
+
+
+/**
+ * @param array $franchises
+ * @param $releaseId
+ * @return string|null
+ */
+function _getReleasesFranchisesAsHtml(array $franchises, $releaseId): ?string
+{
+    $html = "";
+
+    foreach ($franchises as $franchise) {
+        $html .= sprintf('<div class="release-franchise-title">Порядок просмотра франшизы "%s":</div>', $franchise[0]['franchise']['name']);
+        foreach ($franchise as $release) {
+            if ($releaseId != $release['release']['id']) {
+                $html .= sprintf('<div class="release-franchise">#%s <a href="/release/%s.html" target="_self">%s</a></div>', $release['release']['ordinal'], $release['release']['alias'], $release['release']['name'],);
+            } else {
+                $html .= sprintf('<div class="release-franchise active">#%s %s</div>', $release['release']['ordinal'], $release['release']['name']);
+            }
+        }
+    }
+
+    return $html;
+
+}
+
 
 function getUserAvatarUrl($user_id, $filename)
 {

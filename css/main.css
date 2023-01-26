@@ -730,7 +730,6 @@ p.lasttortext {
 	float: left;
 	width: 470px;
 	height: auto;
-	overflow: hidden;
 }
 
 #nextserial {
@@ -1000,4 +999,21 @@ button.favorites {
 .team-block .teamuser {
 	display: flex;
 	align-items: center;
+}
+
+
+.release-franchise-title {
+	margin-top: 20px;
+	font-weight: bold;
+	margin-bottom: 4px;
+}
+.release-franchise {
+}
+
+.release-franchise.active {
+	border: 1px solid #a8a8a8;
+	padding: 0 10px;
+	display: inline-block;
+	margin-left: -10px;
+	border-radius: 4px;
 }
