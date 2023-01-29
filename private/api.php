@@ -1024,6 +1024,8 @@ function updateApiCache() // DONE
         $names = [];
         $firstName = html_entity_decode(trim($row['name']));
         $secondName = html_entity_decode(trim($row['ename']));
+        $franchises = _getReleaseFranchises($row['id']) ?? [];
+
         if (!empty($firstName)) {
             $names[] = $firstName;
         }
@@ -1114,6 +1116,9 @@ function updateApiCache() // DONE
             'episodes' => $telegramPlaylist
         ];
 
+        $franchisesAsLinks = _getReleasesFranchisesAsHtmlLinks($franchises, $row['id']);
+        $descriptionWithFranchises = sprintf('%s<br><br>%s', $row['description'], $franchisesAsLinks);
+
         $info[$row['id']] = [
             'id' => intval($row['id']),
             'code' => $row['code'],
@@ -1132,7 +1137,7 @@ function updateApiCache() // DONE
             'year' => (string)$row['year'],
             'season' => html_entity_decode($row['season']),
             'day' => (string)$row['day'],
-            'description' => $row['description'],
+            'description' => $descriptionWithFranchises,
             //Для блокировки релизов
             'blockedInfo' => [
                 'blocked' => boolval($row['block']),

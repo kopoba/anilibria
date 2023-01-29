@@ -4389,6 +4389,32 @@ function _getReleasesFranchisesAsHtml(array $franchises, $releaseId): ?string
 }
 
 
+/**
+ * @param array $franchises
+ * @param $releaseId
+ * @return string|null
+ */
+function _getReleasesFranchisesAsHtmlLinks(array $franchises, $releaseId): ?string
+{
+    $html = "";
+
+    foreach ($franchises as $franchise) {
+        $html .= sprintf('Порядок просмотра франшизы "%s":', $franchise[0]['franchise']['name']);
+        foreach ($franchise as $release) {
+            $html .= "<br>";
+            if ($releaseId != $release['release']['id']) {
+                $html .= sprintf('#%s <a href="https://anilibria.tv/release/%s.html" target="_blank">%s</a>', $release['release']['ordinal'], $release['release']['alias'], $release['release']['name'],);
+            } else {
+                $html .= sprintf('#%s %s', $release['release']['ordinal'], $release['release']['name']);
+            }
+        }
+    }
+
+    return $html;
+
+}
+
+
 function getUserAvatarUrl($user_id, $filename)
 {
     global $conf;
