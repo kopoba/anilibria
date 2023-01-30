@@ -458,18 +458,11 @@ function apiList()
 
     function apiGetFavoriteField($release) // DONE
     {
-        global $user, $db;
-
-        //$count = countRatingRelease($release['id']);
-
-        $query = $db->prepare('SELECT `rating_by_favorites` from `releases` WHERE id = :id');
-        $query->bindValue(':id', $release['id']);
-        $query->execute();
-        $result = $query->fetch();
+        global $user;
 
         return [
-            'rating' => intval($result['rating_by_favorites'] ?? 0),
-            'added' => isFavorite($user['id'], $release['id'])
+            'rating' => intval($release['rating'] ?? 0),
+            'added' => $user && isFavorite($user['id'], $release['id'])
         ];
     }
 
