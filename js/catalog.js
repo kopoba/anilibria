@@ -92,6 +92,23 @@
         setPaginationPage();
     });
 
+    $(document).on('click', '.anime_info_wrapper .remove-favorite', function (e) {
+        e.preventDefault();
+        var rid = $(this).data("release-id");
+        var csrf_token = $('input[id=csrf_token]').val();
+        $.post("/public/favorites.php", {'rid': rid, 'csrf_token': csrf_token}, function (json) {
+            console.log(json);
+            data = JSON.parse(json);
+            if (data.key == 'access') {
+                $('#authPlsModal').modal('show');
+                return;
+            }
+            if (data.err == 'ok') {
+                getCatalog(getCurrentPage());
+            }
+        });
+    });
+
 
     function xPagination(a) {
 

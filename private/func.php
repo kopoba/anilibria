@@ -3258,7 +3258,7 @@ function showCatalog() // DONE
 
         $arr = [];
         $i = 0;
-        $animeDescription = '<div class="anime_info_wrapper"><span class="anime_name">{runame}</span><span class="anime_number">{series}</span><span class="anime_description">{description}</span></div>';
+        $animeDescription = '<div class="anime_info_wrapper"><a href="#" data-release-id="{releaseId}" style="text-decoration: none;position: absolute;right: 1rem;color: red;" title="Удалить из избранного" class="remove-favorite"><i class="glyphicon glyphicon-remove"></i></a><span class="anime_name">{runame}</span><span class="anime_number">{series}</span><span class="anime_description">{description}</span></div>';
         $tmplTD = '<td><a href="/release/{id}.html">' . $animeDescription . '<img class="torrent_pic" border="0" src="{img}" width="270" height="390" alt="{alt}" ></a></td>';
         foreach ($data as $key => $val) {
 
@@ -3276,6 +3276,7 @@ function showCatalog() // DONE
                     : '/upload/release/270x390/default.jpg';
 
                 $item = $tmplTD;
+                $item = str_replace('{releaseId}', $releaseId, $item);
                 $item = str_replace('{img}', $img, $item);
                 $item = str_replace('{alt}', "{$release['name']} / {$release['name_english']}", $item);
                 $item = str_replace('{id}', $release['alias'], $item);
