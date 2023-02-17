@@ -118,6 +118,16 @@ $xcss = headerAds();
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/main.css');?>" />
 		<style><?php echo $xcss['css']; ?></style>
+		<link rel="apple-touch-icon" sizes="180x180" href="/img/favicons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/img/favicons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/img/favicons/favicon-16x16.png">
+		<link rel="manifest" href="/img/favicons/site.webmanifest">
+		<link rel="mask-icon" href="/img/favicons/safari-pinned-tab.svg" color="#c40809">
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
+		<meta name="msapplication-TileColor" content="#c40809">
+		<meta name="msapplication-config" content="/img/favicons/browserconfig.xml">
+		<meta name="theme-color" content="#c40809">
 	</head>
 	<body>
 		<input type="hidden" id="csrf_token" value='<?php echo $csrf_token; ?>'>
