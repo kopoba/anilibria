@@ -77,8 +77,8 @@ $xcss = headerAds();
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
 	<head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id="></script>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php global $conf; echo $conf['google_analytics_id']; ?>"></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
