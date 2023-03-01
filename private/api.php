@@ -875,6 +875,11 @@ function apiList()
                 return apiGetReleasesByIdsString($info, $torrent, $_POST['id']);
                 break;
 
+
+            case 'franchises': // DONE
+                return _getReleaseFranchises($_POST['id']);
+                break;
+
             case 'release': // DONE
                 if (!empty($_POST['id'])) {
                     checkIsStringOrInteger($_POST['id'], 'id');

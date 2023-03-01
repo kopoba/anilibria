@@ -512,6 +512,11 @@ $router->map('GET', '/getCacheServers', function () {
 });
 
 
+$router->map('GET', '/getReleaseFranchises/[:releaseId]', function($releaseId) {
+    return _getReleaseFranchises($releaseId);
+});
+
+
 $match = $router->match();
 $response = is_array($match) && is_callable($match['target']) ? call_user_func_array($match['target'], $match['params']) : null;
 
