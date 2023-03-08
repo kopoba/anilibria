@@ -166,10 +166,11 @@ $xcss = headerAds();
 	Внимание! На сайте идёт <a href="https://www.anilibria.tv/season/2220winter.html" target="_blank">голосование</a> за неонгоинги на озвучку! ТОП-5 мы возьмём на озвучку!</br> А ещё, <a href="https://www.anilibria.tv/season/2021winter.html" target="_blank">голосование</a> за самые ожидаемые аниме зимы 2021!
 </div>-->
 
-<a href="https://www.anilibria.tv/pages/donate.php" target="_blank">
-	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
+
+<a href="/season/2023spring.html" target="_blank">
+    <img src="/img/season/spring2023.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season spring 2023 AniLibria" />
 </a>
 
-<!--<a href="/season/2023winter.html" target="_blank">
-    <img src="/img/season/winter2023.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season winter 2023 AniLibria" />
-</a>-->
+<a href="/pages/donate.php" target="_blank">
+	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
+</a>
