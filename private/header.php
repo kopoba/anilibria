@@ -87,6 +87,7 @@ $xcss = headerAds();
 		</script>
 
 		<script src="<?php echo '/js/theme-toggle.js';?>"></script>
+		
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php global $conf; echo $conf['google_analytics_id']; ?>"></script>
 		<script>
