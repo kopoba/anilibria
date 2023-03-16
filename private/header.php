@@ -167,9 +167,9 @@ $xcss = headerAds();
 </div>-->
 
 
-<a href="/season/2023spring.html" target="_blank">
+<!--<a href="/season/2023spring.html" target="_blank">
     <img src="/img/season/spring2023.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season spring 2023 AniLibria" />
-</a>
+</a>-->
 
 <a href="/pages/donate.php" target="_blank">
 	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
