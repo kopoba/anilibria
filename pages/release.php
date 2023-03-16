@@ -57,13 +57,16 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
 <?php endif; ?>
 
-<div style="margin-top: 10px; margin-bottom: 10px;">
-    <a href="https://vk.com/anilibria" target="_blank" rel="nofollow"><img src="/img/other/a1.jpg" width="283"
-                                                                           style="border-radius: 4px;"></a>
-    <a href="tg://resolve?domain=anilibria_tv" rel="nofollow"><img src="/img/other/a2.jpg" width="283"
-                                                                   style="margin-left: 12px; border-radius: 4px;"></a>
-    <a href="https://discord.gg/M6yCGeGN9B" target="_blank" rel="nofollow"><img src="/img/other/a3.jpg" width="283"
-                                                                                style="float: right; border-radius: 4px;"></a>
+<div class="releases-socials">
+    <a href="https://vk.com/anilibria" target="_blank" rel="nofollow">
+        <img src="/img/other/a1.jpg" alt="Anilibria Vkontakte">
+    </a>
+    <a href="tg://resolve?domain=anilibria_tv" rel="nofollow">
+        <img src="/img/other/a2.jpg" alt="Anilibria Telegram">
+    </a>
+    <a href="https://discord.gg/M6yCGeGN9B" target="_blank" rel="nofollow">
+        <img src="/img/other/a3.jpg" alt="Anilibria Discord">
+    </a>
 </div>
 
 <div id="vk_comments" style="margin-top: 10px;"></div>

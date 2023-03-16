@@ -77,6 +77,16 @@ $xcss = headerAds();
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
 	<head>
+		<!--Удалить скрипт после ознакомления аудитории с новой темой-->
+		<script>
+		    var visited = localStorage.getItem('visited');
+		    if (!visited) {
+		        alert("Привет Либрийцы! У нас появилась вторая цветовая тема. Cменить которую можно в нижней левой части страницы.");
+		        localStorage.setItem('visited', true);
+		    }
+	    </script>
+
+	    <script src="<?php echo '/js/theme-toggle.js';?>"></script>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id="></script>
 		<script>
@@ -114,7 +124,8 @@ $xcss = headerAds();
         <!-- Recaptcha -->
         <meta name="recaptcha2_site_key" content="<?php echo $conf['recaptcha2_public']; ?>" />
         <meta name="recaptcha3_site_key" content="<?php echo $conf['recaptcha_public']; ?>" />
-
+        
+        <link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/maindark.css');?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/main.css');?>" />
 		<style><?php echo $xcss['css']; ?></style>

@@ -1750,7 +1750,7 @@ function showRelease() // DONE
         if (in_array($release['season'], $var['season'])) {
 
             $tmpLink = $release['year'] . array_search($release['season'], $var['season']);
-            $xtmp = "<a href='/season/$tmpLink.html' style='color: #333;'>$xtmp</a>";
+            $xtmp = "<a href='/season/$tmpLink.html' class=\"release-season\">$xtmp</a>";
         }
         $release['year'] = $xtmp;
     }
@@ -1764,7 +1764,7 @@ function showRelease() // DONE
     $page = str_replace('{edityear}', $release['edityear'], $page);
     $page = str_replace('{type}', $release['type'], $page);
     if ($release['other']) {
-        $page = str_replace('{other}', "<b><a href=\"#\" data-show-other style=\"color: #000;\">Работа над субтитрами</a>:</b> " . $release['other'] . "<br>", $page);
+        $page = str_replace('{other}', "<b><a href=\"#\" data-show-other class=\"release-subseditors\">Работа над субтитрами</a>:</b> " . $release['other'] . "<br>", $page);
     } elseif (!$release['other'] && $user['access'] > 1) {
         $page = str_replace('{other}', "<b>ID Релиза:</b> " . $release['id'] . "<br>", $page);
     } else {
