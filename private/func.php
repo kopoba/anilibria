@@ -4340,10 +4340,10 @@ function _getReleaseFranchises($releaseId): array
 
         $response = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        $franchises = [];
+        $franchisesReleases = [];
 
         foreach ($response as $franchiseRelease) {
-            $franchises[$franchiseRelease['franchise_id']][] = [
+            $franchisesReleases[$franchiseRelease['franchise_id']][] = [
                 'franchise' => [
                     'id' => $franchiseRelease['franchise_id'],
                     'name' => $franchiseRelease['franchise_name']
@@ -4355,6 +4355,16 @@ function _getReleaseFranchises($releaseId): array
                     'ordinal' => $franchiseRelease['release_ordinal'],
                 ]
             ];
+        }
+
+        $franchises = [];
+        foreach ($franchisesReleases as $franchise) {
+            foreach ($franchise as $franchiseRelease) {
+                $franchise =  $franchiseRelease['franchise'];
+                $franchises[$franchise['id']]['franchise'] = $franchise;
+                $franchises[$franchise['id']]['releases'] = $franchises[$franchise['id']]['releases'] ?? [];
+                $franchises[$franchise['id']]['releases'][] = $franchiseRelease['release'];
+            }
         }
 
         return array_values($franchises);
@@ -4374,12 +4384,16 @@ function _getReleasesFranchisesAsHtml(array $franchises, $releaseId): ?string
     $html = "";
 
     foreach ($franchises as $franchise) {
-        $html .= sprintf('<div class="release-franchise-title">Порядок просмотра франшизы "%s":</div>', $franchise[0]['franchise']['name']);
-        foreach ($franchise as $release) {
-            if ($releaseId != $release['release']['id']) {
-                $html .= sprintf('<div class="release-franchise">#%s <a href="/release/%s.html" target="_self">%s</a></div>', $release['release']['ordinal'], $release['release']['alias'], $release['release']['name'],);
+
+        // Franchise
+        $html .= sprintf('<div class="release-franchise-title">Порядок просмотра франшизы "%s":</div>', $franchise['franchise']['name']);
+
+        // Releases
+        foreach ($franchise['releases'] ?? [] as $release) {
+            if ($releaseId != $release['id']) {
+                $html .= sprintf('<div class="release-franchise">#%s <a href="/release/%s.html" target="_self">%s</a></div>', $release['ordinal'], $release['alias'], $release['name']);
             } else {
-                $html .= sprintf('<div class="release-franchise active">#%s %s</div>', $release['release']['ordinal'], $release['release']['name']);
+                $html .= sprintf('<div class="release-franchise active">#%s %s</div>', $release['ordinal'], $release['name']);
             }
         }
     }
@@ -4399,13 +4413,14 @@ function _getReleasesFranchisesAsHtmlLinks(array $franchises, $releaseId): ?stri
     $html = "";
 
     foreach ($franchises as $franchise) {
-        $html .= sprintf('Порядок просмотра франшизы "%s":', $franchise[0]['franchise']['name']);
-        foreach ($franchise as $release) {
+        $html .= sprintf('Порядок просмотра франшизы "%s":', $franchise['franchise']['name']);
+
+        foreach ($franchise['releases'] ?? [] as $release) {
             $html .= "<br>";
-            if ($releaseId != $release['release']['id']) {
-                $html .= sprintf('#%s <a href="https://anilibria.tv/release/%s.html" target="_blank">%s</a>', $release['release']['ordinal'], $release['release']['alias'], $release['release']['name'],);
+            if ($releaseId != $release['id']) {
+                $html .= sprintf('#%s <a href="https://anilibria.tv/release/%s.html" target="_blank">%s</a>', $release['ordinal'], $release['alias'], $release['name']);
             } else {
-                $html .= sprintf('#%s %s', $release['release']['ordinal'], $release['release']['name']);
+                $html .= sprintf('#%s %s', $release['ordinal'], $release['name']);
             }
         }
     }

@@ -87,6 +87,7 @@ $xcss = headerAds();
 		</script>
 
 		<script src="<?php echo '/js/theme-toggle.js';?>"></script>
+
         <!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php global $conf; echo $conf['google_analytics_id']; ?>"></script>
 		<script>
@@ -129,6 +130,16 @@ $xcss = headerAds();
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/main.css');?>" />
 		<style><?php echo $xcss['css']; ?></style>
+		<link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+		<link rel="manifest" href="/favicons/site.webmanifest">
+		<link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#c40809">
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="icon" href="/favicons/favicon.svg" type="image/svg+xml" sizes="any">
+		<meta name="msapplication-TileColor" content="#c40809">
+		<meta name="msapplication-config" content="/favicons/browserconfig.xml">
+		<meta name="theme-color" content="#c40809">
 	</head>
 	<body>
 		<input type="hidden" id="csrf_token" value='<?php echo $csrf_token; ?>'>
@@ -167,10 +178,11 @@ $xcss = headerAds();
 	Внимание! На сайте идёт <a href="https://www.anilibria.tv/season/2220winter.html" target="_blank">голосование</a> за неонгоинги на озвучку! ТОП-5 мы возьмём на озвучку!</br> А ещё, <a href="https://www.anilibria.tv/season/2021winter.html" target="_blank">голосование</a> за самые ожидаемые аниме зимы 2021!
 </div>-->
 
-<a href="https://www.anilibria.tv/pages/donate.php" target="_blank">
+
+<!--<a href="/season/2023spring.html" target="_blank">
+    <img src="/img/season/spring2023.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season spring 2023 AniLibria" />
+</a>-->
+
+<a href="/pages/donate.php" target="_blank">
 	<img src="/img/support_al.png" style="width: 880px; height: 100px; margin-top: 10px;" alt="Support Anilibria" />
 </a>
-
-<!--<a href="/season/2023winter.html" target="_blank">
-    <img src="/img/season/winter2023.jpg" style="width: 880px; height: 100px; margin-top: 10px;" alt="Vote anime season winter 2023 AniLibria" />
-</a>-->
