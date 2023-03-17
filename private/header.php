@@ -87,8 +87,7 @@ $xcss = headerAds();
 		</script>
 
 		<script src="<?php echo '/js/theme-toggle.js';?>"></script>
-
-	<!-- Global site tag (gtag.js) - Google Analytics -->
+        <!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php global $conf; echo $conf['google_analytics_id']; ?>"></script>
 		<script>
 		  window.dataLayer = window.dataLayer || [];
@@ -126,7 +125,7 @@ $xcss = headerAds();
         <meta name="recaptcha2_site_key" content="<?php echo $conf['recaptcha2_public']; ?>" />
         <meta name="recaptcha3_site_key" content="<?php echo $conf['recaptcha_public']; ?>" />
 
-        <link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/maindark.css');?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo '/css/maindark.css?hash=' . md5_file('/var/www/html/css/maindark.css');?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo urlCDN(fileTime('/css/bootstrap.min.css'));?>" />
 		<link rel="stylesheet" type="text/css" href="<?php echo '/css/main.css?hash=' . md5_file('/var/www/html/css/main.css');?>" />
 		<style><?php echo $xcss['css']; ?></style>

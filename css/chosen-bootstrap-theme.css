@@ -1,4 +1,4 @@
-select.form-control+.chosen-container.chosen-container-single .chosen-single {
+select.form-control + .chosen-container.chosen-container-single .chosen-single {
     display: block;
     width: 100%;
     height: 34px;
@@ -10,19 +10,19 @@ select.form-control+.chosen-container.chosen-container-single .chosen-single {
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    background-image: none;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    background-image:none;
 }
 
-select.form-control+.chosen-container.chosen-container-single .chosen-single div {
-    top: 4px;
-    color: #000;
+select.form-control + .chosen-container.chosen-container-single .chosen-single div {
+    top:4px;
+    color:#000;
 }
 
-select.form-control+.chosen-container .chosen-drop {
+select.form-control + .chosen-container .chosen-drop {
     background-color: #FFF;
     border: 1px solid #CCC;
     border: 1px solid rgba(0, 0, 0, 0.15);
@@ -34,7 +34,7 @@ select.form-control+.chosen-container .chosen-drop {
 
 }
 
-select.form-control+.chosen-container .chosen-search input[type=text] {
+select.form-control + .chosen-container .chosen-search input[type=text] {
     display: block;
     width: 100%;
     height: 34px;
@@ -50,10 +50,10 @@ select.form-control+.chosen-container .chosen-search input[type=text] {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-    background-image: none;
+    background-image:none;
 }
 
-select.form-control+.chosen-container .chosen-results {
+select.form-control + .chosen-container .chosen-results {
     margin: 2px 0 0;
     padding: 5px 0;
     font-size: 15px;
@@ -62,8 +62,8 @@ select.form-control+.chosen-container .chosen-results {
     margin-bottom: 5px;
 }
 
-select.form-control+.chosen-container .chosen-results li,
-select.form-control+.chosen-container .chosen-results li.active-result {
+select.form-control + .chosen-container .chosen-results li , 
+select.form-control + .chosen-container .chosen-results li.active-result {
     display: block;
     padding: 3px 20px;
     clear: both;
@@ -71,19 +71,19 @@ select.form-control+.chosen-container .chosen-results li.active-result {
     line-height: 1.428571429;
     color: #333;
     white-space: nowrap;
-    background-image: none;
+    background-image:none;
 }
-
-select.form-control+.chosen-container .chosen-results li:hover,
-select.form-control+.chosen-container .chosen-results li.active-result:hover,
-select.form-control+.chosen-container .chosen-results li.highlighted {
+select.form-control + .chosen-container .chosen-results li:hover, 
+select.form-control + .chosen-container .chosen-results li.active-result:hover,
+select.form-control + .chosen-container .chosen-results li.highlighted
+{
     color: #FFF;
     text-decoration: none;
     background-color: #428BCA;
-    background-image: none;
+    background-image:none;
 }
 
-select.form-control+.chosen-container-multi .chosen-choices {
+select.form-control + .chosen-container-multi .chosen-choices {
     display: block;
     width: 100%;
     min-height: 34px;
@@ -99,15 +99,15 @@ select.form-control+.chosen-container-multi .chosen-choices {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-    background-image: none;
+    background-image:none;
 }
 
-select.form-control+.chosen-container-multi .chosen-choices li.search-field input[type="text"] {
-    height: auto;
-    padding: 5px 0;
+select.form-control + .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+    height:auto;
+    padding:5px 0;
 }
 
-select.form-control+.chosen-container-multi .chosen-choices li.search-choice {
+select.form-control + .chosen-container-multi .chosen-choices li.search-choice {
 
     background-image: none;
     padding: 3px 24px 3px 5px;
@@ -126,27 +126,26 @@ select.form-control+.chosen-container-multi .chosen-choices li.search-choice {
     border-color: #CCC;
 }
 
-select.form-control+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
-    top: 8px;
-    right: 6px;
+select.form-control + .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+    top:8px;
+    right:6px;
 }
 
-select.form-control+.chosen-container-multi.chosen-container-active .chosen-choices,
-select.form-control+.chosen-container.chosen-container-single.chosen-container-active .chosen-single,
-select.form-control+.chosen-container .chosen-search input[type=text]:focus {
+select.form-control + .chosen-container-multi.chosen-container-active .chosen-choices,
+select.form-control + .chosen-container.chosen-container-single.chosen-container-active .chosen-single,
+select.form-control + .chosen-container .chosen-search input[type=text]:focus{
     border-color: #66AFE9;
     outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 8px rgba(102, 175, 233, 0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),0 0 8px rgba(102, 175, 233, 0.6);
 }
 
-select.form-control+.chosen-container-multi .chosen-results li.result-selected {
+select.form-control + .chosen-container-multi .chosen-results li.result-selected{
     display: list-item;
     color: #ccc;
     cursor: default;
     background-color: white;
 }
-
 select.form-control+.chosen-container-multi.chosen-container-active .chosen-choices {
     display: flex;
     flex-wrap: wrap;
