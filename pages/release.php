@@ -57,15 +57,15 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
 
 <?php endif; ?>
 
-<div class="releases-socials">
+<div style="margin-top: 10px; margin-bottom: 10px;">
     <a href="https://vk.com/anilibria" target="_blank" rel="nofollow">
-        <img src="/img/other/a1.jpg" alt="Anilibria Vkontakte">
+        <img src="/img/other/a1.jpg" width="283" style="border-radius: 4px;">
     </a>
     <a href="tg://resolve?domain=anilibria_tv" rel="nofollow">
-        <img src="/img/other/a2.jpg" alt="Anilibria Telegram">
+        <img src="/img/other/a2.jpg" width="283" style="margin-left: 12px; border-radius: 4px;">
     </a>
     <a href="https://discord.gg/M6yCGeGN9B" target="_blank" rel="nofollow">
-        <img src="/img/other/a3.jpg" alt="Anilibria Discord">
+        <img src="/img/other/a3.jpg" width="283" style="float: right; border-radius: 4px;">
     </a>
 </div>
 
@@ -209,7 +209,10 @@ require($_SERVER['DOCUMENT_ROOT'] . '/private/header.php');
         for (var i = 0; i < torrents.length; i++) {
             var entry = torrents[i];
             var datetime = new Date(entry.dataset.datetime);
-            entry.innerHTML = 'Добавлен ' +  new Intl.DateTimeFormat(undefined, { dateStyle: 'short', timeStyle: 'short' }).format(datetime);
+            entry.innerHTML = 'Добавлен ' + new Intl.DateTimeFormat(undefined, {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            }).format(datetime);
         }
     })();
 

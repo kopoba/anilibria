@@ -155,11 +155,15 @@ html[data-theme=dark] {
 }
 
 [data-theme=dark] .news-block {
-    background-color: transparent;
+    background-color: #222324;
+}
+
+[data-theme=dark] .news-name {
+    color: #ab8484;
 }
 
 [data-theme=dark] .download-torrent {
-    background-color: #1f1f1f;
+    background-color: #454545;
 }
 
 [data-theme=dark] .download-torrent td {
@@ -249,4 +253,17 @@ html[data-theme=dark] {
 
 [data-theme=dark] .release-subseditors {
     color: #d83541;
+}
+
+[data-theme=dark] .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: transparent;
+}
+
+[data-theme=dark] .modal-content {
+    background-color: #303030;
+}
+
+[data-theme=dark] .pagination>.disabled>a, .pagination>.disabled>a:focus, .pagination>.disabled>a:hover, .pagination>.disabled>span, .pagination>.disabled>span:focus, .pagination>.disabled>span:hover {
+    background-color: #303030;
+    border-color: #303030;
 }

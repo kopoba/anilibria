@@ -252,6 +252,22 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 	<div style="margin-top:10px;"></div>
 </div>
 
+
+
+<div class="news-block">
+    <div class="news-header">
+        <h2 class="news-name" style="float:left;">Переключить темную тему</h2>
+        <h2 class="news-name" style="float:left; padding-left: 10px;"></h2>
+        <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    <div>
+        <input class="btn btn btn-success btn-block" id="dark-theme-toggle" style="margin-top: 10px;"  type="submit" value="ПЕРЕКЛЮЧИТЬ">
+    </div>
+    <div class="clear"></div>
+    <div style="margin-top:10px;"></div>
+</div>
+
 <div class="news-block">
 	<div class="news-header">
 		<h2 class="news-name">
