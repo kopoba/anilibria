@@ -77,15 +77,6 @@ $xcss = headerAds();
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
 	<head>
-		<!--Удалить скрипт после ознакомления аудитории с новой темой-->
-		<script>
-			var visited = localStorage.getItem('visited');
-			if (!visited) {
-				alert("Привет Либрийцы! У нас появилась вторая цветовая тема. Cменить которую можно в нижней левой части страницы.");
-				localStorage.setItem('visited', true);
-			}
-		</script>
-
 		<script src="<?php echo '/js/theme-toggle.js';?>"></script>
 
         <!-- Global site tag (gtag.js) - Google Analytics -->
