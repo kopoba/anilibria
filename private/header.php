@@ -78,6 +78,7 @@ $xcss = headerAds();
 <html prefix="og: http://ogp.me/ns#">
 	<head>
 		<script src="<?php echo '/js/theme-toggle.js';?>"></script>
+        <script data-cfasync="false" src="<?php echo '/js/theme-toggle.js?hash=' . md5_file('/var/www/html/js/theme-toggle.js');?>"></script>
 
         <!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php global $conf; echo $conf['google_analytics_id']; ?>"></script>
