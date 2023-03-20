@@ -744,6 +744,7 @@ p.lasttortext {
 	padding-bottom: 5px;
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
+	z-index: 1;
 }
 
 .download-torrent {
@@ -804,6 +805,13 @@ p.lasttortext {
 	margin-top: 0px;
 	font-weight: 500;
 }
+.release-season,.release-subseditors{
+	color: #000;
+}
+.release-season:hover,.release-subseditors:hover{
+	color: #000;
+}
+
 
 .tab-switcher {
 	margin-top: 10px;
