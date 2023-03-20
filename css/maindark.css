@@ -98,7 +98,6 @@ html[data-theme=dark] {
 
 [data-theme=dark] .contentmenu {
     background-color: transparent;
-    filter: brightness(50%);
 }
 
 [data-theme=dark] .contentmenu:hover {
@@ -140,10 +139,6 @@ html[data-theme=dark] {
     background-color: #000;
 }
 
-[data-theme=dark] .footer img,
-[data-theme=dark] .footer_center {
-    filter: grayscale(80%) brightness(50%);
-}
 
 [data-theme=dark] .footer img:hover,
 [data-theme=dark] .footer_center:hover {

@@ -64,6 +64,7 @@ require($_SERVER['DOCUMENT_ROOT'].'/private/header.php');
 .goodcell > a:hover .schedule-anime-desc {
 	display: block;
 	border: 3px solid #e04e4e;
+	z-index: 1;
 }
 
 .schedule-anime-desc > span {
